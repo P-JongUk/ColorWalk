@@ -41,5 +41,6 @@ Push beta work to `main` unless a dedicated review branch is requested.
 
 ## Remaining Manual QA
 
-- Real Android device or emulator QA is still required for camera permissions, local notifications while locked, and install/update behavior.
-- `adb devices` currently shows no connected device/emulator in this workspace.
+- Android emulator QA on `ColorWalkPixel7` passed for location permission, camera permission, camera capture, journal save, same-day replacement confirm, history, native story share sheet, notification permission, and immediate test notification display.
+- Real physical phone QA is still recommended for PWA install, camera feel, share targets installed on the user's phone, and notification behavior while the phone is locked.
+- Android daily reminder delivery may be delayed by exact-alarm policy on Android 12+. The profile "테스트 알림 보내기" button verifies notification permission/channel/display immediately.

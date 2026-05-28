@@ -5,6 +5,7 @@ import type { Locale } from '@/types'
 
 const REMINDER_STORAGE_KEY = 'colorwalk:daily-reminder'
 const REMINDER_NOTIFICATION_ID = 1314
+const REMINDER_TEST_NOTIFICATION_ID = 1315
 
 type ReminderSettings = {
   enabled: boolean
@@ -133,4 +134,42 @@ export async function scheduleDailyReminder(time: string, locale: Locale) {
   startWebReminderScheduler(locale)
 
   return { platform: 'web' as const, time: normalizedTime }
+}
+
+export async function sendTestReminderNotification(locale: Locale) {
+  const copy = getNotificationCopy(locale)
+
+  if (Capacitor.isNativePlatform()) {
+    const permission = await LocalNotifications.requestPermissions()
+    if (permission.display !== 'granted') throw new Error(locale === 'ko' ? '알림 권한이 꺼져 있어요.' : 'Notification permission is off.')
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: REMINDER_TEST_NOTIFICATION_ID,
+          title: locale === 'ko' ? 'ColorWalk 테스트 알림' : 'ColorWalk test reminder',
+          body: copy.body,
+          autoCancel: true,
+        },
+      ],
+    })
+
+    return { platform: 'native' as const }
+  }
+
+  if (typeof Notification === 'undefined') {
+    throw new Error(locale === 'ko' ? '이 브라우저는 알림을 지원하지 않아요.' : 'This browser does not support notifications.')
+  }
+
+  const permission = await Notification.requestPermission()
+  if (permission !== 'granted') throw new Error(locale === 'ko' ? '알림 권한이 꺼져 있어요.' : 'Notification permission is off.')
+
+  new Notification(locale === 'ko' ? 'ColorWalk 테스트 알림' : 'ColorWalk test reminder', {
+    body: copy.body,
+    icon: '/favicon.svg',
+    badge: '/favicon.svg',
+    tag: 'colorwalk-test-reminder',
+  })
+
+  return { platform: 'web' as const }
 }

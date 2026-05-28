@@ -1,4 +1,7 @@
 import { useMemo, useRef, useState, type PointerEvent } from 'react'
+import { Capacitor } from '@capacitor/core'
+import { Directory, Filesystem } from '@capacitor/filesystem'
+import { Share } from '@capacitor/share'
 import { Download, Eraser, Minus, Plus, RotateCcw, Search, Share2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -57,6 +60,58 @@ async function exportElement(element: HTMLElement, filename: string) {
 
       resolve(new File([blob], filename, { type: 'image/png' }))
     }, 'image/png')
+  })
+}
+
+function storyFilename() {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+  return `colorwalk-story-${stamp}.png`
+}
+
+function fileToBase64(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const value = String(reader.result ?? '')
+      resolve(value.includes(',') ? value.split(',')[1] : value)
+    }
+    reader.onerror = () => reject(reader.error ?? new Error('Failed to read story file'))
+    reader.readAsDataURL(file)
+  })
+}
+
+async function shareNativeStory(file: File, locale: Locale, mode: 'download' | 'share') {
+  const path = `stories/${file.name}`
+
+  await Filesystem.mkdir({
+    path: 'stories',
+    directory: Directory.Cache,
+    recursive: true,
+  }).catch(() => undefined)
+
+  await Filesystem.writeFile({
+    path,
+    directory: Directory.Cache,
+    data: await fileToBase64(file),
+    recursive: true,
+  })
+
+  const { uri } = await Filesystem.getUri({
+    path,
+    directory: Directory.Cache,
+  })
+
+  await Share.share({
+    title: 'ColorWalk Story',
+    dialogTitle:
+      mode === 'download'
+        ? locale === 'ko'
+          ? '스토리 사진 저장 또는 공유'
+          : 'Save or share story image'
+        : locale === 'ko'
+          ? '스토리 공유하기'
+          : 'Share story',
+    files: [uri],
   })
 }
 
@@ -159,7 +214,13 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
     if (!exportRef.current) return
 
     try {
-      const file = await exportElement(exportRef.current, `colorwalk-story-${new Date().toISOString().slice(0, 10)}.png`)
+      const file = await exportElement(exportRef.current, storyFilename())
+      if (Capacitor.isNativePlatform()) {
+        await shareNativeStory(file, locale, mode)
+        toast.success(t(locale, 'storySaved'))
+        return
+      }
+
       if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: 'ColorWalk Story' })
         return

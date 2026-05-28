@@ -86,12 +86,24 @@ When coding or QA-ing account-specific flows, sign in with that account unless t
 ## Android Local Paths
 
 - JDK 21: `C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot`
-- Android SDK: `C:\Users\JongUk\AppData\Local\Android\Sdk`
-- ADB: `C:\Users\JongUk\AppData\Local\Android\Sdk\platform-tools\adb.exe`
+- Primary Android SDK: `D:\Android\Sdk`
+- Primary AVD home: `D:\Android\Avd`
+- Working AVD: `ColorWalkPixel7`
+- ADB: `D:\Android\Sdk\platform-tools\adb.exe`
+- Legacy C-drive SDK: `C:\Users\JongUk\AppData\Local\Android\Sdk`
 - Debug APK: `D:\JongUk\Documents\ColorWalk\android\app\build\outputs\apk\debug\app-debug.apk`
 - Release AAB: `D:\JongUk\Documents\ColorWalk\android\app\build\outputs\bundle\release\app-release.aab`
 
-Current emulator blocker: the C drive has no free space, so Android system image/AVD creation failed. Keep future emulator storage on D drive by setting `ANDROID_SDK_ROOT`/`ANDROID_AVD_HOME` to D-drive folders or free C-drive space before installing system images.
+Use the D-drive SDK/AVD for emulator QA so the C drive does not fill up:
+
+```powershell
+$env:ANDROID_SDK_ROOT='D:\Android\Sdk'
+$env:ANDROID_HOME='D:\Android\Sdk'
+$env:ANDROID_AVD_HOME='D:\Android\Avd'
+Start-Process -FilePath 'D:\Android\Sdk\emulator\emulator.exe' -ArgumentList '-avd ColorWalkPixel7 -no-snapshot -no-audio -no-boot-anim -camera-back emulated -gpu swiftshader_indirect' -WindowStyle Hidden
+```
+
+Android emulator QA on `ColorWalkPixel7` has verified location permission, camera permission, camera capture, journal save/replace, history, native story share sheet, notification permission, and immediate test notification display. Physical phone PWA install QA is still user-side.
 
 ## Design QA Routine
 

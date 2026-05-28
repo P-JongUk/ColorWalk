@@ -15,7 +15,7 @@
    - Android Chrome: 메뉴 -> Add to Home screen 또는 Install app
    - iOS Safari: 공유 -> 홈 화면에 추가
 
-PWA 알림은 브라우저 권한과 실행 상태의 영향을 받습니다. Android 네이티브 빌드는 Capacitor Local Notifications로 매일 알림을 예약합니다.
+PWA 알림은 브라우저 권한과 실행 상태의 영향을 받습니다. Android 네이티브 빌드는 Capacitor Local Notifications로 매일 알림을 예약합니다. 프로필의 `테스트 알림 보내기`로 권한/채널/표시 여부를 바로 확인할 수 있습니다.
 
 ## 2. 공유 테스트 계정
 
@@ -45,13 +45,13 @@ D:\JongUk\Documents\ColorWalk\android\app\build\outputs\apk\debug\app-debug.apk
 PC에서 연결 확인:
 
 ```powershell
-C:\Users\JongUk\AppData\Local\Android\Sdk\platform-tools\adb.exe devices
+D:\Android\Sdk\platform-tools\adb.exe devices
 ```
 
 설치:
 
 ```powershell
-C:\Users\JongUk\AppData\Local\Android\Sdk\platform-tools\adb.exe install -r D:\JongUk\Documents\ColorWalk\android\app\build\outputs\apk\debug\app-debug.apk
+D:\Android\Sdk\platform-tools\adb.exe install -r D:\JongUk\Documents\ColorWalk\android\app\build\outputs\apk\debug\app-debug.apk
 ```
 
 ## 4. Android 빌드
@@ -85,10 +85,19 @@ android/app/build/outputs/bundle/release/app-release.aab
 ADB가 PATH에 없으면 전체 경로를 사용합니다.
 
 ```powershell
-C:\Users\JongUk\AppData\Local\Android\Sdk\platform-tools\adb.exe devices
+D:\Android\Sdk\platform-tools\adb.exe devices
 ```
 
-현재 이 PC는 Android SDK는 있지만 등록된 AVD가 없습니다. Android 36 system image 설치는 C 드라이브 공간 부족으로 실패했습니다. 다음 에뮬레이터 작업 전에 `docs/android-local-environment.md`를 읽고 SDK/AVD 위치를 D 드라이브로 정리하세요.
+현재 이 PC는 D 드라이브 SDK/AVD를 사용합니다.
+
+```powershell
+$env:ANDROID_SDK_ROOT='D:\Android\Sdk'
+$env:ANDROID_HOME='D:\Android\Sdk'
+$env:ANDROID_AVD_HOME='D:\Android\Avd'
+Start-Process -FilePath 'D:\Android\Sdk\emulator\emulator.exe' -ArgumentList '-avd ColorWalkPixel7 -no-snapshot -no-audio -no-boot-anim -camera-back emulated -gpu swiftshader_indirect' -WindowStyle Hidden
+```
+
+자세한 경로와 최근 QA 결과는 `docs/android-local-environment.md`와 `docs/android-emulator-qa-2026-05-29.md`를 봅니다.
 
 ## 6. 빠른 QA 체크리스트
 
@@ -103,3 +112,4 @@ C:\Users\JongUk\AppData\Local\Android\Sdk\platform-tools\adb.exe devices
 - 저널/히스토리에서 스토리 템플릿 변경, 스티커 추가/이동/삭제
 - 9:16 스토리 이미지 저장/공유
 - 프로필에서 매일 알림 시간 설정
+- 프로필에서 테스트 알림 표시 확인

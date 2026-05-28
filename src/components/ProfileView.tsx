@@ -7,7 +7,7 @@ import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
 import { t } from '@/lib/i18n'
-import { cancelDailyReminder, getReminderSettings, scheduleDailyReminder } from '@/lib/notifications'
+import { cancelDailyReminder, getReminderSettings, scheduleDailyReminder, sendTestReminderNotification } from '@/lib/notifications'
 import type { Locale, Post, UserProfile } from '@/types'
 
 type ProfileViewProps = {
@@ -26,6 +26,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
   const [reminderTime, setReminderTime] = useState(initialReminder.time)
   const [reminderEnabled, setReminderEnabled] = useState(initialReminder.enabled)
   const [isScheduling, setIsScheduling] = useState(false)
+  const [isSendingTest, setIsSendingTest] = useState(false)
 
   async function saveReminder() {
     setIsScheduling(true)
@@ -45,6 +46,18 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
     await cancelDailyReminder()
     setReminderEnabled(false)
     toast.message(locale === 'ko' ? '매일 알림을 껐어요.' : 'Daily reminder is off.')
+  }
+
+  async function sendTestNotification() {
+    setIsSendingTest(true)
+    try {
+      await sendTestReminderNotification(locale)
+      toast.success(locale === 'ko' ? '테스트 알림을 보냈어요.' : 'Test reminder sent.')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t(locale, 'saveFailed'))
+    } finally {
+      setIsSendingTest(false)
+    }
   }
 
   return (
@@ -133,6 +146,9 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
               {locale === 'ko' ? '끄기' : 'Off'}
             </Button>
           </div>
+          <Button type="button" variant="ghost" onClick={() => void sendTestNotification()} disabled={isSendingTest}>
+            {isSendingTest ? (locale === 'ko' ? '전송 중' : 'Sending') : locale === 'ko' ? '테스트 알림 보내기' : 'Send test reminder'}
+          </Button>
           <p>
             {locale === 'ko'
               ? 'Android 앱에서는 기기가 잠겨 있어도 매일 로컬 알림이 울려요. 웹/PWA에서는 브라우저 권한과 실행 상태에 따라 달라질 수 있어요.'
