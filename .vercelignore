@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+docs/*.private.md
+.design-references/
+.lazyweb/
+.npm-cache/
+node_modules/
+dist/
+android/
+logs/
+*.log

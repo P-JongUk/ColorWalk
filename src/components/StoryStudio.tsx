@@ -1,0 +1,326 @@
+import { useMemo, useRef, useState, type PointerEvent } from 'react'
+import { Download, Eraser, Minus, Plus, RotateCcw, Search, Share2, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { StoryCard, type StoryCardData } from '@/components/StoryCard'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  createStickerItem,
+  DEFAULT_STORY_DESIGN,
+  getStickerDefinition,
+  STORY_STICKERS,
+  STORY_TEMPLATES,
+  STICKER_CATEGORIES,
+  TEMPLATE_CATEGORIES,
+  type StoryTemplateCategory,
+} from '@/lib/story'
+import { t } from '@/lib/i18n'
+import { cn } from '@/lib/utils'
+import type { Locale, StoryDesign, StoryStickerCategory, StoryStickerItem, StoryTemplateId } from '@/types'
+
+type StoryStudioProps = {
+  locale: Locale
+  data: Omit<StoryCardData, 'locale' | 'templateId'>
+  initialDesign?: StoryDesign
+  onDesignChange?: (design: StoryDesign) => void
+}
+
+async function exportElement(element: HTMLElement, filename: string) {
+  const { default: html2canvas } = await import('html2canvas')
+  const bounds = element.getBoundingClientRect()
+  const scale = 1080 / bounds.width
+  element.classList.add('story-exporting')
+  let sourceCanvas: HTMLCanvasElement
+  try {
+    sourceCanvas = await html2canvas(element, {
+      backgroundColor: null,
+      scale,
+      useCORS: true,
+    })
+  } finally {
+    element.classList.remove('story-exporting')
+  }
+  const canvas = document.createElement('canvas')
+  canvas.width = 1080
+  canvas.height = 1920
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Failed to render story')
+  context.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height)
+
+  return new Promise<File>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Failed to render story'))
+        return
+      }
+
+      resolve(new File([blob], filename, { type: 'image/png' }))
+    }, 'image/png')
+  })
+}
+
+export function StoryStudio({ locale, data, initialDesign, onDesignChange }: StoryStudioProps) {
+  const exportRef = useRef<HTMLDivElement | null>(null)
+  const cardBoundsRef = useRef<DOMRect | null>(null)
+  const stickerIndexRef = useRef(0)
+  const [templateId, setTemplateId] = useState<StoryTemplateId>(initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId)
+  const [stickers, setStickers] = useState<StoryStickerItem[]>(initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers)
+  const [selectedStickerUid, setSelectedStickerUid] = useState<string | null>(stickers[0]?.uid ?? null)
+  const [activeCategory, setActiveCategory] = useState<StoryStickerCategory>('all')
+  const [activeTemplateCategory, setActiveTemplateCategory] = useState<StoryTemplateCategory>('recommended')
+  const [query, setQuery] = useState('')
+
+  const visibleTemplates = useMemo(() => {
+    if (activeTemplateCategory === 'recommended') return STORY_TEMPLATES
+    return STORY_TEMPLATES.filter((template) => template.category === activeTemplateCategory || template.category === 'recommended')
+  }, [activeTemplateCategory])
+
+  const visibleStickers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase()
+
+    return STORY_STICKERS.filter((sticker) => {
+      const matchesCategory = activeCategory === 'all' || sticker.pack === activeCategory
+      const matchesQuery =
+        !normalizedQuery ||
+        sticker.label.toLowerCase().includes(normalizedQuery) ||
+        sticker.keywords.some((keyword) => keyword.toLowerCase().includes(normalizedQuery))
+
+      return matchesCategory && matchesQuery
+    })
+  }, [activeCategory, query])
+
+  function publish(nextTemplateId: StoryTemplateId, nextStickers: StoryStickerItem[]) {
+    onDesignChange?.({ templateId: nextTemplateId, stickers: nextStickers })
+  }
+
+  function selectTemplate(nextTemplateId: StoryTemplateId) {
+    setTemplateId(nextTemplateId)
+    publish(nextTemplateId, stickers)
+  }
+
+  function setNextStickers(nextStickers: StoryStickerItem[]) {
+    setStickers(nextStickers)
+    publish(templateId, nextStickers)
+  }
+
+  function addSticker(stickerId: string) {
+    stickerIndexRef.current += 1
+    const next = [...stickers, createStickerItem(stickerId, stickerIndexRef.current)]
+    setSelectedStickerUid(next[next.length - 1].uid)
+    setNextStickers(next)
+  }
+
+  function updateSelected(patch: Partial<StoryStickerItem>) {
+    if (!selectedStickerUid) return
+    setNextStickers(
+      stickers.map((sticker) =>
+        sticker.uid === selectedStickerUid
+          ? {
+              ...sticker,
+              ...patch,
+              scale: Math.min(2.2, Math.max(0.45, patch.scale ?? sticker.scale)),
+              rotation: Math.min(32, Math.max(-32, patch.rotation ?? sticker.rotation)),
+            }
+          : sticker,
+      ),
+    )
+  }
+
+  function removeSelected() {
+    if (!selectedStickerUid) return
+    const next = stickers.filter((sticker) => sticker.uid !== selectedStickerUid)
+    setSelectedStickerUid(next[0]?.uid ?? null)
+    setNextStickers(next)
+  }
+
+  function beginDrag(event: PointerEvent<HTMLButtonElement>, target: StoryStickerItem) {
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setSelectedStickerUid(target.uid)
+    cardBoundsRef.current = exportRef.current?.getBoundingClientRect() ?? null
+  }
+
+  function moveSelected(event: PointerEvent<HTMLDivElement>) {
+    if (!selectedStickerUid || !cardBoundsRef.current || event.buttons !== 1) return
+    const bounds = cardBoundsRef.current
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100
+    setNextStickers(
+      stickers.map((sticker) =>
+        sticker.uid === selectedStickerUid
+          ? { ...sticker, x: Math.min(94, Math.max(6, x)), y: Math.min(94, Math.max(6, y)) }
+          : sticker,
+      ),
+    )
+  }
+
+  async function saveOrShare(mode: 'download' | 'share') {
+    if (!exportRef.current) return
+
+    try {
+      const file = await exportElement(exportRef.current, `colorwalk-story-${new Date().toISOString().slice(0, 10)}.png`)
+      if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'ColorWalk Story' })
+        return
+      }
+
+      const url = URL.createObjectURL(file)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = file.name
+      anchor.click()
+      URL.revokeObjectURL(url)
+      toast.success(t(locale, 'storySaved'))
+    } catch (error) {
+      console.error(error)
+      toast.error(t(locale, 'saveFailed'))
+    }
+  }
+
+  const selectedSticker = stickers.find((sticker) => sticker.uid === selectedStickerUid)
+
+  return (
+    <section className="story-studio">
+      <div className="section-heading story-studio-heading">
+        <div>
+          <p>{t(locale, 'story')}</p>
+          <h2>{t(locale, 'storyMaker')}</h2>
+        </div>
+        <span>9:16</span>
+      </div>
+
+      <div className="story-preview-wrap" onPointerMove={moveSelected}>
+        <StoryCard
+          {...data}
+          locale={locale}
+          templateId={templateId}
+          stickers={stickers}
+          exportRef={exportRef}
+          selectedStickerUid={selectedStickerUid}
+          onStickerPointerDown={beginDrag}
+          onSelectSticker={setSelectedStickerUid}
+        />
+      </div>
+
+      <div className="template-gallery">
+        <div className="template-tabs">
+          {TEMPLATE_CATEGORIES.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              className={cn(activeTemplateCategory === category.id && 'is-active')}
+              onClick={() => setActiveTemplateCategory(category.id)}
+            >
+              {category.label[locale]}
+            </button>
+          ))}
+        </div>
+        <div className="template-strip" aria-label={t(locale, 'storyTemplate')}>
+          {visibleTemplates.map((template) => (
+            <button
+              key={template.id}
+              type="button"
+              className={cn('template-card', templateId === template.id && 'template-card-active')}
+              onClick={() => selectTemplate(template.id)}
+            >
+              <div className={cn('template-thumb', template.className)}>
+                <span style={{ backgroundColor: data.missionHex }} />
+                <span style={{ backgroundColor: data.capturedHex }} />
+                <b>{template.id === 'travel' ? 'AIR' : template.id === 'newspaper' ? 'NEWS' : template.id === 'polaroid' ? 'PHOTO' : 'COLOR'}</b>
+              </div>
+              <strong>{template.name[locale]}</strong>
+              <small>{template.caption[locale]}</small>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="story-export-actions">
+        <Button type="button" variant="outline" onClick={() => void saveOrShare('download')}>
+          <Download data-icon="inline-start" aria-hidden="true" />
+          {t(locale, 'saveStory')}
+        </Button>
+        <Button type="button" onClick={() => void saveOrShare('share')}>
+          <Share2 data-icon="inline-start" aria-hidden="true" />
+          {t(locale, 'shareStory')}
+        </Button>
+      </div>
+
+      <div className="sticker-drawer">
+        <label className="sticker-search">
+          <Search aria-hidden="true" />
+          <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t(locale, 'storySearch')} />
+        </label>
+        <div className="sticker-tabs">
+          {STICKER_CATEGORIES.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              className={cn(activeCategory === category.id && 'is-active')}
+              onClick={() => setActiveCategory(category.id)}
+            >
+              {category.label[locale]}
+            </button>
+          ))}
+        </div>
+        <p>{t(locale, 'stickerHint')}</p>
+        <div className="sticker-grid">
+          {visibleStickers.map((sticker) => {
+            const definition = getStickerDefinition(sticker.id)
+            return (
+              <button key={sticker.id} type="button" onClick={() => addSticker(sticker.id)} aria-label={definition.label}>
+                <img src={definition.assetUrl} alt="" draggable={false} />
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="story-controls">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!selectedSticker}
+          onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) + 0.12 })}
+        >
+          <Plus data-icon="inline-start" aria-hidden="true" />
+          {locale === 'ko' ? '크게' : 'Size'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!selectedSticker}
+          onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) - 0.12 })}
+        >
+          <Minus data-icon="inline-start" aria-hidden="true" />
+          {locale === 'ko' ? '작게' : 'Size'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!selectedSticker}
+          onClick={() => updateSelected({ rotation: (selectedSticker?.rotation ?? 0) + 6 })}
+        >
+          <RotateCcw data-icon="inline-start" aria-hidden="true" />
+          {locale === 'ko' ? '회전' : 'Rotate'}
+        </Button>
+        <Button type="button" variant="outline" disabled={!selectedSticker} onClick={removeSelected}>
+          <Trash2 data-icon="inline-start" aria-hidden="true" />
+          {locale === 'ko' ? '삭제' : 'Delete'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setSelectedStickerUid(DEFAULT_STORY_DESIGN.stickers[0]?.uid ?? null)
+            setNextStickers(DEFAULT_STORY_DESIGN.stickers)
+          }}
+        >
+          <Eraser data-icon="inline-start" aria-hidden="true" />
+          {t(locale, 'resetStickers')}
+        </Button>
+      </div>
+    </section>
+  )
+}
