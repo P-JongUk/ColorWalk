@@ -1,4 +1,4 @@
-import { detectScreenAbuse, rgbToHex } from '@/lib/colors'
+import { rgbToHex } from '@/lib/colors'
 import type { Rgb } from '@/types'
 
 export type CompressedImage = {
@@ -138,7 +138,6 @@ export function sampleVideoCenter(video: HTMLVideoElement) {
   if (!context || !video.videoWidth || !video.videoHeight) {
     return {
       hex: '#FFFFFF',
-      abuseWarning: false,
     }
   }
 
@@ -147,7 +146,6 @@ export function sampleVideoCenter(video: HTMLVideoElement) {
 
   return {
     hex: rgbToHex(sampleWeightedCenter(fullPixels.data, sampleSize, sampleSize)),
-    abuseWarning: detectScreenAbuse(fullPixels.data, sampleSize),
   }
 }
 
@@ -161,7 +159,6 @@ export function sampleCanvasCenter(source: HTMLCanvasElement) {
   if (!context || !source.width || !source.height) {
     return {
       hex: '#FFFFFF',
-      abuseWarning: false,
     }
   }
 
@@ -170,7 +167,6 @@ export function sampleCanvasCenter(source: HTMLCanvasElement) {
 
   return {
     hex: rgbToHex(sampleWeightedCenter(fullPixels.data, sampleSize, sampleSize)),
-    abuseWarning: detectScreenAbuse(fullPixels.data, sampleSize),
   }
 }
 

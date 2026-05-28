@@ -52,6 +52,22 @@ VITE_BETA_INVITE_CODE
 
 Only publishable Supabase keys may be used in Vite/browser code. Service role keys are allowed only in Supabase Edge Functions or local admin tooling and must never be committed.
 
+## Live Web Beta
+
+- URL: `https://colorwalk-tau.vercel.app`
+- Invite code: `colorwalk-friends`
+- Vercel project: `parkjonguks-projects/colorwalk`
+
+For local Vercel CLI work, keep Vercel config/cache on D because the C drive can be full:
+
+```powershell
+$env:XDG_DATA_HOME='D:\JongUk\Documents\ColorWalk\.vercel-local\data'
+$env:XDG_CONFIG_HOME='D:\JongUk\Documents\ColorWalk\.vercel-local\config'
+$env:VERCEL_TELEMETRY_DISABLED='1'
+```
+
+The last successful production deploy used local `npm run build`, manual `.vercel/output` packaging from `dist`, and `npx vercel deploy --prebuilt --prod --yes`.
+
 ## Supabase
 
 - Project id: `nhsvmypztjyhqunixxeg`

@@ -6,7 +6,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!manifest.webmanifest|sw.js|favicon.svg|assets/.*|design/.*|stickers/.*).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

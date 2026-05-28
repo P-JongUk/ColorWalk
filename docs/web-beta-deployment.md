@@ -33,11 +33,29 @@ Node install command: npm ci
 
 ## Vercel
 
-1. Import `P-JongUk/ColorWalk` in Vercel.
-2. Set the required environment variables above for Production and Preview.
-3. Deploy with the default Vite settings from `vercel.json`.
+Current live beta:
 
-The local Vercel CLI could not complete in this workspace while the C drive had 0 bytes free because the CLI tried to write global config under the user profile. Use the Vercel Git integration or rerun CLI after moving its config/cache to D.
+```text
+https://colorwalk-tau.vercel.app
+Invite code: colorwalk-friends
+```
+
+The project is linked to Vercel as `parkjonguks-projects/colorwalk`. Because this Windows workspace has very little C-drive space and `vercel build` can collide with locked native `node_modules` files, the successful local deployment path was:
+
+```powershell
+$env:npm_config_cache='D:\JongUk\Documents\ColorWalk\.npm-cache'
+$env:TEMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:TMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:XDG_DATA_HOME='D:\JongUk\Documents\ColorWalk\.vercel-local\data'
+$env:XDG_CONFIG_HOME='D:\JongUk\Documents\ColorWalk\.vercel-local\config'
+$env:VERCEL_TELEMETRY_DISABLED='1'
+$env:VITE_BETA_INVITE_CODE='colorwalk-friends'
+npm run build
+# Copy dist into .vercel/output/static and create .vercel/output/config.json.
+npx vercel deploy --prebuilt --prod --yes
+```
+
+For long-term deployment, importing `P-JongUk/ColorWalk` through the Vercel Git integration is cleaner. Set the required environment variables in Vercel Production and Preview before using Git deployments.
 
 ## GitHub Pages Fallback
 
@@ -88,3 +106,5 @@ npm run verify:supabase
 npm run seed:test-account
 npm run cap:sync
 ```
+
+Latest verified live browser path: invite code -> beta test account login -> home -> history -> story editor.

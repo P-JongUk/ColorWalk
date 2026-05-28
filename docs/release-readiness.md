@@ -11,12 +11,13 @@
 
 ## PWA Beta
 
-- Use an HTTPS host.
+- Current HTTPS beta URL: `https://colorwalk-tau.vercel.app`
+- Current friend invite code: `colorwalk-friends`
 - Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_AUTH_EMAIL_DOMAIN`, and `VITE_BETA_INVITE_CODE`.
 - Share the HTTPS URL plus invite code with friends.
 - Android Chrome users can install from browser menu -> Add to Home screen / Install app.
 - iOS users can install from Safari Share -> Add to Home Screen.
-- Preferred free deployment path: Vercel Git import of `P-JongUk/ColorWalk`.
+- Preferred free deployment path: Vercel Git import of `P-JongUk/ColorWalk`, with the env vars above configured in Vercel.
 - Fallback path: GitHub Pages workflow in `.github/workflows/deploy-pages.yml`.
 
 ## Security Checklist
@@ -30,9 +31,15 @@
 
 ## GitHub
 
-This local repository currently needs a GitHub remote before push. If the GitHub connector cannot create a repository in the user's account, create `ColorWalk` on GitHub manually, then run:
+This repository is connected to:
 
-```powershell
-git remote add origin https://github.com/<owner>/ColorWalk.git
-git push -u origin main
+```text
+https://github.com/P-JongUk/ColorWalk.git
 ```
+
+Push beta work to `main` unless a dedicated review branch is requested.
+
+## Remaining Manual QA
+
+- Real Android device or emulator QA is still required for camera permissions, local notifications while locked, and install/update behavior.
+- `adb devices` currently shows no connected device/emulator in this workspace.
