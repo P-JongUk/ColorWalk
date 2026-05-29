@@ -95,6 +95,20 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
   - Optional account linking for backup and device transfer.
 - Safety/privacy note: if directly targeting users under 14 in Korea or under 13 in the US, add age gating, parental consent review, privacy copy, and a stricter data-minimization design before launch.
 
+### Streak Badge Reward System
+- Product principle: streak badges are not scores or pressure mechanics. They are creative keys that unlock prettier ways to remember and share the colors the user already collected.
+- Preferred reward loop:
+  - 3 days: tiny doodle stickers, sparkle marks, seed/leaf stamps.
+  - 7 days: weekly color passport stamp, "Color Walk Week" sticker, one soft story decoration.
+  - 14 days: ticket corner details, collection frame, richer color-name sticker.
+  - 30 days: signature clover mark sticker, premium-feeling story frame, monthly passport stamp.
+- UX direction:
+  - Keep badges private, collectible, and share-friendly.
+  - Avoid leaderboards, public comparison, harsh missed-day copy, or rewards that only protect a number.
+  - Tapping a badge should eventually show the period palette/photos and offer a story-making path.
+- Implementation direction: derive badge state from saved `posts.local_date` whenever possible. If templates, sticker packs, or badge visuals change later, preserve the milestone-to-creative-reward relationship.
+- Detailed design note: `docs/colorwalk-reward-system.md`.
+
 ### Instagram / SNS Sharing
 - Current MVP: receipt export through `html2canvas`, Web Share API when available, and image download fallback.
 - Beta-safe improvement: add native 9:16 story export templates that save/share cleanly even without direct Instagram integration.
