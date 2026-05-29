@@ -7,7 +7,7 @@ import type {
   StoryTemplateId,
 } from '@/types'
 
-export type StoryTemplateCategory = 'recommended' | 'mongle' | 'travel' | 'editorial' | 'minimal'
+export type StoryTemplateCategory = 'recommended' | 'soft' | 'travel' | 'editorial' | 'brand'
 
 export type StoryTemplate = {
   id: StoryTemplateId
@@ -21,69 +21,69 @@ const stickerBase = '/stickers/colorwalk-doodles'
 
 export const STORY_TEMPLATES: StoryTemplate[] = [
   {
-    id: 'passport',
+    id: 'soft-passport',
     category: 'recommended',
-    name: { ko: '컬러 패스포트', en: 'Passport' },
-    caption: { ko: '오늘 발견한 색을 스탬프처럼', en: 'A color stamp from today' },
-    className: 'story-template-passport',
+    name: { ko: '소프트 패스포트', en: 'Soft Passport' },
+    caption: { ko: '가장 ColorWalk다운 기본 프레임', en: 'The most ColorWalk frame' },
+    className: 'story-template-soft-passport',
   },
   {
-    id: 'mongle',
-    category: 'mongle',
-    name: { ko: '몽글', en: 'Mongle' },
-    caption: { ko: '구름처럼 부드러운 오늘', en: 'Cloud-soft daily mood' },
-    className: 'story-template-mongle',
+    id: 'life-cut',
+    category: 'recommended',
+    name: { ko: '라이프 컷', en: 'Life Cut' },
+    caption: { ko: '인생네컷처럼 깔끔한 포토부스', en: 'Clean photobooth energy' },
+    className: 'story-template-life-cut',
   },
   {
-    id: 'travel',
+    id: 'air-trip',
     category: 'travel',
     name: { ko: '비행기 여행', en: 'Air Trip' },
-    caption: { ko: '오늘 색으로 떠나는 작은 여행', en: 'A tiny color trip' },
-    className: 'story-template-travel',
+    caption: { ko: '작은 산책을 여행처럼', en: 'A tiny color trip' },
+    className: 'story-template-air-trip',
   },
   {
-    id: 'modern',
-    category: 'minimal',
-    name: { ko: '모던', en: 'Modern' },
-    caption: { ko: '깔끔한 컬러 포스터', en: 'Clean color poster' },
-    className: 'story-template-modern',
+    id: 'modern-grid',
+    category: 'recommended',
+    name: { ko: '모던 그리드', en: 'Modern Grid' },
+    caption: { ko: '깔끔한 포스터 감성', en: 'Clean poster mood' },
+    className: 'story-template-modern-grid',
   },
   {
-    id: 'newspaper',
+    id: 'newsprint',
     category: 'editorial',
-    name: { ko: '신문', en: 'Newsprint' },
-    caption: { ko: '오늘의 컬러 뉴스', en: 'Today color news' },
-    className: 'story-template-newspaper',
+    name: { ko: '컬러 신문', en: 'Newsprint' },
+    caption: { ko: '오늘의 컬러 기록지', en: 'Today color record' },
+    className: 'story-template-newsprint',
   },
   {
-    id: 'polaroid',
+    id: 'polaroid-grid',
     category: 'editorial',
     name: { ko: '폴라로이드', en: 'Polaroid' },
-    caption: { ko: '사진 한 장과 색 조각', en: 'A photo and two color chips' },
-    className: 'story-template-polaroid',
+    caption: { ko: '사진첩에 붙인 듯한 프레임', en: 'Album-photo frame' },
+    className: 'story-template-polaroid-grid',
   },
   {
-    id: 'receipt',
+    id: 'sponsor-clean',
+    category: 'brand',
+    name: { ko: '브랜드 클린', en: 'Brand Clean' },
+    caption: { ko: '협찬 프레임으로 확장하기 쉬운 구조', en: 'Sponsor-frame ready' },
+    className: 'story-template-sponsor-clean',
+  },
+  {
+    id: 'color-ticket',
     category: 'editorial',
-    name: { ko: '영수증', en: 'Receipt' },
-    caption: { ko: '오늘만의 컬러 영수증', en: 'Color receipt' },
-    className: 'story-template-receipt',
-  },
-  {
-    id: 'minimal',
-    category: 'minimal',
-    name: { ko: '미니멀', en: 'Minimal' },
-    caption: { ko: '색만 남기는 조용한 카드', en: 'Only the color remains' },
-    className: 'story-template-minimal',
+    name: { ko: '컬러 티켓', en: 'Color Ticket' },
+    caption: { ko: '티켓 디테일을 살린 프레임', en: 'Ticket-like details' },
+    className: 'story-template-color-ticket',
   },
 ]
 
 export const TEMPLATE_CATEGORIES: Array<{ id: StoryTemplateCategory; label: Record<Locale, string> }> = [
   { id: 'recommended', label: { ko: '추천', en: 'For you' } },
-  { id: 'mongle', label: { ko: '몽글', en: 'Mongle' } },
+  { id: 'soft', label: { ko: '몽글', en: 'Soft' } },
   { id: 'travel', label: { ko: '여행', en: 'Travel' } },
-  { id: 'editorial', label: { ko: '에디토리얼', en: 'Editorial' } },
-  { id: 'minimal', label: { ko: '모던', en: 'Modern' } },
+  { id: 'editorial', label: { ko: '기록지', en: 'Editorial' } },
+  { id: 'brand', label: { ko: '브랜드', en: 'Brand' } },
 ]
 
 export const STICKER_CATEGORIES: Array<{ id: StoryStickerCategory; label: Record<Locale, string> }> = [
@@ -148,10 +148,21 @@ export const STORY_STICKERS: StoryStickerDefinition[] = [
 ]
 
 export const DEFAULT_STORY_DESIGN: StoryDesign = {
-  templateId: 'passport',
+  templateId: 'soft-passport',
   stickers: [
-    { uid: 'default-stamp', stickerId: 'passport-stamp', x: 82, y: 78, scale: 0.58, rotation: -12 },
+    { uid: 'default-stamp', stickerId: 'passport-stamp', x: 82, y: 82, scale: 0.52, rotation: -12 },
   ],
+}
+
+const legacyTemplateMap: Record<string, StoryTemplateId> = {
+  passport: 'soft-passport',
+  mongle: 'soft-passport',
+  travel: 'air-trip',
+  modern: 'modern-grid',
+  newspaper: 'newsprint',
+  polaroid: 'polaroid-grid',
+  receipt: 'color-ticket',
+  minimal: 'modern-grid',
 }
 
 export function getStoryTemplate(id: StoryTemplateId) {
@@ -169,7 +180,7 @@ export function createStickerItem(stickerId: string, index: number): StorySticke
     uid: `${stickerId}-${Date.now()}-${index}`,
     stickerId,
     x: 18 + ((index * 17) % 54),
-    y: 22 + ((index * 13) % 52),
+    y: 24 + ((index * 13) % 50),
     scale: definition.defaultScale ?? 1,
     rotation: [-8, 6, -3, 10][index % 4],
   }
@@ -201,7 +212,7 @@ export function parseStoryStickers(value: unknown): StoryStickerItem[] {
 }
 
 export function normalizeTemplateId(value: unknown): StoryTemplateId {
-  return STORY_TEMPLATES.some((template) => template.id === value)
-    ? (value as StoryTemplateId)
-    : DEFAULT_STORY_DESIGN.templateId
+  if (STORY_TEMPLATES.some((template) => template.id === value)) return value as StoryTemplateId
+  if (typeof value === 'string' && legacyTemplateMap[value]) return legacyTemplateMap[value]
+  return DEFAULT_STORY_DESIGN.templateId
 }

@@ -10,7 +10,7 @@ This keeps ColorWalk aligned with the core product direction: private, emotional
 
 ## Why Badges Matter
 
-The value of a streak badge is not the number itself. The value is that the user can turn their repeated color walks into visible identity and creative assets.
+The value of a streak badge is not the number itself. The value is that the user can turn repeated color walks into visible identity and creative assets.
 
 Good badge rewards should make users think:
 
@@ -36,6 +36,46 @@ Use the existing 3, 7, 14, and 30 day streak milestones. The exact visuals can e
 | 7 days | One color week | Weekly color passport stamp, "Color Walk Week" sticker, one soft story decoration |
 | 14 days | Mood collection | Ticket corner details, collection frame, richer color-name sticker |
 | 30 days | Color Walker identity | Signature clover mark sticker, premium-feeling story frame, monthly passport stamp |
+
+## Reward System Maintenance Contract
+
+This reward system should move with the product whenever the core capture, story, profile, or monetization feature changes. Do not treat the current streak UI, monthly color shelf, story templates, or sticker IDs as the permanent system.
+
+The permanent rule is:
+
+> Repeated ColorWalk activity should unlock more personal, prettier, and more shareable ways to remember what the user collected.
+
+When a feature changes, update rewards by preserving these relationships:
+
+- `habit milestone -> creative unlock`
+- `saved posts -> source of truth`
+- `collected colors/photos -> shareable memory`
+- `free earned reward -> genuinely useful creative item`
+
+Examples:
+
+- If the app stays as a single-photo color diary, badge rewards should unlock stickers, passport/ticket details, color-name labels, and story templates based on saved daily posts.
+- If the app moves to a 3x3 grid system, badge rewards should unlock grid frame styles, photobooth-style borders, doodle sticker packs, and recap layouts based on completed grid days.
+- If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
+- If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.
+- If monetization adds paid packs later, earned badge rewards should remain useful free items, not previews that immediately feel locked or inferior.
+- If a feature is removed, migrate the reward to the nearest surviving surface instead of removing the user's reason to care.
+
+Implementation rule:
+
+- Derive unlock state from persisted user activity, preferably `posts.local_date` plus future post metadata such as grid completion count.
+- Keep the reward mapping in one helper/config layer so design assets can be renamed without rewriting the product loop.
+- When changing capture, story, profile, or monetization features, update this document and the reward mapping in the same PR/commit.
+
+## Feature Change Checklist
+
+Before shipping a change that touches camera, journal, story export, profile, history, templates, stickers, or monetization, answer these questions in the PR/commit notes:
+
+- Does each milestone still unlock something the user can see or use?
+- Is the unlock based on saved posts rather than a fragile local counter?
+- Can the reward help the user make a better story, recap, profile stamp, or memory card?
+- Are free earned rewards still desirable after adding premium packs?
+- Did `docs/colorwalk-reward-system.md`, `plan.md`, and the reward helper/config stay in sync?
 
 ## Reward Types
 
@@ -131,4 +171,3 @@ If story templates, sticker packs, or badge visuals are renamed later, keep the 
 - Badge detail sheet with period palette and favorite captured photo.
 - Seasonal badge art for school break, spring flowers, rain season, exams, and travel.
 - Premium packs that complement earned rewards, without replacing the free badge unlocks.
-

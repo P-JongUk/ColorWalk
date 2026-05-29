@@ -1,8 +1,9 @@
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js'
 
 import { getPerceptualDeltaE, hexToRgb } from '@/lib/colors'
+import { normalizeGridImages } from '@/lib/grid'
 import { parseStoryStickers, normalizeTemplateId } from '@/lib/story'
-import type { Locale, Post, ProfileGender, UserProfile } from '@/types'
+import type { GridImage, Locale, Post, ProfileGender, UserProfile } from '@/types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
@@ -211,25 +212,36 @@ export async function fetchPosts(userId: string): Promise<Post[]> {
     ...post,
     story_template_id: normalizeTemplateId(post.story_template_id),
     story_stickers: parseStoryStickers(post.story_stickers),
+    grid_images: normalizeGridImages(post.grid_images),
     client_meta: post.client_meta ?? {},
   }))
 
   return Promise.all(
     posts.map(async (post) => {
-      if (/^(blob:|data:image\/|https?:\/\/)/.test(post.image_path)) {
-        return {
-          ...post,
-          signedImageUrl: post.image_path,
-        }
+      async function signPath(path: string) {
+        if (/^(blob:|data:image\/|https?:\/\/)/.test(path)) return path
+
+        const { data: signed } = await supabase!.storage
+          .from('post-images')
+          .createSignedUrl(path, 60 * 60)
+
+        return signed?.signedUrl
       }
 
-      const { data: signed } = await supabase.storage
-        .from('post-images')
-        .createSignedUrl(post.image_path, 60 * 60)
+      const signedGridImages: GridImage[] = await Promise.all(
+        normalizeGridImages(post.grid_images).map(async (image) => ({
+          ...image,
+          signedUrl: await signPath(image.path),
+        })),
+      )
+      const signedImageUrl = post.image_path
+        ? await signPath(post.image_path)
+        : signedGridImages[0]?.signedUrl
 
       return {
         ...post,
-        signedImageUrl: signed?.signedUrl ?? undefined,
+        grid_images: signedGridImages,
+        signedImageUrl: signedImageUrl ?? undefined,
       }
     }),
   )

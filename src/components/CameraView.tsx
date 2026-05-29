@@ -1,33 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
-import { Images, RotateCcw, Sparkles, X, Zap } from 'lucide-react'
+import { Check, Images, RotateCcw, X, Zap } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { getMatchRate } from '@/lib/colors'
-import { pulseForMatch } from '@/lib/haptics'
-import {
-  compressCanvasToWebP,
-  drawImageFileToCanvas,
-  drawVideoToCanvas,
-  sampleCanvasCenter,
-  sampleVideoCenter,
-} from '@/lib/image'
+import { compressCanvasToWebP, drawImageFileToCanvas, drawVideoToCanvas } from '@/lib/image'
 import { t } from '@/lib/i18n'
-import type { CaptureDraft, Locale, Mission } from '@/types'
+import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
+import type { CaptureDraft, GridDraftImage, Locale, Mission } from '@/types'
 
 type CameraViewProps = {
   locale: Locale
   mission: Mission
+  initialDraft: CaptureDraft | null
   onBack: () => void
-  onCaptured: (draft: CaptureDraft) => void
+  onDraftChange: (draft: CaptureDraft) => void
+  onComplete: (draft: CaptureDraft) => void
 }
 
-export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewProps) {
+function buildDraft(images: GridDraftImage[], compression?: CaptureDraft['compression']): CaptureDraft {
+  return {
+    gridImages: images,
+    abuseWarning: false,
+    compression,
+  }
+}
+
+export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const lastPulseRef = useRef(0)
-  const [sampledHex, setSampledHex] = useState('#FFFFFF')
-  const [matchRate, setMatchRate] = useState(0)
+  const [images, setImages] = useState<GridDraftImage[]>(() => initialDraft?.gridImages ?? [])
   const [error, setError] = useState<string | null>(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
@@ -35,7 +38,6 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
   const [hasTorch, setHasTorch] = useState(false)
 
   useEffect(() => {
-    let animationFrame = 0
     let isMounted = true
 
     function stopStream() {
@@ -66,6 +68,7 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
             audio: false,
           })
         }
+        if (!isMounted) return
         streamRef.current = stream
 
         if (videoRef.current) {
@@ -76,24 +79,6 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
         const [track] = stream.getVideoTracks()
         const capabilities = track?.getCapabilities?.() as MediaTrackCapabilities & { torch?: boolean }
         setHasTorch(Boolean(capabilities?.torch))
-
-        const tick = () => {
-          if (!isMounted || !videoRef.current) return
-
-          const sample = sampleVideoCenter(videoRef.current)
-          const nextMatch = getMatchRate(mission.hex, sample.hex)
-          setSampledHex(sample.hex)
-          setMatchRate(nextMatch)
-
-          if (nextMatch >= 90 && Date.now() - lastPulseRef.current > 1600) {
-            lastPulseRef.current = Date.now()
-            void pulseForMatch(nextMatch)
-          }
-
-          animationFrame = window.requestAnimationFrame(tick)
-        }
-
-        animationFrame = window.requestAnimationFrame(tick)
       } catch {
         setError(t(locale, 'permissionDenied'))
       }
@@ -103,37 +88,56 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
 
     return () => {
       isMounted = false
-      window.cancelAnimationFrame(animationFrame)
       stopStream()
     }
-  }, [facingMode, locale, mission.hex])
+  }, [facingMode, locale])
 
-  async function capture() {
-    if (!videoRef.current) return
+  function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
+    const nextDraft = buildDraft(nextImages, compression)
+    setImages(nextImages)
+    onDraftChange(nextDraft)
+    if (nextImages.length === MAX_GRID_IMAGES) {
+      toast.success(locale === 'ko' ? '8컷을 모두 채웠어요.' : 'All 8 shots are collected.')
+    }
+  }
+
+  async function addCanvasToGrid(canvas: HTMLCanvasElement, source: 'camera' | 'album') {
+    if (images.length >= MAX_GRID_IMAGES) {
+      toast.message(locale === 'ko' ? '오늘 그리드는 이미 가득 찼어요.' : "Today's grid is already full.")
+      return
+    }
 
     setIsCapturing(true)
     try {
-      const canvas = drawVideoToCanvas(videoRef.current)
       const compressed = await compressCanvasToWebP(canvas)
       const previewUrl = URL.createObjectURL(compressed.blob)
-
-      onCaptured({
+      const nextImage: GridDraftImage = {
+        id: crypto.randomUUID(),
+        slot: getNextGridSlot(images.length),
         previewUrl,
         imageBlob: compressed.blob,
-        capturedHex: sampledHex,
-        matchRate,
-        abuseWarning: false,
-        compression: {
-          width: compressed.width,
-          height: compressed.height,
-          bytes: compressed.bytes,
-          quality: compressed.quality,
-          source: 'camera',
-        },
+        width: compressed.width,
+        height: compressed.height,
+        bytes: compressed.bytes,
+        quality: compressed.quality,
+        source,
+        createdAt: new Date().toISOString(),
+      }
+      commitImages([...images, nextImage], {
+        width: compressed.width,
+        height: compressed.height,
+        bytes: compressed.bytes,
+        quality: compressed.quality,
+        source,
       })
     } finally {
       setIsCapturing(false)
     }
+  }
+
+  async function capture() {
+    if (!videoRef.current) return
+    await addCanvasToGrid(drawVideoToCanvas(videoRef.current), 'camera')
   }
 
   async function captureFromAlbum(file: File) {
@@ -142,35 +146,10 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
       return
     }
 
-    setIsCapturing(true)
     try {
-      const canvas = await drawImageFileToCanvas(file)
-      const sample = sampleCanvasCenter(canvas)
-      const nextMatch = getMatchRate(mission.hex, sample.hex)
-      const compressed = await compressCanvasToWebP(canvas)
-      const previewUrl = URL.createObjectURL(compressed.blob)
-
-      setSampledHex(sample.hex)
-      setMatchRate(nextMatch)
-
-      onCaptured({
-        previewUrl,
-        imageBlob: compressed.blob,
-        capturedHex: sample.hex,
-        matchRate: nextMatch,
-        abuseWarning: false,
-        compression: {
-          width: compressed.width,
-          height: compressed.height,
-          bytes: compressed.bytes,
-          quality: compressed.quality,
-          source: 'album',
-        },
-      })
+      await addCanvasToGrid(await drawImageFileToCanvas(file), 'album')
     } catch {
       setError(t(locale, 'imageLoadFailed'))
-    } finally {
-      setIsCapturing(false)
     }
   }
 
@@ -190,7 +169,7 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
     }
   }
 
-  const glow = matchRate >= 95 ? 'camera-ring-glow' : ''
+  const canComplete = images.length > 0
 
   return (
     <main className="camera-screen">
@@ -213,8 +192,7 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
           <X aria-hidden="true" />
         </Button>
         <div className="camera-pill">
-          <span>{locale === 'ko' ? '조명을 잘 비춰서 비춰보세요' : 'Catch the light softly'}</span>
-          <Sparkles className="camera-pill-icon" aria-hidden="true" />
+          <span>{locale === 'ko' ? `${images.length}/8컷 모으는 중` : `${images.length}/8 shots`}</span>
         </div>
         <Button
           type="button"
@@ -241,38 +219,36 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
             </Button>
           </div>
         ) : (
-          <div className="camera-target">
-            <div className={`camera-ring absolute inset-0 ${glow}`} style={{ backgroundColor: `${sampledHex}18` }} />
-            <div className="camera-crosshair" />
+          <div className="camera-grid-ghost">
+            <span />
+            <span />
+            <span />
+            <span />
           </div>
         )}
       </div>
 
       {!error ? (
-        <footer className="camera-footer">
-          <div className="camera-sample-help">{locale === 'ko' ? '탭하면 색을 샘플링해요' : 'Tap to sample this color'}</div>
-          <div className="camera-match-card">
-            <div className="camera-swatch-block">
-              <span style={{ backgroundColor: mission.hex }} />
-              <small>{t(locale, 'target')}</small>
-              <strong>{mission.hex}</strong>
+        <footer className="camera-footer camera-footer-grid">
+          <div className="camera-grid-card">
+            <div>
+              <strong>{mission.label[locale]}</strong>
+              <span>{t(locale, 'captureTip')}</span>
             </div>
-            <div className="camera-match-ring">
-              <b>{matchRate}%</b>
-              <small>{t(locale, 'match')}</small>
-            </div>
-            <div className="camera-swatch-block">
-              <span style={{ backgroundColor: sampledHex }} />
-              <small>{t(locale, 'sampled')}</small>
-              <strong>{sampledHex}</strong>
-            </div>
+            <GridCollage
+              locale={locale}
+              missionHex={mission.hex}
+              colorName={mission.label[locale]}
+              images={images}
+              variant="camera"
+              onEmptyClick={openAlbumPicker}
+            />
           </div>
-          <Progress value={matchRate} className="sr-only" />
           <div className="camera-actions">
             <Button type="button" variant="soft" size="icon" onClick={openAlbumPicker} disabled={isCapturing} aria-label={t(locale, 'albumSelect')}>
               <Images aria-hidden="true" />
             </Button>
-            <button type="button" className="camera-shutter" onClick={() => void capture()} disabled={isCapturing} aria-label={t(locale, 'capture')} />
+            <button type="button" className="camera-shutter" onClick={() => void capture()} disabled={isCapturing || images.length >= MAX_GRID_IMAGES} aria-label={t(locale, 'capture')} />
             <Button
               type="button"
               variant="soft"
@@ -283,6 +259,15 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
               <RotateCcw aria-hidden="true" />
             </Button>
           </div>
+          <Button
+            type="button"
+            className="camera-done-button"
+            disabled={!canComplete}
+            onClick={() => onComplete(buildDraft(images))}
+          >
+            <Check data-icon="inline-start" aria-hidden="true" />
+            {locale === 'ko' ? '저널 쓰기' : 'Write journal'}
+          </Button>
         </footer>
       ) : null}
     </main>

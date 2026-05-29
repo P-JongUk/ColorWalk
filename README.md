@@ -1,6 +1,6 @@
 # ColorWalk
 
-ColorWalk is a private daily color-hunting app. It gives the user a weather/time-based color mission, lets them find the color through a camera eyedropper, saves a short journal entry, and builds a color calendar without social comparison.
+ColorWalk is a private daily color-walk app. It gives the user a weather/time-based mood color mission, lets them collect up to eight surrounding photos into a 3x3 color grid, saves a short journal entry, and builds a visual history without social comparison.
 
 ## Stack
 
@@ -50,8 +50,8 @@ After enabling anonymous sign-ins, run:
 npm run verify:supabase
 ```
 
-The script signs in anonymously, upserts a profile, uploads a tiny WebP to `post-images`, inserts/selects a post, and cleans up the test data.
-It also verifies profile beta metadata, DB color-name suggestions, story metadata persistence, and confirms another anonymous user cannot read the post or create a signed URL for the uploaded image.
+The script signs in anonymously, confirms anonymous data writes are blocked, signs in with the beta test account, upserts a profile, uploads WebP images to `post-images`, inserts/selects/updates a 3x3-grid post, and cleans up the test data.
+It also verifies profile beta metadata, DB color-name suggestions, story/grid metadata persistence, signed image access, and confirms another user cannot read the post or create a signed URL for the uploaded images.
 
 ## PWA
 

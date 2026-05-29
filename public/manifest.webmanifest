@@ -1,7 +1,7 @@
 {
   "name": "Color Walk",
   "short_name": "ColorWalk",
-  "description": "A private daily color hunting and journaling ritual.",
+  "description": "A private daily 3x3 color grid and story journaling ritual.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -11,10 +11,10 @@
   "categories": ["lifestyle", "photo", "journaling"],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-192.png",

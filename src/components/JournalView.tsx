@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { ArrowLeft, ArrowRight, Bookmark, MapPin } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, Bookmark, MapPin } from 'lucide-react'
 
-import { ReceiptCard } from '@/components/ReceiptCard'
+import { GridCollage } from '@/components/GridCollage'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { DEFAULT_STORY_DESIGN } from '@/lib/story'
 import { getMoodColorSuggestions } from '@/lib/collection'
 import { getJournalPrompt } from '@/lib/journal'
+import { DEFAULT_STORY_DESIGN } from '@/lib/story'
 import { t } from '@/lib/i18n'
 import { getCurrentSavedLocation } from '@/lib/location'
 import { fetchColorNameSuggestions } from '@/lib/supabase'
@@ -33,7 +33,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
   const [isLocating, setIsLocating] = useState(false)
   const [locationError, setLocationError] = useState<string | null>(null)
   const [remoteSuggestions, setRemoteSuggestions] = useState<string[]>([])
-  const activeHex = draft?.capturedHex ?? mission.hex
+  const activeHex = mission.hex
   const prompt = useMemo(
     () => getJournalPrompt(activeHex, locale),
     [activeHex, locale],
@@ -64,15 +64,13 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
     weekday: 'short',
   }).format(new Date())
   const storyData = {
-    imageUrl: draft?.previewUrl,
     dateLabel,
     missionLabel: mission.label[locale],
     missionHex: mission.hex,
-    capturedHex: draft?.capturedHex ?? mission.hex,
-    matchRate: draft?.matchRate ?? 0,
     colorName,
     moodText: journalAnswer,
     placeName: savePayload.location?.name ?? undefined,
+    gridImages: draft?.gridImages ?? [],
   }
 
   useEffect(() => {
@@ -102,7 +100,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
     }
   }
 
-  if (!draft) {
+  if (!draft || draft.gridImages.length === 0) {
     return (
       <main className="screen-flow">
         <section className="passport-panel flex min-h-[70svh] flex-col items-center justify-center gap-4 p-8 text-center">
@@ -124,10 +122,9 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
         <div>
           <h1>{locale === 'ko' ? '저널 작성' : 'Write journal'}</h1>
           <div className="journal-progress" aria-hidden="true">
-            <span>✓</span>
-            <span>✓</span>
-            <span>✓</span>
-            <b>3</b>
+            <span />
+            <span />
+            <b>{draft.gridImages.length}</b>
           </div>
         </div>
         <Button
@@ -140,31 +137,22 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
         </Button>
       </header>
 
-      <section className="journal-summary-card">
-        <div className="journal-match">
-          <small>{t(locale, 'match')}</small>
-          <span
-            className="journal-match-dial"
-            style={{ '--match-angle': `${Math.min(100, Math.max(0, draft.matchRate)) * 3.6}deg` } as CSSProperties}
-          >
-            <strong>{draft.matchRate}%</strong>
-          </span>
+      <section className="journal-grid-panel">
+        <div className="section-heading">
+          <div>
+            <p>{locale === 'ko' ? `${draft.gridImages.length}/8컷` : `${draft.gridImages.length}/8 shots`}</p>
+            <h2>{mission.label[locale]}</h2>
+          </div>
+          <span className="journal-hex">{mission.hex}</span>
         </div>
-        <div className="journal-mini-swatch">
-          <span style={{ backgroundColor: mission.hex }} />
-          <small>{t(locale, 'target')}</small>
-          <b>{mission.hex}</b>
-        </div>
-        <ArrowRight aria-hidden="true" />
-        <div className="journal-mini-swatch">
-          <span style={{ backgroundColor: draft.capturedHex }} />
-          <small>{t(locale, 'sampled')}</small>
-          <b>{draft.capturedHex}</b>
-        </div>
-      </section>
-
-      <section className="journal-capture">
-        <img src={draft.previewUrl} alt="" />
+        <GridCollage
+          locale={locale}
+          missionHex={mission.hex}
+          colorName={colorName || mission.label[locale]}
+          images={draft.gridImages}
+          variant="journal"
+          onEmptyClick={onOpenCamera}
+        />
       </section>
 
       <section className="journal-form-card">
@@ -177,11 +165,25 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
               placeholder={suggestions[0] ?? t(locale, 'colorNamePlaceholder')}
               maxLength={colorNameLimit}
             />
-            <button type="button" onClick={() => void requestPlace()} aria-label={locale === 'ko' ? '위치 스탬프' : 'Place stamp'}>
+            <button type="button" onClick={() => void requestPlace()} aria-label={locale === 'ko' ? '장소 저장' : 'Place stamp'}>
               <MapPin aria-hidden="true" />
             </button>
           </div>
           <small>{colorName.length}/{colorNameLimit}</small>
+        </label>
+
+        <div className="suggestion-row">
+          {suggestions.map((suggestion) => (
+            <button key={suggestion} type="button" onClick={() => setColorName(suggestion)}>
+              {suggestion}
+            </button>
+          ))}
+        </div>
+
+        <label className="journal-field">
+          <span>{prompt}</span>
+          <Textarea value={journalAnswer} onChange={(event) => setJournalAnswer(event.target.value)} placeholder={t(locale, 'journalAnswer')} maxLength={120} />
+          <small>{journalAnswer.length}/120</small>
         </label>
 
         <div className="journal-place-card">
@@ -200,14 +202,14 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           >
             <MapPin aria-hidden="true" />
             <span>{locale === 'ko' ? '찍은 장소도 함께 저장' : 'Save where I found it'}</span>
-            <strong>{savePlace ? (locale === 'ko' ? '켜짐' : 'On') : (locale === 'ko' ? '선택' : 'Optional')}</strong>
+            <strong>{savePlace ? (locale === 'ko' ? '켬' : 'On') : (locale === 'ko' ? '선택' : 'Optional')}</strong>
           </button>
           {savePlace ? (
             <div className="journal-place-fields">
               <Input
                 value={placeName}
                 onChange={(event) => setPlaceName(event.target.value)}
-                placeholder={locale === 'ko' ? '예: 학교 앞 골목, 한강 산책길' : 'ex. School alley, riverside walk'}
+                placeholder={locale === 'ko' ? '예: 학교 앞 골목, 성수 산책길' : 'ex. School alley, riverside walk'}
                 maxLength={placeLimit}
               />
               <Button type="button" variant="outline" size="sm" onClick={() => void requestPlace()} disabled={isLocating}>
@@ -223,38 +225,12 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
             </div>
           ) : null}
         </div>
-
-        <div className="suggestion-row">
-          {suggestions.map((suggestion) => (
-            <button key={suggestion} type="button" onClick={() => setColorName(suggestion)}>
-              {suggestion}
-            </button>
-          ))}
-        </div>
-
-        <label className="journal-field">
-          <span>{prompt}</span>
-          <Textarea value={journalAnswer} onChange={(event) => setJournalAnswer(event.target.value)} placeholder={t(locale, 'journalAnswer')} maxLength={120} />
-          <small>{journalAnswer.length}/120</small>
-        </label>
-
       </section>
 
-      <section className="flex flex-col gap-3">
-        <ReceiptCard
-          locale={locale}
-          mission={mission}
-          capturedHex={draft.capturedHex}
-          matchRate={draft.matchRate}
-          colorName={colorName}
-          journalAnswer={journalAnswer}
-          locationName={savePayload.location?.name ?? undefined}
-        />
-        <Button type="button" size="lg" className="journal-save-cta" disabled={isSaving} onClick={() => void onSave(savePayload)}>
-          {isSaving ? t(locale, 'saving') : locale === 'ko' ? '기록 저장' : t(locale, 'save')}
-          <Bookmark data-icon="inline-end" aria-hidden="true" />
-        </Button>
-      </section>
+      <Button type="button" size="lg" className="journal-save-cta" disabled={isSaving} onClick={() => void onSave(savePayload)}>
+        {isSaving ? t(locale, 'saving') : locale === 'ko' ? '그리드 저장' : t(locale, 'save')}
+        <Bookmark data-icon="inline-end" aria-hidden="true" />
+      </Button>
 
       <section className="journal-story-section">
         <StoryStudio
@@ -264,7 +240,6 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           onDesignChange={setStoryDesign}
         />
       </section>
-
     </main>
   )
 }

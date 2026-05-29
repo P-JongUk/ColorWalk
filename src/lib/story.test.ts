@@ -4,8 +4,9 @@ import { createStickerItem, normalizeTemplateId, parseStoryStickers, STORY_TEMPL
 
 describe('story helpers', () => {
   it('normalizes unknown template ids', () => {
-    expect(normalizeTemplateId('passport')).toBe('passport')
-    expect(normalizeTemplateId('unknown')).toBe('passport')
+    expect(normalizeTemplateId('passport')).toBe('soft-passport')
+    expect(normalizeTemplateId('life-cut')).toBe('life-cut')
+    expect(normalizeTemplateId('unknown')).toBe('soft-passport')
     expect(STORY_TEMPLATES).toHaveLength(8)
   })
 

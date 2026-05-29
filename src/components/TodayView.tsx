@@ -1,12 +1,14 @@
-import { Bell, Camera, CloudSun, Flame, Info, MapPin, Shuffle } from 'lucide-react'
+import { Bell, Camera, CloudSun, Flame, Info, Shuffle } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 
 import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
+import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak } from '@/lib/collection'
 import { getLocalDateKey } from '@/lib/date'
+import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import type { Locale, Mission, Post } from '@/types'
 
@@ -32,9 +34,7 @@ export function TodayView({
 }: TodayViewProps) {
   const streak = getCurrentStreak(posts)
   const todayPost = posts.find((post) => post.local_date === getLocalDateKey())
-  const ticketImageUrl =
-    todayPost?.signedImageUrl ||
-    (todayPost && /^(blob:|data:image\/|https?:\/\/)/.test(todayPost.image_path) ? todayPost.image_path : undefined)
+  const todayGridImages = getPostGridImages(todayPost)
 
   async function handleNotifications() {
     if (!('Notification' in window)) {
@@ -48,7 +48,7 @@ export function TodayView({
 
     if (permission === 'granted') {
       new Notification('ColorWalk', {
-        body: locale === 'ko' ? '오늘의 색 산책을 잊지 않게 알려드릴게요.' : "We'll remind you to take a color walk.",
+        body: locale === 'ko' ? '오늘의 컬러 산책을 잊지 않게 알려드릴게요.' : "We'll remind you to take a color walk.",
       })
       toast.success(locale === 'ko' ? '알림 권한이 켜졌어요.' : 'Notifications are enabled.')
       return
@@ -109,7 +109,7 @@ export function TodayView({
                 onClick={() =>
                   toast.message(
                     locale === 'ko'
-                      ? '오늘의 날씨와 시간대에 맞춰 산책 미션 컬러를 골랐어요.'
+                      ? '오늘의 날씨와 시간에 맞춰 산책 미션 컬러를 골라요.'
                       : "Today's mission color is picked from the current weather and time.",
                   )
                 }
@@ -129,10 +129,9 @@ export function TodayView({
           </section>
 
           <section
-            className="mission-ticket"
+            className="mission-ticket mission-ticket-grid"
             style={{
               '--mission-color': mission.hex,
-              '--ticket-photo-image': ticketImageUrl ? `url("${ticketImageUrl}")` : 'none',
             } as CSSProperties}
           >
             <div className="ticket-copy">
@@ -140,15 +139,22 @@ export function TodayView({
               <h2>{mission.label[locale]}</h2>
               <strong>{mission.hex}</strong>
             </div>
-            <div className="ticket-photo" />
-            <MapPin className="ticket-pin" aria-hidden="true" />
+            <div className="ticket-grid-preview">
+              <GridCollage
+                locale={locale}
+                missionHex={mission.hex}
+                colorName={mission.label[locale]}
+                images={todayGridImages}
+                variant="home"
+              />
+            </div>
           </section>
 
           <section className="prompt-card">
             <span>“</span>
             <div>
               <strong>{mission.prompt[locale]}</strong>
-              <p>{locale === 'ko' ? '옷, 간판, 과일, 의자 같은 것들!' : 'Try signs, fruit, chairs, or evening light.'}</p>
+              <p>{locale === 'ko' ? '옷, 간판, 과일, 의자 같은 것들에서 8컷을 모아보세요.' : 'Try signs, fruit, chairs, or evening light.'}</p>
             </div>
           </section>
 
@@ -159,10 +165,10 @@ export function TodayView({
           <section className="plain-block">
             <div className="section-heading">
               <div>
-                <h2>{locale === 'ko' ? '연속 기록 배지' : 'Streak badges'}</h2>
+                <h2>{locale === 'ko' ? '컬러 리워드 배지' : 'Color reward badges'}</h2>
               </div>
             </div>
-            <BadgeShelf locale={locale} streak={streak} />
+            <BadgeShelf locale={locale} streak={streak} posts={posts} />
           </section>
 
           <Button type="button" size="lg" className="camera-cta" onClick={onStartCamera}>

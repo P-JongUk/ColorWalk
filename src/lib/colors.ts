@@ -24,10 +24,6 @@ export function rgbToHex({ r, g, b }: Rgb) {
     .join('')}`.toUpperCase()
 }
 
-export function getColorDistance(a: Rgb, b: Rgb) {
-  return Math.sqrt((a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2)
-}
-
 type Lab = {
   l: number
   a: number
@@ -138,67 +134,6 @@ export function getPerceptualDeltaE(a: Rgb, b: Rgb) {
       (deltaHPrime / sH) ** 2 +
       rT * (deltaCPrime / sC) * (deltaHPrime / sH),
   )
-}
-
-type Hsl = {
-  h: number
-  s: number
-  l: number
-}
-
-function rgbToHsl({ r, g, b }: Rgb): Hsl {
-  const normalizedR = r / 255
-  const normalizedG = g / 255
-  const normalizedB = b / 255
-  const max = Math.max(normalizedR, normalizedG, normalizedB)
-  const min = Math.min(normalizedR, normalizedG, normalizedB)
-  const delta = max - min
-  const lightness = (max + min) / 2
-
-  if (delta === 0) {
-    return { h: 0, s: 0, l: lightness }
-  }
-
-  const saturation = delta / (1 - Math.abs(2 * lightness - 1))
-  let hue = 0
-
-  if (max === normalizedR) hue = ((normalizedG - normalizedB) / delta) % 6
-  if (max === normalizedG) hue = (normalizedB - normalizedR) / delta + 2
-  if (max === normalizedB) hue = (normalizedR - normalizedG) / delta + 4
-
-  return {
-    h: (hue * 60 + 360) % 360,
-    s: saturation,
-    l: lightness,
-  }
-}
-
-function getHueSimilarity(a: Hsl, b: Hsl) {
-  const chromaGate = Math.min(1, Math.max(a.s, b.s) * 1.65)
-  const distance = Math.abs(a.h - b.h)
-  const shortestDistance = Math.min(distance, 360 - distance)
-
-  return 1 - Math.min(1, (shortestDistance / 180) * chromaGate)
-}
-
-export function getMatchRate(targetHex: string, capturedHex: string) {
-  const target = hexToRgb(targetHex)
-  const captured = hexToRgb(capturedHex)
-  const deltaE = getPerceptualDeltaE(target, captured)
-  const targetHsl = rgbToHsl(target)
-  const capturedHsl = rgbToHsl(captured)
-  const perceptualScore = 1 - Math.min(1, deltaE / 44)
-  const channelScore = 1 - Math.min(1, getColorDistance(target, captured) / 255)
-  const hueScore = getHueSimilarity(targetHsl, capturedHsl)
-  const lightnessScore = 1 - Math.min(1, Math.abs(targetHsl.l - capturedHsl.l) / 0.72)
-  const blendedScore =
-    perceptualScore * 0.68 +
-    channelScore * 0.16 +
-    hueScore * 0.1 +
-    lightnessScore * 0.06
-  const score = 100 * Math.max(0, blendedScore) ** 1.18
-
-  return Math.max(0, Math.min(100, Math.round(score)))
 }
 
 export type ColorFamily =

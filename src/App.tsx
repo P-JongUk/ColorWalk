@@ -6,15 +6,16 @@ import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
 import { InviteGate } from '@/components/InviteGate'
 import { TodayView } from '@/components/TodayView'
-import { getLocalDateKey } from '@/lib/date'
 import { hasBetaAccess, isBetaGateEnabled } from '@/lib/betaGate'
+import { getLocalDateKey } from '@/lib/date'
+import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { getRandomMission } from '@/lib/mission'
 import { startWebReminderScheduler } from '@/lib/notifications'
 import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
-import type { Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
+import type { GridImage, Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
 
@@ -205,7 +206,7 @@ function App() {
     storyDesign: StoryDesign
     location: SavedLocation | null
   }) {
-    if (!mission || !draft) return
+    if (!mission || !draft || draft.gridImages.length === 0) return
 
     const localDate = getLocalDateKey()
     const existingTodayPost = posts.find((post) => post.local_date === localDate)
@@ -213,8 +214,8 @@ function App() {
     if (existingTodayPost) {
       const shouldReplace = window.confirm(
         locale === 'ko'
-          ? '오늘 기록을 새 사진으로 갱신할까요? 기존 사진은 히스토리에서 교체돼요.'
-          : "Replace today's entry with this new photo? The previous one will be replaced in history.",
+          ? '오늘 기록을 새 그리드로 바꿀까요? 기존 사진은 히스토리에서 교체돼요.'
+          : "Replace today's entry with this new grid? The previous photos will be replaced in history.",
       )
       if (!shouldReplace) return
     }
@@ -223,13 +224,17 @@ function App() {
 
     try {
       if (supabase && session) {
-        const imagePath = await uploadPostImage(session.user.id, localDate, draft.imageBlob)
+        const uploadPaths = await Promise.all(
+          draft.gridImages.map((image) => uploadPostImage(session.user.id, localDate, image.imageBlob)),
+        )
+        const gridImages = toStoredGridImages(draft.gridImages, uploadPaths)
+        const imagePath = gridImages[0]?.path ?? uploadPaths[0]
         const payload = {
           user_id: session.user.id,
           local_date: localDate,
           mission_hex: mission.hex,
-          captured_hex: draft.capturedHex,
-          match_rate: draft.matchRate,
+          captured_hex: mission.hex,
+          match_rate: 0,
           image_path: imagePath,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
@@ -246,10 +251,13 @@ function App() {
           location_accuracy_m: location?.accuracyMeters ?? null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
+          grid_images: gridImages,
           client_meta: {
             app: 'colorwalk',
             savedFrom: 'journal',
-            version: 'beta',
+            feature: '3x3-grid',
+            version: 'beta-3x3',
+            gridPhotoCount: gridImages.length,
             compression: draft.compression ?? null,
           },
         }
@@ -260,24 +268,41 @@ function App() {
 
         if (error) throw error
 
-        if (existingTodayPost?.image_path && existingTodayPost.image_path !== imagePath) {
-          await deletePostImage(existingTodayPost.image_path).catch((error) => {
-            console.warn('Failed to remove replaced post image', error)
-          })
-        }
+        await Promise.all(
+          getPostImagePaths(existingTodayPost)
+            .filter((path) => !uploadPaths.includes(path))
+            .map((path) =>
+              deletePostImage(path).catch((error) => {
+                console.warn('Failed to remove replaced post image', error)
+              }),
+            ),
+        )
 
         setPosts(await fetchPosts(session.user.id))
       } else {
+        const localGridImages: GridImage[] = draft.gridImages.map((image) => ({
+          id: image.id,
+          slot: image.slot,
+          path: image.previewUrl,
+          signedUrl: image.previewUrl,
+          previewUrl: image.previewUrl,
+          width: image.width,
+          height: image.height,
+          bytes: image.bytes,
+          source: image.source,
+          createdAt: image.createdAt,
+        }))
+        const primaryImage = localGridImages[0]?.previewUrl ?? ''
         const localPost: Post = {
           id: crypto.randomUUID(),
           user_id: 'local',
           created_at: new Date().toISOString(),
           local_date: localDate,
           mission_hex: mission.hex,
-          captured_hex: draft.capturedHex,
-          match_rate: draft.matchRate,
-          image_path: draft.previewUrl,
-          signedImageUrl: draft.previewUrl,
+          captured_hex: mission.hex,
+          match_rate: 0,
+          image_path: primaryImage,
+          signedImageUrl: primaryImage,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
           locale,
@@ -293,10 +318,13 @@ function App() {
           location_accuracy_m: location?.accuracyMeters ?? null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
+          grid_images: localGridImages,
           client_meta: {
             app: 'colorwalk',
             savedFrom: 'local-journal',
-            version: 'beta',
+            feature: '3x3-grid',
+            version: 'beta-3x3',
+            gridPhotoCount: localGridImages.length,
             compression: draft.compression ?? null,
           },
         }
@@ -332,8 +360,10 @@ function App() {
         <CameraView
           locale={locale}
           mission={mission}
+          initialDraft={draft}
           onBack={() => setActiveTab('today')}
-          onCaptured={(nextDraft) => {
+          onDraftChange={setDraft}
+          onComplete={(nextDraft) => {
             setDraft(nextDraft)
             setActiveTab('journal')
           }}

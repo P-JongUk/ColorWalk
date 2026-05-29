@@ -49,7 +49,7 @@ function getTestAccount() {
   return {
     username,
     password,
-    nickname: process.env.COLORWALK_TEST_NICKNAME || '테스트워커',
+    nickname: process.env.COLORWALK_TEST_NICKNAME || '테스트 워커',
     gender: process.env.COLORWALK_TEST_GENDER || 'prefer_not_to_say',
     birthYear: Number(process.env.COLORWALK_TEST_BIRTH_YEAR || 2008),
     locale: process.env.COLORWALK_TEST_LOCALE || 'ko',
@@ -69,98 +69,82 @@ function toDateKey(offsetDays) {
   return date.toISOString().slice(0, 10)
 }
 
+const assetPool = [
+  'mongle-bloom.webp',
+  'earth-soft-border.webp',
+  'mongle-edge.webp',
+  'earth-fiber-line.webp',
+  'mongle-tape.webp',
+  'earth-stamp-ring.webp',
+  'earth-washi-line.webp',
+  'mongle-dust.webp',
+]
+
 const seedPosts = [
   {
     offset: 0,
-    asset: 'mongle-bloom.webp',
     missionHex: '#FF8A7A',
-    capturedHex: '#F6B59B',
-    matchRate: 84,
     customColorName: '피치 멜로우',
-    journalAnswer: '따뜻한 햇살 아래에서 괜히 마음이 느긋해졌던 오후. 좋은 음악과 함께 걷기 딱 좋았어.',
+    journalAnswer: '따뜻한 햇살 아래에서 마음이 느긋해진 오후. 8컷으로 오늘의 산책을 묶어뒀다.',
     missionLabel: '따뜻한 코랄빛',
-    missionPrompt: '오늘은 따뜻한 색을 찾아봐요. 노을, 간판, 과일, 의자 같은 것들!',
-    storyTemplateId: 'passport',
-    storyStickers: [
-      { uid: 'seed-passport-stamp', stickerId: 'passport-stamp', x: 79, y: 75, scale: 0.58, rotation: -10 },
-      { uid: 'seed-soft-cloud', stickerId: 'soft-cloud', x: 10, y: 14, scale: 0.78, rotation: -6 },
-    ],
+    missionPrompt: '오늘은 따뜻한 색을 찾아봐요.',
+    storyTemplateId: 'life-cut',
     locationName: '서울 성수동',
     weatherGroup: 'clear',
     timeBucket: 'sunset',
+    photoCount: 8,
   },
   {
     offset: 1,
-    asset: 'earth-soft-border.webp',
     missionHex: '#A7C8B3',
-    capturedHex: '#B8D6C8',
-    matchRate: 91,
     customColorName: '비 온 뒤 세이지',
-    journalAnswer: '길가 잎사귀에 남은 빛이 조용해서 잠깐 멈춰 보고 싶었다.',
+    journalAnswer: '길가 잎사귀에 남은 빛이 조용해서 천천히 멈춰 보게 됐다.',
     missionLabel: '부드러운 세이지',
-    missionPrompt: '오늘은 차분한 초록을 찾아봐요. 잎, 컵, 가방, 표지판처럼 작은 초록들!',
-    storyTemplateId: 'mongle',
-    storyStickers: [
-      { uid: 'seed-leaf-lines', stickerId: 'wavy-lines', x: 15, y: 70, scale: 0.72, rotation: 8 },
-    ],
+    missionPrompt: '오늘은 차분한 초록을 찾아봐요.',
+    storyTemplateId: 'soft-passport',
     locationName: '서울숲 근처',
     weatherGroup: 'clouds',
     timeBucket: 'day',
+    photoCount: 6,
   },
   {
     offset: 2,
-    asset: 'mongle-edge.webp',
     missionHex: '#A9CBE4',
-    capturedHex: '#9EC4DA',
-    matchRate: 88,
     customColorName: '유리창 하늘',
-    journalAnswer: '창문에 비친 하늘색이 오늘 기분을 조금 가볍게 만들었다.',
+    journalAnswer: '창문에 비친 파랑이 오늘 기분을 조금 가볍게 만들어줬다.',
     missionLabel: '맑은 하늘 블루',
-    missionPrompt: '오늘은 맑은 파랑을 찾아봐요. 하늘, 유리, 옷, 포장지 속 파랑!',
-    storyTemplateId: 'travel',
-    storyStickers: [
-      { uid: 'seed-plane', stickerId: 'airplane', x: 68, y: 18, scale: 0.78, rotation: 12 },
-      { uid: 'seed-route', stickerId: 'dotted-route', x: 59, y: 25, scale: 0.7, rotation: -8 },
-    ],
-    locationName: '한강 산책로',
+    missionPrompt: '오늘은 맑은 파랑을 찾아봐요.',
+    storyTemplateId: 'air-trip',
+    locationName: '학교 산책로',
     weatherGroup: 'clear',
     timeBucket: 'day',
+    photoCount: 8,
   },
   {
     offset: 3,
-    asset: 'earth-fiber-line.webp',
     missionHex: '#F4C56E',
-    capturedHex: '#F1CF88',
-    matchRate: 79,
     customColorName: '주말 크림 골드',
     journalAnswer: '작은 조명 아래에서 본 노란빛이 생각보다 포근했다.',
-    missionLabel: '작은 노란빛',
-    missionPrompt: '오늘은 환한 노랑을 찾아봐요. 조명, 과일, 문구류, 간판 속 노랑!',
-    storyTemplateId: 'newspaper',
-    storyStickers: [
-      { uid: 'seed-stars', stickerId: 'sparkle-stars', x: 72, y: 18, scale: 0.7, rotation: -4 },
-    ],
+    missionLabel: '작은 전구빛',
+    missionPrompt: '오늘은 은은한 노랑을 찾아봐요.',
+    storyTemplateId: 'newsprint',
     locationName: '동네 카페',
     weatherGroup: 'clear',
     timeBucket: 'night',
+    photoCount: 5,
   },
   {
     offset: 4,
-    asset: 'mongle-tape.webp',
     missionHex: '#D7C2E8',
-    capturedHex: '#CDBDE6',
-    matchRate: 86,
     customColorName: '구름 뒤 라벤더',
-    journalAnswer: '느린 오후의 보라빛이 평소보다 조금 특별하게 느껴졌다.',
+    journalAnswer: '흐린 오후의 보라빛이 평소보다 조금 더 선명하게 남았다.',
     missionLabel: '몽글 라벤더',
-    missionPrompt: '오늘은 부드러운 보라를 찾아봐요. 꽃, 노트, 포스터, 그림자 속 보라!',
-    storyTemplateId: 'polaroid',
-    storyStickers: [
-      { uid: 'seed-heart', stickerId: 'heart-outline', x: 12, y: 65, scale: 0.7, rotation: -12 },
-    ],
+    missionPrompt: '오늘은 부드러운 보라를 찾아봐요.',
+    storyTemplateId: 'polaroid-grid',
     locationName: '집 근처 골목',
     weatherGroup: 'clouds',
     timeBucket: 'sunset',
+    photoCount: 8,
   },
 ]
 
@@ -233,7 +217,7 @@ async function main() {
   }, { onConflict: 'id' })
   if (profileError) throw profileError
 
-  const list = await supabase.storage.from('post-images').list(userId, { limit: 100 })
+  const list = await supabase.storage.from('post-images').list(userId, { limit: 200 })
   if (list.error) throw list.error
   const oldSeedFiles = (list.data ?? [])
     .map((item) => `${userId}/${item.name}`)
@@ -247,22 +231,40 @@ async function main() {
 
   for (const seed of seedPosts) {
     const localDate = toDateKey(seed.offset)
-    const imagePath = `${userId}/${localDate}-seed-${seed.asset}`
-    const blob = await getAssetBlob(seed.asset)
+    const gridImages = []
 
-    const upload = await supabase.storage.from('post-images').upload(imagePath, blob, {
-      contentType: 'image/webp',
-      upsert: true,
-    })
-    if (upload.error) throw upload.error
+    for (let index = 0; index < seed.photoCount; index += 1) {
+      const asset = assetPool[(index + seed.offset) % assetPool.length]
+      const imagePath = `${userId}/${localDate}-seed-${index + 1}-${asset}`
+      const blob = await getAssetBlob(asset)
+
+      const upload = await supabase.storage.from('post-images').upload(imagePath, blob, {
+        contentType: 'image/webp',
+        upsert: true,
+      })
+      if (upload.error) throw upload.error
+
+      const slotOrder = [0, 8, 2, 6, 1, 3, 7, 5]
+      gridImages.push({
+        id: `seed-${localDate}-${index + 1}`,
+        slot: slotOrder[index],
+        path: imagePath,
+        width: 1080,
+        height: 1080,
+        bytes: blob.size,
+        source: 'seed',
+        createdAt: new Date(Date.now() - index * 1000).toISOString(),
+      })
+    }
 
     const { error: postError } = await supabase.from('posts').upsert({
       user_id: userId,
       local_date: localDate,
       mission_hex: seed.missionHex,
-      captured_hex: seed.capturedHex,
-      match_rate: seed.matchRate,
-      image_path: imagePath,
+      captured_hex: seed.missionHex,
+      match_rate: 0,
+      image_path: gridImages[0]?.path,
+      grid_images: gridImages,
       custom_color_name: seed.customColorName,
       journal_answer: seed.journalAnswer,
       locale: testAccount.locale,
@@ -273,7 +275,9 @@ async function main() {
       mission_prompt: seed.missionPrompt,
       abuse_warning: false,
       story_template_id: seed.storyTemplateId,
-      story_stickers: seed.storyStickers,
+      story_stickers: [
+        { uid: `seed-${localDate}-stamp`, stickerId: 'passport-stamp', x: 82, y: 82, scale: 0.52, rotation: -10 },
+      ],
       location_name: seed.locationName,
       location_latitude: 37.5446,
       location_longitude: 127.0557,
@@ -281,7 +285,8 @@ async function main() {
       client_meta: {
         app: 'colorwalk',
         seed: true,
-        seedVersion: 1,
+        seedVersion: 2,
+        feature: '3x3-grid',
         source: 'scripts/seed-beta-test-account.mjs',
       },
     }, { onConflict: 'user_id,local_date' })

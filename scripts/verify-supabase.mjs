@@ -187,9 +187,21 @@ try {
       user_id: userId,
       local_date: verifyDate,
       mission_hex: '#8BC6E8',
-      captured_hex: '#8AC4E7',
-      match_rate: 99,
+      captured_hex: '#8BC6E8',
+      match_rate: 0,
       image_path: imagePath,
+      grid_images: [
+        {
+          id: 'verify-grid-image',
+          slot: 0,
+          path: imagePath,
+          width: 1,
+          height: 1,
+          bytes: onePixelWebP.length,
+          source: 'camera',
+          createdAt: new Date().toISOString(),
+        },
+      ],
       locale: 'en',
       weather_group: 'clear',
       time_bucket: 'day',
@@ -199,7 +211,7 @@ try {
       location_latitude: 37.5665,
       location_longitude: 126.978,
       location_accuracy_m: 50,
-      story_template_id: 'passport',
+      story_template_id: 'soft-passport',
       story_stickers: [
         {
           uid: 'verify-sticker',
@@ -220,13 +232,16 @@ try {
 
   const select = await mainClient
     .from('posts')
-    .select('id,image_path,story_template_id,story_stickers,client_meta,location_name,location_latitude,location_longitude,location_accuracy_m')
+    .select('id,image_path,grid_images,story_template_id,story_stickers,client_meta,location_name,location_latitude,location_longitude,location_accuracy_m')
     .eq('user_id', userId)
     .eq('local_date', verifyDate)
   if (select.error) throw select.error
   if (!select.data?.length) throw new Error('Post select returned no rows.')
-  if (select.data[0].story_template_id !== 'passport') {
+  if (select.data[0].story_template_id !== 'soft-passport') {
     throw new Error('Story template metadata was not persisted.')
+  }
+  if (!Array.isArray(select.data[0].grid_images) || select.data[0].grid_images[0]?.path !== imagePath) {
+    throw new Error('3x3 grid image metadata was not persisted.')
   }
   if (select.data[0].location_name !== 'Verify Place' || select.data[0].location_latitude !== 37.5665) {
     throw new Error('Location metadata was not persisted.')
@@ -260,6 +275,7 @@ try {
         storageSignedUrl: true,
         postUpsertAndSelect: true,
         storyMetadata: true,
+        gridImageMetadata: true,
         locationMetadata: true,
         postRlsBlocksOtherUser: true,
         storageRlsBlocksOtherUser: true,

@@ -286,9 +286,8 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
               onClick={() => selectTemplate(template.id)}
             >
               <div className={cn('template-thumb', template.className)}>
-                <span style={{ backgroundColor: data.missionHex }} />
-                <span style={{ backgroundColor: data.capturedHex }} />
-                <b>{template.id === 'travel' ? 'AIR' : template.id === 'newspaper' ? 'NEWS' : template.id === 'polaroid' ? 'PHOTO' : 'COLOR'}</b>
+                <span className="template-thumb-grid" style={{ backgroundColor: data.missionHex }} />
+                <b>{template.id === 'air-trip' ? 'AIR' : template.id === 'newsprint' ? 'NEWS' : template.id === 'life-cut' ? 'CUT' : 'GRID'}</b>
               </div>
               <strong>{template.name[locale]}</strong>
               <small>{template.caption[locale]}</small>
@@ -346,7 +345,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) + 0.12 })}
         >
           <Plus data-icon="inline-start" aria-hidden="true" />
-          {locale === 'ko' ? '크게' : 'Size'}
+          {locale === 'ko' ? '크게' : 'Bigger'}
         </Button>
         <Button
           type="button"
@@ -355,7 +354,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) - 0.12 })}
         >
           <Minus data-icon="inline-start" aria-hidden="true" />
-          {locale === 'ko' ? '작게' : 'Size'}
+          {locale === 'ko' ? '작게' : 'Smaller'}
         </Button>
         <Button
           type="button"

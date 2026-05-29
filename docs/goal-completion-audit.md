@@ -2,35 +2,38 @@
 
 Last updated: 2026-05-29 KST.
 
-This file tracks the active goal requirement by requirement. Do not mark the goal complete until every row is proven by current evidence.
+This file tracks the active 3x3-grid rebuild goal requirement by requirement. Do not mark the goal complete until every row is proven by current evidence.
 
 | # | Requirement | Current evidence | Status |
 |---|---|---|---|
-| 0 | Today ticket shows pattern/illustration before capture and today's photo after capture | `TodayView` uses `ticketImageUrl` only from today's post; CSS fallback draws the ticket/photo pattern when absent. Browser home screenshot exists in `.design-references/01-current-screens/home-seeded-430x932.png`. | Implemented; browser verified |
-| 0b | Remove duplicate month collection strip from Today/History | `TodayView` has no monthly color strip. `CalendarView` has calendar, selected record card, and compact stats only. | Implemented |
-| 1 | Reduce AI-looking design with reference-driven polish | Reference folders and QA routine documented in `AGENTS.md`; latest 430x932 captures saved; final CSS layer unifies soft sage accents/cards. | Partially implemented; visual taste can always be iterated |
-| 2 | Use soft green/sage theme for primary CTA and icons | `camera-cta`, active bottom nav, status icons, story export CTA, selected calendar ring, match ring use sage final overrides. | Implemented; browser screenshots verify |
-| 3 | Fix History collection box overlap | History month collection box was removed; selected record + stats remain. | Implemented |
-| 4 | Unify card backgrounds and borders | Final CSS layer unifies main cards to `#fffefa`/soft border treatment. | Implemented |
-| 5 | Replace seed badge dot, make 14-day leaf more grown, tone down 30-day badge | `BadgeShelf` uses custom plant SVGs for 3/7/14/30 days and toned-down 30-day styling. | Implemented |
-| 6 | Daily reminder notification | `ProfileView`/`notifications.ts` support web notifications, Capacitor Local Notifications, and a beta test-notification button. Android emulator evidence: `android-notification-after-tap.png`, `android-notification-enabled.png`, `android-test-notification-shade.png`, and `android-test-notification-dumpsys.txt`. Daily reminder is queued in Android alarm manager; exact wall-clock delivery can be delayed by Android exact-alarm policy. | Implemented; emulator verified |
-| 7 | Many color names in DB | `color_name_suggestions` migration seeded hundreds; `verify:supabase` checks at least 200 English suggestions and previous remote count was over 400 each locale. | Implemented; Supabase verified |
-| 8 | Shuffle today's color | `TodayView` exposes shuffle button; `App.shuffleMission` replaces mission and shows toast. | Implemented; browser verified |
-| 9 | Multiple same-day captures ask whether to replace and keep only latest in history | `App.saveEntry` checks existing same-day post, confirms replacement, upserts on `user_id,local_date`, and deletes replaced image. Android emulator showed the same-day replacement confirm before save. | Implemented; emulator verified |
-| 10 | App-first behavior and Android compatibility | `ColorWalkPixel7` on D-drive AVD verified location permission, camera permission, camera preview/capture, journal save/replace, history, story editor, native story share sheet, notification permission, and immediate test notification display. `cap:sync`, `assembleDebug`, and `bundleRelease` pass; APK/AAB exist. | Implemented; emulator verified, physical phone still recommended |
-| 11 | Remove "screen vs real object color" warning | User-facing copy and screen-abuse detection logic removed; camera always records `abuseWarning: false`. | Implemented |
-| 12 | Restore story template/sticker UX in Journal/History | `StoryStudio` works from History; browser screenshot `story-from-history-430x932.png` shows templates, stickers, search, export. Android emulator opened story editor from History and native share sheet displayed the exported PNG. Journal shows editor once a draft exists. | Implemented; browser and emulator verified |
-| 13 | PWA account flow with Supabase username/password/profile metadata | `AuthGate`, `beta-signup`, `profiles` columns, PWA manifest/service worker, seeded test account, and Supabase verify script. Live URL `https://colorwalk-tau.vercel.app` was redeployed and returns 200 with the manifest. | Implemented; live browser verified |
-| 14 | Main chunk >500KB warning | Vite code splitting keeps largest chunks around 200KB. `npm run build` has no 500KB warning. | Implemented; build verified |
+| 1 | Work on a new branch | Current branch is `codex/3x3-grid-rebuild`. | Implemented |
+| 2 | Remove color match-rate judgment from the product flow | Camera, journal, history, and story UI use 3x3 photo collection instead of match scoring. `getMatchRate`, match haptics, and old receipt component were removed. Legacy `posts.match_rate` remains as `0` for existing schema compatibility. | Implemented locally |
+| 3 | Replace the core feature with 3x3 color-grid capture | `CaptureDraft`, `Post`, `GridCollage`, `CameraView`, `JournalView`, `CalendarView`, `StoryCard`, and `StoryStudio` now support grid images around the mission color. | Implemented locally |
+| 4 | Redesign camera and app surfaces to fit the new feature while preserving the soft ColorWalk direction | Reference folders and current 430x932 captures exist under `.design-references/06-3x3-grid-rebuild/`. This pass captured home, camera permission fallback, camera after album photo, journal, story preview/editor, history, and profile. | Implemented locally; DB save path still pending remote migration |
+| 5 | Update badge system for the new feature | `docs/colorwalk-reward-system.md`, `plan.md`, `AGENTS.md`, and `src/lib/collection.ts` define milestones as creative unlocks for stickers, weekly frames, photobooth borders, and signature frames. | Implemented locally |
+| 6 | Use generated/user-provided icon images if copyright-safe | App/PWA icons and internal mark use local PNG assets under `public/brand/`, `public/favicon.png`, `public/icon-192.png`, `public/icon-512.png`, and `public/apple-touch-icon.png`. Browser profile/header captures show the internal mark. | Implemented locally |
+| 7 | Rebuild story editor for 3x3/Life4Cuts-style frames | `StoryStudio`, `StoryCard`, and `src/lib/story.ts` use 3x3-oriented frames and sticker editing. Lazyweb references are stored under `.lazyweb/design-research/colorwalk-3x3-photobooth-2026-05-29/` and `.design-references/06-3x3-grid-rebuild/`. Browser QA exported a `1080x1920` PNG story successfully. | Implemented locally |
+| 8 | Update test seed data for the new feature | `scripts/seed-beta-test-account.mjs` seeds grid images and new story template ids. | Implemented locally; remote run blocked until Supabase migration/auth is available |
+| 9 | Add backend/API persistence for grid metadata | Migration `supabase/migrations/20260529200000_add_grid_images.sql` adds `posts.grid_images` and expands template ids. `src/lib/supabase.ts` signs grid image paths. | Implemented locally; remote migration not applied |
+| 10 | Keep security intact | Frontend uses Vite publishable Supabase key only; service role remains local/Edge tooling only. RLS/storage policy model remains owner-scoped. `npm run verify:supabase` currently fails before policy checks because the remote schema is missing `posts.grid_images`. | Partially verified; remote migration required |
+| 11 | Run verification | `npm run lint`, `npm test -- --run`, `npm run build`, `npm run cap:sync`, Android `:app:assembleDebug`, Android `:app:bundleRelease`, browser console check, and 1080x1920 story export passed. `npm run verify:supabase` failed with `PGRST204` because remote `posts.grid_images` is missing. | Mostly passed; Supabase blocked |
+| 12 | Commit and push important finished features | No commit/push has been made for this active branch yet. | Pending |
+| 13 | Redeploy free PWA beta | Deployment must wait until remote Supabase migration and verification pass, otherwise saving grid posts would fail on production. | Pending |
 
-## Current Non-Code Blockers
+## Current Blocker
 
-- Physical phone PWA install/share/camera QA is still user-side.
-- Android daily repeating notifications are scheduled through Android alarm manager. On Android 12+ exact-alarm policy can delay wall-clock delivery; use the profile "테스트 알림 보내기" button to verify permission/channel/display immediately.
-- Public/free PWA deployment is live at `https://colorwalk-tau.vercel.app`. The successful path used local Vite build output packaged as Vercel Build Output API artifacts because `vercel build` hit Windows `node_modules` file locks.
+Supabase MCP authentication is expired:
+
+```text
+Provided authentication token is expired. token_expired 401
+```
+
+Until Supabase MCP is re-authenticated or another admin SQL path is provided, the remote `posts.grid_images` migration cannot be applied and the live PWA cannot be safely redeployed.
 
 ## Do Next
 
-1. Run real-device PWA install QA on the user's phone from `https://colorwalk-tau.vercel.app`.
-2. Re-run camera, story export/share, and notification test on the physical phone after PWA install.
-3. If Play Store internal testing is used, upload the latest `app-release.aab` and reuse the same beta account/invite code.
+1. Re-authenticate Supabase MCP or provide a DB admin path, then apply `20260529200000_add_grid_images.sql`.
+2. Run `npm run verify:supabase` and `npm run seed:test-account`.
+3. Re-run browser save path from camera/album -> journal save -> history reshare.
+4. Commit/push once the local 3x3 package is staged cleanly.
+5. Redeploy the Vercel PWA only after remote Supabase verification passes.

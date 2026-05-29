@@ -15,7 +15,8 @@ The Android emulator path is usable again from the D-drive SDK/AVD setup. The de
 - Supabase session persisted in the Android WebView after beta test account sign-in.
 - Camera permission prompt appeared and was allowed.
 - Camera preview opened with the emulator camera feed.
-- Capture moved into journal with sampled color, match rate, receipt, and location toggle.
+- Legacy QA note: the previous build moved capture into journal with sampled color, match rate, receipt, and location toggle.
+- Current 3x3-grid rebuild still needs a fresh emulator pass after the Supabase grid migration is applied.
 - Same-day save showed the replacement confirmation dialog.
 - Save succeeded and history showed the updated post.
 - History story editor opened with 9:16 template/export UI.

@@ -23,10 +23,7 @@ export type Mission = {
 }
 
 export type CaptureDraft = {
-  previewUrl: string
-  imageBlob: Blob
-  capturedHex: string
-  matchRate: number
+  gridImages: GridDraftImage[]
   abuseWarning: boolean
   compression?: {
     width: number
@@ -35,6 +32,34 @@ export type CaptureDraft = {
     quality: number
     source: 'camera' | 'album'
   }
+}
+
+export type GridImageSource = 'camera' | 'album' | 'seed' | 'legacy'
+
+export type GridDraftImage = {
+  id: string
+  slot: number
+  previewUrl: string
+  imageBlob: Blob
+  width: number
+  height: number
+  bytes: number
+  quality: number
+  source: Extract<GridImageSource, 'camera' | 'album'>
+  createdAt: string
+}
+
+export type GridImage = {
+  id: string
+  slot: number
+  path: string
+  signedUrl?: string
+  previewUrl?: string
+  width?: number | null
+  height?: number | null
+  bytes?: number | null
+  source?: GridImageSource
+  createdAt?: string | null
 }
 
 export type SavedLocation = {
@@ -68,6 +93,7 @@ export type Post = {
   location_accuracy_m?: number | null
   story_template_id?: StoryTemplateId | null
   story_stickers?: StoryStickerItem[] | null
+  grid_images?: GridImage[] | null
   client_meta?: Record<string, unknown> | null
   signedImageUrl?: string
 }
@@ -88,14 +114,14 @@ export type UserProfile = {
 }
 
 export type StoryTemplateId =
-  | 'mongle'
-  | 'travel'
-  | 'modern'
-  | 'newspaper'
-  | 'polaroid'
-  | 'passport'
-  | 'receipt'
-  | 'minimal'
+  | 'soft-passport'
+  | 'life-cut'
+  | 'air-trip'
+  | 'modern-grid'
+  | 'newsprint'
+  | 'polaroid-grid'
+  | 'sponsor-clean'
+  | 'color-ticket'
 
 export type StoryStickerCategory =
   | 'all'
