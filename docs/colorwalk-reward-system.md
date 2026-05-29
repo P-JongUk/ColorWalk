@@ -37,6 +37,17 @@ Use the existing 3, 7, 14, and 30 day streak milestones. The exact visuals can e
 | 14 days | Mood collection | Ticket corner details, collection frame, richer color-name sticker |
 | 30 days | Color Walker identity | Signature clover mark sticker, premium-feeling story frame, monthly passport stamp |
 
+## Badge Utility Model
+
+When a user earns a badge, the app should answer "what can I do with this now?" clearly. A badge should unlock or highlight at least one of these useful surfaces:
+
+- Story editor: sticker pack, frame detail, template variant, title stamp, or recap layout.
+- Profile: passport stamp, identity label, collected-period badge, or favorite color mark.
+- History detail: period palette, representative photos, and a shortcut to make a story from that badge.
+- Monthly recap: a generated 9:16 card that uses the unlocked badge art as a seal or frame.
+
+Do not ship a badge that only changes a locked/unlocked icon. The reward can be small, but it should be usable, visible, and emotionally connected to the user's saved colors.
+
 ## Reward System Maintenance Contract
 
 This reward system should move with the product whenever the core capture, story, profile, or monetization feature changes. Do not treat the current streak UI, monthly color shelf, story templates, or sticker IDs as the permanent system.
@@ -61,11 +72,23 @@ Examples:
 - If monetization adds paid packs later, earned badge rewards should remain useful free items, not previews that immediately feel locked or inferior.
 - If a feature is removed, migrate the reward to the nearest surviving surface instead of removing the user's reason to care.
 
+Remapping examples:
+
+| Product change | Keep the badge valuable by moving the reward to |
+| --- | --- |
+| Story templates are redesigned | New template IDs, frame layers, or sticker packs in the story editor |
+| Sticker packs are replaced | Equivalent ColorWalk-native doodle/stamp assets at the same milestones |
+| Profile is redesigned | Passport stamp row, identity label, or collected-period badge section |
+| Monthly color shelf is removed | Badge detail sheet, history filter, or monthly recap story |
+| Travel mode is added | Route/map stamp, trip story frame, or travel-color recap |
+| Paid template packs are added | Free earned badge templates that still feel complete, plus paid extras as optional expansion |
+
 Implementation rule:
 
 - Derive unlock state from persisted user activity, preferably `posts.local_date` plus future post metadata such as grid completion count.
 - Keep the reward mapping in one helper/config layer so design assets can be renamed without rewriting the product loop.
 - When changing capture, story, profile, or monetization features, update this document and the reward mapping in the same PR/commit.
+- Current helper/config location: `src/lib/collection.ts`. Keep the badge reward labels and unlock conditions aligned with this document.
 
 ## Feature Change Checklist
 

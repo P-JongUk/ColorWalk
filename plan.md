@@ -101,6 +101,11 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
   - 7 days: weekly color passport stamp, "Color Walk Week" sticker, one soft story decoration.
   - 14 days: ticket corner details, collection frame, richer color-name sticker.
   - 30 days: signature clover mark sticker, premium-feeling story frame, monthly passport stamp.
+- Why a badge matters:
+  - It should give the user a visible creative benefit, not just a number.
+  - It should make the story editor, profile, history detail, or monthly recap feel more personal.
+  - It should turn "I used the app several days" into "I unlocked a nicer way to show my collected colors."
+  - It should stay private and self-expressive unless the user chooses to export/share it.
 - UX direction:
   - Keep badges private, collectible, and share-friendly.
   - Avoid leaderboards, public comparison, harsh missed-day copy, or rewards that only protect a number.
@@ -108,6 +113,12 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 - Implementation direction: derive badge state from saved `posts.local_date` whenever possible. If templates, sticker packs, or badge visuals change later, preserve the milestone-to-creative-reward relationship.
 - Maintenance rule: whenever the core capture/story/profile/monetization feature changes, update the reward mapping with it so streak milestones keep unlocking creative memory tools rather than becoming a stale counter.
 - Living-system rule: do not hard-code the current badge UI as the product loop. The stable loop is `saved color-walk activity -> milestone -> creative unlock -> story/profile memory`. If ColorWalk changes from one-photo capture to 3x3 grids, monthly recap, travel mode, or paid template packs, remap each milestone to the closest useful free creative item instead of deleting the reward meaning.
+- Feature-change contract:
+  - If the story editor changes, remap badge rewards to the new sticker/template/export surfaces.
+  - If the profile changes, keep badge stamps or identity labels visible somewhere personal.
+  - If the monthly shelf is removed, preserve the same memory value through a badge detail sheet or recap story.
+  - If paid packs are added, earned badge rewards must remain genuinely useful free creative items.
+  - Any PR that changes capture, story, profile, history, templates, stickers, or monetization should update `docs/colorwalk-reward-system.md` and the reward mapping helper in the same change.
 - Detailed design note: `docs/colorwalk-reward-system.md`.
 
 ### Instagram / SNS Sharing
