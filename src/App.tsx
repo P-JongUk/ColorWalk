@@ -12,7 +12,7 @@ import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { getRandomMission } from '@/lib/mission'
 import { startWebReminderScheduler } from '@/lib/notifications'
-import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage } from '@/lib/supabase'
+import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
 import type { GridImage, Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
@@ -262,9 +262,7 @@ function App() {
           },
         }
 
-        const { error } = await supabase
-          .from('posts')
-          .upsert(payload, { onConflict: 'user_id,local_date' })
+        const { error } = await upsertPostWithGridFallback(payload)
 
         if (error) throw error
 

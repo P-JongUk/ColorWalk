@@ -165,6 +165,17 @@ const legacyTemplateMap: Record<string, StoryTemplateId> = {
   minimal: 'modern-grid',
 }
 
+const databaseTemplateMap: Record<StoryTemplateId, string> = {
+  'soft-passport': 'passport',
+  'life-cut': 'minimal',
+  'air-trip': 'travel',
+  'modern-grid': 'modern',
+  newsprint: 'newspaper',
+  'polaroid-grid': 'polaroid',
+  'sponsor-clean': 'minimal',
+  'color-ticket': 'receipt',
+}
+
 export function getStoryTemplate(id: StoryTemplateId) {
   return STORY_TEMPLATES.find((template) => template.id === id) ?? STORY_TEMPLATES[0]
 }
@@ -215,4 +226,8 @@ export function normalizeTemplateId(value: unknown): StoryTemplateId {
   if (STORY_TEMPLATES.some((template) => template.id === value)) return value as StoryTemplateId
   if (typeof value === 'string' && legacyTemplateMap[value]) return legacyTemplateMap[value]
   return DEFAULT_STORY_DESIGN.templateId
+}
+
+export function toLegacyDatabaseTemplateId(value: unknown) {
+  return databaseTemplateMap[normalizeTemplateId(value)]
 }

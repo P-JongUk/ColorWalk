@@ -80,6 +80,90 @@ const assetPool = [
   'mongle-dust.webp',
 ]
 
+function needsLegacyPostFallback(error) {
+  if (!error) return false
+  const message = error.message ?? ''
+  return (
+    error.code === 'PGRST204' && message.includes('grid_images')
+  ) || (
+    error.code === '42703' && message.includes('grid_images')
+  ) || (
+    error.code === '23514' && message.includes('posts_story_template_id_check')
+  )
+}
+
+function toLegacyTemplateId(templateId) {
+  return {
+    'soft-passport': 'passport',
+    'life-cut': 'minimal',
+    'air-trip': 'travel',
+    'modern-grid': 'modern',
+    newsprint: 'newspaper',
+    'polaroid-grid': 'polaroid',
+    'sponsor-clean': 'minimal',
+    'color-ticket': 'receipt',
+  }[templateId] ?? 'passport'
+}
+
+function toLegacyPostPayload(payload) {
+  const { grid_images: gridImages = [], story_template_id: storyTemplateId, client_meta: clientMeta, ...rest } = payload
+
+  return {
+    ...rest,
+    story_template_id: toLegacyTemplateId(storyTemplateId),
+    client_meta: {
+      ...(clientMeta ?? {}),
+      storyTemplateId,
+      gridImages,
+      gridImagesStorage: 'client_meta_fallback',
+    },
+  }
+}
+
+async function upsertPostWithFallback(client, payload) {
+  const upsert = await client.from('posts').upsert(payload, { onConflict: 'user_id,local_date' })
+  if (!upsert.error || !needsLegacyPostFallback(upsert.error)) {
+    return { ...upsert, usedFallback: false }
+  }
+
+  const fallback = await client.from('posts').upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
+  return { ...fallback, usedFallback: true }
+}
+
+function collectImagePathsFromPosts(posts) {
+  return Array.from(new Set(
+    posts.flatMap((post) => [
+      post.image_path,
+      ...(Array.isArray(post.grid_images) ? post.grid_images : []),
+      ...(Array.isArray(post.client_meta?.gridImages) ? post.client_meta.gridImages : []),
+    ])
+      .map((item) => (typeof item === 'string' ? item : item?.path))
+      .filter((item) => typeof item === 'string' && item && !/^(blob:|data:image\/|https?:\/\/)/.test(item)),
+  ))
+}
+
+async function fetchExistingSeedPostImagePaths(client, userId, localDates) {
+  const fullSelect = await client
+    .from('posts')
+    .select('image_path,grid_images,client_meta')
+    .eq('user_id', userId)
+    .in('local_date', localDates)
+
+  if (!needsLegacyPostFallback(fullSelect.error)) {
+    if (fullSelect.error) throw fullSelect.error
+    return collectImagePathsFromPosts(fullSelect.data ?? [])
+  }
+
+  const fallbackSelect = await client
+    .from('posts')
+    .select('image_path,client_meta')
+    .eq('user_id', userId)
+    .in('local_date', localDates)
+
+  if (fallbackSelect.error) throw fallbackSelect.error
+  return collectImagePathsFromPosts(fallbackSelect.data ?? [])
+}
+
 const seedPosts = [
   {
     offset: 0,
@@ -217,17 +301,22 @@ async function main() {
   }, { onConflict: 'id' })
   if (profileError) throw profileError
 
+  const seedDates = seedPosts.map((seed) => toDateKey(seed.offset))
+  const existingPostImagePaths = await fetchExistingSeedPostImagePaths(supabase, userId, seedDates)
+
   const list = await supabase.storage.from('post-images').list(userId, { limit: 200 })
   if (list.error) throw list.error
   const oldSeedFiles = (list.data ?? [])
     .map((item) => `${userId}/${item.name}`)
     .filter((name) => name.includes('-seed-'))
-  if (oldSeedFiles.length) {
-    const removed = await supabase.storage.from('post-images').remove(oldSeedFiles)
+  const filesToRemove = Array.from(new Set([...oldSeedFiles, ...existingPostImagePaths]))
+  if (filesToRemove.length) {
+    const removed = await supabase.storage.from('post-images').remove(filesToRemove)
     if (removed.error) throw removed.error
   }
 
   const seededDates = []
+  let fallbackPostCount = 0
 
   for (const seed of seedPosts) {
     const localDate = toDateKey(seed.offset)
@@ -257,7 +346,7 @@ async function main() {
       })
     }
 
-    const { error: postError } = await supabase.from('posts').upsert({
+    const { error: postError, usedFallback } = await upsertPostWithFallback(supabase, {
       user_id: userId,
       local_date: localDate,
       mission_hex: seed.missionHex,
@@ -289,8 +378,9 @@ async function main() {
         feature: '3x3-grid',
         source: 'scripts/seed-beta-test-account.mjs',
       },
-    }, { onConflict: 'user_id,local_date' })
+    })
     if (postError) throw postError
+    if (usedFallback) fallbackPostCount += 1
     seededDates.push(localDate)
   }
 
@@ -299,10 +389,11 @@ async function main() {
   console.log(JSON.stringify({
     ok: true,
     username: testAccount.username,
-    password: testAccount.password,
-    email,
     userId,
     seededDates,
+    gridImageStorage: fallbackPostCount ? 'client_meta_fallback' : 'grid_images',
+    fallbackPostCount,
+    credentialsFile: 'docs/beta-test-account.private.md',
   }, null, 2))
 }
 

@@ -2,7 +2,7 @@ import { createClient, type Session, type SupabaseClient } from '@supabase/supab
 
 import { getPerceptualDeltaE, hexToRgb } from '@/lib/colors'
 import { normalizeGridImages } from '@/lib/grid'
-import { parseStoryStickers, normalizeTemplateId } from '@/lib/story'
+import { parseStoryStickers, normalizeTemplateId, toLegacyDatabaseTemplateId } from '@/lib/story'
 import type { GridImage, Locale, Post, ProfileGender, UserProfile } from '@/types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
@@ -28,6 +28,12 @@ function createColorWalkSupabaseClient() {
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? ((globalThis as GlobalWithSupabase).__colorWalkSupabaseClient ??= createColorWalkSupabaseClient())
   : null
+
+type PostUpsertPayload = Record<string, unknown> & {
+  grid_images?: GridImage[]
+  story_template_id?: string | null
+  client_meta?: Record<string, unknown> | null
+}
 
 let pendingAnonymousSession: Promise<Session | null> | null = null
 
@@ -210,9 +216,11 @@ export async function fetchPosts(userId: string): Promise<Post[]> {
 
   const posts = ((data ?? []) as Post[]).map((post) => ({
     ...post,
-    story_template_id: normalizeTemplateId(post.story_template_id),
+    story_template_id: normalizeTemplateId(post.client_meta?.storyTemplateId ?? post.story_template_id),
     story_stickers: parseStoryStickers(post.story_stickers),
-    grid_images: normalizeGridImages(post.grid_images),
+    grid_images: normalizeGridImages(post.grid_images).length
+      ? normalizeGridImages(post.grid_images)
+      : normalizeGridImages(post.client_meta?.gridImages),
     client_meta: post.client_meta ?? {},
   }))
 
@@ -261,6 +269,47 @@ export async function uploadPostImage(userId: string, localDate: string, blob: B
   if (error) throw error
 
   return path
+}
+
+function needsLegacyPostFallback(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false
+  const message = error.message ?? ''
+  return (
+    error.code === 'PGRST204' && message.includes('grid_images')
+  ) || (
+    error.code === '42703' && message.includes('grid_images')
+  ) || (
+    error.code === '23514' && message.includes('posts_story_template_id_check')
+  )
+}
+
+function toLegacyPostPayload(payload: PostUpsertPayload): PostUpsertPayload {
+  const { grid_images: gridImages = [], story_template_id: storyTemplateId, client_meta: clientMeta, ...rest } = payload
+
+  return {
+    ...rest,
+    story_template_id: toLegacyDatabaseTemplateId(storyTemplateId),
+    client_meta: {
+      ...(clientMeta ?? {}),
+      storyTemplateId: normalizeTemplateId(storyTemplateId),
+      gridImages,
+      gridImagesStorage: 'client_meta_fallback',
+    },
+  }
+}
+
+export async function upsertPostWithGridFallback(payload: PostUpsertPayload) {
+  if (!supabase) throw new Error('Supabase is not configured')
+
+  const result = await supabase
+    .from('posts')
+    .upsert(payload, { onConflict: 'user_id,local_date' })
+
+  if (!result.error || !needsLegacyPostFallback(result.error)) return result
+
+  return supabase
+    .from('posts')
+    .upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
 }
 
 export async function deletePostImage(path: string) {

@@ -77,6 +77,7 @@ The last successful production deploy used local `npm run build`, manual `.verce
 - Account creation path: username/password form calls the deployed `beta-signup` Edge Function, then signs in through Supabase Auth.
 - RLS/storage policies are owner-scoped by `auth.uid()`.
 - `npm run verify:supabase` must keep checking anonymous sign-in, anonymous data-write denial, password-user profile upsert, post CRUD, signed storage read, and cross-user denial.
+- Current 3x3-grid beta code writes `posts.grid_images` when the migration exists, and automatically falls back to `posts.client_meta.gridImages` on the live project until the `20260529200000_add_grid_images.sql` migration can be applied with authenticated Supabase admin access.
 
 ## Beta Test Account
 

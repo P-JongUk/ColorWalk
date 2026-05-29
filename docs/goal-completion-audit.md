@@ -13,27 +13,25 @@ This file tracks the active 3x3-grid rebuild goal requirement by requirement. Do
 | 5 | Update badge system for the new feature | `docs/colorwalk-reward-system.md`, `plan.md`, `AGENTS.md`, and `src/lib/collection.ts` define milestones as creative unlocks for stickers, weekly frames, photobooth borders, and signature frames. | Implemented locally |
 | 6 | Use generated/user-provided icon images if copyright-safe | App/PWA icons and internal mark use local PNG assets under `public/brand/`, `public/favicon.png`, `public/icon-192.png`, `public/icon-512.png`, and `public/apple-touch-icon.png`. Browser profile/header captures show the internal mark. | Implemented locally |
 | 7 | Rebuild story editor for 3x3/Life4Cuts-style frames | `StoryStudio`, `StoryCard`, and `src/lib/story.ts` use 3x3-oriented frames and sticker editing. Lazyweb references are stored under `.lazyweb/design-research/colorwalk-3x3-photobooth-2026-05-29/` and `.design-references/06-3x3-grid-rebuild/`. Browser QA exported a `1080x1920` PNG story successfully. | Implemented locally |
-| 8 | Update test seed data for the new feature | `scripts/seed-beta-test-account.mjs` seeds grid images and new story template ids. | Implemented locally; remote run blocked until Supabase migration/auth is available |
-| 9 | Add backend/API persistence for grid metadata | Migration `supabase/migrations/20260529200000_add_grid_images.sql` adds `posts.grid_images` and expands template ids. `src/lib/supabase.ts` signs grid image paths. | Implemented locally; remote migration not applied |
-| 10 | Keep security intact | Frontend uses Vite publishable Supabase key only; service role remains local/Edge tooling only. RLS/storage policy model remains owner-scoped. `npm run verify:supabase` currently fails before policy checks because the remote schema is missing `posts.grid_images`. | Partially verified; remote migration required |
-| 11 | Run verification | `npm run lint`, `npm test -- --run`, `npm run build`, `npm run cap:sync`, Android `:app:assembleDebug`, Android `:app:bundleRelease`, browser console check, and 1080x1920 story export passed. `npm run verify:supabase` failed with `PGRST204` because remote `posts.grid_images` is missing. | Mostly passed; Supabase blocked |
+| 8 | Update test seed data for the new feature | `scripts/seed-beta-test-account.mjs` seeds 5 days of 3x3 data. Latest run succeeded on the live project using `client_meta_fallback` for grid metadata. | Implemented; Supabase verified |
+| 9 | Add backend/API persistence for grid metadata | Migration `supabase/migrations/20260529200000_add_grid_images.sql` adds `posts.grid_images` and expands template ids. Runtime/API now writes `grid_images` when available and falls back to `client_meta.gridImages` plus legacy template ids when the production schema has not been migrated yet. | Implemented; fallback verified live |
+| 10 | Keep security intact | Frontend uses Vite publishable Supabase key only; service role remains local/Edge tooling only. `npm run verify:supabase` passed anonymous sign-in, anonymous write denial, profile upsert, post CRUD, signed storage URL, cross-user post denial, and cross-user storage denial. | Verified |
+| 11 | Run verification | `npm run lint`, `npm test -- --run`, `npm run build`, `npm run verify:supabase`, `npm run seed:test-account`, `npm run cap:sync`, Android `:app:assembleDebug`, Android `:app:bundleRelease`, browser remote save QA, and 1080x1920 story export passed. | Passed |
 | 12 | Commit and push important finished features | No commit/push has been made for this active branch yet. | Pending |
-| 13 | Redeploy free PWA beta | Deployment must wait until remote Supabase migration and verification pass, otherwise saving grid posts would fail on production. | Pending |
+| 13 | Redeploy free PWA beta | Deployment is now unblocked because live Supabase verification and seed pass through `client_meta_fallback`. | Pending |
 
-## Current Blocker
+## Current Schema Note
 
-Supabase MCP authentication is expired:
+Supabase MCP authentication is still expired:
 
 ```text
 Provided authentication token is expired. token_expired 401
 ```
 
-Until Supabase MCP is re-authenticated or another admin SQL path is provided, the remote `posts.grid_images` migration cannot be applied and the live PWA cannot be safely redeployed.
+Because of that, the remote `posts.grid_images` migration has not been applied. The beta is still deployable because the app, verifier, and seed script persist grid metadata through `client_meta.gridImages` when the column is missing.
 
 ## Do Next
 
-1. Re-authenticate Supabase MCP or provide a DB admin path, then apply `20260529200000_add_grid_images.sql`.
-2. Run `npm run verify:supabase` and `npm run seed:test-account`.
-3. Re-run browser save path from camera/album -> journal save -> history reshare.
-4. Commit/push once the local 3x3 package is staged cleanly.
-5. Redeploy the Vercel PWA only after remote Supabase verification passes.
+1. Deploy the Vercel PWA production build.
+2. Verify the live URL loads the new assets and manifest.
+3. Re-authenticate Supabase MCP later and apply `20260529200000_add_grid_images.sql` to move from fallback storage to the dedicated column.

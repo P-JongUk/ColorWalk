@@ -71,6 +71,9 @@ export function getPostGridImages(post: Post | undefined): GridImage[] {
   const normalized = normalizeGridImages(post.grid_images)
   if (normalized.length) return normalized
 
+  const metaGridImages = normalizeGridImages(post.client_meta?.gridImages)
+  if (metaGridImages.length) return metaGridImages
+
   const fallbackUrl = post.signedImageUrl || (/^(blob:|data:image\/|https?:\/\/)/.test(post.image_path) ? post.image_path : undefined)
   if (!fallbackUrl && !post.image_path) return []
 
@@ -98,6 +101,7 @@ export function getPostImagePaths(post: Post | undefined) {
       [
         post.image_path,
         ...normalizeGridImages(post.grid_images).map((image) => image.path),
+        ...normalizeGridImages(post.client_meta?.gridImages).map((image) => image.path),
       ].filter((path) => path && !/^(blob:|data:image\/|https?:\/\/)/.test(path)),
     ),
   )
