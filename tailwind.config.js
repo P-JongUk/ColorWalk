@@ -68,11 +68,10 @@ export default {
       },
       fontFamily: {
         sans: [
-          'Inter',
-          'Pretendard',
-          'ui-sans-serif',
-          'system-ui',
-          'Segoe UI',
+          'Sunghyun Sans KR',
+          'LINE Seed KR',
+          'Apple SD Gothic Neo',
+          'Malgun Gothic',
           'sans-serif',
         ],
       },

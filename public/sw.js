@@ -1,5 +1,5 @@
-const CACHE_NAME = 'colorwalk-shell-v1'
-const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.svg']
+const CACHE_NAME = 'colorwalk-shell-v2'
+const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

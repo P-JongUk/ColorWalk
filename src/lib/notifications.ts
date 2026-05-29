@@ -87,8 +87,8 @@ export function startWebReminderScheduler(locale: Locale) {
     const copy = getNotificationCopy(locale)
     new Notification(copy.title, {
       body: copy.body,
-      icon: '/favicon.svg',
-      badge: '/favicon.svg',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
       tag: 'colorwalk-daily-reminder',
     })
     startWebReminderScheduler(locale)
@@ -166,8 +166,8 @@ export async function sendTestReminderNotification(locale: Locale) {
 
   new Notification(locale === 'ko' ? 'ColorWalk 테스트 알림' : 'ColorWalk test reminder', {
     body: copy.body,
-    icon: '/favicon.svg',
-    badge: '/favicon.svg',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
     tag: 'colorwalk-test-reminder',
   })
 

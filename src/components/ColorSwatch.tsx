@@ -18,7 +18,7 @@ export function ColorSwatch({ hex, label, className, showHex = true }: ColorSwat
       }}
     >
       {label ? <span className="text-xs font-semibold opacity-85">{label}</span> : null}
-      {showHex ? <span className="font-mono text-sm font-bold">{hex}</span> : null}
+      {showHex ? <span className="text-sm font-bold tabular-nums">{hex}</span> : null}
     </div>
   )
 }

@@ -183,7 +183,7 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
             )}
             <div className="min-w-0 flex-1">
               <p className="truncate text-lg font-black">{selectedPost.custom_color_name || selectedPost.mission_label || selectedPost.captured_hex}</p>
-              <p className="mt-1 font-mono text-xs text-muted-foreground">
+              <p className="mt-1 text-xs tabular-nums text-muted-foreground">
                 {selectedPost.mission_hex} → {selectedPost.captured_hex}
               </p>
               {selectedPost.location_name ? <p className="history-place">{locale === 'ko' ? '장소' : 'Place'} · {selectedPost.location_name}</p> : null}

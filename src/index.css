@@ -1,4 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@500;600&display=swap');
+@font-face {
+  font-family: 'Sunghyun Sans KR';
+  src: url('/fonts/sunghyun-sans/SunghyunSansKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sunghyun Sans KR';
+  src: url('/fonts/sunghyun-sans/SunghyunSansKR-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sunghyun Sans KR';
+  src: url('/fonts/sunghyun-sans/SunghyunSansKR-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sunghyun Sans KR';
+  src: url('/fonts/sunghyun-sans/SunghyunSansKR-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sunghyun Sans KR';
+  src: url('/fonts/sunghyun-sans/SunghyunSansKR-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +44,7 @@
 
 @layer base {
   :root {
+    --font-sans: 'Sunghyun Sans KR', 'LINE Seed KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     --background: 42 43% 98%;
     --foreground: 26 18% 13%;
     --card: 0 0% 100%;
@@ -62,8 +101,10 @@
 
   button,
   input,
-  textarea {
+  textarea,
+  select {
     font: inherit;
+    font-family: var(--font-sans);
   }
 }
 
@@ -93,7 +134,7 @@
   }
 
   body {
-    font-family: 'Gowun Dodum', 'Nunito', ui-rounded, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+    font-family: var(--font-sans) !important;
     background: #fffdf9 !important;
     color: #26211f !important;
   }
@@ -118,7 +159,7 @@
 
   .home-hero h1,
   .app-header h1 {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+    font-family: var(--font-sans) !important;
     color: #211d1b !important;
     font-weight: 500 !important;
     letter-spacing: 0 !important;
@@ -807,7 +848,7 @@
 
   .home-hero h1 {
     color: #2F211B;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 30px;
     font-weight: 500;
   }
@@ -1284,7 +1325,7 @@
   }
 
   body {
-    font-family: 'Gowun Dodum', 'Nunito', ui-rounded, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+    font-family: var(--font-sans) !important;
     background: #fffdf9 !important;
     color: #26211f !important;
   }
@@ -1309,7 +1350,7 @@
 
   .home-hero h1,
   .app-header h1 {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+    font-family: var(--font-sans) !important;
     color: #211d1b !important;
     font-weight: 500 !important;
     letter-spacing: 0 !important;
@@ -2269,7 +2310,8 @@
 
   .receipt-rows em {
     justify-self: end;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
     font-size: 10px;
     font-style: normal;
     color: #544d47;
@@ -2996,7 +3038,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 34px;
     font-weight: 400;
     line-height: 1;
@@ -3015,7 +3057,7 @@
   .app-header h1 {
     font-size: 28px;
     font-weight: 900;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   .home-header-actions {
@@ -3130,7 +3172,7 @@
   .collection-heading h2 {
     font-size: 18px;
     font-weight: 900;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
 
   .home-section-title svg {
@@ -3198,7 +3240,8 @@
 
   .ticket-copy strong {
     margin-top: 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
     font-size: 16px;
   }
 
@@ -3251,7 +3294,7 @@
 
   .prompt-card > span {
     align-self: flex-start;
-    font-family: Georgia, serif;
+    font-family: var(--font-sans);
     font-size: 30px;
     color: hsl(var(--coral));
   }
@@ -3617,7 +3660,8 @@
   }
 
   .camera-swatch-block strong {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
     font-size: 12px;
     font-weight: 800;
   }
@@ -3779,7 +3823,8 @@
   .journal-mini-swatch b {
     display: block;
     margin-top: 5px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
     font-size: 11px;
   }
 
@@ -4064,7 +4109,7 @@
   }
 
   .invite-card h1 {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 40px;
   }
 
@@ -4134,7 +4179,7 @@
 
   .story-template-newspaper {
     background: #fffdf4;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
   }
 
   .story-template-polaroid {
@@ -4201,7 +4246,7 @@
     display: block;
     max-width: 180px;
     margin-top: 6px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 31px;
     line-height: .96;
     text-transform: uppercase;
@@ -4249,7 +4294,8 @@
   }
 
   .story-polaroids b {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
     font-size: 9px;
   }
 
@@ -4392,7 +4438,7 @@
     border-bottom: 1px solid rgba(36,32,29,.22);
     padding: 8px 0;
     text-align: center;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 13px;
   }
 
@@ -4413,7 +4459,8 @@
     left: 24px;
     top: 24px;
     color: rgba(36,32,29,.58);
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
   }
 
   .decor-minimal {
@@ -4568,7 +4615,7 @@
     top: 14px;
     max-width: 64px;
     color: #fff;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 13px;
     line-height: 1;
     text-shadow: 0 2px 8px rgba(0,0,0,.22);
@@ -5171,7 +5218,7 @@
   .prompt-card > span {
     width: 26px;
     color: #ff625b;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 35px;
     font-weight: 900;
     line-height: .75;
@@ -6078,7 +6125,7 @@
 
   .home-hero h1 {
     color: #2F211B !important;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 30px;
     font-weight: 500;
   }
@@ -6565,7 +6612,7 @@
   }
 
   body {
-    font-family: 'Gowun Dodum', 'Nunito', ui-rounded, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+    font-family: var(--font-sans) !important;
     background: #fffdf9 !important;
     color: #26211f !important;
   }
@@ -6577,7 +6624,7 @@
 
   .home-hero h1,
   .app-header h1 {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+    font-family: var(--font-sans) !important;
     color: #211d1b !important;
   }
 
@@ -6815,7 +6862,7 @@
     width: auto !important;
     min-width: 150px !important;
     white-space: nowrap !important;
-    font-family: 'Gowun Dodum', 'Nunito', ui-rounded, sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-size: 28px !important;
     font-weight: 900 !important;
     line-height: 1.1 !important;
@@ -7167,7 +7214,7 @@
   .home-hero h1,
   .home-hero h1 *,
   .profile-card h2 {
-    font-family: 'Gowun Dodum', 'Nunito', ui-rounded, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-weight: 900 !important;
     letter-spacing: 0 !important;
   }
@@ -7865,8 +7912,9 @@
 
   .auth-brand h1 {
     color: #241f1a;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-sans);
     font-size: 36px;
+    font-weight: 900;
     line-height: 1;
   }
 
