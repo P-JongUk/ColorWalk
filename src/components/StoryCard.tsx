@@ -48,6 +48,7 @@ export function StoryCard({
   const template = getStoryTemplate(templateId)
   const title = colorName?.trim() || missionLabel
   const mood = moodText?.trim() || (locale === 'ko' ? '오늘 산책에서 모은 작은 색의 조각들.' : "Small color pieces from today's walk.")
+  const photoCount = gridImages.length
 
   return (
     <div ref={exportRef} className={cn('story-card', 'story-card-grid', template.className)} data-template={templateId}>
@@ -56,8 +57,9 @@ export function StoryCard({
       <header className="story-grid-header">
         <div>
           <strong>{title}</strong>
+          <small>{missionHex}</small>
         </div>
-        <span>{dateLabel}</span>
+        <span>{dateLabel} · {photoCount}/8</span>
       </header>
 
       <div className="story-grid-stage">
@@ -77,7 +79,7 @@ export function StoryCard({
 
       {SHOW_STORY_BRANDING ? (
         <footer className="story-footer-mark">
-          <ColorWalkMark compact className="text-coral" />
+          <ColorWalkMark compact />
           <span>ColorWalk</span>
         </footer>
       ) : null}

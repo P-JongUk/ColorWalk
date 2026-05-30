@@ -73,7 +73,7 @@ export function TodayView({
         <div>
           <h1>
             Color Walk
-            <ColorWalkMark compact className="text-coral" />
+            <ColorWalkMark compact />
           </h1>
           <p>{locale === 'ko' ? '오늘을 물들이는 작은 색의 발견' : 'A tiny color ritual for today'}</p>
         </div>
@@ -189,7 +189,7 @@ export function TodayView({
         </>
       ) : (
         <section className="passport-panel flex min-h-96 flex-col items-center justify-center gap-4 p-8 text-center">
-          <ColorWalkMark className="text-coral" />
+          <ColorWalkMark />
           <p className="font-semibold">{t(locale, 'loadingMission')}</p>
         </section>
       )}

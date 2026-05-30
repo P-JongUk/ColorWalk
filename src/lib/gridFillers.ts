@@ -1,50 +1,22 @@
 export type GridFillerVariant =
-  | 'soft-gradient'
-  | 'tiny-dots'
-  | 'paper-fold'
-  | 'sun-arc'
-  | 'quiet-check'
-  | 'corner-orbit'
-  | 'thin-stripes'
-  | 'color-field'
-  | 'half-moon'
-  | 'mini-swatch'
-  | 'window-light'
-  | 'soft-noise'
-  | 'paper-note'
-  | 'split-tone'
-  | 'corner-ticket'
-  | 'pencil-grid'
-  | 'soft-rings'
-  | 'mini-label'
-  | 'diagonal-block'
-  | 'quiet-spark'
-  | 'blurred-wash'
-  | 'thin-frame'
+  | 'matte'
+  | 'sage-wash'
+  | 'fine-grid'
+  | 'paper-line'
+  | 'split-surface'
+  | 'soft-stripe'
+  | 'negative-frame'
+  | 'quiet-dot'
 
 export const GRID_FILLER_VARIANTS: GridFillerVariant[] = [
-  'soft-gradient',
-  'tiny-dots',
-  'paper-fold',
-  'sun-arc',
-  'quiet-check',
-  'corner-orbit',
-  'thin-stripes',
-  'color-field',
-  'half-moon',
-  'mini-swatch',
-  'window-light',
-  'soft-noise',
-  'paper-note',
-  'split-tone',
-  'corner-ticket',
-  'pencil-grid',
-  'soft-rings',
-  'mini-label',
-  'diagonal-block',
-  'quiet-spark',
-  'blurred-wash',
-  'thin-frame',
+  'matte',
+  'sage-wash',
+  'fine-grid',
+  'paper-line',
+  'split-surface',
+  'soft-stripe',
+  'negative-frame',
+  'quiet-dot',
 ]
 
 function hash(value: string) {

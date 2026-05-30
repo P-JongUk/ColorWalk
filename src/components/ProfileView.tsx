@@ -67,11 +67,11 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           <p>{t(locale, 'profile')}</p>
           <h1>{profile?.nickname || t(locale, 'profileTitle')}</h1>
         </div>
-        <ColorWalkMark className="text-coral" />
+        <ColorWalkMark />
       </header>
 
       <section className="profile-card">
-        <ColorWalkMark className="mx-auto text-coral" />
+        <ColorWalkMark className="mx-auto" />
         <h2>Color Walk</h2>
         <p>{profile?.nickname ? `${profile.nickname} · ${t(locale, 'profileSubtitle')}` : t(locale, 'profileSubtitle')}</p>
         <div className="profile-stats">
