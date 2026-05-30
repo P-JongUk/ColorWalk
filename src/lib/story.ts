@@ -148,10 +148,8 @@ export const STORY_STICKERS: StoryStickerDefinition[] = [
 ]
 
 export const DEFAULT_STORY_DESIGN: StoryDesign = {
-  templateId: 'soft-passport',
-  stickers: [
-    { uid: 'default-stamp', stickerId: 'passport-stamp', x: 82, y: 82, scale: 0.52, rotation: -12 },
-  ],
+  templateId: 'modern-grid',
+  stickers: [],
 }
 
 const legacyTemplateMap: Record<string, StoryTemplateId> = {

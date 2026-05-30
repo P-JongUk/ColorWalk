@@ -32,16 +32,16 @@ Use the existing 3, 7, 14, and 30 day streak milestones. The exact visuals can e
 
 | Milestone | Meaning | Reward Direction |
 | --- | --- | --- |
-| 3 days | First tiny habit | Small doodle stickers, sparkle marks, seed/leaf stamps |
-| 7 days | One color week | Weekly color passport stamp, "Color Walk Week" sticker, one soft story decoration |
-| 14 days | Mood collection | Ticket corner details, collection frame, richer color-name sticker |
-| 30 days | Color Walker identity | Signature clover mark sticker, premium-feeling story frame, monthly passport stamp |
+| 3 days | First tiny habit | Extra empty-grid filler patterns, tiny marks, seed/leaf stamps |
+| 7 days | One color week | Weekly grid seal, "Color Walk Week" stamp, one subtle export detail |
+| 14 days | Mood collection | Modern grid border, collection frame, richer color-name label |
+| 30 days | Color Walker identity | Signature clover seal, premium-feeling grid frame, monthly passport stamp |
 
 ## Badge Utility Model
 
 When a user earns a badge, the app should answer "what can I do with this now?" clearly. A badge should unlock or highlight at least one of these useful surfaces:
 
-- Story editor: sticker pack, frame detail, template variant, title stamp, or recap layout.
+- Story/export surface: filler pattern set, frame detail, simple title stamp, or recap layout.
 - Profile: passport stamp, identity label, collected-period badge, or favorite color mark.
 - History detail: period palette, representative photos, and a shortcut to make a story from that badge.
 - Monthly recap: a generated 9:16 card that uses the unlocked badge art as a seal or frame.
@@ -65,8 +65,8 @@ When a feature changes, update rewards by preserving these relationships:
 
 Examples:
 
-- If the app stays as a single-photo color diary, badge rewards should unlock stickers, passport/ticket details, color-name labels, and story templates based on saved daily posts.
-- If the app moves to a 3x3 grid system, badge rewards should unlock grid frame styles, photobooth-style borders, doodle sticker packs, and recap layouts based on completed grid days.
+- If the app stays as a single-photo color diary, badge rewards should unlock marks, passport/ticket details, color-name labels, and simple export treatments based on saved daily posts.
+- If the app moves to a 3x3 grid system, badge rewards should unlock grid frame styles, empty-cell filler patterns, subtle border treatments, and recap layouts based on completed grid days.
 - If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
 - If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.
 - If monetization adds paid packs later, earned badge rewards should remain useful free items, not previews that immediately feel locked or inferior.
@@ -76,8 +76,8 @@ Remapping examples:
 
 | Product change | Keep the badge valuable by moving the reward to |
 | --- | --- |
-| Story templates are redesigned | New template IDs, frame layers, or sticker packs in the story editor |
-| Sticker packs are replaced | Equivalent ColorWalk-native doodle/stamp assets at the same milestones |
+| Story templates are paused or redesigned | New simple export frame layers, grid filler sets, or recap layouts |
+| Sticker packs are paused or replaced | Equivalent ColorWalk-native marks, seals, or filler assets at the same milestones |
 | Profile is redesigned | Passport stamp row, identity label, or collected-period badge section |
 | Monthly color shelf is removed | Badge detail sheet, history filter, or monthly recap story |
 | Travel mode is added | Route/map stamp, trip story frame, or travel-color recap |

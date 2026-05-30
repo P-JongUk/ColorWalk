@@ -9,10 +9,10 @@ export type StreakBadgeDays = (typeof STREAK_BADGES)[number]
 // Keep this mapping aligned with docs/colorwalk-reward-system.md.
 // Streaks should unlock creative memory tools, not score pressure.
 const badgeRewards: Record<StreakBadgeDays, Record<Locale, string>> = {
-  3: { ko: '작은 스티커팩', en: 'Tiny sticker pack' },
-  7: { ko: '위클리 프레임', en: 'Weekly frame' },
-  14: { ko: '포토부스 테두리', en: 'Photobooth border' },
-  30: { ko: '시그니처 프레임', en: 'Signature frame' },
+  3: { ko: '빈칸 패턴', en: 'Filler patterns' },
+  7: { ko: '위클리 그리드', en: 'Weekly grid' },
+  14: { ko: '모던 테두리', en: 'Modern border' },
+  30: { ko: '시그니처 씰', en: 'Signature seal' },
 }
 
 function toDateKey(date: Date) {

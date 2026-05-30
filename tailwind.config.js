@@ -4,6 +4,30 @@ import animate from 'tailwindcss-animate'
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  safelist: [
+    'color-grid-empty-soft-gradient',
+    'color-grid-empty-tiny-dots',
+    'color-grid-empty-paper-fold',
+    'color-grid-empty-sun-arc',
+    'color-grid-empty-quiet-check',
+    'color-grid-empty-corner-orbit',
+    'color-grid-empty-thin-stripes',
+    'color-grid-empty-color-field',
+    'color-grid-empty-half-moon',
+    'color-grid-empty-mini-swatch',
+    'color-grid-empty-window-light',
+    'color-grid-empty-soft-noise',
+    'color-grid-empty-paper-note',
+    'color-grid-empty-split-tone',
+    'color-grid-empty-corner-ticket',
+    'color-grid-empty-pencil-grid',
+    'color-grid-empty-soft-rings',
+    'color-grid-empty-mini-label',
+    'color-grid-empty-diagonal-block',
+    'color-grid-empty-quiet-spark',
+    'color-grid-empty-blurred-wash',
+    'color-grid-empty-thin-frame',
+  ],
   theme: {
     extend: {
       colors: {

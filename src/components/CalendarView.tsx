@@ -12,12 +12,6 @@ import { DEFAULT_STORY_DESIGN, normalizeTemplateId, parseStoryStickers } from '@
 import { cn } from '@/lib/utils'
 import type { Locale, Post } from '@/types'
 
-const calendarPalette = ['#F7B4B2', '#F6D889', '#F6B99D', '#B8DDD2', '#C2DDF0', '#D3C7EC', '#E1E0A8', '#F3C8CA', '#B7E3D7']
-
-function calendarTint(day: number) {
-  return calendarPalette[(day - 1) % calendarPalette.length]
-}
-
 type CalendarViewProps = {
   locale: Locale
   posts: Post[]
@@ -34,6 +28,7 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
   const streak = getCurrentStreak(posts)
+  const todayKey = getLocalDateKey()
   const selectedStoryData = selectedPost
     ? {
         dateLabel: formatDisplayDate(selectedPost.local_date, localeCode),
@@ -117,6 +112,7 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
             const key = getLocalDateKey(day)
             const post = postsByDate.get(key)
             const isCurrentMonth = day.getMonth() === visibleMonth.getMonth()
+            const isFuture = key > todayKey
             const isSelected = key === selectedDate
 
             return (
@@ -128,8 +124,9 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
                   isSelected && 'calendar-day-selected',
                   !isCurrentMonth && 'calendar-day-muted',
                   !post && 'calendar-day-empty',
+                  isFuture && 'calendar-day-future',
                 )}
-                style={isCurrentMonth ? ({ '--calendar-color': post ? post.mission_hex : calendarTint(day.getDate()) } as CSSProperties) : undefined}
+                style={isCurrentMonth && post && !isFuture ? ({ '--calendar-color': post.mission_hex } as CSSProperties) : undefined}
                 onClick={() => {
                   setSelectedDate(key)
                   setShowStoryStudio(false)

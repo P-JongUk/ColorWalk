@@ -6,7 +6,7 @@ describe('story helpers', () => {
   it('normalizes unknown template ids', () => {
     expect(normalizeTemplateId('passport')).toBe('soft-passport')
     expect(normalizeTemplateId('life-cut')).toBe('life-cut')
-    expect(normalizeTemplateId('unknown')).toBe('soft-passport')
+    expect(normalizeTemplateId('unknown')).toBe('modern-grid')
     expect(STORY_TEMPLATES).toHaveLength(8)
   })
 

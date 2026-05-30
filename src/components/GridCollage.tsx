@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { Plus } from 'lucide-react'
 
 import { GRID_ALL_SLOTS, GRID_CENTER_SLOT, getGridImageUrl } from '@/lib/grid'
+import { getGridFillerVariant } from '@/lib/gridFillers'
 import { cn } from '@/lib/utils'
 import type { GridDraftImage, GridImage, Locale } from '@/types'
 
@@ -58,7 +59,7 @@ export function GridCollage({
           <button
             key={slot}
             type="button"
-            className="color-grid-empty"
+            className={cn('color-grid-empty', `color-grid-empty-${getGridFillerVariant(missionHex, slot)}`)}
             onClick={onEmptyClick}
             disabled={!onEmptyClick}
             aria-label={locale === 'ko' ? '사진 추가' : 'Add photo'}

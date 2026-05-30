@@ -8,6 +8,7 @@ import { InviteGate } from '@/components/InviteGate'
 import { TodayView } from '@/components/TodayView'
 import { hasBetaAccess, isBetaGateEnabled } from '@/lib/betaGate'
 import { getLocalDateKey } from '@/lib/date'
+import { clearCachedDraft, loadCachedDraft, saveCachedDraft } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { getRandomMission } from '@/lib/mission'
@@ -18,6 +19,7 @@ import { useColorWalkStore } from '@/store/useColorWalkStore'
 import type { GridImage, Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
+const MISSION_SHUFFLE_PREFIX = 'colorwalk:mission-shuffle-count'
 
 const CalendarView = lazy(() => import('@/components/CalendarView').then((module) => ({ default: module.CalendarView })))
 const CameraView = lazy(() => import('@/components/CameraView').then((module) => ({ default: module.CameraView })))
@@ -83,8 +85,16 @@ function App() {
 
     async function boot() {
       try {
-        const nextMission = await loadTodayMission(locale)
+        const [nextMission, cachedDraft] = await Promise.all([
+          loadTodayMission(locale),
+          loadCachedDraft(),
+        ])
         if (!isMounted) return
+        if (cachedDraft) {
+          setDraft(cachedDraft)
+          setMission(cachedDraft.mission, nextMission.usedFallbackLocation)
+          return
+        }
         setMission(nextMission.mission, nextMission.usedFallbackLocation)
       } catch {
         toast.error(t(locale, 'loadingMission'))
@@ -96,7 +106,7 @@ function App() {
     return () => {
       isMounted = false
     }
-  }, [locale, setMission])
+  }, [locale, setDraft, setMission])
 
   useEffect(() => {
     let isMounted = true
@@ -192,7 +202,13 @@ function App() {
     setProfile(null)
     setPosts([])
     setDraft(null)
+    void clearCachedDraft()
     setActiveTab('today')
+  }
+
+  function handleDraftChange(nextDraft: typeof draft) {
+    setDraft(nextDraft)
+    void saveCachedDraft(nextDraft)
   }
 
   async function saveEntry({
@@ -208,6 +224,7 @@ function App() {
   }) {
     if (!mission || !draft || draft.gridImages.length === 0) return
 
+    const activeMission = draft.mission ?? mission
     const localDate = getLocalDateKey()
     const existingTodayPost = posts.find((post) => post.local_date === localDate)
 
@@ -232,18 +249,18 @@ function App() {
         const payload = {
           user_id: session.user.id,
           local_date: localDate,
-          mission_hex: mission.hex,
-          captured_hex: mission.hex,
+          mission_hex: activeMission.hex,
+          captured_hex: activeMission.hex,
           match_rate: 0,
           image_path: imagePath,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
           locale,
-          weather_code: mission.weatherCode ?? null,
-          weather_group: mission.weatherGroup,
-          time_bucket: mission.timeBucket,
-          mission_label: mission.label[locale],
-          mission_prompt: mission.prompt[locale],
+          weather_code: activeMission.weatherCode ?? null,
+          weather_group: activeMission.weatherGroup,
+          time_bucket: activeMission.timeBucket,
+          mission_label: activeMission.label[locale],
+          mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
           location_name: location?.name || null,
           location_latitude: location?.latitude ?? null,
@@ -296,19 +313,19 @@ function App() {
           user_id: 'local',
           created_at: new Date().toISOString(),
           local_date: localDate,
-          mission_hex: mission.hex,
-          captured_hex: mission.hex,
+          mission_hex: activeMission.hex,
+          captured_hex: activeMission.hex,
           match_rate: 0,
           image_path: primaryImage,
           signedImageUrl: primaryImage,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
           locale,
-          weather_code: mission.weatherCode ?? null,
-          weather_group: mission.weatherGroup,
-          time_bucket: mission.timeBucket,
-          mission_label: mission.label[locale],
-          mission_prompt: mission.prompt[locale],
+          weather_code: activeMission.weatherCode ?? null,
+          weather_group: activeMission.weatherGroup,
+          time_bucket: activeMission.timeBucket,
+          mission_label: activeMission.label[locale],
+          mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
           location_name: location?.name || null,
           location_latitude: location?.latitude ?? null,
@@ -332,6 +349,7 @@ function App() {
       }
 
       setDraft(null)
+      void clearCachedDraft()
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
     } catch (error) {
@@ -344,12 +362,32 @@ function App() {
 
   function shuffleMission() {
     if (!mission) return
+    const localDate = getLocalDateKey()
+    const hasCapturedToday = Boolean(draft?.gridImages.length) || posts.some((post) => post.local_date === localDate)
+
+    if (hasCapturedToday) {
+      toast.message(
+        locale === 'ko'
+          ? '사진을 찍은 뒤에는 오늘의 색을 바꿀 수 없어요.'
+          : "Today's color is locked after you start capturing.",
+      )
+      return
+    }
+
+    const storageKey = `${MISSION_SHUFFLE_PREFIX}:${localDate}`
+    const storedCount = Number(localStorage.getItem(storageKey) ?? '0')
+    const count = Number.isFinite(storedCount) ? Math.max(0, storedCount) : 0
+    const broaden = count >= 4
 
     setMission(
-      getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode),
+      getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode, {
+        broaden,
+        excludeId: mission.id,
+      }),
       usedFallbackLocation,
     )
-    toast.success(locale === 'ko' ? '오늘의 색을 다시 골랐어요.' : "Today's color was shuffled.")
+    localStorage.setItem(storageKey, String(count + 1))
+    toast.success(locale === 'ko' ? (broaden ? '전체 팔레트에서 새 색을 골랐어요.' : '오늘 날씨에 맞는 다른 색을 골랐어요.') : "Today's color was shuffled.")
   }
 
   const content = (() => {
@@ -360,9 +398,9 @@ function App() {
           mission={mission}
           initialDraft={draft}
           onBack={() => setActiveTab('today')}
-          onDraftChange={setDraft}
+          onDraftChange={handleDraftChange}
           onComplete={(nextDraft) => {
-            setDraft(nextDraft)
+            handleDraftChange(nextDraft)
             setActiveTab('journal')
           }}
         />
@@ -409,6 +447,7 @@ function App() {
         onStartCamera={() => setActiveTab('camera')}
         onToggleLocale={toggleLocale}
         onShuffleMission={shuffleMission}
+        canShuffleMission={!draft?.gridImages.length && !posts.some((post) => post.local_date === getLocalDateKey())}
       />
     )
   })()

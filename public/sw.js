@@ -1,4 +1,4 @@
-const CACHE_NAME = 'colorwalk-shell-v3-grid'
+const CACHE_NAME = 'colorwalk-shell-v4-grid-polish'
 const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.png', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/brand/colorwalk-mark.png']
 
 self.addEventListener('install', (event) => {

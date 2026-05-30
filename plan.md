@@ -97,10 +97,10 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 ### Streak Badge Reward System
 - Product principle: streak badges are not scores or pressure mechanics. They are creative keys that unlock prettier ways to remember and share the colors the user already collected.
 - Preferred reward loop:
-  - 3 days: tiny doodle stickers, sparkle marks, seed/leaf stamps.
-  - 7 days: weekly color passport stamp, "Color Walk Week" sticker, one soft story decoration.
-  - 14 days: ticket corner details, collection frame, richer color-name sticker.
-  - 30 days: signature clover mark sticker, premium-feeling story frame, monthly passport stamp.
+  - 3 days: extra empty-grid filler patterns, tiny marks, seed/leaf stamps.
+  - 7 days: weekly grid seal, "Color Walk Week" stamp, one soft export detail.
+  - 14 days: modern grid border, collection frame, richer color-name label.
+  - 30 days: signature clover seal, premium-feeling grid frame, monthly passport stamp.
 - Why a badge matters:
   - It should give the user a visible creative benefit, not just a number.
   - It should make the story editor, profile, history detail, or monthly recap feel more personal.
@@ -114,7 +114,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 - Maintenance rule: whenever the core capture/story/profile/monetization feature changes, update the reward mapping with it so streak milestones keep unlocking creative memory tools rather than becoming a stale counter.
 - Living-system rule: do not hard-code the current badge UI as the product loop. The stable loop is `saved color-walk activity -> milestone -> creative unlock -> story/profile memory`. If ColorWalk changes from one-photo capture to 3x3 grids, monthly recap, travel mode, or paid template packs, remap each milestone to the closest useful free creative item instead of deleting the reward meaning.
 - Feature-change contract:
-  - If the story editor changes, remap badge rewards to the new sticker/template/export surfaces.
+  - If the story editor changes, remap badge rewards to the new filler/frame/export surfaces.
   - If the profile changes, keep badge stamps or identity labels visible somewhere personal.
   - If the monthly shelf is removed, preserve the same memory value through a badge detail sheet or recap story.
   - If paid packs are added, earned badge rewards must remain genuinely useful free creative items.

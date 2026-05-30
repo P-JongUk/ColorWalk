@@ -21,11 +21,10 @@ export function getCurrentSavedLocation(): Promise<SavedLocation> {
       },
       () => reject(new Error('Location permission was denied')),
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         maximumAge: 1000 * 60 * 5,
-        timeout: 9000,
+        timeout: 12000,
       },
     )
   })
 }
-

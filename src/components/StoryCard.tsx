@@ -6,6 +6,9 @@ import { getStickerDefinition, getStoryTemplate } from '@/lib/story'
 import { cn } from '@/lib/utils'
 import type { GridDraftImage, GridImage, Locale, StoryStickerItem, StoryTemplateId } from '@/types'
 
+const SHOW_STORY_BRANDING = false
+const SHOW_STORY_DECORATIONS = false
+
 export type StoryCardData = {
   locale: Locale
   templateId: StoryTemplateId
@@ -52,7 +55,6 @@ export function StoryCard({
       <div className="story-frame-line" aria-hidden="true" />
       <header className="story-grid-header">
         <div>
-          <small>COLORWALK</small>
           <strong>{title}</strong>
         </div>
         <span>{dateLabel}</span>
@@ -73,12 +75,14 @@ export function StoryCard({
         {placeName ? <span>{placeName}</span> : null}
       </div>
 
-      <footer className="story-footer-mark">
-        <ColorWalkMark compact className="text-coral" />
-        <span>ColorWalk</span>
-      </footer>
+      {SHOW_STORY_BRANDING ? (
+        <footer className="story-footer-mark">
+          <ColorWalkMark compact className="text-coral" />
+          <span>ColorWalk</span>
+        </footer>
+      ) : null}
 
-      {stickers.map((sticker) => {
+      {SHOW_STORY_DECORATIONS ? stickers.map((sticker) => {
         const definition = getStickerDefinition(sticker.stickerId)
         return (
           <button
@@ -101,7 +105,7 @@ export function StoryCard({
             <img src={definition.assetUrl} alt="" draggable={false} />
           </button>
         )
-      })}
+      }) : null}
     </div>
   )
 }

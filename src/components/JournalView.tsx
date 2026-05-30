@@ -92,7 +92,13 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
 
     try {
       const nextLocation = await getCurrentSavedLocation()
-      setLocation(nextLocation)
+      const fallbackName = locale === 'ko' ? '현재 위치' : 'Current location'
+      const namedLocation = {
+        ...nextLocation,
+        name: nextLocation.name || fallbackName,
+      }
+      if (!placeName.trim()) setPlaceName(fallbackName)
+      setLocation(namedLocation)
     } catch {
       setLocationError(locale === 'ko' ? '위치 권한이 꺼져 있어요. 장소 이름만 저장할 수 있어요.' : 'Location permission is off. You can still save a place name.')
     } finally {

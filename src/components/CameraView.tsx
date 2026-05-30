@@ -18,8 +18,9 @@ type CameraViewProps = {
   onComplete: (draft: CaptureDraft) => void
 }
 
-function buildDraft(images: GridDraftImage[], compression?: CaptureDraft['compression']): CaptureDraft {
+function buildDraft(mission: Mission, images: GridDraftImage[], compression?: CaptureDraft['compression']): CaptureDraft {
   return {
+    mission,
     gridImages: images,
     abuseWarning: false,
     compression,
@@ -93,7 +94,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }, [facingMode, locale])
 
   function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
-    const nextDraft = buildDraft(nextImages, compression)
+    const nextDraft = buildDraft(mission, nextImages, compression)
     setImages(nextImages)
     onDraftChange(nextDraft)
     if (nextImages.length === MAX_GRID_IMAGES) {
@@ -263,7 +264,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
             type="button"
             className="camera-done-button"
             disabled={!canComplete}
-            onClick={() => onComplete(buildDraft(images))}
+            onClick={() => onComplete(buildDraft(mission, images))}
           >
             <Check data-icon="inline-start" aria-hidden="true" />
             {locale === 'ko' ? '저널 쓰기' : 'Write journal'}

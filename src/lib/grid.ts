@@ -1,7 +1,7 @@
 import type { GridDraftImage, GridImage, GridImageSource, Post } from '@/types'
 
 export const GRID_CENTER_SLOT = 4
-export const GRID_PHOTO_SLOTS = [0, 8, 2, 6, 1, 3, 7, 5] as const
+export const GRID_PHOTO_SLOTS = [0, 1, 2, 3, 5, 6, 7, 8] as const
 export const GRID_ALL_SLOTS = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
 export const MAX_GRID_IMAGES = GRID_PHOTO_SLOTS.length
 

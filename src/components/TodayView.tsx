@@ -21,6 +21,7 @@ type TodayViewProps = {
   onStartCamera: () => void
   onToggleLocale: () => void
   onShuffleMission: () => void
+  canShuffleMission: boolean
 }
 
 export function TodayView({
@@ -31,6 +32,7 @@ export function TodayView({
   posts,
   onStartCamera,
   onShuffleMission,
+  canShuffleMission,
 }: TodayViewProps) {
   const streak = getCurrentStreak(posts)
   const todayPost = posts.find((post) => post.local_date === getLocalDateKey())
@@ -47,9 +49,17 @@ export function TodayView({
       : Notification.permission
 
     if (permission === 'granted') {
-      new Notification('ColorWalk', {
-        body: locale === 'ko' ? '오늘의 컬러 산책을 잊지 않게 알려드릴게요.' : "We'll remind you to take a color walk.",
-      })
+      try {
+        new Notification('ColorWalk', {
+          body: locale === 'ko' ? '오늘의 컬러 산책을 잊지 않게 알려드릴게요.' : "We'll remind you to take a color walk.",
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'colorwalk-permission-check',
+        })
+      } catch {
+        toast.message(locale === 'ko' ? '알림 권한은 켜졌지만, 이 브라우저에서는 설치 후 알림이 표시돼요.' : 'Notifications are enabled, but this browser shows them after install.')
+        return
+      }
       toast.success(locale === 'ko' ? '알림 권한이 켜졌어요.' : 'Notifications are enabled.')
       return
     }
@@ -120,6 +130,7 @@ export function TodayView({
                 type="button"
                 className="mission-shuffle-button"
                 onClick={onShuffleMission}
+                disabled={!canShuffleMission}
                 aria-label={locale === 'ko' ? '오늘의 색 다시 고르기' : 'Shuffle today color'}
               >
                 <Shuffle aria-hidden="true" />

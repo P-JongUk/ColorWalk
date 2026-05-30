@@ -23,6 +23,7 @@ export type Mission = {
 }
 
 export type CaptureDraft = {
+  mission: Mission
   gridImages: GridDraftImage[]
   abuseWarning: boolean
   compression?: {

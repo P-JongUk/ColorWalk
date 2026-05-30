@@ -22,6 +22,9 @@ import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import type { Locale, StoryDesign, StoryStickerCategory, StoryStickerItem, StoryTemplateId } from '@/types'
 
+const STORY_DECORATION_TOOLS_ENABLED = false
+const SIMPLE_STORY_TEMPLATE_ID: StoryTemplateId = 'modern-grid'
+
 type StoryStudioProps = {
   locale: Locale
   data: Omit<StoryCardData, 'locale' | 'templateId'>
@@ -119,8 +122,8 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
   const exportRef = useRef<HTMLDivElement | null>(null)
   const cardBoundsRef = useRef<DOMRect | null>(null)
   const stickerIndexRef = useRef(0)
-  const [templateId, setTemplateId] = useState<StoryTemplateId>(initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId)
-  const [stickers, setStickers] = useState<StoryStickerItem[]>(initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers)
+  const [templateId, setTemplateId] = useState<StoryTemplateId>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId : SIMPLE_STORY_TEMPLATE_ID)
+  const [stickers, setStickers] = useState<StoryStickerItem[]>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers : [])
   const [selectedStickerUid, setSelectedStickerUid] = useState<string | null>(stickers[0]?.uid ?? null)
   const [activeCategory, setActiveCategory] = useState<StoryStickerCategory>('all')
   const [activeTemplateCategory, setActiveTemplateCategory] = useState<StoryTemplateCategory>('recommended')
@@ -256,7 +259,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           {...data}
           locale={locale}
           templateId={templateId}
-          stickers={stickers}
+          stickers={STORY_DECORATION_TOOLS_ENABLED ? stickers : []}
           exportRef={exportRef}
           selectedStickerUid={selectedStickerUid}
           onStickerPointerDown={beginDrag}
@@ -264,6 +267,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
         />
       </div>
 
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="template-gallery">
         <div className="template-tabs">
           {TEMPLATE_CATEGORIES.map((category) => (
@@ -295,6 +299,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           ))}
         </div>
       </div>
+      ) : null}
 
       <div className="story-export-actions">
         <Button type="button" variant="outline" onClick={() => void saveOrShare('download')}>
@@ -307,6 +312,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
         </Button>
       </div>
 
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="sticker-drawer">
         <label className="sticker-search">
           <Search aria-hidden="true" />
@@ -336,7 +342,9 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           })}
         </div>
       </div>
+      ) : null}
 
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="story-controls">
         <Button
           type="button"
@@ -381,6 +389,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           {t(locale, 'resetStickers')}
         </Button>
       </div>
+      ) : null}
     </section>
   )
 }
