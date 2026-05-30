@@ -164,6 +164,40 @@ async function fetchExistingSeedPostImagePaths(client, userId, localDates) {
   return collectImagePathsFromPosts(fallbackSelect.data ?? [])
 }
 
+async function fetchAllSeedPosts(client, userId) {
+  const fullSelect = await client
+    .from('posts')
+    .select('local_date,image_path,grid_images,client_meta')
+    .eq('user_id', userId)
+
+  const data = (() => {
+    if (!needsLegacyPostFallback(fullSelect.error)) {
+      if (fullSelect.error) throw fullSelect.error
+      return fullSelect.data ?? []
+    }
+
+    return null
+  })()
+
+  if (data) {
+    return data.filter((post) => {
+      const paths = collectImagePathsFromPosts([post])
+      return post.client_meta?.seed === true || paths.some((item) => item.includes('-seed-'))
+    })
+  }
+
+  const fallbackSelect = await client
+    .from('posts')
+    .select('local_date,image_path,client_meta')
+    .eq('user_id', userId)
+
+  if (fallbackSelect.error) throw fallbackSelect.error
+  return (fallbackSelect.data ?? []).filter((post) => {
+    const paths = collectImagePathsFromPosts([post])
+    return post.client_meta?.seed === true || paths.some((item) => item.includes('-seed-'))
+  })
+}
+
 const seedPosts = [
   {
     offset: 0,
@@ -302,6 +336,19 @@ async function main() {
   if (profileError) throw profileError
 
   const seedDates = seedPosts.map((seed) => toDateKey(seed.offset))
+  const allSeedPosts = await fetchAllSeedPosts(supabase, userId)
+  const staleSeedDates = allSeedPosts
+    .map((post) => post.local_date)
+    .filter((localDate) => localDate && !seedDates.includes(localDate))
+  if (staleSeedDates.length) {
+    const deleted = await supabase
+      .from('posts')
+      .delete()
+      .eq('user_id', userId)
+      .in('local_date', staleSeedDates)
+    if (deleted.error) throw deleted.error
+  }
+
   const existingPostImagePaths = await fetchExistingSeedPostImagePaths(supabase, userId, seedDates)
 
   const list = await supabase.storage.from('post-images').list(userId, { limit: 200 })

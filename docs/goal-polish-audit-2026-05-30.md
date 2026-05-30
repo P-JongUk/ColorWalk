@@ -27,6 +27,7 @@ This note records the evidence for the 12-item polish goal before commit and web
 - `npm run verify:supabase` passed: anonymous sign-in, anonymous write denial, profile upsert, color suggestions, storage upload/signed URL, post upsert/select, story metadata, grid metadata fallback, location metadata, post RLS denial, and storage RLS denial.
 - `npm run seed:test-account` passed for `colorwalk_test_01`.
 - `npm run cap:sync` passed after rebuilding.
+- Production QA after deployment logged into the shared beta account, opened history, verified signed storage URLs include tokens, and showed zero browser console errors after stale seed cleanup.
 
 ## Remaining launch note
 
