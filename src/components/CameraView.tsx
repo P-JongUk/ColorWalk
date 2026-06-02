@@ -32,10 +32,17 @@ type CameraCapabilities = MediaTrackCapabilities & {
   zoom?: { min?: number; max?: number; step?: number }
 }
 
+function shouldUseNativeCameraFileCapture() {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false
+
+  return window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0
+}
+
 export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const backdropVideoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const cameraFileInputRef = useRef<HTMLInputElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const [images, setImages] = useState<GridDraftImage[]>(() => initialDraft?.gridImages ?? [])
   const [error, setError] = useState<string | null>(null)
@@ -161,6 +168,11 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }
 
   async function capture() {
+    if (shouldUseNativeCameraFileCapture()) {
+      cameraFileInputRef.current?.click()
+      return
+    }
+
     if (!videoRef.current) return
     const [track] = streamRef.current?.getVideoTracks() ?? []
     if (!track) return
@@ -169,7 +181,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     await addBlobToGrid(photo.blob, photo, 'camera')
   }
 
-  async function captureFromAlbum(file: File) {
+  async function captureFromFile(file: File, source: 'camera' | 'album') {
     if (!file.type.startsWith('image/')) {
       setError(t(locale, 'imageOnly'))
       return
@@ -177,7 +189,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
     try {
       const image = await fileToDraftImageBlob(file)
-      await addBlobToGrid(image.blob, image, 'album')
+      await addBlobToGrid(image.blob, image, source)
     } catch {
       setError(t(locale, 'imageLoadFailed'))
     }
@@ -217,7 +229,19 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         onChange={(event) => {
           const file = event.currentTarget.files?.[0]
           event.currentTarget.value = ''
-          if (file) void captureFromAlbum(file)
+          if (file) void captureFromFile(file, 'album')
+        }}
+      />
+      <input
+        ref={cameraFileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0]
+          event.currentTarget.value = ''
+          if (file) void captureFromFile(file, 'camera')
         }}
       />
       <div className="camera-vignette" />
