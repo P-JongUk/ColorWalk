@@ -9270,3 +9270,201 @@
     box-shadow: none !important;
   }
 }
+
+@layer components {
+  .camera-video-backdrop {
+    object-fit: cover !important;
+    opacity: .78 !important;
+    filter: blur(18px) saturate(1.08) brightness(.78) !important;
+    transform: scale(1.06) !important;
+  }
+
+  .camera-video {
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+    filter: saturate(1.04) contrast(1.02) !important;
+  }
+
+  .camera-vignette {
+    background:
+      linear-gradient(180deg, rgba(6, 8, 7, .4) 0%, transparent 22%, transparent 61%, rgba(6, 8, 7, .62) 100%),
+      radial-gradient(circle at 50% 38%, transparent 0 44%, rgba(6, 8, 7, .22) 100%) !important;
+  }
+
+  .camera-grid-ghost {
+    display: none !important;
+  }
+
+  .camera-grid-card {
+    grid-template-columns: minmax(0, 1fr) 88px !important;
+    gap: 13px !important;
+    border: 1px solid rgba(255, 253, 248, .48) !important;
+    border-radius: 28px !important;
+    padding: 12px 12px 12px 15px !important;
+    background: rgba(255, 253, 248, .76) !important;
+    box-shadow: 0 24px 52px rgba(6, 8, 7, .24) !important;
+    backdrop-filter: blur(24px) saturate(1.22);
+  }
+
+  .camera-grid-card .color-grid {
+    width: 88px !important;
+    min-width: 88px !important;
+    border-radius: 15px !important;
+  }
+
+  .color-grid-camera .color-grid-chip {
+    display: block !important;
+    background: var(--grid-color) !important;
+  }
+
+  .color-grid-camera .color-grid-chip-color {
+    width: 100% !important;
+    height: 100% !important;
+    background: var(--grid-color) !important;
+  }
+
+  .color-grid-camera .color-grid-chip-label {
+    display: none !important;
+  }
+
+  .color-grid-camera .color-grid-empty svg {
+    display: none !important;
+  }
+
+  .camera-actions {
+    display: grid !important;
+    grid-template-columns: 64px minmax(0, 1fr) 64px !important;
+    align-items: center !important;
+    gap: 18px !important;
+    padding: 0 2px !important;
+  }
+
+  .camera-shutter {
+    justify-self: center !important;
+    width: 78px !important;
+    height: 78px !important;
+    border: 7px solid #fffdf8 !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, #fffdf8 0%, #f9f1e8 100%) !important;
+    box-shadow:
+      0 0 0 5px rgba(143, 205, 191, .88),
+      0 18px 38px rgba(6, 8, 7, .26) !important;
+  }
+
+  .camera-done-button {
+    height: 51px !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+  }
+
+  .story-card {
+    width: min(72vw, 286px) !important;
+    border: 1px solid rgba(43, 38, 33, .09) !important;
+    border-radius: 24px !important;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255, 255, 255, .82) 0 12%, transparent 26%),
+      linear-gradient(180deg, #fffdf8 0%, #f6f0e8 100%) !important;
+    box-shadow: 0 22px 52px rgba(36, 31, 26, .14) !important;
+  }
+
+  .story-card-grid {
+    gap: 16px !important;
+    padding: 28px 20px 24px !important;
+  }
+
+  .story-grid-header strong {
+    display: -webkit-box !important;
+    max-width: 174px !important;
+    overflow: hidden !important;
+    color: #211d19 !important;
+    font-size: clamp(17px, 4.8vw, 20px) !important;
+    font-weight: 700 !important;
+    line-height: 1.13 !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .story-card .color-grid-story {
+    --grid-gap: 5px;
+    width: 100% !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: rgba(255, 253, 248, .92) !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .story-card .color-grid-chip,
+  .grid-export-card .color-grid-chip {
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) 34px !important;
+    background: #fffaf2 !important;
+  }
+
+  .story-card .color-grid-chip-color,
+  .grid-export-card .color-grid-chip-color {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: var(--grid-color) !important;
+  }
+
+  .story-card .color-grid-chip-label,
+  .grid-export-card .color-grid-chip-label {
+    display: flex !important;
+    min-height: 0 !important;
+    justify-content: center !important;
+    gap: 1px !important;
+    padding: 5px 6px !important;
+    background: rgba(255, 253, 248, .98) !important;
+    font-family: 'Sunghyun Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+    line-height: 1.05 !important;
+  }
+
+  .story-card .color-grid-chip-label strong,
+  .grid-export-card .color-grid-chip-label strong {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    color: #211d19 !important;
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .story-card .color-grid-chip-label span,
+  .grid-export-card .color-grid-chip-label span {
+    color: #70675e !important;
+    font-size: 8px !important;
+    font-weight: 400 !important;
+  }
+
+  .story-export-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 2px !important;
+  }
+
+  .grid-export-card .color-grid-chip {
+    grid-template-rows: minmax(0, 1fr) 42px !important;
+  }
+
+  .grid-export-card .color-grid-chip-label {
+    padding: 7px 9px !important;
+  }
+
+  .grid-export-card .color-grid-chip-label strong {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+  }
+
+  .grid-export-card .color-grid-chip-label span {
+    font-size: 10px !important;
+    font-weight: 400 !important;
+  }
+}

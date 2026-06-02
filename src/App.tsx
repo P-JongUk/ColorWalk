@@ -4,9 +4,7 @@ import type { Session } from '@supabase/supabase-js'
 
 import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
-import { InviteGate } from '@/components/InviteGate'
 import { TodayView } from '@/components/TodayView'
-import { hasBetaAccess, isBetaGateEnabled } from '@/lib/betaGate'
 import { getLocalDateKey } from '@/lib/date'
 import { clearCachedDraft, loadCachedDraft, saveCachedDraft } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
@@ -57,7 +55,6 @@ function App() {
   const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
   const [isSaving, setIsSaving] = useState(false)
   const [isLocalOnly, setIsLocalOnly] = useState(!isSupabaseConfigured)
-  const [betaUnlocked, setBetaUnlocked] = useState(() => hasBetaAccess())
 
   async function hydrateAuthenticatedSession(nextSession: Session) {
     if (nextSession.user.is_anonymous) {
@@ -453,16 +450,6 @@ function App() {
   })()
 
   const showNav = activeTab !== 'camera'
-
-  if (isBetaGateEnabled() && !betaUnlocked) {
-    return (
-      <div className="phone-shell flex justify-center">
-        <div className="app-frame">
-          <InviteGate locale={locale} onUnlock={() => setBetaUnlocked(true)} />
-        </div>
-      </div>
-    )
-  }
 
   if (isSupabaseConfigured && isAuthLoading) {
     return (

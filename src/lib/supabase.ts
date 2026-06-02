@@ -8,7 +8,7 @@ import type { GridImage, Locale, Post, ProfileGender, UserProfile } from '@/type
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
 const authEmailDomain = (import.meta.env.VITE_AUTH_EMAIL_DOMAIN as string | undefined) || 'gmail.com'
-const MAX_UPLOAD_BYTES = 420 * 1024
+const MAX_UPLOAD_BYTES = 500 * 1024
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey)
 
@@ -135,7 +135,6 @@ export async function signUpWithUsername({
   gender,
   birthYear,
   locale,
-  inviteCode,
 }: {
   username: string
   password: string
@@ -143,7 +142,6 @@ export async function signUpWithUsername({
   gender: ProfileGender
   birthYear: number
   locale: Locale
-  inviteCode?: string
 }) {
   if (!supabase) throw new Error('Supabase is not configured')
 
@@ -161,7 +159,6 @@ export async function signUpWithUsername({
       gender,
       birthYear,
       locale,
-      inviteCode,
     },
   })
 

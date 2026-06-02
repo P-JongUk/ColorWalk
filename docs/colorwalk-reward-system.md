@@ -172,6 +172,15 @@ Candidate English labels:
 
 The current app can derive streaks from `posts.local_date`. Future reward logic should continue to use persisted posts as the source of truth.
 
+Current beta implementation:
+
+- Milestones are fixed at 3, 7, 14, and 30.
+- `getCurrentStreak(posts)` counts consecutive saved `posts.local_date` values backward from today.
+- `getCompletedGridCount(posts)` counts saved posts with 8 or more grid images.
+- `getUnlockedBadges(streak, posts)` unlocks a milestone when either the current streak reaches the milestone or the user has completed that many full 3x3 grids.
+- This means a user can unlock rewards through daily consistency or through enough completed color grids, but the unlock still comes from persisted posts rather than a fragile local counter.
+- Current visible rewards are still mostly labels and badge states. The next product step should make each unlocked milestone visibly usable in story/export/profile surfaces.
+
 Potential helper shape:
 
 ```ts

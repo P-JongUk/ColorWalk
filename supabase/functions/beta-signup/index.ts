@@ -14,7 +14,6 @@ type SignupBody = {
   gender?: unknown
   birthYear?: unknown
   locale?: unknown
-  inviteCode?: unknown
 }
 
 type ProfileGender = 'female' | 'male' | 'nonbinary' | 'prefer_not_to_say'
@@ -66,11 +65,6 @@ function parseBirthYear(value: unknown) {
 }
 
 function validateBody(body: SignupBody) {
-  const configuredInviteCode = Deno.env.get('COLORWALK_BETA_INVITE_CODE')?.trim()
-  if (configuredInviteCode && String(body.inviteCode ?? '').trim() !== configuredInviteCode) {
-    throw new Error('초대 코드가 맞지 않아요.')
-  }
-
   const username = normalizeUsername(body.username)
   const password = String(body.password ?? '')
   const nickname = normalizeNickname(body.nickname)

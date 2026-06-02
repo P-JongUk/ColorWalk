@@ -277,7 +277,6 @@ async function main() {
 
   const url = process.env.VITE_SUPABASE_URL
   const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY
-  const inviteCode = process.env.VITE_BETA_INVITE_CODE
   const testAccount = getTestAccount()
 
   if (!url || !key) throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY.')
@@ -305,7 +304,6 @@ async function main() {
         gender: testAccount.gender,
         birthYear: testAccount.birthYear,
         locale: testAccount.locale,
-        inviteCode,
       },
     })
 

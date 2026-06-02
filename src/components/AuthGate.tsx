@@ -5,7 +5,6 @@ import { LockKeyhole, Sparkles, UserRound } from 'lucide-react'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { getStoredInviteCode } from '@/lib/betaGate'
 import { normalizeUsername, signInWithUsername, signUpWithUsername } from '@/lib/supabase'
 import type { Locale, ProfileGender } from '@/types'
 
@@ -44,7 +43,6 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
               gender,
               birthYear: Number(birthYear),
               locale,
-              inviteCode: getStoredInviteCode(),
             })
           : await signInWithUsername(username, password, locale)
 

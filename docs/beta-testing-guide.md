@@ -10,11 +10,9 @@
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_PUBLISHABLE_KEY`
    - `VITE_AUTH_EMAIL_DOMAIN`
-   - `VITE_BETA_INVITE_CODE`
-2. `VITE_BETA_INVITE_CODE`를 켜면 초대 코드를 아는 친구만 입장할 수 있습니다.
-3. Supabase Auth에서 Email provider가 켜져 있어야 합니다.
-4. `beta-signup` Edge Function이 배포되어 있어야 합니다. 서비스 롤 키는 이 함수 안에서만 사용합니다.
-5. 친구는 링크 접속 후 초대 코드, 회원가입 또는 로그인, 카메라 권한 허용 순서로 사용할 수 있습니다.
+2. Supabase Auth에서 Email provider가 켜져 있어야 합니다.
+3. `beta-signup` Edge Function이 배포되어 있어야 합니다. 서비스 롤 키는 이 함수 안에서만 사용합니다.
+4. 친구는 링크 접속 후 회원가입 또는 로그인, 카메라 권한 허용 순서로 사용할 수 있습니다.
 
 PWA 설치:
 
@@ -35,7 +33,6 @@ npm run seed:test-account
 
 ## 3. 핵심 QA 흐름
 
-- 초대 코드 입력
 - 회원가입 또는 로그인
 - 홈에서 오늘의 무드 컬러 확인
 - 카메라 권한 허용

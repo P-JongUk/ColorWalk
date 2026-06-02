@@ -48,7 +48,6 @@ Required browser env vars:
 VITE_SUPABASE_URL
 VITE_SUPABASE_PUBLISHABLE_KEY
 VITE_AUTH_EMAIL_DOMAIN
-VITE_BETA_INVITE_CODE
 ```
 
 Only publishable Supabase keys may be used in Vite/browser code. Service role keys are allowed only in Supabase Edge Functions or local admin tooling and must never be committed.
@@ -56,7 +55,7 @@ Only publishable Supabase keys may be used in Vite/browser code. Service role ke
 ## Live Web Beta
 
 - URL: `https://colorwalk-tau.vercel.app`
-- Invite code: `colorwalk-friends`
+- Browser invite gate: disabled. Use the username/password beta account flow.
 - Vercel project: `parkjonguks-projects/colorwalk`
 
 For local Vercel CLI work, keep Vercel config/cache on D because the C drive can be full:
@@ -117,6 +116,6 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## Release Rules
 
 - PWA must be served over HTTPS for camera/location/install behavior.
-- Invite code is a friend-only beta gate, not security.
+- The browser invite-code gate is disabled; do not reintroduce it unless the product direction changes.
 - Browser build must not expose service role keys or local private docs.
 - Before sharing a URL, run lint/test/build/Supabase verification and one browser QA path from login to story export.

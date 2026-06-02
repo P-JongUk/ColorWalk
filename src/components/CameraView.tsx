@@ -29,6 +29,7 @@ function buildDraft(mission: Mission, images: GridDraftImage[], compression?: Ca
 
 export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const backdropVideoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const [images, setImages] = useState<GridDraftImage[]>(() => initialDraft?.gridImages ?? [])
@@ -55,12 +56,15 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
         let stream: MediaStream
         try {
+          const videoConstraints = {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1440 },
+            height: { ideal: 2560 },
+            aspectRatio: { ideal: 9 / 16 },
+            resizeMode: { ideal: 'none' },
+          } as MediaTrackConstraints
           stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { ideal: facingMode },
-              width: { ideal: 1280 },
-              height: { ideal: 1920 },
-            },
+            video: videoConstraints,
             audio: false,
           })
         } catch {
@@ -71,6 +75,11 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         }
         if (!isMounted) return
         streamRef.current = stream
+
+        if (backdropVideoRef.current) {
+          backdropVideoRef.current.srcObject = stream
+          await backdropVideoRef.current.play()
+        }
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream
@@ -110,7 +119,12 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
     setIsCapturing(true)
     try {
-      const compressed = await compressCanvasToWebP(canvas)
+      const compressed = await compressCanvasToWebP(canvas, {
+        maxWidth: 1440,
+        targetBytes: 420 * 1024,
+        minWidth: 900,
+        minQuality: 0.6,
+      })
       const previewUrl = URL.createObjectURL(compressed.blob)
       const nextImage: GridDraftImage = {
         id: crypto.randomUUID(),
@@ -138,7 +152,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
   async function capture() {
     if (!videoRef.current) return
-    await addCanvasToGrid(drawVideoToCanvas(videoRef.current), 'camera')
+    await addCanvasToGrid(drawVideoToCanvas(videoRef.current, 1440), 'camera')
   }
 
   async function captureFromAlbum(file: File) {
@@ -148,7 +162,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     }
 
     try {
-      await addCanvasToGrid(await drawImageFileToCanvas(file), 'album')
+      await addCanvasToGrid(await drawImageFileToCanvas(file, 1440), 'album')
     } catch {
       setError(t(locale, 'imageLoadFailed'))
     }
@@ -174,7 +188,12 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
   return (
     <main className="camera-screen">
-      {!error ? <video ref={videoRef} className="absolute inset-0 size-full object-cover" playsInline muted /> : null}
+      {!error ? (
+        <>
+          <video ref={backdropVideoRef} className="camera-video-backdrop absolute inset-0 size-full" playsInline muted />
+          <video ref={videoRef} className="camera-video absolute inset-0 size-full" playsInline muted />
+        </>
+      ) : null}
       <input
         ref={fileInputRef}
         type="file"
@@ -219,14 +238,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
               {t(locale, 'today')}
             </Button>
           </div>
-        ) : (
-          <div className="camera-grid-ghost">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-        )}
+        ) : null}
       </div>
 
       {!error ? (

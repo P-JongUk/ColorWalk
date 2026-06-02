@@ -25,7 +25,15 @@ function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob>
   })
 }
 
-export function drawVideoToCanvas(video: HTMLVideoElement, maxWidth = 1080) {
+function getCanvasContext(canvas: HTMLCanvasElement) {
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Canvas is not available')
+  context.imageSmoothingEnabled = true
+  context.imageSmoothingQuality = 'high'
+  return context
+}
+
+export function drawVideoToCanvas(video: HTMLVideoElement, maxWidth = 1440) {
   const sourceWidth = video.videoWidth || 720
   const sourceHeight = video.videoHeight || 1280
   const ratio = Math.min(1, maxWidth / sourceWidth)
@@ -33,15 +41,13 @@ export function drawVideoToCanvas(video: HTMLVideoElement, maxWidth = 1080) {
   canvas.width = Math.round(sourceWidth * ratio)
   canvas.height = Math.round(sourceHeight * ratio)
 
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('Canvas is not available')
-
+  const context = getCanvasContext(canvas)
   context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
   return canvas
 }
 
-export function drawImageFileToCanvas(file: File, maxWidth = 1080): Promise<HTMLCanvasElement> {
+export function drawImageFileToCanvas(file: File, maxWidth = 1440): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const imageUrl = URL.createObjectURL(file)
     const image = new Image()
@@ -54,14 +60,13 @@ export function drawImageFileToCanvas(file: File, maxWidth = 1080): Promise<HTML
       canvas.width = Math.max(1, Math.round(image.naturalWidth * ratio))
       canvas.height = Math.max(1, Math.round(image.naturalHeight * ratio))
 
-      const context = canvas.getContext('2d')
-      if (!context) {
-        reject(new Error('Canvas is not available'))
-        return
+      try {
+        const context = getCanvasContext(canvas)
+        context.drawImage(image, 0, 0, canvas.width, canvas.height)
+        resolve(canvas)
+      } catch (error) {
+        reject(error)
       }
-
-      context.drawImage(image, 0, 0, canvas.width, canvas.height)
-      resolve(canvas)
     }
 
     image.onerror = () => {
@@ -77,20 +82,18 @@ export async function compressCanvasToWebP(
   source: HTMLCanvasElement,
   options: { maxWidth?: number; targetBytes?: number; minWidth?: number; minQuality?: number } = {},
 ): Promise<CompressedImage> {
-  const targetBytes = options.targetBytes ?? 320 * 1024
-  let maxWidth = options.maxWidth ?? 1080
-  const minWidth = options.minWidth ?? 640
-  const minQuality = options.minQuality ?? 0.5
-  let quality = 0.78
+  const targetBytes = options.targetBytes ?? 420 * 1024
+  let maxWidth = options.maxWidth ?? 1440
+  const minWidth = options.minWidth ?? 900
+  const minQuality = options.minQuality ?? 0.6
+  let quality = 0.84
 
   for (let attempt = 0; attempt < 14; attempt += 1) {
     const ratio = Math.min(1, maxWidth / source.width)
     const canvas = document.createElement('canvas')
     canvas.width = Math.max(1, Math.round(source.width * ratio))
     canvas.height = Math.max(1, Math.round(source.height * ratio))
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('Canvas is not available')
-
+    const context = getCanvasContext(canvas)
     context.drawImage(source, 0, 0, canvas.width, canvas.height)
 
     const blob = await canvasToBlob(canvas, quality)
@@ -105,10 +108,10 @@ export async function compressCanvasToWebP(
     }
 
     if (quality > minQuality) {
-      quality = Math.max(minQuality, quality - 0.06)
+      quality = Math.max(minQuality, quality - 0.05)
     } else {
-      maxWidth = Math.max(minWidth, Math.round(maxWidth * 0.84))
-      quality = 0.68
+      maxWidth = Math.max(minWidth, Math.round(maxWidth * 0.88))
+      quality = 0.72
     }
   }
 
@@ -116,7 +119,7 @@ export async function compressCanvasToWebP(
   const ratio = Math.min(1, minWidth / source.width)
   fallback.width = Math.max(1, Math.round(source.width * ratio))
   fallback.height = Math.max(1, Math.round(source.height * ratio))
-  fallback.getContext('2d')?.drawImage(source, 0, 0, fallback.width, fallback.height)
+  getCanvasContext(fallback).drawImage(source, 0, 0, fallback.width, fallback.height)
   const blob = await canvasToBlob(fallback, minQuality)
 
   return {
