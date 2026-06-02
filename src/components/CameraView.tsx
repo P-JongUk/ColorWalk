@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
-import { compressCanvasToWebP, drawImageFileToCanvas, drawVideoToCanvas } from '@/lib/image'
+import { capturePhotoBlob, fileToDraftImageBlob } from '@/lib/image'
 import { t } from '@/lib/i18n'
 import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
 import type { CaptureDraft, GridDraftImage, Locale, Mission } from '@/types'
@@ -25,6 +25,11 @@ function buildDraft(mission: Mission, images: GridDraftImage[], compression?: Ca
     abuseWarning: false,
     compression,
   }
+}
+
+type CameraCapabilities = MediaTrackCapabilities & {
+  torch?: boolean
+  zoom?: { min?: number; max?: number; step?: number }
 }
 
 export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
@@ -58,9 +63,8 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         try {
           const videoConstraints = {
             facingMode: { ideal: facingMode },
-            width: { ideal: 1440 },
-            height: { ideal: 2560 },
-            aspectRatio: { ideal: 9 / 16 },
+            width: { ideal: 4096 },
+            height: { ideal: 4096 },
             resizeMode: { ideal: 'none' },
           } as MediaTrackConstraints
           stream = await navigator.mediaDevices.getUserMedia({
@@ -87,7 +91,10 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         }
 
         const [track] = stream.getVideoTracks()
-        const capabilities = track?.getCapabilities?.() as MediaTrackCapabilities & { torch?: boolean }
+        const capabilities = track?.getCapabilities?.() as CameraCapabilities
+        if (capabilities?.zoom?.min !== undefined) {
+          await track.applyConstraints({ advanced: [{ zoom: capabilities.zoom.min } as MediaTrackConstraintSet] }).catch(() => undefined)
+        }
         setHasTorch(Boolean(capabilities?.torch))
       } catch {
         setError(t(locale, 'permissionDenied'))
@@ -111,7 +118,11 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     }
   }
 
-  async function addCanvasToGrid(canvas: HTMLCanvasElement, source: 'camera' | 'album') {
+  async function addBlobToGrid(
+    imageBlob: Blob,
+    imageMeta: { width: number; height: number; bytes: number; mimeType: string },
+    source: 'camera' | 'album',
+  ) {
     if (images.length >= MAX_GRID_IMAGES) {
       toast.message(locale === 'ko' ? '오늘 그리드는 이미 가득 찼어요.' : "Today's grid is already full.")
       return
@@ -119,31 +130,30 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
     setIsCapturing(true)
     try {
-      const compressed = await compressCanvasToWebP(canvas, {
-        maxWidth: 1440,
-        targetBytes: 420 * 1024,
-        minWidth: 900,
-        minQuality: 0.6,
-      })
-      const previewUrl = URL.createObjectURL(compressed.blob)
+      const previewUrl = URL.createObjectURL(imageBlob)
       const nextImage: GridDraftImage = {
         id: crypto.randomUUID(),
         slot: getNextGridSlot(images.length),
         previewUrl,
-        imageBlob: compressed.blob,
-        width: compressed.width,
-        height: compressed.height,
-        bytes: compressed.bytes,
-        quality: compressed.quality,
+        imageBlob,
+        width: imageMeta.width,
+        height: imageMeta.height,
+        bytes: imageMeta.bytes,
+        quality: null,
+        mimeType: imageMeta.mimeType,
+        originalWidth: imageMeta.width,
+        originalHeight: imageMeta.height,
+        originalBytes: imageMeta.bytes,
         source,
         createdAt: new Date().toISOString(),
       }
       commitImages([...images, nextImage], {
-        width: compressed.width,
-        height: compressed.height,
-        bytes: compressed.bytes,
-        quality: compressed.quality,
+        width: imageMeta.width,
+        height: imageMeta.height,
+        bytes: imageMeta.bytes,
+        quality: 1,
         source,
+        stage: 'draft',
       })
     } finally {
       setIsCapturing(false)
@@ -152,7 +162,11 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
   async function capture() {
     if (!videoRef.current) return
-    await addCanvasToGrid(drawVideoToCanvas(videoRef.current, 1440), 'camera')
+    const [track] = streamRef.current?.getVideoTracks() ?? []
+    if (!track) return
+
+    const photo = await capturePhotoBlob(track, videoRef.current)
+    await addBlobToGrid(photo.blob, photo, 'camera')
   }
 
   async function captureFromAlbum(file: File) {
@@ -162,7 +176,8 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     }
 
     try {
-      await addCanvasToGrid(await drawImageFileToCanvas(file, 1440), 'album')
+      const image = await fileToDraftImageBlob(file)
+      await addBlobToGrid(image.blob, image, 'album')
     } catch {
       setError(t(locale, 'imageLoadFailed'))
     }

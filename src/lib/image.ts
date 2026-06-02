@@ -9,7 +9,30 @@ export type CompressedImage = {
   bytes: number
 }
 
-function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+export type DraftImageBlob = {
+  blob: Blob
+  width: number
+  height: number
+  bytes: number
+  mimeType: string
+}
+
+type ImageCaptureLike = {
+  takePhoto: () => Promise<Blob>
+}
+
+type WindowWithImageCapture = Window & {
+  ImageCapture?: new (track: MediaStreamTrack) => ImageCaptureLike
+}
+
+export const HISTORY_UPLOAD_IMAGE_OPTIONS = {
+  maxWidth: 1440,
+  targetBytes: 420 * 1024,
+  minWidth: 900,
+  minQuality: 0.6,
+} as const
+
+function canvasToBlob(canvas: HTMLCanvasElement, quality: number, type = 'image/webp'): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
@@ -19,7 +42,7 @@ function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob>
         }
         resolve(blob)
       },
-      'image/webp',
+      type,
       quality,
     )
   })
@@ -33,13 +56,12 @@ function getCanvasContext(canvas: HTMLCanvasElement) {
   return context
 }
 
-export function drawVideoToCanvas(video: HTMLVideoElement, maxWidth = 1440) {
+export function drawVideoFrameToCanvas(video: HTMLVideoElement) {
   const sourceWidth = video.videoWidth || 720
   const sourceHeight = video.videoHeight || 1280
-  const ratio = Math.min(1, maxWidth / sourceWidth)
   const canvas = document.createElement('canvas')
-  canvas.width = Math.round(sourceWidth * ratio)
-  canvas.height = Math.round(sourceHeight * ratio)
+  canvas.width = sourceWidth
+  canvas.height = sourceHeight
 
   const context = getCanvasContext(canvas)
   context.drawImage(video, 0, 0, canvas.width, canvas.height)
@@ -47,18 +69,85 @@ export function drawVideoToCanvas(video: HTMLVideoElement, maxWidth = 1440) {
   return canvas
 }
 
-export function drawImageFileToCanvas(file: File, maxWidth = 1440): Promise<HTMLCanvasElement> {
+export function readImageDimensions(blob: Blob): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
-    const imageUrl = URL.createObjectURL(file)
+    const imageUrl = URL.createObjectURL(blob)
     const image = new Image()
 
     image.onload = () => {
       URL.revokeObjectURL(imageUrl)
+      resolve({
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      })
+    }
 
-      const ratio = Math.min(1, maxWidth / image.naturalWidth)
+    image.onerror = () => {
+      URL.revokeObjectURL(imageUrl)
+      reject(new Error('Could not read image dimensions'))
+    }
+
+    image.src = imageUrl
+  })
+}
+
+export async function canvasToDraftImageBlob(canvas: HTMLCanvasElement): Promise<DraftImageBlob> {
+  const blob = await canvasToBlob(canvas, 0.92, 'image/png')
+
+  return {
+    blob,
+    width: canvas.width,
+    height: canvas.height,
+    bytes: blob.size,
+    mimeType: blob.type || 'image/png',
+  }
+}
+
+export async function fileToDraftImageBlob(file: File): Promise<DraftImageBlob> {
+  const { width, height } = await readImageDimensions(file)
+
+  return {
+    blob: file,
+    width,
+    height,
+    bytes: file.size,
+    mimeType: file.type || 'image/*',
+  }
+}
+
+export async function capturePhotoBlob(track: MediaStreamTrack, video: HTMLVideoElement): Promise<DraftImageBlob> {
+  const ImageCaptureCtor = (window as WindowWithImageCapture).ImageCapture
+
+  if (ImageCaptureCtor) {
+    try {
+      const blob = await new ImageCaptureCtor(track).takePhoto()
+      const { width, height } = await readImageDimensions(blob)
+
+      return {
+        blob,
+        width,
+        height,
+        bytes: blob.size,
+        mimeType: blob.type || 'image/jpeg',
+      }
+    } catch {
+      // Some browsers expose ImageCapture but reject takePhoto for the active track.
+    }
+  }
+
+  return canvasToDraftImageBlob(drawVideoFrameToCanvas(video))
+}
+
+export async function blobToCanvas(blob: Blob): Promise<HTMLCanvasElement> {
+  return new Promise((resolve, reject) => {
+    const imageUrl = URL.createObjectURL(blob)
+    const image = new Image()
+
+    image.onload = () => {
+      URL.revokeObjectURL(imageUrl)
       const canvas = document.createElement('canvas')
-      canvas.width = Math.max(1, Math.round(image.naturalWidth * ratio))
-      canvas.height = Math.max(1, Math.round(image.naturalHeight * ratio))
+      canvas.width = Math.max(1, image.naturalWidth)
+      canvas.height = Math.max(1, image.naturalHeight)
 
       try {
         const context = getCanvasContext(canvas)
@@ -129,6 +218,10 @@ export async function compressCanvasToWebP(
     quality: minQuality,
     bytes: blob.size,
   }
+}
+
+export async function compressBlobToHistoryWebP(blob: Blob) {
+  return compressCanvasToWebP(await blobToCanvas(blob), HISTORY_UPLOAD_IMAGE_OPTIONS)
 }
 
 export function sampleVideoCenter(video: HTMLVideoElement) {

@@ -9,6 +9,7 @@ import { getLocalDateKey } from '@/lib/date'
 import { clearCachedDraft, loadCachedDraft, saveCachedDraft } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
+import { compressBlobToHistoryWebP } from '@/lib/image'
 import { getRandomMission } from '@/lib/mission'
 import { startWebReminderScheduler } from '@/lib/notifications'
 import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
@@ -238,10 +239,24 @@ function App() {
 
     try {
       if (supabase && session) {
-        const uploadPaths = await Promise.all(
-          draft.gridImages.map((image) => uploadPostImage(session.user.id, localDate, image.imageBlob)),
+        const compressedGridImages = await Promise.all(
+          draft.gridImages.map(async (image) => ({
+            source: image,
+            compressed: await compressBlobToHistoryWebP(image.imageBlob),
+          })),
         )
-        const gridImages = toStoredGridImages(draft.gridImages, uploadPaths)
+        const uploadPaths = await Promise.all(
+          compressedGridImages.map(({ compressed }) => uploadPostImage(session.user.id, localDate, compressed.blob)),
+        )
+        const uploadDraftImages = compressedGridImages.map(({ source, compressed }) => ({
+          ...source,
+          imageBlob: compressed.blob,
+          width: compressed.width,
+          height: compressed.height,
+          bytes: compressed.bytes,
+          quality: compressed.quality,
+        }))
+        const gridImages = toStoredGridImages(uploadDraftImages, uploadPaths)
         const imagePath = gridImages[0]?.path ?? uploadPaths[0]
         const payload = {
           user_id: session.user.id,
@@ -272,7 +287,20 @@ function App() {
             feature: '3x3-grid',
             version: 'beta-3x3',
             gridPhotoCount: gridImages.length,
-            compression: draft.compression ?? null,
+            compression: {
+              stage: 'upload',
+              images: compressedGridImages.map(({ source, compressed }) => ({
+                id: source.id,
+                source: source.source,
+                originalWidth: source.originalWidth ?? source.width,
+                originalHeight: source.originalHeight ?? source.height,
+                originalBytes: source.originalBytes ?? source.bytes,
+                uploadWidth: compressed.width,
+                uploadHeight: compressed.height,
+                uploadBytes: compressed.bytes,
+                uploadQuality: compressed.quality,
+              })),
+            },
           },
         }
 
@@ -345,8 +373,7 @@ function App() {
         writeLocalPosts(nextPosts)
       }
 
-      setDraft(null)
-      void clearCachedDraft()
+      void saveCachedDraft(draft)
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
     } catch (error) {

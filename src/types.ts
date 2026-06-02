@@ -32,6 +32,7 @@ export type CaptureDraft = {
     bytes: number
     quality: number
     source: 'camera' | 'album'
+    stage?: 'draft' | 'upload'
   }
 }
 
@@ -45,7 +46,11 @@ export type GridDraftImage = {
   width: number
   height: number
   bytes: number
-  quality: number
+  quality: number | null
+  mimeType?: string
+  originalWidth?: number
+  originalHeight?: number
+  originalBytes?: number
   source: Extract<GridImageSource, 'camera' | 'album'>
   createdAt: string
 }
