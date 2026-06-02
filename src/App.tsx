@@ -445,7 +445,7 @@ function App() {
     }
 
     if (activeTab === 'calendar') {
-      return <CalendarView locale={locale} posts={posts} />
+      return <CalendarView locale={locale} posts={posts} currentDraft={draft} />
     }
 
     if (activeTab === 'profile') {

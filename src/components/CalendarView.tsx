@@ -10,25 +10,30 @@ import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { DEFAULT_STORY_DESIGN, normalizeTemplateId, parseStoryStickers } from '@/lib/story'
 import { cn } from '@/lib/utils'
-import type { Locale, Post } from '@/types'
+import type { CaptureDraft, Locale, Post } from '@/types'
 
 type CalendarViewProps = {
   locale: Locale
   posts: Post[]
+  currentDraft?: CaptureDraft | null
 }
 
-export function CalendarView({ locale, posts }: CalendarViewProps) {
+export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
   const postsByDate = useMemo(() => new Map(posts.map((post) => [post.local_date, post])), [posts])
   const selectedPost = postsByDate.get(selectedDate)
-  const selectedGridImages = getPostGridImages(selectedPost)
   const days = getMonthMatrix(visibleMonth)
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
   const streak = getCurrentStreak(posts)
   const todayKey = getLocalDateKey()
+  const todayOriginalDraftImages =
+    selectedDate === todayKey && currentDraft?.gridImages.length
+      ? currentDraft.gridImages
+      : null
+  const selectedGridImages = todayOriginalDraftImages ?? getPostGridImages(selectedPost)
   const selectedStoryData = selectedPost
     ? {
         dateLabel: formatDisplayDate(selectedPost.local_date, localeCode),
