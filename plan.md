@@ -74,6 +74,19 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 
 ## Future Roadmap
 
+### Product Growth Strategy
+- Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
+- ColorWalk's unique loop is `daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity`.
+- Priority growth bets:
+  - Friend-shared "today color card" links.
+  - Monthly color recap.
+  - Badge rewards that unlock story frames/stamps.
+  - School/travel/seasonal color mission packs.
+  - Close-friend "see each other's today color" without ranking or comparison.
+  - Color/mood-first lightweight feed after private and close sharing are proven.
+  - Anonymous aggregate color trends only after enough usage and privacy safeguards.
+- Detailed living roadmap: `docs/product-growth-strategy.md`.
+
 ### Monetization Direction
 - Keep beta free and avoid in-app ads. Ads conflict with the calm daily ritual and make the first impression feel cheap.
 - Use a freemium path after retention is proven:
