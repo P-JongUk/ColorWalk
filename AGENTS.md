@@ -1,15 +1,16 @@
-# ColorWalk Codex Handoff
+# Hueday Codex Handoff
 
 Read this file before coding in this repository.
 
 ## Current Product Direction
 
+- Public product brand: `Hueday`. Keep internal repo paths, Supabase namespace, Android package, storage keys, and Vercel project names as `ColorWalk`/`colorwalk` unless a deliberate migration is planned.
 - Main target: Korean beta users, especially teens and young adults.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
 - Reward/badge direction: streak badges are creative keys, not scores. When capture, story, profile, or monetization features change, preserve the milestone-to-creative-unlock loop and update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
-- Product growth direction: see `docs/product-growth-strategy.md`. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve ColorWalk's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
+- Product growth direction: see `docs/product-growth-strategy.md`. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
 
 ## Local Commands
 

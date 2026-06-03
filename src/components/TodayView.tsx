@@ -50,7 +50,7 @@ export function TodayView({
 
     if (permission === 'granted') {
       try {
-        new Notification('ColorWalk', {
+        new Notification('Hueday', {
           body: locale === 'ko' ? '오늘의 컬러 산책을 잊지 않게 알려드릴게요.' : "We'll remind you to take a color walk.",
           icon: '/icon-192.png',
           badge: '/icon-192.png',
@@ -72,7 +72,7 @@ export function TodayView({
       <header className="home-hero">
         <div>
           <h1>
-            Color Walk
+            Hueday
             <ColorWalkMark compact />
           </h1>
           <p>{locale === 'ko' ? '오늘을 물들이는 작은 색의 발견' : 'A tiny color ritual for today'}</p>

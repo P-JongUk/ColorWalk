@@ -24,7 +24,7 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     id: 'soft-passport',
     category: 'recommended',
     name: { ko: '소프트 패스포트', en: 'Soft Passport' },
-    caption: { ko: '가장 ColorWalk다운 기본 프레임', en: 'The most ColorWalk frame' },
+    caption: { ko: '가장 Hueday다운 기본 프레임', en: 'The most Hueday frame' },
     className: 'story-template-soft-passport',
   },
   {
@@ -144,7 +144,7 @@ export const STORY_STICKERS: StoryStickerDefinition[] = [
   sticker('color-palette', 'color', 'color palette', ['palette', 'swatch', '팔레트'], 0.92),
   sticker('washi-tape', 'color', 'washi tape', ['tape', 'paper', '테이프'], 0.9),
   sticker('tiny-camera', 'color', 'tiny camera', ['camera', 'photo', '카메라'], 0.88),
-  sticker('color-walk-word', 'color', 'color walk', ['colorwalk', 'logo', '컬러워크'], 0.95),
+  sticker('color-walk-word', 'color', 'hueday', ['hueday', 'logo', '휴데이'], 0.95),
 ]
 
 export const DEFAULT_STORY_DESIGN: StoryDesign = {

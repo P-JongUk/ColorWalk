@@ -2,7 +2,7 @@ import type { Locale } from '@/types'
 
 export const copy = {
   ko: {
-    appName: 'Color Walk',
+    appName: 'Hueday',
     today: '오늘',
     camera: '카메라',
     journal: '저널',
@@ -39,7 +39,7 @@ export const copy = {
     saveFailed: '저장에 실패했어요. 잠시 뒤 다시 시도해주세요.',
     demoMode: 'Supabase 연결이 없어 이 기기에만 저장돼요.',
     cloudPending: '로그인하면 클라우드 저장이 바로 켜져요.',
-    betaBadge: '친구 베타',
+    betaBadge: '베타',
     monthCollection: '이번 달 완성한 그리드',
     moodColor: '오늘의 무드 컬러',
     colorHint: '컬러 힌트',
@@ -59,7 +59,7 @@ export const copy = {
     storyFromHistory: '이 기록으로 스토리 만들기',
     photoRecord: '사진 기록',
     localOnlyShort: '기기 저장',
-    profileTitle: '나의 ColorWalk',
+    profileTitle: '나의 Hueday',
     profileSubtitle: '비교 없이, 내가 모은 색과 사진만 차곡차곡.',
     betaReady: '친구 테스트 준비',
     webBeta: '웹 베타',
@@ -71,7 +71,7 @@ export const copy = {
     templateRecommended: '추천 프레임',
   },
   en: {
-    appName: 'Color Walk',
+    appName: 'Hueday',
     today: 'Today',
     camera: 'Camera',
     journal: 'Journal',
@@ -108,7 +108,7 @@ export const copy = {
     saveFailed: 'Could not save. Please try again.',
     demoMode: 'Supabase is not connected, so entries stay on this device.',
     cloudPending: 'Cloud saving turns on after login.',
-    betaBadge: 'Friend beta',
+    betaBadge: 'Beta',
     monthCollection: 'Completed grids this month',
     moodColor: 'Today mood color',
     colorHint: 'Color hints',
@@ -128,7 +128,7 @@ export const copy = {
     storyFromHistory: 'Make a story from this entry',
     photoRecord: 'Photo records',
     localOnlyShort: 'Device only',
-    profileTitle: 'My ColorWalk',
+    profileTitle: 'My Hueday',
     profileSubtitle: 'No ranking. Just the colors and photos you collected.',
     betaReady: 'Friend test ready',
     webBeta: 'Web beta',

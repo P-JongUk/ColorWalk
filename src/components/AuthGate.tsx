@@ -69,8 +69,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
         <div className="auth-brand">
           <ColorWalkMark />
           <div>
-            <p>{locale === 'ko' ? '친구 베타' : 'Friend beta'}</p>
-            <h1>Color Walk</h1>
+            <h1>Hueday</h1>
           </div>
         </div>
         <p className="auth-copy">
@@ -98,7 +97,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
                 inputMode="text"
-                placeholder="colorwalker"
+                placeholder="hueday"
                 required
               />
             </div>
@@ -170,8 +169,8 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 : 'Checking'
               : mode === 'signup'
                 ? locale === 'ko'
-                  ? 'ColorWalk 시작하기'
-                  : 'Start ColorWalk'
+                  ? 'Hueday 시작하기'
+                  : 'Start Hueday'
                 : locale === 'ko'
                   ? '다시 들어가기'
                   : 'Enter'}

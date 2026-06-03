@@ -1,12 +1,12 @@
-# ColorWalk Product Growth Strategy
+# Hueday Product Growth Strategy
 
-이 문서는 ColorWalk가 베타 이후 어떤 성장 루프를 키울지 정리한 living document다. 새 기능을 추가할 때는 단순히 유행 앱을 따라 만들지 말고, 아래의 고유 루프를 강화하는지 먼저 확인한다.
+이 문서는 Hueday가 베타 이후 어떤 성장 루프를 키울지 정리한 living document다. 새 기능을 추가할 때는 단순히 유행 앱을 따라 만들지 말고, 아래의 고유 루프를 강화하는지 먼저 확인한다.
 
 > 오늘의 색 미션 -> 현실에서 색 찾기 -> 3x3 컬렉션 -> 스토리 공유 -> 내 색 정체성 축적
 
 ## Product North Star
 
-ColorWalk는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수집하고 자기만의 무드 정체성으로 쌓아가는 color diary다.
+Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수집하고 자기만의 무드 정체성으로 쌓아가는 color diary다.
 
 - Main target: 한국 베타 사용자, 특히 10대와 20대 초반.
 - Core emotion: 부담 없는 산책, 감성적인 기록, 친구에게 보여주고 싶은 오늘의 색.

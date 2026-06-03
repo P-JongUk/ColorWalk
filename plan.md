@@ -1,4 +1,4 @@
-# ColorWalk MVP Development Plan
+# Hueday MVP Development Plan
 
 ## Status
 - [x] Lazyweb setup and reference verification
@@ -18,7 +18,7 @@
 - [x] Supabase cloud verification after Anonymous sign-ins is enabled
 
 ## Product Direction
-ColorWalk is a private daily color-walk ritual. The user receives a daily mood color mission based on local weather and time, collects up to eight surrounding photos into a 3x3 grid around that color, writes a short reflection, and keeps a visual history of collected color days. There is no social feed, ranking, or comparison loop.
+Hueday is a private daily color-walk ritual. The user receives a daily mood color mission based on local weather and time, collects up to eight surrounding photos into a 3x3 grid around that color, writes a short reflection, and keeps a visual history of collected color days. There is no social feed, ranking, or comparison loop.
 
 The final visual direction is Candidate 3: soft emotional warmth with restrained trendy color-ticket details. The interface should feel youthful, collectible, and share-worthy, while staying calm enough for daily use in Korean and English markets.
 
@@ -76,7 +76,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 
 ### Product Growth Strategy
 - Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
-- ColorWalk's unique loop is `daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity`.
+- Hueday's unique loop is `daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity`.
 - Priority growth bets:
   - Friend-shared "today color card" links.
   - Monthly color recap.
@@ -111,7 +111,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 - Product principle: streak badges are not scores or pressure mechanics. They are creative keys that unlock prettier ways to remember and share the colors the user already collected.
 - Preferred reward loop:
   - 3 days: extra empty-grid filler patterns, tiny marks, seed/leaf stamps.
-  - 7 days: weekly grid seal, "Color Walk Week" stamp, one soft export detail.
+  - 7 days: weekly grid seal, "Hueday Week" stamp, one soft export detail.
   - 14 days: modern grid border, collection frame, richer color-name label.
   - 30 days: signature clover seal, premium-feeling grid frame, monthly passport stamp.
 - Why a badge matters:
@@ -125,7 +125,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
   - Tapping a badge should eventually show the period palette/photos and offer a story-making path.
 - Implementation direction: derive badge state from saved `posts.local_date` whenever possible. If templates, sticker packs, or badge visuals change later, preserve the milestone-to-creative-reward relationship.
 - Maintenance rule: whenever the core capture/story/profile/monetization feature changes, update the reward mapping with it so streak milestones keep unlocking creative memory tools rather than becoming a stale counter.
-- Living-system rule: do not hard-code the current badge UI as the product loop. The stable loop is `saved color-walk activity -> milestone -> creative unlock -> story/profile memory`. If ColorWalk changes from one-photo capture to 3x3 grids, monthly recap, travel mode, or paid template packs, remap each milestone to the closest useful free creative item instead of deleting the reward meaning.
+- Living-system rule: do not hard-code the current badge UI as the product loop. The stable loop is `saved color-walk activity -> milestone -> creative unlock -> story/profile memory`. If Hueday changes from one-photo capture to 3x3 grids, monthly recap, travel mode, or paid template packs, remap each milestone to the closest useful free creative item instead of deleting the reward meaning.
 - Feature-change contract:
   - If the story editor changes, remap badge rewards to the new filler/frame/export surfaces.
   - If the profile changes, keep badge stamps or identity labels visible somewhere personal.

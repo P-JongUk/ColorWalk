@@ -80,7 +80,7 @@ export function StoryCard({
       {SHOW_STORY_BRANDING ? (
         <footer className="story-footer-mark">
           <ColorWalkMark compact />
-          <span>ColorWalk</span>
+          <span>Hueday</span>
         </footer>
       ) : null}
 

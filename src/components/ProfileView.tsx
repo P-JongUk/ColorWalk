@@ -72,7 +72,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
 
       <section className="profile-card">
         <ColorWalkMark className="mx-auto" />
-        <h2>Color Walk</h2>
+        <h2>Hueday</h2>
         <p>{profile?.nickname ? `${profile.nickname} · ${t(locale, 'profileSubtitle')}` : t(locale, 'profileSubtitle')}</p>
         <div className="profile-stats">
           <div>
@@ -114,7 +114,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           </div>
           <div>
             <ShieldCheck aria-hidden="true" />
-            <span>{locale === 'ko' ? '친구 베타 접근' : 'Friend beta access'}</span>
+            <span>{locale === 'ko' ? '베타 접근' : 'Beta access'}</span>
             <strong>{t(locale, 'betaReady')}</strong>
           </div>
           <div>

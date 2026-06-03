@@ -1,6 +1,8 @@
-# ColorWalk
+# Hueday
 
-ColorWalk is a private daily color-walk app. It gives the user a weather/time-based mood color mission, lets them collect up to eight surrounding photos into a 3x3 color grid, saves a short journal entry, and builds a visual history without social comparison.
+Hueday is a private daily color-walk app. It gives the user a weather/time-based mood color mission, lets them collect up to eight surrounding photos into a 3x3 color grid, saves a short journal entry, and builds a visual history without social comparison.
+
+The repository, Supabase namespace, and some internal storage keys still use the original `ColorWalk` codename to avoid breaking existing beta data.
 
 ## Stack
 
@@ -28,8 +30,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=...
 VITE_AUTH_EMAIL_DOMAIN=...
 ```
 
-This workspace already has `.env.local` configured for the existing ColorWalk Supabase project. The file is ignored by git.
-ColorWalk no longer shows a browser invite-code gate. Beta access is handled by the username/password account flow and the shared beta test account.
+This workspace already has `.env.local` configured for the existing Supabase project. The file is ignored by git.
+Hueday no longer shows a browser invite-code gate. Beta access is handled by the username/password account flow and the shared beta test account.
 `VITE_AUTH_EMAIL_DOMAIN` is used only to map a simple username to Supabase email/password auth. For the current beta code, use a deliverable-looking domain such as `gmail.com` unless you configure your own domain.
 
 ## Supabase
@@ -41,7 +43,7 @@ Required Dashboard setting:
 - Auth -> Sign In / Providers -> Anonymous sign-ins: enabled
 - Auth -> Sign In / Providers -> Email: enabled
 
-The app now shows a signup/login screen before the main app when Supabase is configured. Because Supabase password auth is email-based, ColorWalk maps the visible username to an internal beta email address. Signup goes through the `beta-signup` Edge Function so the service role key stays server-side and new beta users can receive an immediate confirmed session without exposing admin credentials in the frontend.
+The app now shows a signup/login screen before the main app when Supabase is configured. Because Supabase password auth is email-based, Hueday maps the visible username to an internal beta email address. Signup goes through the `beta-signup` Edge Function so the service role key stays server-side and new beta users can receive an immediate confirmed session without exposing admin credentials in the frontend.
 
 After enabling anonymous sign-ins, run:
 

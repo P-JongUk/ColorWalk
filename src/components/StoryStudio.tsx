@@ -69,7 +69,7 @@ async function exportElement(element: HTMLElement, filename: string, size = { wi
 
 function exportFilename(kind: 'story' | 'grid') {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
-  return kind === 'grid' ? `colorwalk-3x3-${stamp}.png` : `colorwalk-story-${stamp}.png`
+  return kind === 'grid' ? `hueday-3x3-${stamp}.png` : `hueday-story-${stamp}.png`
 }
 
 function fileToBase64(file: File) {
@@ -106,7 +106,7 @@ async function shareNativeStory(file: File, locale: Locale, mode: 'download' | '
   })
 
   await Share.share({
-    title: kind === 'grid' ? 'ColorWalk 3x3' : 'ColorWalk Story',
+    title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story',
     dialogTitle:
       mode === 'download'
         ? locale === 'ko'
@@ -232,7 +232,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
       }
 
       if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: kind === 'grid' ? 'ColorWalk 3x3' : 'ColorWalk Story' })
+        await navigator.share({ files: [file], title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story' })
         return
       }
 

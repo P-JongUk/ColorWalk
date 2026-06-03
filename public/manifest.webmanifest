@@ -1,6 +1,6 @@
 {
-  "name": "Color Walk",
-  "short_name": "ColorWalk",
+  "name": "Hueday",
+  "short_name": "Hueday",
   "description": "A private daily 3x3 color grid and story journaling ritual.",
   "start_url": "/",
   "scope": "/",

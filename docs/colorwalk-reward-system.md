@@ -1,12 +1,12 @@
-# ColorWalk Reward System Direction
+# Hueday Reward System Direction
 
 ## Product Principle
 
-ColorWalk streak badges should not be treated as a score, ranking, or pressure loop. They should work as a soft creative reward system:
+Hueday streak badges should not be treated as a score, ranking, or pressure loop. They should work as a soft creative reward system:
 
 > A badge is a key that unlocks prettier ways to remember and share the colors the user already collected.
 
-This keeps ColorWalk aligned with the core product direction: private, emotional, collectible, camera-first, and share-worthy without becoming competitive.
+This keeps Hueday aligned with the core product direction: private, emotional, collectible, camera-first, and share-worthy without becoming competitive.
 
 ## Why Badges Matter
 
@@ -33,7 +33,7 @@ Use the existing 3, 7, 14, and 30 day streak milestones. The exact visuals can e
 | Milestone | Meaning | Reward Direction |
 | --- | --- | --- |
 | 3 days | First tiny habit | Extra empty-grid filler patterns, tiny marks, seed/leaf stamps |
-| 7 days | One color week | Weekly grid seal, "Color Walk Week" stamp, one subtle export detail |
+| 7 days | One color week | Weekly grid seal, "Hueday Week" stamp, one subtle export detail |
 | 14 days | Mood collection | Modern grid border, collection frame, richer color-name label |
 | 30 days | Color Walker identity | Signature clover seal, premium-feeling grid frame, monthly passport stamp |
 
