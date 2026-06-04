@@ -371,7 +371,8 @@ function App() {
         writeLocalPosts(nextPosts)
       }
 
-      void saveCachedDraft(draft)
+      setDraft(null)
+      void clearCachedDraft()
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
     } catch (error) {

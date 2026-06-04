@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hueday-shell-v2-brand-assets'
+const CACHE_NAME = 'hueday-shell-v3-safe-icons'
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',

@@ -131,7 +131,14 @@ export function TodayView({
                 type="button"
                 className="mission-shuffle-button"
                 onClick={onShuffleMission}
-                disabled={!canShuffleMission}
+                data-locked={!canShuffleMission || undefined}
+                title={
+                  !canShuffleMission
+                    ? locale === 'ko'
+                      ? '사진을 찍기 시작했거나 오늘 기록이 있으면 오늘의 색은 고정돼요.'
+                      : "Today's color locks after a draft or entry exists."
+                    : undefined
+                }
                 aria-label={locale === 'ko' ? '오늘의 색 다시 고르기' : 'Shuffle today color'}
               >
                 <Shuffle aria-hidden="true" />

@@ -6,7 +6,6 @@ import { GridCollage } from '@/components/GridCollage'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { getMoodColorSuggestions } from '@/lib/collection'
 import { getJournalPrompt } from '@/lib/journal'
 import { DEFAULT_STORY_DESIGN } from '@/lib/story'
@@ -152,15 +151,10 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           dateLabel={dateLabel}
           missionHex={mission.hex}
           missionLabel={mission.label[locale]}
+          prompt={prompt}
           value={journalAnswer}
           onChange={setJournalAnswer}
         />
-
-        <label className="journal-field">
-          <span>{prompt}</span>
-          <Textarea value={journalAnswer} onChange={(event) => setJournalAnswer(event.target.value)} placeholder={t(locale, 'journalAnswer')} maxLength={120} />
-          <small>{journalAnswer.length}/120</small>
-        </label>
       </section>
 
       <Button type="button" size="lg" className="journal-save-cta" disabled={isSaving} onClick={() => void onSave(savePayload)}>

@@ -9543,3 +9543,345 @@
     transform: scale(.97);
   }
 }
+
+@layer components {
+  .mission-shuffle-button[data-locked='true'] {
+    opacity: .82;
+  }
+
+  .mission-shuffle-button[data-locked='true']:active {
+    transform: scale(.98);
+  }
+
+  .journal-screen {
+    min-height: 100svh !important;
+    gap: 16px !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    padding-bottom: calc(138px + env(safe-area-inset-bottom, 0px)) !important;
+    scroll-padding-bottom: 150px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .journal-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin: -10px -4px 0 !important;
+    border-bottom: 1px solid rgba(226, 216, 203, .58);
+    padding: 8px 4px 10px !important;
+    background: linear-gradient(180deg, rgba(255, 253, 248, .98) 0%, rgba(255, 253, 248, .9) 74%, rgba(255, 253, 248, 0) 100%);
+    backdrop-filter: blur(18px);
+  }
+
+  .journal-header h1 {
+    color: #211d19;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .journal-header .inline-flex {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 14px;
+  }
+
+  .journal-progress {
+    margin-top: 8px !important;
+    opacity: .82;
+  }
+
+  .journal-grid-panel {
+    display: grid;
+    gap: 11px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .journal-grid-panel .section-heading {
+    margin-bottom: 0 !important;
+  }
+
+  .journal-grid-panel .section-heading p {
+    color: #817466;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .journal-grid-panel .section-heading h2 {
+    color: #211d19;
+    font-size: 21px !important;
+    font-weight: 750 !important;
+    line-height: 1.18;
+  }
+
+  .journal-hex {
+    align-self: end;
+    border: 1px solid rgba(109, 127, 109, .18);
+    border-radius: 999px;
+    padding: 7px 10px;
+    background: rgba(255, 253, 248, .78);
+    color: #5f7569;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  .journal-grid-panel .color-grid {
+    width: min(100%, 318px) !important;
+    justify-self: center;
+    border: 1px solid rgba(42, 34, 28, .08) !important;
+    border-radius: 18px !important;
+    background: #f1ebe3 !important;
+    box-shadow: 0 16px 38px rgba(40, 32, 26, .09) !important;
+  }
+
+  .journal-grid-panel .color-grid-photo,
+  .journal-grid-panel .color-grid-empty,
+  .journal-grid-panel .color-grid-chip {
+    border-radius: 14px !important;
+  }
+
+  .journal-grid-panel .color-grid-chip {
+    grid-template-rows: minmax(0, 1fr) 44px !important;
+  }
+
+  .journal-grid-panel .color-grid-chip-label {
+    gap: 3px !important;
+    padding: 7px 9px !important;
+  }
+
+  .journal-grid-panel .color-grid-chip-label strong {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    color: #211d19 !important;
+    font-size: 10px !important;
+    font-weight: 750 !important;
+    line-height: 1.12 !important;
+    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .journal-grid-panel .color-grid-chip-label span {
+    color: #6f6256 !important;
+    font-size: 9px !important;
+    font-weight: 650 !important;
+  }
+
+  .journal-form-card {
+    display: grid;
+    gap: 14px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .journal-field {
+    display: grid;
+    gap: 7px !important;
+  }
+
+  .journal-field > span {
+    color: #332c25;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .journal-input-action {
+    display: block;
+    border: 1px solid rgba(226, 216, 203, .92);
+    border-radius: 18px;
+    background: rgba(255, 253, 248, .94);
+    box-shadow: 0 8px 20px rgba(44, 34, 27, .055);
+  }
+
+  .journal-input-action input {
+    height: 48px;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #2a231e;
+    font-size: 15px;
+    font-weight: 650;
+  }
+
+  .journal-field > small {
+    justify-self: end;
+    margin-top: -4px;
+    color: #9c8d7e;
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  .journal-form-card .suggestion-row {
+    display: flex !important;
+    gap: 7px !important;
+    overflow-x: auto;
+    padding: 0 0 2px !important;
+    scrollbar-width: none;
+  }
+
+  .journal-form-card .suggestion-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .journal-form-card .suggestion-row button {
+    height: 31px !important;
+    flex: 0 0 auto;
+    border: 1px solid rgba(109, 127, 109, .14) !important;
+    border-radius: 999px !important;
+    padding: 0 11px !important;
+    background: rgba(255, 253, 248, .82) !important;
+    color: #5f7569 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+  }
+
+  .daily-diary-panel {
+    display: grid !important;
+    gap: 13px !important;
+    overflow: visible !important;
+    border: 1px solid rgba(226, 216, 203, .82) !important;
+    border-radius: 22px !important;
+    padding: 16px !important;
+    background:
+      linear-gradient(180deg, rgba(255, 253, 248, .98), rgba(253, 246, 235, .9)),
+      #fffaf1 !important;
+    box-shadow: 0 14px 32px rgba(45, 35, 28, .065) !important;
+  }
+
+  .daily-diary-panel::before,
+  .daily-diary-stamp,
+  .daily-diary-chips {
+    display: none !important;
+  }
+
+  .daily-diary-head {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .daily-diary-color {
+    display: flex !important;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .daily-diary-color > span {
+    width: 38px !important;
+    height: 38px !important;
+    flex: 0 0 auto;
+    border: 3px solid rgba(255, 253, 248, .98) !important;
+    border-radius: 13px !important;
+    box-shadow: 0 8px 18px rgba(43, 34, 28, .12) !important;
+  }
+
+  .daily-diary-color p {
+    margin: 0;
+    color: #241f1a !important;
+    font-size: 16px !important;
+    font-weight: 750 !important;
+    line-height: 1.18;
+  }
+
+  .daily-diary-color small {
+    display: block;
+    max-width: 205px;
+    overflow: hidden;
+    margin-top: 3px;
+    color: #86796a !important;
+    font-size: 11px !important;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .daily-diary-count {
+    flex: 0 0 auto;
+    border: 1px solid rgba(226, 216, 203, .74);
+    border-radius: 999px;
+    padding: 5px 8px;
+    background: rgba(255, 253, 248, .72);
+    color: #9b8b7a;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+  }
+
+  .daily-diary-writing {
+    display: grid;
+    gap: 8px;
+  }
+
+  .daily-diary-writing > span {
+    color: #4c433a;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.45;
+  }
+
+  .daily-diary-writing textarea {
+    min-height: 128px !important;
+    border-color: rgba(226, 216, 203, .84) !important;
+    border-radius: 18px !important;
+    background:
+      linear-gradient(180deg, rgba(255, 253, 248, .96), rgba(255, 250, 242, .92)) !important;
+    box-shadow: none !important;
+    color: #2b241f;
+    font-size: 15px !important;
+    font-weight: 560;
+    line-height: 1.72 !important;
+  }
+
+  .daily-diary-writing textarea::placeholder {
+    color: #a59685;
+    font-weight: 520;
+  }
+
+  .daily-diary-footnote {
+    display: grid;
+    gap: 3px;
+    border-top: 1px dashed rgba(196, 181, 162, .52);
+    padding-top: 11px;
+  }
+
+  .daily-diary-footnote strong {
+    color: #5f7569;
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .daily-diary-footnote span {
+    color: #786b5e;
+    font-size: 12px;
+    font-weight: 560;
+    line-height: 1.48;
+  }
+
+  .journal-save-cta {
+    min-height: 52px !important;
+    height: 52px !important;
+    margin: 0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 24px rgba(95, 159, 145, .18) !important;
+  }
+
+  .journal-story-section {
+    margin-top: 4px !important;
+    padding-bottom: 24px !important;
+  }
+}
