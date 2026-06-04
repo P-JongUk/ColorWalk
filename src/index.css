@@ -7,6 +7,45 @@
 }
 
 @layer components {
+  .hueday-wordmark {
+    display: inline-flex;
+    width: 144px;
+    max-width: 100%;
+    align-items: center;
+    line-height: 0;
+    vertical-align: middle;
+  }
+
+  .hueday-wordmark img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .home-hero h1 .hueday-wordmark {
+    width: clamp(118px, 32vw, 154px);
+    margin-right: 8px;
+  }
+
+  .auth-brand .hueday-wordmark {
+    width: min(190px, 54vw);
+  }
+
+  .profile-card h2 .hueday-wordmark {
+    width: 152px;
+    justify-content: center;
+  }
+
+  .colorwalk-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+@layer components {
   .color-grid {
     --grid-gap: 5px;
     display: grid;
@@ -535,6 +574,7 @@
 @layer base {
   :root {
     --font-sans: 'Sunghyun Sans KR', 'LINE Seed KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --font-brand: 'Segoe UI Variable Display', 'Segoe UI', 'SF Pro Display', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
     --background: 42 43% 98%;
     --foreground: 26 18% 13%;
     --card: 0 0% 100%;
@@ -857,7 +897,6 @@
   .journal-summary-card,
   .journal-field input,
   .journal-field textarea,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-month-card,
@@ -885,7 +924,6 @@
   .journal-summary-card,
   .journal-field input,
   .journal-field textarea,
-  .journal-place-card,
   .history-detail,
   .history-month-card,
   .history-stats-card,
@@ -900,7 +938,6 @@
   .status-card::before,
   .prompt-card::before,
   .journal-summary-card::before,
-  .journal-place-card::before,
   .history-detail::before,
   .history-month-card::before,
   .history-stats-card::before,
@@ -930,7 +967,6 @@
   .status-card > *,
   .prompt-card > *,
   .journal-summary-card > *,
-  .journal-place-card > *,
   .history-detail > *,
   .history-month-card > *,
   .history-stats-card > *,
@@ -947,7 +983,6 @@
   .journal-summary-card,
   .journal-field input,
   .journal-field textarea,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-month-card,
@@ -1142,73 +1177,6 @@
   .receipt-stamp {
     border-color: rgba(255, 102, 95, .42) !important;
     background: rgba(255, 250, 247, .92) !important;
-  }
-
-  .journal-place-card {
-    border-radius: 13px !important;
-    padding: 9px !important;
-  }
-
-  .journal-place-toggle {
-    display: grid;
-    width: 100%;
-    grid-template-columns: 30px 1fr auto;
-    align-items: center;
-    gap: 8px;
-    border: 0;
-    background: transparent;
-    color: #4e4541;
-    text-align: left;
-  }
-
-  .journal-place-toggle svg {
-    width: 20px;
-    height: 20px;
-    color: #ff665f;
-  }
-
-  .journal-place-toggle span,
-  .journal-place-toggle strong {
-    font-size: 12px;
-    font-weight: 900;
-  }
-
-  .journal-place-toggle strong {
-    color: #ff665f;
-  }
-
-  .journal-place-fields {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    margin-top: 9px;
-  }
-
-  .journal-place-fields input {
-    height: 36px !important;
-    border-radius: 11px !important;
-    font-size: 12px !important;
-  }
-
-  .journal-place-fields button {
-    height: 36px !important;
-    border-radius: 11px !important;
-    border-color: #f1ded7 !important;
-    background: #fff !important;
-    color: #ff665f !important;
-    font-size: 11px !important;
-    font-weight: 900 !important;
-  }
-
-  .journal-place-fields small {
-    grid-column: 1 / -1;
-    color: #827771;
-    font-size: 10.5px;
-    font-weight: 800;
-  }
-
-  .journal-place-error {
-    color: #b85a4f !important;
   }
 
   .calendarPaletteSoftHack {
@@ -2048,7 +2016,6 @@
   .journal-summary-card,
   .journal-field input,
   .journal-field textarea,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-month-card,
@@ -2206,73 +2173,6 @@
   .journal-input-action button {
     border-color: #f1ded7 !important;
     background: #fff7f4 !important;
-  }
-
-  .journal-place-card {
-    border-radius: 13px !important;
-    padding: 9px !important;
-  }
-
-  .journal-place-toggle {
-    display: grid;
-    width: 100%;
-    grid-template-columns: 30px 1fr auto;
-    align-items: center;
-    gap: 8px;
-    border: 0;
-    background: transparent;
-    color: #4e4541;
-    text-align: left;
-  }
-
-  .journal-place-toggle svg {
-    width: 20px;
-    height: 20px;
-    color: #ff665f;
-  }
-
-  .journal-place-toggle span,
-  .journal-place-toggle strong {
-    font-size: 12px;
-    font-weight: 900;
-  }
-
-  .journal-place-toggle strong {
-    color: #ff665f;
-  }
-
-  .journal-place-fields {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    margin-top: 9px;
-  }
-
-  .journal-place-fields input {
-    height: 36px !important;
-    border-radius: 11px !important;
-    font-size: 12px !important;
-  }
-
-  .journal-place-fields button {
-    height: 36px !important;
-    border-radius: 11px !important;
-    border-color: #f1ded7 !important;
-    background: #fff !important;
-    color: #ff665f !important;
-    font-size: 11px !important;
-    font-weight: 900 !important;
-  }
-
-  .journal-place-fields small {
-    grid-column: 1 / -1;
-    color: #827771;
-    font-size: 10.5px;
-    font-weight: 800;
-  }
-
-  .journal-place-error {
-    color: #b85a4f !important;
   }
 
   .calendar-day {
@@ -7240,7 +7140,6 @@
   .journal-summary-card,
   .journal-field input,
   .journal-field textarea,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-month-card,
@@ -7535,7 +7434,6 @@
   .status-card,
   .prompt-card,
   .journal-summary-card,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-month-card,
@@ -7555,7 +7453,6 @@
   .status-card::before,
   .prompt-card::before,
   .journal-summary-card::before,
-  .journal-place-card::before,
   .history-detail::before,
   .history-month-card::before,
   .history-stats-card::before,
@@ -7704,8 +7601,8 @@
   .home-hero h1,
   .home-hero h1 *,
   .profile-card h2 {
-    font-family: var(--font-sans) !important;
-    font-weight: 800 !important;
+    font-family: var(--font-brand) !important;
+    font-weight: 750 !important;
     letter-spacing: 0 !important;
   }
 
@@ -8190,7 +8087,6 @@
   .prompt-card,
   .journal-summary-card,
   .journal-form-card,
-  .journal-place-card,
   .calendar-panel,
   .history-detail,
   .history-stats-card,
@@ -8213,7 +8109,6 @@
   .prompt-card::before,
   .journal-summary-card::before,
   .journal-form-card::before,
-  .journal-place-card::before,
   .calendar-panel::before,
   .history-detail::before,
   .history-stats-card::before,
@@ -8396,9 +8291,9 @@
 
   .auth-brand h1 {
     color: #241f1a;
-    font-family: var(--font-sans);
-    font-size: 34px;
-    font-weight: 800;
+    font-family: var(--font-brand);
+    font-size: 33px;
+    font-weight: 750;
     line-height: 1.04;
   }
 
@@ -8665,28 +8560,6 @@
   .journal-form-card .suggestion-row button {
     height: 23px !important;
     padding-inline: 8px !important;
-  }
-
-  .journal-place-card {
-    padding: 0 !important;
-    border: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .journal-place-toggle {
-    min-height: 34px !important;
-    padding: 7px 10px !important;
-  }
-
-  .journal-place-toggle svg {
-    width: 18px !important;
-    height: 18px !important;
-  }
-
-  .journal-place-fields {
-    gap: 7px !important;
-    padding-top: 8px !important;
   }
 }
 
@@ -9460,5 +9333,112 @@
   .grid-export-card .color-grid-chip-label span {
     font-size: 10px !important;
     font-weight: 400 !important;
+  }
+}
+
+@layer components {
+  .daily-diary-panel {
+    position: relative;
+    display: grid;
+    gap: 13px;
+    overflow: hidden;
+    border: 1px solid rgba(119, 98, 76, .14);
+    border-radius: 22px;
+    padding: 16px;
+    background:
+      linear-gradient(90deg, rgba(109, 127, 109, .08) 1px, transparent 1px) 0 0 / 18px 18px,
+      linear-gradient(180deg, rgba(255, 253, 247, .96), rgba(248, 238, 224, .82));
+    box-shadow: 0 14px 32px rgba(55, 45, 36, .08);
+  }
+
+  .daily-diary-panel::before {
+    position: absolute;
+    inset: 10px 12px auto auto;
+    width: 54px;
+    height: 54px;
+    border: 1px solid rgba(234, 141, 102, .28);
+    border-radius: 999px;
+    content: '';
+    opacity: .7;
+    transform: rotate(-8deg);
+  }
+
+  .daily-diary-stamp,
+  .daily-diary-color {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .daily-diary-stamp span {
+    color: #6d7f6d;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .daily-diary-stamp strong {
+    color: #332c25;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .daily-diary-color {
+    justify-content: flex-start;
+  }
+
+  .daily-diary-color > span {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border: 4px solid rgba(255, 253, 248, .98);
+    border-radius: 14px;
+    box-shadow: 0 8px 18px rgba(41, 34, 27, .14);
+  }
+
+  .daily-diary-color p {
+    margin: 0;
+    color: #211d19;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.16;
+  }
+
+  .daily-diary-color small {
+    display: block;
+    margin-top: 3px;
+    color: #817466;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  .daily-diary-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 1px;
+    scrollbar-width: none;
+  }
+
+  .daily-diary-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .daily-diary-chips button {
+    min-height: 34px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(109, 127, 109, .18);
+    border-radius: 999px;
+    padding: 0 13px;
+    background: rgba(255, 253, 248, .82);
+    color: #5c6f5f;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 7px 16px rgba(55, 45, 36, .07);
   }
 }

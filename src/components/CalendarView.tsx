@@ -1,4 +1,4 @@
-import { CalendarDays, Camera, ChevronLeft, ChevronRight, Flame, MapPin, Share2 } from 'lucide-react'
+import { CalendarDays, Camera, ChevronLeft, ChevronRight, Flame, Share2 } from 'lucide-react'
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
@@ -41,7 +41,6 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
         missionHex: selectedPost.mission_hex,
         colorName: selectedPost.custom_color_name ?? undefined,
         moodText: selectedPost.journal_answer ?? undefined,
-        placeName: selectedPost.location_name ?? undefined,
         gridImages: selectedGridImages,
       }
     : null
@@ -175,7 +174,6 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
               <p className="mt-1 text-xs tabular-nums text-muted-foreground">
                 {selectedGridImages.length}/8 · {selectedPost.mission_hex}
               </p>
-              {selectedPost.location_name ? <p className="history-place"><MapPin aria-hidden="true" /> {selectedPost.location_name}</p> : null}
               {selectedPost.journal_answer ? <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{selectedPost.journal_answer}</p> : null}
             </div>
           </div>

@@ -17,7 +17,6 @@ export type StoryCardData = {
   missionHex: string
   colorName?: string
   moodText?: string
-  placeName?: string
   gridImages: Array<GridImage | GridDraftImage>
 }
 
@@ -37,7 +36,6 @@ export function StoryCard({
   missionHex,
   colorName,
   moodText,
-  placeName,
   gridImages,
   stickers,
   exportRef,
@@ -74,7 +72,6 @@ export function StoryCard({
 
       <div className="story-grid-note">
         <p>{mood}</p>
-        {placeName ? <span>{placeName}</span> : null}
       </div>
 
       {SHOW_STORY_BRANDING ? (

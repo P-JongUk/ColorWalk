@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { GridCollage } from '@/components/GridCollage'
+import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak } from '@/lib/collection'
 import { getLocalDateKey } from '@/lib/date'
@@ -72,7 +73,7 @@ export function TodayView({
       <header className="home-hero">
         <div>
           <h1>
-            Hueday
+            <HuedayWordmark />
             <ColorWalkMark compact />
           </h1>
           <p>{locale === 'ko' ? '오늘을 물들이는 작은 색의 발견' : 'A tiny color ritual for today'}</p>

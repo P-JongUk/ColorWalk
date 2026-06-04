@@ -15,7 +15,7 @@ import { startWebReminderScheduler } from '@/lib/notifications'
 import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
-import type { GridImage, Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
+import type { GridImage, Locale, Post, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
 const MISSION_SHUFFLE_PREFIX = 'colorwalk:mission-shuffle-count'
@@ -213,12 +213,10 @@ function App() {
     colorName,
     journalAnswer,
     storyDesign,
-    location,
   }: {
     colorName: string
     journalAnswer: string
     storyDesign: StoryDesign
-    location: SavedLocation | null
   }) {
     if (!mission || !draft || draft.gridImages.length === 0) return
 
@@ -274,10 +272,10 @@ function App() {
           mission_label: activeMission.label[locale],
           mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
-          location_name: location?.name || null,
-          location_latitude: location?.latitude ?? null,
-          location_longitude: location?.longitude ?? null,
-          location_accuracy_m: location?.accuracyMeters ?? null,
+          location_name: null,
+          location_latitude: null,
+          location_longitude: null,
+          location_accuracy_m: null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
           grid_images: gridImages,
@@ -352,10 +350,10 @@ function App() {
           mission_label: activeMission.label[locale],
           mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
-          location_name: location?.name || null,
-          location_latitude: location?.latitude ?? null,
-          location_longitude: location?.longitude ?? null,
-          location_accuracy_m: location?.accuracyMeters ?? null,
+          location_name: null,
+          location_latitude: null,
+          location_longitude: null,
+          location_accuracy_m: null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
           grid_images: localGridImages,

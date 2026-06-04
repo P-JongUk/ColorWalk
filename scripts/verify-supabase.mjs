@@ -151,7 +151,7 @@ async function upsertPostWithFallback(client, payload) {
 async function selectVerifyPost(client) {
   const fullSelect = await client
     .from('posts')
-    .select('id,image_path,grid_images,story_template_id,story_stickers,client_meta,location_name,location_latitude,location_longitude,location_accuracy_m')
+    .select('id,image_path,grid_images,story_template_id,story_stickers,client_meta')
     .eq('user_id', userId)
     .eq('local_date', verifyDate)
 
@@ -160,7 +160,7 @@ async function selectVerifyPost(client) {
   usedGridFallback = true
   return client
     .from('posts')
-    .select('id,image_path,story_template_id,story_stickers,client_meta,location_name,location_latitude,location_longitude,location_accuracy_m')
+    .select('id,image_path,story_template_id,story_stickers,client_meta')
     .eq('user_id', userId)
     .eq('local_date', verifyDate)
 }
@@ -271,10 +271,10 @@ try {
     time_bucket: 'day',
     mission_label: 'Verification',
     mission_prompt: 'Verification prompt',
-    location_name: 'Verify Place',
-    location_latitude: 37.5665,
-    location_longitude: 126.978,
-    location_accuracy_m: 50,
+    location_name: null,
+    location_latitude: null,
+    location_longitude: null,
+    location_accuracy_m: null,
     story_template_id: 'soft-passport',
     story_stickers: [
       {
@@ -305,9 +305,6 @@ try {
     : row.client_meta?.gridImages
   if (!Array.isArray(effectiveGridImages) || effectiveGridImages[0]?.path !== imagePath) {
     throw new Error('3x3 grid image metadata was not persisted.')
-  }
-  if (row.location_name !== 'Verify Place' || row.location_latitude !== 37.5665) {
-    throw new Error('Location metadata was not persisted.')
   }
 
   const signed = await mainClient.storage.from('post-images').createSignedUrl(imagePath, 60)
@@ -340,7 +337,7 @@ try {
         storyMetadata: true,
         gridImageMetadata: true,
         gridImageStorage: usedGridFallback ? 'client_meta_fallback' : 'grid_images',
-        locationMetadata: true,
+        locationMetadataDisabled: true,
         postRlsBlocksOtherUser: true,
         storageRlsBlocksOtherUser: true,
         otherUserId,

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Bookmark, MapPin } from 'lucide-react'
+import { ArrowLeft, Bookmark } from 'lucide-react'
 
+import { DailyDiaryPanel } from '@/components/DailyDiaryPanel'
 import { GridCollage } from '@/components/GridCollage'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
@@ -10,9 +11,8 @@ import { getMoodColorSuggestions } from '@/lib/collection'
 import { getJournalPrompt } from '@/lib/journal'
 import { DEFAULT_STORY_DESIGN } from '@/lib/story'
 import { t } from '@/lib/i18n'
-import { getCurrentSavedLocation } from '@/lib/location'
 import { fetchColorNameSuggestions } from '@/lib/supabase'
-import type { CaptureDraft, Locale, Mission, SavedLocation, StoryDesign } from '@/types'
+import type { CaptureDraft, Locale, Mission, StoryDesign } from '@/types'
 
 type JournalViewProps = {
   locale: Locale
@@ -20,18 +20,13 @@ type JournalViewProps = {
   draft: CaptureDraft | null
   isSaving: boolean
   onOpenCamera: () => void
-  onSave: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign; location: SavedLocation | null }) => Promise<void>
+  onSave: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) => Promise<void>
 }
 
 export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, onSave }: JournalViewProps) {
   const [colorName, setColorName] = useState('')
   const [journalAnswer, setJournalAnswer] = useState('')
   const [storyDesign, setStoryDesign] = useState<StoryDesign>(DEFAULT_STORY_DESIGN)
-  const [savePlace, setSavePlace] = useState(false)
-  const [placeName, setPlaceName] = useState('')
-  const [location, setLocation] = useState<SavedLocation | null>(null)
-  const [isLocating, setIsLocating] = useState(false)
-  const [locationError, setLocationError] = useState<string | null>(null)
   const [remoteSuggestions, setRemoteSuggestions] = useState<string[]>([])
   const activeHex = mission.hex
   const prompt = useMemo(
@@ -44,19 +39,10 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
   )
   const suggestions = remoteSuggestions.length ? remoteSuggestions : fallbackSuggestions
   const colorNameLimit = locale === 'ko' ? 20 : 28
-  const placeLimit = locale === 'ko' ? 24 : 32
   const savePayload = {
     colorName,
     journalAnswer,
     storyDesign,
-    location: savePlace
-      ? {
-          name: placeName.trim() || location?.name || null,
-          latitude: location?.latitude ?? null,
-          longitude: location?.longitude ?? null,
-          accuracyMeters: location?.accuracyMeters ?? null,
-        }
-      : null,
   }
   const dateLabel = new Intl.DateTimeFormat(locale === 'ko' ? 'ko-KR' : 'en-US', {
     month: 'numeric',
@@ -69,7 +55,6 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
     missionHex: mission.hex,
     colorName,
     moodText: journalAnswer,
-    placeName: savePayload.location?.name ?? undefined,
     gridImages: draft?.gridImages ?? [],
   }
 
@@ -84,27 +69,6 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
       cancelled = true
     }
   }, [activeHex, locale])
-
-  async function requestPlace() {
-    setSavePlace(true)
-    setIsLocating(true)
-    setLocationError(null)
-
-    try {
-      const nextLocation = await getCurrentSavedLocation()
-      const fallbackName = locale === 'ko' ? '현재 위치' : 'Current location'
-      const namedLocation = {
-        ...nextLocation,
-        name: nextLocation.name || fallbackName,
-      }
-      if (!placeName.trim()) setPlaceName(fallbackName)
-      setLocation(namedLocation)
-    } catch {
-      setLocationError(locale === 'ko' ? '위치 권한이 꺼져 있어요. 장소 이름만 저장할 수 있어요.' : 'Location permission is off. You can still save a place name.')
-    } finally {
-      setIsLocating(false)
-    }
-  }
 
   if (!draft || draft.gridImages.length === 0) {
     return (
@@ -171,9 +135,6 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
               placeholder={suggestions[0] ?? t(locale, 'colorNamePlaceholder')}
               maxLength={colorNameLimit}
             />
-            <button type="button" onClick={() => void requestPlace()} aria-label={locale === 'ko' ? '장소 저장' : 'Place stamp'}>
-              <MapPin aria-hidden="true" />
-            </button>
           </div>
           <small>{colorName.length}/{colorNameLimit}</small>
         </label>
@@ -186,51 +147,20 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           ))}
         </div>
 
+        <DailyDiaryPanel
+          locale={locale}
+          dateLabel={dateLabel}
+          missionHex={mission.hex}
+          missionLabel={mission.label[locale]}
+          value={journalAnswer}
+          onChange={setJournalAnswer}
+        />
+
         <label className="journal-field">
           <span>{prompt}</span>
           <Textarea value={journalAnswer} onChange={(event) => setJournalAnswer(event.target.value)} placeholder={t(locale, 'journalAnswer')} maxLength={120} />
           <small>{journalAnswer.length}/120</small>
         </label>
-
-        <div className="journal-place-card">
-          <button
-            type="button"
-            className={savePlace ? 'journal-place-toggle is-active' : 'journal-place-toggle'}
-            onClick={() => {
-              if (savePlace) {
-                setSavePlace(false)
-                setLocationError(null)
-                return
-              }
-              void requestPlace()
-            }}
-            aria-pressed={savePlace}
-          >
-            <MapPin aria-hidden="true" />
-            <span>{locale === 'ko' ? '찍은 장소도 함께 저장' : 'Save where I found it'}</span>
-            <strong>{savePlace ? (locale === 'ko' ? '켬' : 'On') : (locale === 'ko' ? '선택' : 'Optional')}</strong>
-          </button>
-          {savePlace ? (
-            <div className="journal-place-fields">
-              <Input
-                value={placeName}
-                onChange={(event) => setPlaceName(event.target.value)}
-                placeholder={locale === 'ko' ? '예: 학교 앞 골목, 성수 산책길' : 'ex. School alley, riverside walk'}
-                maxLength={placeLimit}
-              />
-              <Button type="button" variant="outline" size="sm" onClick={() => void requestPlace()} disabled={isLocating}>
-                {isLocating ? (locale === 'ko' ? '찾는 중' : 'Locating') : (locale === 'ko' ? '현재 위치' : 'Use location')}
-              </Button>
-              {location ? (
-                <small>
-                  {locale === 'ko' ? '좌표 저장됨' : 'Coordinates saved'}
-                  {location.accuracyMeters ? ` · ±${location.accuracyMeters}m` : ''}
-                </small>
-              ) : null}
-              {locationError ? <small className="journal-place-error">{locationError}</small> : null}
-            </div>
-          ) : null}
-        </div>
       </section>
 
       <Button type="button" size="lg" className="journal-save-cta" disabled={isSaving} onClick={() => void onSave(savePayload)}>

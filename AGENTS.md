@@ -103,7 +103,28 @@ Use the D-drive SDK/AVD for emulator QA so the C drive does not fill up:
 $env:ANDROID_SDK_ROOT='D:\Android\Sdk'
 $env:ANDROID_HOME='D:\Android\Sdk'
 $env:ANDROID_AVD_HOME='D:\Android\Avd'
+$env:GRADLE_USER_HOME='D:\GradleCacheColorWalk'
+$env:TEMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:TMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:GRADLE_OPTS='-Djava.io.tmpdir=D:\JongUk\Documents\ColorWalk\.tmp'
 Start-Process -FilePath 'D:\Android\Sdk\emulator\emulator.exe' -ArgumentList '-avd ColorWalkPixel7 -no-snapshot -no-audio -no-boot-anim -camera-back emulated -gpu swiftshader_indirect' -WindowStyle Hidden
+```
+
+For Android Gradle builds on this machine, keep Gradle and Java temp writes on D because C can be completely full:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+$env:ANDROID_SDK_ROOT='D:\Android\Sdk'
+$env:ANDROID_HOME='D:\Android\Sdk'
+$env:ANDROID_AVD_HOME='D:\Android\Avd'
+$env:GRADLE_USER_HOME='D:\GradleCacheColorWalk'
+$env:TEMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:TMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:GRADLE_OPTS='-Djava.io.tmpdir=D:\JongUk\Documents\ColorWalk\.tmp'
+cd android
+.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:assembleDebug
+.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:bundleRelease
 ```
 
 Android emulator QA on `ColorWalkPixel7` has verified location permission, camera permission, camera capture, journal save/replace, history, native story share sheet, notification permission, and immediate test notification display. Physical phone PWA install QA is still user-side.

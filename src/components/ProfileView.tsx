@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 
 import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
+import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
 import { t } from '@/lib/i18n'
@@ -72,7 +73,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
 
       <section className="profile-card">
         <ColorWalkMark className="mx-auto" />
-        <h2>Hueday</h2>
+        <h2><HuedayWordmark /></h2>
         <p>{profile?.nickname ? `${profile.nickname} · ${t(locale, 'profileSubtitle')}` : t(locale, 'profileSubtitle')}</p>
         <div className="profile-stats">
           <div>

@@ -1,6 +1,6 @@
 # Security Audit Notes
 
-Last checked: 2026-05-29 KST.
+Last checked: 2026-06-04 KST.
 
 ## Completed
 
@@ -15,6 +15,13 @@ Last checked: 2026-05-29 KST.
   - post insert/select/update path works
   - storage upload and signed URL work for the owner
   - another user cannot read the post or create a signed URL
+- Journal/story saves intentionally write `null` for capture-location metadata. Location permission remains only for weather/time mission generation.
+
+## 2026-06-04 Check
+
+- `rg` found no `service_role`/`SUPABASE_SERVICE_ROLE_KEY` usage in browser code.
+- `docs/*.private.md`, `.env*`, `.design-references/`, `.lazyweb/`, and Vercel local cache paths are ignored by git and Vercel upload rules.
+- Supabase MCP Advisor could not run in this Codex session because the connector token had expired. The local `verify:supabase` script passed and still covers Auth, RLS, Storage owner checks, post CRUD, and signed URL denial for another user.
 
 ## Remaining Manual Dashboard Item
 

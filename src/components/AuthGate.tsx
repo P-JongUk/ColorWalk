@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { LockKeyhole, Sparkles, UserRound } from 'lucide-react'
 
 import { ColorWalkMark } from '@/components/ColorWalkMark'
+import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { normalizeUsername, signInWithUsername, signUpWithUsername } from '@/lib/supabase'
@@ -69,7 +70,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
         <div className="auth-brand">
           <ColorWalkMark />
           <div>
-            <h1>Hueday</h1>
+            <HuedayWordmark />
           </div>
         </div>
         <p className="auth-copy">

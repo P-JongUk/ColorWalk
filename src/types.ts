@@ -68,13 +68,6 @@ export type GridImage = {
   createdAt?: string | null
 }
 
-export type SavedLocation = {
-  name: string | null
-  latitude: number | null
-  longitude: number | null
-  accuracyMeters: number | null
-}
-
 export type Post = {
   id: string
   user_id: string

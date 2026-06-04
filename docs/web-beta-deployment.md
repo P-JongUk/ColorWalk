@@ -1,6 +1,6 @@
-# ColorWalk Web Beta Deployment
+# Hueday Web Beta Deployment
 
-This is the fastest way to let friends test ColorWalk without installing an APK.
+This is the fastest way to let friends test Hueday without installing an APK.
 
 ## Recommended Free Flow
 
@@ -38,7 +38,15 @@ Current live beta:
 https://colorwalk-tau.vercel.app
 ```
 
-The project is linked to Vercel as `parkjonguks-projects/colorwalk`. Because this Windows workspace has very little C-drive space and `vercel build` can collide with locked native `node_modules` files, the successful local deployment path was:
+Latest production deploy:
+
+```text
+dpl_HsbEcLU7JDaZUgy6cvr8DAd9UfkL
+https://colorwalk-2vznpjmlx-parkjonguks-projects.vercel.app
+Aliased to https://colorwalk-tau.vercel.app
+```
+
+The public product name is Hueday, while the repository, Vercel project, Supabase namespace, and some storage keys still use the original `ColorWalk`/`colorwalk` codename for compatibility. The project is linked to Vercel as `parkjonguks-projects/colorwalk`. Because this Windows workspace has very little C-drive space and `vercel build` can collide with locked native `node_modules` files, the successful local deployment path was:
 
 ```powershell
 $env:npm_config_cache='D:\JongUk\Documents\ColorWalk\.npm-cache'
@@ -89,6 +97,7 @@ Then enable Pages with GitHub Actions as the source and run the `Deploy PWA to G
 - The `beta-signup` Edge Function creates confirmed users with the service role key on the server only.
 - Saved entries are protected by owner-scoped RLS on `posts`.
 - Uploaded images are stored in `post-images` under the authenticated user's id path.
+- Journal/story saves do not persist the user's current capture location; location is used only to generate the weather/time color mission.
 - The old browser invite-code gate is disabled; do not use it as a security boundary.
 
 ## Pre-Share Verification
@@ -102,4 +111,6 @@ npm run seed:test-account
 npm run cap:sync
 ```
 
-Latest verified live browser path: beta test account login -> home -> history -> story editor.
+Latest local browser path: beta test account login -> home -> camera album input -> journal daily diary panel -> story export actions visible.
+
+Latest production browser path: beta test account login -> home.
