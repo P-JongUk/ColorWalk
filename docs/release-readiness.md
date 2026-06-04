@@ -9,17 +9,19 @@
 - `npm run seed:test-account`
 - `npm run cap:sync`
 
-Latest verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`, `seed:test-account`, `cap:sync`, Android debug APK build, Android release AAB build, and Vercel production deploy passed after the Hueday brand asset and no-location-story-save changes.
+Latest verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`, `seed:test-account`, `cap:sync`, Android debug APK build, Android release AAB build, and Vercel production deploy passed after the Hueday brand asset, no-location-story-save, and in-app PWA camera/zoom changes.
 
 ## PWA Beta
 
 - Current HTTPS beta URL: `https://colorwalk-tau.vercel.app`
-- Latest production deployment id: `dpl_HsbEcLU7JDaZUgy6cvr8DAd9UfkL`
+- Latest production deployment id: `dpl_C8P7CJvjmZHJNQm1NSjTrDXhxi49`
 - Browser invite-code gate: disabled.
 - Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `VITE_AUTH_EMAIL_DOMAIN`.
 - Share the HTTPS URL with friends and have them sign up or sign in through the username/password beta flow.
 - Android Chrome users can install from browser menu -> Add to Home screen / Install app.
 - iOS users can install from Safari Share -> Add to Home Screen.
+- PWA camera now defaults to in-app `getUserMedia` capture instead of opening the phone's native camera app from the shutter. Supported mobile browsers expose an in-app zoom slider through `MediaStreamTrack.applyConstraints({ zoom })`; unsupported browsers keep in-app capture and show a small native camera fallback button.
+- PWA camera quality still depends on each browser/device. `ImageCapture.takePhoto()` is used when available for higher-resolution stills, then save-time WebP compression protects storage size. Physical phone QA remains required for lens choice, zoom range, low-light quality, and share-sheet behavior.
 - Preferred free deployment path: Vercel Git import of `P-JongUk/ColorWalk`, with the env vars above configured in Vercel. Public product name is Hueday; repository/project names may still use the original ColorWalk codename.
 - Fallback path: GitHub Pages workflow in `.github/workflows/deploy-pages.yml`.
 

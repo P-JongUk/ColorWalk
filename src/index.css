@@ -9442,3 +9442,104 @@
     box-shadow: 0 7px 16px rgba(55, 45, 36, .07);
   }
 }
+
+@layer components {
+  .camera-footer-grid {
+    gap: 12px !important;
+  }
+
+  .camera-zoom-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    border: 1px solid rgba(255, 253, 248, .42);
+    border-radius: 999px;
+    padding: 6px 7px 6px 11px;
+    background: rgba(22, 25, 23, .34);
+    box-shadow: 0 16px 36px rgba(6, 8, 7, .2);
+    backdrop-filter: blur(22px) saturate(1.12);
+  }
+
+  .camera-zoom-panel > span {
+    padding-left: 4px;
+    color: rgba(255, 253, 248, .92);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .camera-zoom-presets {
+    display: flex;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .camera-zoom-presets button,
+  .camera-native-link {
+    display: inline-flex;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 253, 248, .28);
+    border-radius: 999px;
+    background: rgba(255, 253, 248, .18);
+    color: #fffdf8;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    line-height: 1;
+    transition: background .16s ease, transform .16s ease;
+  }
+
+  .camera-zoom-presets button {
+    min-width: 41px;
+    padding: 0 10px;
+  }
+
+  .camera-zoom-presets button.is-active {
+    background: #fffdf8;
+    color: #26362f;
+    box-shadow: 0 9px 18px rgba(6, 8, 7, .18);
+  }
+
+  .camera-zoom-slider {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 1px 4px 2px;
+  }
+
+  .camera-zoom-slider span {
+    color: rgba(255, 253, 248, .9);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .camera-zoom-slider input {
+    width: 100%;
+    height: 18px;
+    accent-color: #fffdf8;
+  }
+
+  .camera-native-link {
+    gap: 5px;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+
+  .camera-native-link svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.5;
+  }
+
+  .camera-zoom-presets button:active,
+  .camera-native-link:active {
+    transform: scale(.97);
+  }
+}

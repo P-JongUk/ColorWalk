@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Images, RotateCcw, X, Zap } from 'lucide-react'
+import { Camera as CameraIcon, Check, Images, RotateCcw, X, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
+import {
+  buildCameraVideoConstraints,
+  clampZoom,
+  formatZoomValue,
+  getDefaultZoom,
+  getZoomPresetValues,
+  normalizeZoomRange,
+  type CameraZoomRange,
+} from '@/lib/camera'
 import { capturePhotoBlob, fileToDraftImageBlob } from '@/lib/image'
 import { t } from '@/lib/i18n'
 import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
@@ -32,10 +41,8 @@ type CameraCapabilities = MediaTrackCapabilities & {
   zoom?: { min?: number; max?: number; step?: number }
 }
 
-function shouldUseNativeCameraFileCapture() {
-  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false
-
-  return window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0
+type CameraSettings = MediaTrackSettings & {
+  zoom?: number
 }
 
 export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
@@ -50,6 +57,8 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
   const [torchOn, setTorchOn] = useState(false)
   const [hasTorch, setHasTorch] = useState(false)
+  const [zoomRange, setZoomRange] = useState<CameraZoomRange | null>(null)
+  const [zoomValue, setZoomValue] = useState(1)
 
   useEffect(() => {
     let isMounted = true
@@ -64,18 +73,14 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         setError(null)
         setHasTorch(false)
         setTorchOn(false)
+        setZoomRange(null)
+        setZoomValue(1)
         stopStream()
 
         let stream: MediaStream
         try {
-          const videoConstraints = {
-            facingMode: { ideal: facingMode },
-            width: { ideal: 4096 },
-            height: { ideal: 4096 },
-            resizeMode: { ideal: 'none' },
-          } as MediaTrackConstraints
           stream = await navigator.mediaDevices.getUserMedia({
-            video: videoConstraints,
+            video: buildCameraVideoConstraints(facingMode),
             audio: false,
           })
         } catch {
@@ -99,8 +104,13 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
         const [track] = stream.getVideoTracks()
         const capabilities = track?.getCapabilities?.() as CameraCapabilities
-        if (capabilities?.zoom?.min !== undefined) {
-          await track.applyConstraints({ advanced: [{ zoom: capabilities.zoom.min } as MediaTrackConstraintSet] }).catch(() => undefined)
+        const nextZoomRange = normalizeZoomRange(capabilities?.zoom)
+        if (track && nextZoomRange) {
+          const settings = track.getSettings?.() as CameraSettings | undefined
+          const nextZoomValue = clampZoom(settings?.zoom ?? getDefaultZoom(nextZoomRange), nextZoomRange)
+          setZoomRange(nextZoomRange)
+          setZoomValue(nextZoomValue)
+          await track.applyConstraints({ advanced: [{ zoom: nextZoomValue } as MediaTrackConstraintSet] }).catch(() => undefined)
         }
         setHasTorch(Boolean(capabilities?.torch))
       } catch {
@@ -168,17 +178,19 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }
 
   async function capture() {
-    if (shouldUseNativeCameraFileCapture()) {
-      cameraFileInputRef.current?.click()
-      return
-    }
-
     if (!videoRef.current) return
     const [track] = streamRef.current?.getVideoTracks() ?? []
     if (!track) return
 
-    const photo = await capturePhotoBlob(track, videoRef.current)
-    await addBlobToGrid(photo.blob, photo, 'camera')
+    setIsCapturing(true)
+    try {
+      const photo = await capturePhotoBlob(track, videoRef.current)
+      await addBlobToGrid(photo.blob, photo, 'camera')
+    } catch {
+      setError(locale === 'ko' ? '사진을 찍지 못했어요. 기본 카메라나 앨범을 사용해보세요.' : 'Could not take a photo. Try the native camera or album.')
+    } finally {
+      setIsCapturing(false)
+    }
   }
 
   async function captureFromFile(file: File, source: 'camera' | 'album') {
@@ -199,6 +211,26 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     fileInputRef.current?.click()
   }
 
+  function openNativeCameraCapture() {
+    cameraFileInputRef.current?.click()
+  }
+
+  async function applyCameraZoom(nextValue: number) {
+    if (!zoomRange) return
+    const [track] = streamRef.current?.getVideoTracks() ?? []
+    if (!track) return
+
+    const nextZoomValue = clampZoom(nextValue, zoomRange)
+    setZoomValue(nextZoomValue)
+
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: nextZoomValue } as MediaTrackConstraintSet] })
+    } catch {
+      setZoomRange(null)
+      toast.message(locale === 'ko' ? '이 브라우저에서는 줌 조절이 불안정해요.' : 'Zoom controls are not stable in this browser.')
+    }
+  }
+
   async function toggleTorch() {
     const [track] = streamRef.current?.getVideoTracks() ?? []
     if (!track || !hasTorch) return
@@ -212,6 +244,8 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }
 
   const canComplete = images.length > 0
+  const zoomPresets = zoomRange ? getZoomPresetValues(zoomRange) : []
+  const zoomLabel = formatZoomValue(zoomValue)
 
   return (
     <main className="camera-screen">
@@ -282,6 +316,42 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
 
       {!error ? (
         <footer className="camera-footer camera-footer-grid">
+          <div className="camera-zoom-panel">
+            {zoomRange ? (
+              <>
+                <div className="camera-zoom-presets" aria-label={locale === 'ko' ? '줌 배율' : 'Zoom presets'}>
+                  {zoomPresets.map((preset) => (
+                    <button
+                      type="button"
+                      key={preset}
+                      className={Math.abs(preset - zoomValue) < 0.05 ? 'is-active' : undefined}
+                      onClick={() => void applyCameraZoom(preset)}
+                    >
+                      {formatZoomValue(preset)}x
+                    </button>
+                  ))}
+                </div>
+                <label className="camera-zoom-slider">
+                  <span>{zoomLabel}x</span>
+                  <input
+                    type="range"
+                    min={zoomRange.min}
+                    max={zoomRange.max}
+                    step={zoomRange.step}
+                    value={zoomValue}
+                    aria-label={locale === 'ko' ? '카메라 줌 조절' : 'Adjust camera zoom'}
+                    onChange={(event) => void applyCameraZoom(Number(event.currentTarget.value))}
+                  />
+                </label>
+              </>
+            ) : (
+              <span>{locale === 'ko' ? '인앱 카메라' : 'In-app camera'}</span>
+            )}
+            <button type="button" className="camera-native-link" onClick={openNativeCameraCapture}>
+              <CameraIcon aria-hidden="true" />
+              {locale === 'ko' ? '기본 카메라' : 'Native'}
+            </button>
+          </div>
           <div className="camera-grid-card">
             <div>
               <strong>{mission.label[locale]}</strong>

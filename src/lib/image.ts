@@ -18,7 +18,11 @@ export type DraftImageBlob = {
 }
 
 type ImageCaptureLike = {
-  takePhoto: () => Promise<Blob>
+  getPhotoCapabilities?: () => Promise<{
+    imageWidth?: { max?: number }
+    imageHeight?: { max?: number }
+  }>
+  takePhoto: (photoSettings?: { imageWidth?: number; imageHeight?: number }) => Promise<Blob>
 }
 
 type WindowWithImageCapture = Window & {
@@ -120,7 +124,22 @@ export async function capturePhotoBlob(track: MediaStreamTrack, video: HTMLVideo
 
   if (ImageCaptureCtor) {
     try {
-      const blob = await new ImageCaptureCtor(track).takePhoto()
+      const imageCapture = new ImageCaptureCtor(track)
+      const photoCapabilities = await imageCapture.getPhotoCapabilities?.().catch(() => undefined)
+      const photoSettings =
+        Number.isFinite(photoCapabilities?.imageWidth?.max) && Number.isFinite(photoCapabilities?.imageHeight?.max)
+          ? {
+              imageWidth: photoCapabilities?.imageWidth?.max,
+              imageHeight: photoCapabilities?.imageHeight?.max,
+            }
+          : undefined
+      let blob: Blob
+
+      try {
+        blob = await imageCapture.takePhoto(photoSettings)
+      } catch {
+        blob = await imageCapture.takePhoto()
+      }
       const { width, height } = await readImageDimensions(blob)
 
       return {
