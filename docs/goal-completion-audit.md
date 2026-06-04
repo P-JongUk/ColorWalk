@@ -1,36 +1,28 @@
-# Goal Completion Audit
+# Hueday Beta Completion Audit
 
-Last updated: 2026-05-29 KST.
+Last updated: 2026-06-04 KST.
 
-This file tracks the active 3x3-grid rebuild goal requirement by requirement. Do not mark the goal complete until every row is proven by current evidence.
+This file tracks the current beta-finishing goal requirement by requirement. Treat local files, command output, live deployment checks, and Android build outputs as the source of truth.
 
 | # | Requirement | Current evidence | Status |
 |---|---|---|---|
-| 1 | Work on a new branch | Current branch is `codex/3x3-grid-rebuild`, tracking `origin/codex/3x3-grid-rebuild`. | Complete |
-| 2 | Remove color match-rate judgment from the product flow | Camera, journal, history, and story UI use 3x3 photo collection instead of match scoring. `getMatchRate`, match haptics, and old receipt component were removed. Legacy `posts.match_rate` remains as `0` only for schema compatibility. | Complete |
-| 3 | Replace the core feature with 3x3 color-grid capture | `CaptureDraft`, `Post`, `GridCollage`, `CameraView`, `JournalView`, `CalendarView`, `StoryCard`, and `StoryStudio` support grid images around the mission color. Live login QA shows the deployed app loading the 3x3 beta home/history/story surfaces. | Complete |
-| 4 | Redesign camera and app surfaces to fit the new feature while preserving the soft ColorWalk direction | Reference folders and current captures exist under `.design-references/06-3x3-grid-rebuild/`. Captures include home, camera permission fallback, camera after album photo, journal, story preview/editor, history, profile, and live production home/history/story editor. | Complete |
-| 5 | Update badge system for the new feature | `docs/colorwalk-reward-system.md`, `plan.md`, `AGENTS.md`, and `src/lib/collection.ts` define milestones as creative unlocks for stickers, weekly frames, photobooth borders, and signature frames. The maintenance contract says feature changes must remap the same milestone-to-creative-unlock loop. | Complete |
-| 6 | Use generated/user-provided icon images if copyright-safe | App/PWA icons and internal mark use local PNG assets under `public/brand/`, `public/favicon.png`, `public/icon-192.png`, `public/icon-512.png`, and `public/apple-touch-icon.png`. Live manifest and service worker return 200 and include the updated app shell. | Complete |
-| 7 | Rebuild story editor for 3x3/Life4Cuts-style frames | `StoryStudio`, `StoryCard`, and `src/lib/story.ts` use 3x3-oriented frames and sticker editing. Lazyweb references are stored under `.lazyweb/design-research/colorwalk-3x3-photobooth-2026-05-29/` and `.design-references/06-3x3-grid-rebuild/`. Local browser QA exported a `1080x1920` PNG story; live QA opened the story editor and clicked `사진 저장` with no console errors, while the Codex in-app browser reported downloads are unsupported. | Complete |
-| 8 | Update test seed data for the new feature | `npm run seed:test-account` succeeded on 2026-05-29 and seeded five 3x3 demo days for `colorwalk_test_01` using `client_meta_fallback` for grid metadata. | Complete |
-| 9 | Add backend/API persistence for grid metadata | Migration `supabase/migrations/20260529200000_add_grid_images.sql` adds `posts.grid_images` and expands template ids. Runtime/API now writes `grid_images` when available and falls back to `client_meta.gridImages` plus legacy template ids when the production schema has not been migrated yet. The live project currently verifies through the fallback path. | Complete |
-| 10 | Keep security intact | Frontend uses Vite publishable Supabase key only; service role remains local/Edge tooling only. `npm run verify:supabase` passed anonymous sign-in, anonymous write denial, profile upsert, post CRUD, signed storage URL, cross-user post denial, and cross-user storage denial on 2026-05-29. | Complete |
-| 11 | Run verification | Latest current-state checks passed: `npm run lint`, `npm test -- --run`, `npm run build`, `npm run verify:supabase`, and `npm run seed:test-account`. Earlier goal checks also passed `npm run cap:sync`, Android `:app:assembleDebug`, Android `:app:bundleRelease`, browser remote save QA, and 1080x1920 story export. | Complete |
-| 12 | Commit and push important finished features | Commits pushed to `origin/codex/3x3-grid-rebuild`: `cfd3765 Rebuild ColorWalk around 3x3 grid capture`, `06db004 Add grid metadata fallback for live beta`, and `e086e30 Document adaptive badge reward system`. | Complete |
-| 13 | Redeploy free PWA beta | Vercel production deployment `dpl_2VzvS8cjPCc5xTvQhR21HrZodXKi` is Ready and aliased to `https://colorwalk-tau.vercel.app`. HTTP checks returned 200 for the app shell, manifest, and service worker. Live browser QA logged in with the beta test account and reached home/history/story editor. | Complete |
+| 1 | Use the selected Hueday app icon, header mark, and wordmark throughout the app | Public icon assets are under `public/favicon.png`, `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`, and `public/brand/hueday-app-icon.png`. Header/internal mark and wordmark are under `public/brand/hueday-mark-transparent.png` and `public/brand/hueday-wordmark.png`. Live manifest returns `name: Hueday`, `display: standalone`, and 3 icons. | Complete |
+| 2 | Keep story/journal capture-location saving removed | `src/App.tsx`, `scripts/verify-supabase.mjs`, and `scripts/seed-beta-test-account.mjs` intentionally write `location_*` fields as `null`. `npm run verify:supabase` returned `locationMetadataDisabled: true`. Docs state location is used only for mission generation. | Complete |
+| 3 | Keep backend/API and security release checks intact | `npm run verify:supabase` passed anonymous sign-in, anonymous write denial, profile upsert, color name suggestions, post CRUD, storage upload, signed URL, cross-user post denial, and cross-user storage denial. `rg` found service role usage only in `supabase/functions/beta-signup/index.ts` and docs. Private docs/env/design references are git-ignored. | Complete |
+| 4 | Provide a dummy beta account and seeded data for routine QA | `npm run seed:test-account` passed for `colorwalk_test_01` and seeded 2026-06-04 through 2026-05-31. Credentials remain only in `docs/beta-test-account.private.md`, which is ignored by git. | Complete |
+| 5 | Free PWA beta is deployed for phone testing | Live URL is `https://colorwalk-tau.vercel.app`. Latest production deployment id is `dpl_2mbPWqdts4UGREosLrDHSQ5yFpnZ`. HTTP checks returned 200 for app shell, manifest, service worker, `CameraView-CMOIOuyQ.js`, and `StoryStudio-DlUvm79N.js`. | Complete |
+| 6 | PWA camera does not force the phone's native camera app from the main shutter | `src/components/CameraView.tsx` now captures from the active `getUserMedia` stream. Supported browsers get zoom presets/slider through `MediaStreamTrack.applyConstraints({ zoom })`; the native camera file input remains only as a small fallback button. `src/lib/camera.test.ts` covers non-square preview constraints and zoom normalization. Live chunk contains `In-app camera` and `applyConstraints`. | Complete |
+| 7 | Story templates, stickers, Hueday watermark, and export/share flow are available | `StoryStudio` enables template/sticker tools by default unless `VITE_SIMPLE_STORY_EDITOR=true`. `StoryCard` renders branding and sticker decorations. Live browser QA logged in, opened history, opened story editor, and confirmed template names, sticker packs, `3x3 저장`, `스토리 저장`, `공유하기`, and `Hueday` watermark. | Complete |
+| 8 | Daily diary experiment is present but easy to remove | `src/components/DailyDiaryPanel.tsx` is isolated and mounted from `JournalView`. Daily diary references are saved under `.design-references/06-daily-diary-references/`. Removing the experiment is localized to the component and one render location. | Complete |
+| 9 | Android/Play Store internal testing artifacts are prepared | `npm run cap:sync`, Android `:app:assembleDebug`, and Android `:app:bundleRelease` passed. Latest outputs are `android/app/build/outputs/apk/debug/app-debug.apk` and `android/app/build/outputs/bundle/release/app-release.aab`. `docs/play-store-internal-testing.md` contains build commands, Play Console steps, store copy, permission copy, and updated release notes. | Complete |
+| 10 | Verification commands pass after final changes | Latest current-state checks passed on 2026-06-04 KST: `npm run lint`, `npm test -- --run` (17 tests), `npm run build`, `npm run verify:supabase`, `npm run seed:test-account`, `npm run cap:sync`, Android debug APK build, Android release AAB build, live deployment asset checks, and live login/history/story QA. | Complete |
+| 11 | Work is committed and pushed to GitHub | Latest pushed branch is `codex/pwa-polish-grid-fixes`. Recent commits include `517827b Improve PWA camera capture and zoom`, `8f76855 Restore story template and sticker tools`, and `213c361 Update internal testing release notes`. | Complete |
 
-## Current Schema Note
+## Manual / External Follow-Up
 
-Supabase MCP authentication is still expired:
+These are not repo-code blockers, but they cannot be fully completed from this local Codex session:
 
-```text
-Provided authentication token is expired. token_expired 401
-```
-
-Because of that, the remote `posts.grid_images` migration has not been applied. This is not blocking the current beta because the deployed app, verifier, and seed script persist grid metadata through `client_meta.gridImages` when the column is missing. Apply the migration later after Supabase admin access is refreshed.
-
-## Do Next
-
-1. Re-authenticate Supabase MCP later and apply `20260529200000_add_grid_images.sql` to move from fallback storage to the dedicated column.
-2. Have the user do physical-phone PWA install QA because camera, install prompt, and share sheet behavior depend on the actual device/browser.
+- Physical phone PWA QA: install from the live HTTPS URL, allow camera, test lens/zoom behavior, capture quality, story save/share targets, and notification behavior on the actual device.
+- Play Console internal testing: upload `app-release.aab`, complete the Google Play required app-content sections, add tester emails, and roll out the internal track from the user's Play Console account.
+- Supabase dashboard: Security Advisor previously reported leaked password protection disabled. Enable it when the Supabase plan supports the feature.
+- Supabase schema cleanup: apply `20260529200000_add_grid_images.sql` later with authenticated admin access so the live project can move from `client_meta.gridImages` fallback to the dedicated `posts.grid_images` column.
