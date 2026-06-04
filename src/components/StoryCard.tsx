@@ -6,8 +6,8 @@ import { getStickerDefinition, getStoryTemplate } from '@/lib/story'
 import { cn } from '@/lib/utils'
 import type { GridDraftImage, GridImage, Locale, StoryStickerItem, StoryTemplateId } from '@/types'
 
-const SHOW_STORY_BRANDING = false
-const SHOW_STORY_DECORATIONS = false
+const SHOW_STORY_BRANDING = true
+const SHOW_STORY_DECORATIONS = true
 
 export type StoryCardData = {
   locale: Locale

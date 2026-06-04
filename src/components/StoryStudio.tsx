@@ -23,7 +23,7 @@ import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import type { Locale, StoryDesign, StoryStickerCategory, StoryStickerItem, StoryTemplateId } from '@/types'
 
-const STORY_DECORATION_TOOLS_ENABLED = false
+const STORY_DECORATION_TOOLS_ENABLED = import.meta.env.VITE_SIMPLE_STORY_EDITOR !== 'true'
 const SIMPLE_STORY_TEMPLATE_ID: StoryTemplateId = 'modern-grid'
 
 type StoryStudioProps = {
