@@ -51,7 +51,7 @@ Latest local AAB build: 2026-06-04 KST, using `D:\GradleCacheColorWalk` and D-dr
 7. Add release notes:
 
 ```text
-Hueday friend beta: daily color mission, camera color capture, journal, history, and story export.
+Hueday friend beta: daily color mission, in-app camera capture with supported zoom controls, journal, history, story templates, stickers, and 9:16 story export/share.
 ```
 
 8. Roll out to internal testing.
