@@ -1,116 +1,79 @@
 # ColorWalk
 
-ColorWalk is a private daily color-hunting app. It gives the user a weather/time-based color mission, lets them find the color through a camera eyedropper, saves a short journal entry, and builds a color calendar without social comparison.
+ColorWalk는 하루에 하나의 색을 찾아 기록하는 개인용 컬러 헌팅 앱입니다.  
+사용자는 날씨와 시간대에 맞는 색 미션을 받고, 주변에서 해당 색을 찾아 사진과 짧은 일기를 남길 수 있습니다. 기록된 색은 캘린더에 쌓이며, 다른 사람과 비교하지 않고 나만의 색 감각과 하루의 분위기를 돌아보는 데 초점을 둡니다.
 
-## Stack
+## 프로젝트 소개
 
-- React + Vite + TypeScript
-- Tailwind CSS with shadcn-style local components
+ColorWalk는 일상 속 색을 관찰하고 기록하는 경험을 앱으로 풀어낸 프로젝트입니다.  
+일반적인 사진 기록 앱이나 SNS처럼 결과물을 공유하고 비교하는 구조가 아니라, 사용자가 자신의 하루를 조용히 돌아볼 수 있는 개인 기록형 서비스로 설계했습니다.
+
+앱은 현재 날씨와 시간 정보를 바탕으로 오늘의 색 미션을 제안합니다. 사용자는 카메라를 통해 주변 사물에서 해당 색을 찾고, 짧은 메모를 남기며 하루의 색을 저장합니다. 이렇게 쌓인 기록은 컬러 캘린더로 확인할 수 있어 사용자가 자신의 일상과 감정의 흐름을 색으로 돌아볼 수 있습니다.
+
+## 주요 기능
+
+- 날씨와 시간대 기반 오늘의 색 미션 제공
+- 카메라를 활용한 색상 탐색
+- 색상 기록과 짧은 저널 작성
+- 날짜별 색 기록을 확인하는 컬러 캘린더
+- 개인 기록 중심의 비공개 사용 경험
+- 웹 앱 및 모바일 앱 형태로 확장 가능한 구조
+
+## 핵심 사용 흐름
+
+1. 사용자는 앱에 접속해 오늘의 색 미션을 확인합니다.
+2. 주변 환경에서 미션 색상과 비슷한 색을 찾습니다.
+3. 카메라를 통해 색을 선택하고 기록합니다.
+4. 짧은 일기나 메모를 함께 남깁니다.
+5. 저장된 기록은 컬러 캘린더에서 날짜별로 확인할 수 있습니다.
+
+## 기술 스택
+
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
 - Zustand
-- Supabase Auth, Postgres, Storage
-- Open-Meteo weather API
+- Supabase Auth, Database, Storage
+- Open-Meteo Weather API
 - Capacitor Android
 - Vitest
 
-## Local Setup
+## 구현 특징
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+### 날씨와 시간 기반 미션
 
-`.env.local` needs:
+사용자의 현재 환경에 맞는 색 미션을 제공하기 위해 날씨 API를 활용했습니다.  
+이를 통해 매일 고정된 색을 제시하는 방식이 아니라, 사용자가 처한 시간과 날씨에 따라 다른 색을 발견하도록 구성했습니다.
 
-```bash
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_PUBLISHABLE_KEY=...
-VITE_AUTH_EMAIL_DOMAIN=...
-VITE_BETA_INVITE_CODE=...
-```
+### 개인 기록 중심 설계
 
-This workspace already has `.env.local` configured for the existing ColorWalk Supabase project. The file is ignored by git.
-`VITE_BETA_INVITE_CODE` is optional locally. Set it for friend-only web beta deployments.
-`VITE_AUTH_EMAIL_DOMAIN` is used only to map a simple username to Supabase email/password auth. For the current beta code, use a deliverable-looking domain such as `gmail.com` unless you configure your own domain.
+ColorWalk는 소셜 피드나 공개 랭킹을 중심에 두지 않습니다.  
+사용자가 타인과 비교하지 않고 자신의 일상에 집중할 수 있도록 개인 기록과 캘린더 중심으로 화면을 구성했습니다.
 
-## Supabase
+### 색상 기록과 저널
 
-The database schema and storage policies were applied to the existing project `nhsvmypztjyhqunixxeg`.
+사용자는 단순히 사진을 저장하는 것이 아니라, 색을 찾은 순간의 느낌이나 짧은 생각을 함께 남길 수 있습니다.  
+이를 통해 기록이 단순한 이미지 저장이 아니라 하루를 돌아보는 작은 저널이 되도록 설계했습니다.
 
-Required Dashboard setting:
+### 웹과 모바일 확장성
 
-- Auth -> Sign In / Providers -> Anonymous sign-ins: enabled
-- Auth -> Sign In / Providers -> Email: enabled
+React 기반 웹 앱으로 개발하면서도 Capacitor를 활용해 Android 앱으로 확장할 수 있는 구조를 마련했습니다.  
+웹 베타 테스트와 모바일 빌드가 모두 가능하도록 프로젝트를 구성했습니다.
 
-The app now shows a signup/login screen before the main app when Supabase is configured. Because Supabase password auth is email-based, ColorWalk maps the visible username to an internal beta email address. Signup goes through the `beta-signup` Edge Function so the service role key stays server-side and new beta users can receive an immediate confirmed session without exposing admin credentials in the frontend.
+## 테스트 및 검증
 
-After enabling anonymous sign-ins, run:
+- 주요 화면 흐름 테스트
+- 색상 기록 저장 및 조회 테스트
+- 사용자 인증 흐름 확인
+- 이미지 저장소 연동 확인
+- 데이터 접근 권한 검증
+- 모바일 환경에서의 사용성 확인
+- 단위 테스트 기반 주요 로직 검증
 
-```bash
-npm run verify:supabase
-```
+## 기대 효과
 
-The script signs in anonymously, upserts a profile, uploads a tiny WebP to `post-images`, inserts/selects a post, and cleans up the test data.
-It also verifies profile beta metadata, DB color-name suggestions, story metadata persistence, and confirms another anonymous user cannot read the post or create a signed URL for the uploaded image.
+ColorWalk는 사용자가 일상 속 사소한 색을 발견하며 자신의 하루를 조금 더 섬세하게 바라보도록 돕는 앱입니다.  
+반복되는 일상 속에서도 오늘의 날씨, 장소, 기분에 따라 다른 색을 발견할 수 있고, 시간이 지나면 개인만의 색 기록이 쌓입니다.
 
-## PWA
-
-The app includes a web manifest and service worker. For a deployed HTTPS web beta, testers can open the link and use the browser install action:
-
-- Chrome/Android: menu -> Add to Home screen or Install app
-- iOS Safari: Share -> Add to Home Screen
-
-Native Android local notifications are available in the Capacitor build. Web/PWA reminders use browser notifications and depend on browser permission and runtime behavior.
-
-## Scripts
-
-```bash
-npm run dev
-npm run build
-npm run lint
-npm test
-npm run cap:sync
-npm run verify:supabase
-```
-
-## Android
-
-The Android platform is scaffolded under `android/`.
-
-For local phone install and mobile preview steps, see [docs/beta-testing-guide.md](docs/beta-testing-guide.md).
-For friend testing without APK sideloading, see [docs/web-beta-deployment.md](docs/web-beta-deployment.md).
-For Play Store Internal testing preparation, see [docs/play-store-internal-testing.md](docs/play-store-internal-testing.md).
-
-To build an APK locally, install JDK 21 and Android SDK. On this PC:
-
-```powershell
-$env:JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
-$env:Path="$env:JAVA_HOME\bin;$env:Path"
-```
-
-Then set one of:
-
-```bash
-ANDROID_HOME=C:\Users\<you>\AppData\Local\Android\Sdk
-```
-
-or create `android/local.properties`:
-
-```properties
-sdk.dir=C\:\\Users\\<you>\\AppData\\Local\\Android\\Sdk
-```
-
-You can start from `android/local.properties.example`.
-
-Then run:
-
-```bash
-cd android
-.\gradlew.bat assembleDebug
-```
-
-On this machine, the debug APK has been verified at:
-
-```text
-android/app/build/outputs/apk/debug/app-debug.apk
-```
+이 프로젝트는 사진, 색상, 날씨, 저널을 결합해 사용자가 자신만의 방식으로 하루를 기록할 수 있는 경험을 만드는 것을 목표로 합니다.
