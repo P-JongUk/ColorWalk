@@ -147,7 +147,7 @@ export async function sendTestReminderNotification(locale: Locale) {
       notifications: [
         {
           id: REMINDER_TEST_NOTIFICATION_ID,
-          title: locale === 'ko' ? 'ColorWalk 테스트 알림' : 'ColorWalk test reminder',
+          title: locale === 'ko' ? 'Hueday 테스트 알림' : 'Hueday test reminder',
           body: copy.body,
           autoCancel: true,
         },
@@ -164,7 +164,7 @@ export async function sendTestReminderNotification(locale: Locale) {
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') throw new Error(locale === 'ko' ? '알림 권한이 꺼져 있어요.' : 'Notification permission is off.')
 
-  new Notification(locale === 'ko' ? 'ColorWalk 테스트 알림' : 'ColorWalk test reminder', {
+  new Notification(locale === 'ko' ? 'Hueday 테스트 알림' : 'Hueday test reminder', {
     body: copy.body,
     icon: '/icon-192.png',
     badge: '/icon-192.png',

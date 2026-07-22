@@ -4,6 +4,16 @@ import animate from 'tailwindcss-animate'
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  safelist: [
+    'color-grid-empty-matte',
+    'color-grid-empty-sage-wash',
+    'color-grid-empty-fine-grid',
+    'color-grid-empty-paper-line',
+    'color-grid-empty-split-surface',
+    'color-grid-empty-soft-stripe',
+    'color-grid-empty-negative-frame',
+    'color-grid-empty-quiet-dot',
+  ],
   theme: {
     extend: {
       colors: {

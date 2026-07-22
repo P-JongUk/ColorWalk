@@ -1,41 +1,66 @@
 import { useEffect, useRef, useState } from 'react'
-import { Images, RotateCcw, Sparkles, X, Zap } from 'lucide-react'
+import { Camera as CameraIcon, Check, Images, RotateCcw, X, Zap } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { getMatchRate } from '@/lib/colors'
-import { pulseForMatch } from '@/lib/haptics'
 import {
-  compressCanvasToWebP,
-  drawImageFileToCanvas,
-  drawVideoToCanvas,
-  sampleCanvasCenter,
-  sampleVideoCenter,
-} from '@/lib/image'
+  buildCameraVideoConstraints,
+  clampZoom,
+  formatZoomValue,
+  getDefaultZoom,
+  getZoomPresetValues,
+  normalizeZoomRange,
+  type CameraZoomRange,
+} from '@/lib/camera'
+import { capturePhotoBlob, fileToDraftImageBlob } from '@/lib/image'
 import { t } from '@/lib/i18n'
-import type { CaptureDraft, Locale, Mission } from '@/types'
+import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
+import type { CaptureDraft, GridDraftImage, Locale, Mission } from '@/types'
 
 type CameraViewProps = {
   locale: Locale
   mission: Mission
+  initialDraft: CaptureDraft | null
   onBack: () => void
-  onCaptured: (draft: CaptureDraft) => void
+  onDraftChange: (draft: CaptureDraft) => void
+  onComplete: (draft: CaptureDraft) => void
 }
 
-export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewProps) {
+function buildDraft(mission: Mission, images: GridDraftImage[], compression?: CaptureDraft['compression']): CaptureDraft {
+  return {
+    mission,
+    gridImages: images,
+    abuseWarning: false,
+    compression,
+  }
+}
+
+type CameraCapabilities = MediaTrackCapabilities & {
+  torch?: boolean
+  zoom?: { min?: number; max?: number; step?: number }
+}
+
+type CameraSettings = MediaTrackSettings & {
+  zoom?: number
+}
+
+export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const backdropVideoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const cameraFileInputRef = useRef<HTMLInputElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const lastPulseRef = useRef(0)
-  const [sampledHex, setSampledHex] = useState('#FFFFFF')
-  const [matchRate, setMatchRate] = useState(0)
+  const [images, setImages] = useState<GridDraftImage[]>(() => initialDraft?.gridImages ?? [])
   const [error, setError] = useState<string | null>(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
   const [torchOn, setTorchOn] = useState(false)
   const [hasTorch, setHasTorch] = useState(false)
+  const [zoomRange, setZoomRange] = useState<CameraZoomRange | null>(null)
+  const [zoomValue, setZoomValue] = useState(1)
 
   useEffect(() => {
-    let animationFrame = 0
     let isMounted = true
 
     function stopStream() {
@@ -48,16 +73,14 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
         setError(null)
         setHasTorch(false)
         setTorchOn(false)
+        setZoomRange(null)
+        setZoomValue(1)
         stopStream()
 
         let stream: MediaStream
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { ideal: facingMode },
-              width: { ideal: 1280 },
-              height: { ideal: 1920 },
-            },
+            video: buildCameraVideoConstraints(facingMode),
             audio: false,
           })
         } catch {
@@ -66,7 +89,13 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
             audio: false,
           })
         }
+        if (!isMounted) return
         streamRef.current = stream
+
+        if (backdropVideoRef.current) {
+          backdropVideoRef.current.srcObject = stream
+          await backdropVideoRef.current.play()
+        }
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream
@@ -74,26 +103,16 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
         }
 
         const [track] = stream.getVideoTracks()
-        const capabilities = track?.getCapabilities?.() as MediaTrackCapabilities & { torch?: boolean }
-        setHasTorch(Boolean(capabilities?.torch))
-
-        const tick = () => {
-          if (!isMounted || !videoRef.current) return
-
-          const sample = sampleVideoCenter(videoRef.current)
-          const nextMatch = getMatchRate(mission.hex, sample.hex)
-          setSampledHex(sample.hex)
-          setMatchRate(nextMatch)
-
-          if (nextMatch >= 90 && Date.now() - lastPulseRef.current > 1600) {
-            lastPulseRef.current = Date.now()
-            void pulseForMatch(nextMatch)
-          }
-
-          animationFrame = window.requestAnimationFrame(tick)
+        const capabilities = track?.getCapabilities?.() as CameraCapabilities
+        const nextZoomRange = normalizeZoomRange(capabilities?.zoom)
+        if (track && nextZoomRange) {
+          const settings = track.getSettings?.() as CameraSettings | undefined
+          const nextZoomValue = clampZoom(settings?.zoom ?? getDefaultZoom(nextZoomRange), nextZoomRange)
+          setZoomRange(nextZoomRange)
+          setZoomValue(nextZoomValue)
+          await track.applyConstraints({ advanced: [{ zoom: nextZoomValue } as MediaTrackConstraintSet] }).catch(() => undefined)
         }
-
-        animationFrame = window.requestAnimationFrame(tick)
+        setHasTorch(Boolean(capabilities?.torch))
       } catch {
         setError(t(locale, 'permissionDenied'))
       }
@@ -103,79 +122,113 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
 
     return () => {
       isMounted = false
-      window.cancelAnimationFrame(animationFrame)
       stopStream()
     }
-  }, [facingMode, locale, mission.hex])
+  }, [facingMode, locale])
 
-  async function capture() {
-    if (!videoRef.current) return
-
-    setIsCapturing(true)
-    try {
-      const canvas = drawVideoToCanvas(videoRef.current)
-      const compressed = await compressCanvasToWebP(canvas)
-      const previewUrl = URL.createObjectURL(compressed.blob)
-
-      onCaptured({
-        previewUrl,
-        imageBlob: compressed.blob,
-        capturedHex: sampledHex,
-        matchRate,
-        abuseWarning: false,
-        compression: {
-          width: compressed.width,
-          height: compressed.height,
-          bytes: compressed.bytes,
-          quality: compressed.quality,
-          source: 'camera',
-        },
-      })
-    } finally {
-      setIsCapturing(false)
+  function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
+    const nextDraft = buildDraft(mission, nextImages, compression)
+    setImages(nextImages)
+    onDraftChange(nextDraft)
+    if (nextImages.length === MAX_GRID_IMAGES) {
+      toast.success(locale === 'ko' ? '8컷을 모두 채웠어요.' : 'All 8 shots are collected.')
     }
   }
 
-  async function captureFromAlbum(file: File) {
-    if (!file.type.startsWith('image/')) {
-      setError(t(locale, 'imageOnly'))
+  async function addBlobToGrid(
+    imageBlob: Blob,
+    imageMeta: { width: number; height: number; bytes: number; mimeType: string },
+    source: 'camera' | 'album',
+  ) {
+    if (images.length >= MAX_GRID_IMAGES) {
+      toast.message(locale === 'ko' ? '오늘 그리드는 이미 가득 찼어요.' : "Today's grid is already full.")
       return
     }
 
     setIsCapturing(true)
     try {
-      const canvas = await drawImageFileToCanvas(file)
-      const sample = sampleCanvasCenter(canvas)
-      const nextMatch = getMatchRate(mission.hex, sample.hex)
-      const compressed = await compressCanvasToWebP(canvas)
-      const previewUrl = URL.createObjectURL(compressed.blob)
-
-      setSampledHex(sample.hex)
-      setMatchRate(nextMatch)
-
-      onCaptured({
+      const previewUrl = URL.createObjectURL(imageBlob)
+      const nextImage: GridDraftImage = {
+        id: crypto.randomUUID(),
+        slot: getNextGridSlot(images.length),
         previewUrl,
-        imageBlob: compressed.blob,
-        capturedHex: sample.hex,
-        matchRate: nextMatch,
-        abuseWarning: false,
-        compression: {
-          width: compressed.width,
-          height: compressed.height,
-          bytes: compressed.bytes,
-          quality: compressed.quality,
-          source: 'album',
-        },
+        imageBlob,
+        width: imageMeta.width,
+        height: imageMeta.height,
+        bytes: imageMeta.bytes,
+        quality: null,
+        mimeType: imageMeta.mimeType,
+        originalWidth: imageMeta.width,
+        originalHeight: imageMeta.height,
+        originalBytes: imageMeta.bytes,
+        source,
+        createdAt: new Date().toISOString(),
+      }
+      commitImages([...images, nextImage], {
+        width: imageMeta.width,
+        height: imageMeta.height,
+        bytes: imageMeta.bytes,
+        quality: 1,
+        source,
+        stage: 'draft',
       })
-    } catch {
-      setError(t(locale, 'imageLoadFailed'))
     } finally {
       setIsCapturing(false)
     }
   }
 
+  async function capture() {
+    if (!videoRef.current) return
+    const [track] = streamRef.current?.getVideoTracks() ?? []
+    if (!track) return
+
+    setIsCapturing(true)
+    try {
+      const photo = await capturePhotoBlob(track, videoRef.current)
+      await addBlobToGrid(photo.blob, photo, 'camera')
+    } catch {
+      setError(locale === 'ko' ? '사진을 찍지 못했어요. 기본 카메라나 앨범을 사용해보세요.' : 'Could not take a photo. Try the native camera or album.')
+    } finally {
+      setIsCapturing(false)
+    }
+  }
+
+  async function captureFromFile(file: File, source: 'camera' | 'album') {
+    if (!file.type.startsWith('image/')) {
+      setError(t(locale, 'imageOnly'))
+      return
+    }
+
+    try {
+      const image = await fileToDraftImageBlob(file)
+      await addBlobToGrid(image.blob, image, source)
+    } catch {
+      setError(t(locale, 'imageLoadFailed'))
+    }
+  }
+
   function openAlbumPicker() {
     fileInputRef.current?.click()
+  }
+
+  function openNativeCameraCapture() {
+    cameraFileInputRef.current?.click()
+  }
+
+  async function applyCameraZoom(nextValue: number) {
+    if (!zoomRange) return
+    const [track] = streamRef.current?.getVideoTracks() ?? []
+    if (!track) return
+
+    const nextZoomValue = clampZoom(nextValue, zoomRange)
+    setZoomValue(nextZoomValue)
+
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: nextZoomValue } as MediaTrackConstraintSet] })
+    } catch {
+      setZoomRange(null)
+      toast.message(locale === 'ko' ? '이 브라우저에서는 줌 조절이 불안정해요.' : 'Zoom controls are not stable in this browser.')
+    }
   }
 
   async function toggleTorch() {
@@ -190,11 +243,18 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
     }
   }
 
-  const glow = matchRate >= 95 ? 'camera-ring-glow' : ''
+  const canComplete = images.length > 0
+  const zoomPresets = zoomRange ? getZoomPresetValues(zoomRange) : []
+  const zoomLabel = formatZoomValue(zoomValue)
 
   return (
     <main className="camera-screen">
-      {!error ? <video ref={videoRef} className="absolute inset-0 size-full object-cover" playsInline muted /> : null}
+      {!error ? (
+        <>
+          <video ref={backdropVideoRef} className="camera-video-backdrop absolute inset-0 size-full" playsInline muted />
+          <video ref={videoRef} className="camera-video absolute inset-0 size-full" playsInline muted />
+        </>
+      ) : null}
       <input
         ref={fileInputRef}
         type="file"
@@ -203,7 +263,19 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
         onChange={(event) => {
           const file = event.currentTarget.files?.[0]
           event.currentTarget.value = ''
-          if (file) void captureFromAlbum(file)
+          if (file) void captureFromFile(file, 'album')
+        }}
+      />
+      <input
+        ref={cameraFileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0]
+          event.currentTarget.value = ''
+          if (file) void captureFromFile(file, 'camera')
         }}
       />
       <div className="camera-vignette" />
@@ -213,8 +285,7 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
           <X aria-hidden="true" />
         </Button>
         <div className="camera-pill">
-          <span>{locale === 'ko' ? '조명을 잘 비춰서 비춰보세요' : 'Catch the light softly'}</span>
-          <Sparkles className="camera-pill-icon" aria-hidden="true" />
+          <span>{locale === 'ko' ? `${images.length}/8컷 모으는 중` : `${images.length}/8 shots`}</span>
         </div>
         <Button
           type="button"
@@ -240,39 +311,66 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
               {t(locale, 'today')}
             </Button>
           </div>
-        ) : (
-          <div className="camera-target">
-            <div className={`camera-ring absolute inset-0 ${glow}`} style={{ backgroundColor: `${sampledHex}18` }} />
-            <div className="camera-crosshair" />
-          </div>
-        )}
+        ) : null}
       </div>
 
       {!error ? (
-        <footer className="camera-footer">
-          <div className="camera-sample-help">{locale === 'ko' ? '탭하면 색을 샘플링해요' : 'Tap to sample this color'}</div>
-          <div className="camera-match-card">
-            <div className="camera-swatch-block">
-              <span style={{ backgroundColor: mission.hex }} />
-              <small>{t(locale, 'target')}</small>
-              <strong>{mission.hex}</strong>
-            </div>
-            <div className="camera-match-ring">
-              <b>{matchRate}%</b>
-              <small>{t(locale, 'match')}</small>
-            </div>
-            <div className="camera-swatch-block">
-              <span style={{ backgroundColor: sampledHex }} />
-              <small>{t(locale, 'sampled')}</small>
-              <strong>{sampledHex}</strong>
-            </div>
+        <footer className="camera-footer camera-footer-grid">
+          <div className="camera-zoom-panel">
+            {zoomRange ? (
+              <>
+                <div className="camera-zoom-presets" aria-label={locale === 'ko' ? '줌 배율' : 'Zoom presets'}>
+                  {zoomPresets.map((preset) => (
+                    <button
+                      type="button"
+                      key={preset}
+                      className={Math.abs(preset - zoomValue) < 0.05 ? 'is-active' : undefined}
+                      onClick={() => void applyCameraZoom(preset)}
+                    >
+                      {formatZoomValue(preset)}x
+                    </button>
+                  ))}
+                </div>
+                <label className="camera-zoom-slider">
+                  <span>{zoomLabel}x</span>
+                  <input
+                    type="range"
+                    min={zoomRange.min}
+                    max={zoomRange.max}
+                    step={zoomRange.step}
+                    value={zoomValue}
+                    aria-label={locale === 'ko' ? '카메라 줌 조절' : 'Adjust camera zoom'}
+                    onChange={(event) => void applyCameraZoom(Number(event.currentTarget.value))}
+                  />
+                </label>
+              </>
+            ) : (
+              <span>{locale === 'ko' ? '인앱 카메라' : 'In-app camera'}</span>
+            )}
+            <button type="button" className="camera-native-link" onClick={openNativeCameraCapture}>
+              <CameraIcon aria-hidden="true" />
+              {locale === 'ko' ? '기본 카메라' : 'Native'}
+            </button>
           </div>
-          <Progress value={matchRate} className="sr-only" />
+          <div className="camera-grid-card">
+            <div>
+              <strong>{mission.label[locale]}</strong>
+              <span>{t(locale, 'captureTip')}</span>
+            </div>
+            <GridCollage
+              locale={locale}
+              missionHex={mission.hex}
+              colorName={mission.label[locale]}
+              images={images}
+              variant="camera"
+              onEmptyClick={openAlbumPicker}
+            />
+          </div>
           <div className="camera-actions">
             <Button type="button" variant="soft" size="icon" onClick={openAlbumPicker} disabled={isCapturing} aria-label={t(locale, 'albumSelect')}>
               <Images aria-hidden="true" />
             </Button>
-            <button type="button" className="camera-shutter" onClick={() => void capture()} disabled={isCapturing} aria-label={t(locale, 'capture')} />
+            <button type="button" className="camera-shutter" onClick={() => void capture()} disabled={isCapturing || images.length >= MAX_GRID_IMAGES} aria-label={t(locale, 'capture')} />
             <Button
               type="button"
               variant="soft"
@@ -283,6 +381,15 @@ export function CameraView({ locale, mission, onBack, onCaptured }: CameraViewPr
               <RotateCcw aria-hidden="true" />
             </Button>
           </div>
+          <Button
+            type="button"
+            className="camera-done-button"
+            disabled={!canComplete}
+            onClick={() => onComplete(buildDraft(mission, images))}
+          >
+            <Check data-icon="inline-start" aria-hidden="true" />
+            {locale === 'ko' ? '저널 쓰기' : 'Write journal'}
+          </Button>
         </footer>
       ) : null}
     </main>

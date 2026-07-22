@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 .npm-cache/
 .tmp/
+.gradle-home*/
 dist
 dist-ssr
 .playwright-mcp/

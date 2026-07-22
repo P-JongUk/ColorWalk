@@ -878,6 +878,20 @@ function getMissionCandidates(weatherGroup: WeatherGroup, timeBucket: TimeBucket
   ]
 }
 
+function getAllMissionCandidates() {
+  return (Object.keys(missionMap) as WeatherGroup[]).flatMap((weatherGroup) =>
+    (Object.keys(missionMap[weatherGroup]) as TimeBucket[]).flatMap((timeBucket) => getMissionCandidates(weatherGroup, timeBucket)),
+  )
+}
+
+function chooseMissionCandidate(candidates: MissionCore[], excludeId?: string) {
+  const filtered = excludeId && candidates.length > 1
+    ? candidates.filter((candidate) => candidate.id !== excludeId)
+    : candidates
+
+  return filtered[Math.floor(Math.random() * filtered.length)] ?? candidates[0]
+}
+
 export function getTimeBucket(date = new Date()): TimeBucket {
   const hour = date.getHours()
 
@@ -935,9 +949,10 @@ export function getRandomMission(
   timeBucket: TimeBucket,
   source: Mission['source'],
   weatherCode?: number,
+  options: { broaden?: boolean; excludeId?: string } = {},
 ): Mission {
-  const candidates = getMissionCandidates(weatherGroup, timeBucket)
-  const selected = candidates[Math.floor(Math.random() * candidates.length)] ?? candidates[0]
+  const candidates = options.broaden ? getAllMissionCandidates() : getMissionCandidates(weatherGroup, timeBucket)
+  const selected = chooseMissionCandidate(candidates, options.excludeId)
 
   return {
     ...selected,

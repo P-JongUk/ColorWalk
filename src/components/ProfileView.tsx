@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 
 import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
+import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
 import { t } from '@/lib/i18n'
@@ -67,12 +68,12 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           <p>{t(locale, 'profile')}</p>
           <h1>{profile?.nickname || t(locale, 'profileTitle')}</h1>
         </div>
-        <ColorWalkMark className="text-coral" />
+        <ColorWalkMark />
       </header>
 
       <section className="profile-card">
-        <ColorWalkMark className="mx-auto text-coral" />
-        <h2>Color Walk</h2>
+        <ColorWalkMark className="mx-auto" />
+        <h2><HuedayWordmark /></h2>
         <p>{profile?.nickname ? `${profile.nickname} · ${t(locale, 'profileSubtitle')}` : t(locale, 'profileSubtitle')}</p>
         <div className="profile-stats">
           <div>
@@ -80,11 +81,11 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
             <span>{t(locale, 'streak')}</span>
           </div>
           <div>
-            <strong>{monthly.count}</strong>
+            <strong>{monthly.completedGridCount}</strong>
             <span>{t(locale, 'monthCollection')}</span>
           </div>
           <div>
-            <strong>{posts.length}</strong>
+            <strong>{monthly.photoCount}</strong>
             <span>{t(locale, 'photoRecord')}</span>
           </div>
         </div>
@@ -94,10 +95,10 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
         <div className="section-heading">
           <div>
             <p>{t(locale, 'streak')}</p>
-            <h2>{locale === 'ko' ? '컬러 배지' : 'Color badges'}</h2>
+            <h2>{locale === 'ko' ? '컬러 리워드 배지' : 'Color reward badges'}</h2>
           </div>
         </div>
-        <BadgeShelf locale={locale} streak={streak} />
+        <BadgeShelf locale={locale} streak={streak} posts={posts} />
       </section>
 
       <section className="soft-section">
@@ -114,7 +115,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           </div>
           <div>
             <ShieldCheck aria-hidden="true" />
-            <span>{locale === 'ko' ? '친구 베타 접근' : 'Friend beta access'}</span>
+            <span>{locale === 'ko' ? '베타 접근' : 'Beta access'}</span>
             <strong>{t(locale, 'betaReady')}</strong>
           </div>
           <div>
@@ -129,7 +130,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
         <div className="section-heading">
           <div>
             <p>{locale === 'ko' ? '매일 알림' : 'Daily reminder'}</p>
-            <h2>{locale === 'ko' ? '오늘의 색을 찍어볼 시간' : 'Time for today’s color'}</h2>
+            <h2>{locale === 'ko' ? '오늘의 색을 찾을 시간' : "Time for today's color"}</h2>
           </div>
           {reminderEnabled ? <Bell aria-hidden="true" /> : <BellOff aria-hidden="true" />}
         </div>
@@ -151,7 +152,7 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           </Button>
           <p>
             {locale === 'ko'
-              ? 'Android 앱에서는 기기가 잠겨 있어도 매일 로컬 알림이 울려요. 웹/PWA에서는 브라우저 권한과 실행 상태에 따라 달라질 수 있어요.'
+              ? 'Android 앱에서는 기기 로컬 알림을 예약해요. 웹/PWA에서는 브라우저 권한과 실행 상태에 따라 달라질 수 있어요.'
               : 'On Android, this schedules a native local notification. On web/PWA, delivery depends on browser permission and whether the app can run.'}
           </p>
         </div>

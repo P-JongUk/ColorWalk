@@ -49,7 +49,7 @@ function getTestAccount() {
   return {
     username,
     password,
-    nickname: process.env.COLORWALK_TEST_NICKNAME || '테스트워커',
+    nickname: process.env.COLORWALK_TEST_NICKNAME || '테스트 워커',
     gender: process.env.COLORWALK_TEST_GENDER || 'prefer_not_to_say',
     birthYear: Number(process.env.COLORWALK_TEST_BIRTH_YEAR || 2008),
     locale: process.env.COLORWALK_TEST_LOCALE || 'ko',
@@ -69,98 +69,195 @@ function toDateKey(offsetDays) {
   return date.toISOString().slice(0, 10)
 }
 
+const assetPool = [
+  'mongle-bloom.webp',
+  'earth-soft-border.webp',
+  'mongle-edge.webp',
+  'earth-fiber-line.webp',
+  'mongle-tape.webp',
+  'earth-stamp-ring.webp',
+  'earth-washi-line.webp',
+  'mongle-dust.webp',
+]
+
+function needsLegacyPostFallback(error) {
+  if (!error) return false
+  const message = error.message ?? ''
+  return (
+    error.code === 'PGRST204' && message.includes('grid_images')
+  ) || (
+    error.code === '42703' && message.includes('grid_images')
+  ) || (
+    error.code === '23514' && message.includes('posts_story_template_id_check')
+  )
+}
+
+function toLegacyTemplateId(templateId) {
+  return {
+    'soft-passport': 'passport',
+    'life-cut': 'minimal',
+    'air-trip': 'travel',
+    'modern-grid': 'modern',
+    newsprint: 'newspaper',
+    'polaroid-grid': 'polaroid',
+    'sponsor-clean': 'minimal',
+    'color-ticket': 'receipt',
+  }[templateId] ?? 'passport'
+}
+
+function toLegacyPostPayload(payload) {
+  const { grid_images: gridImages = [], story_template_id: storyTemplateId, client_meta: clientMeta, ...rest } = payload
+
+  return {
+    ...rest,
+    story_template_id: toLegacyTemplateId(storyTemplateId),
+    client_meta: {
+      ...(clientMeta ?? {}),
+      storyTemplateId,
+      gridImages,
+      gridImagesStorage: 'client_meta_fallback',
+    },
+  }
+}
+
+async function upsertPostWithFallback(client, payload) {
+  const upsert = await client.from('posts').upsert(payload, { onConflict: 'user_id,local_date' })
+  if (!upsert.error || !needsLegacyPostFallback(upsert.error)) {
+    return { ...upsert, usedFallback: false }
+  }
+
+  const fallback = await client.from('posts').upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
+  return { ...fallback, usedFallback: true }
+}
+
+function collectImagePathsFromPosts(posts) {
+  return Array.from(new Set(
+    posts.flatMap((post) => [
+      post.image_path,
+      ...(Array.isArray(post.grid_images) ? post.grid_images : []),
+      ...(Array.isArray(post.client_meta?.gridImages) ? post.client_meta.gridImages : []),
+    ])
+      .map((item) => (typeof item === 'string' ? item : item?.path))
+      .filter((item) => typeof item === 'string' && item && !/^(blob:|data:image\/|https?:\/\/)/.test(item)),
+  ))
+}
+
+async function fetchExistingSeedPostImagePaths(client, userId, localDates) {
+  const fullSelect = await client
+    .from('posts')
+    .select('image_path,grid_images,client_meta')
+    .eq('user_id', userId)
+    .in('local_date', localDates)
+
+  if (!needsLegacyPostFallback(fullSelect.error)) {
+    if (fullSelect.error) throw fullSelect.error
+    return collectImagePathsFromPosts(fullSelect.data ?? [])
+  }
+
+  const fallbackSelect = await client
+    .from('posts')
+    .select('image_path,client_meta')
+    .eq('user_id', userId)
+    .in('local_date', localDates)
+
+  if (fallbackSelect.error) throw fallbackSelect.error
+  return collectImagePathsFromPosts(fallbackSelect.data ?? [])
+}
+
+async function fetchAllSeedPosts(client, userId) {
+  const fullSelect = await client
+    .from('posts')
+    .select('local_date,image_path,grid_images,client_meta')
+    .eq('user_id', userId)
+
+  const data = (() => {
+    if (!needsLegacyPostFallback(fullSelect.error)) {
+      if (fullSelect.error) throw fullSelect.error
+      return fullSelect.data ?? []
+    }
+
+    return null
+  })()
+
+  if (data) {
+    return data.filter((post) => {
+      const paths = collectImagePathsFromPosts([post])
+      return post.client_meta?.seed === true || paths.some((item) => item.includes('-seed-'))
+    })
+  }
+
+  const fallbackSelect = await client
+    .from('posts')
+    .select('local_date,image_path,client_meta')
+    .eq('user_id', userId)
+
+  if (fallbackSelect.error) throw fallbackSelect.error
+  return (fallbackSelect.data ?? []).filter((post) => {
+    const paths = collectImagePathsFromPosts([post])
+    return post.client_meta?.seed === true || paths.some((item) => item.includes('-seed-'))
+  })
+}
+
 const seedPosts = [
   {
     offset: 0,
-    asset: 'mongle-bloom.webp',
     missionHex: '#FF8A7A',
-    capturedHex: '#F6B59B',
-    matchRate: 84,
     customColorName: '피치 멜로우',
-    journalAnswer: '따뜻한 햇살 아래에서 괜히 마음이 느긋해졌던 오후. 좋은 음악과 함께 걷기 딱 좋았어.',
+    journalAnswer: '따뜻한 햇살 아래에서 마음이 느긋해진 오후. 8컷으로 오늘의 산책을 묶어뒀다.',
     missionLabel: '따뜻한 코랄빛',
-    missionPrompt: '오늘은 따뜻한 색을 찾아봐요. 노을, 간판, 과일, 의자 같은 것들!',
-    storyTemplateId: 'passport',
-    storyStickers: [
-      { uid: 'seed-passport-stamp', stickerId: 'passport-stamp', x: 79, y: 75, scale: 0.58, rotation: -10 },
-      { uid: 'seed-soft-cloud', stickerId: 'soft-cloud', x: 10, y: 14, scale: 0.78, rotation: -6 },
-    ],
-    locationName: '서울 성수동',
+    missionPrompt: '오늘은 따뜻한 색을 찾아봐요.',
+    storyTemplateId: 'life-cut',
     weatherGroup: 'clear',
     timeBucket: 'sunset',
+    photoCount: 8,
   },
   {
     offset: 1,
-    asset: 'earth-soft-border.webp',
     missionHex: '#A7C8B3',
-    capturedHex: '#B8D6C8',
-    matchRate: 91,
     customColorName: '비 온 뒤 세이지',
-    journalAnswer: '길가 잎사귀에 남은 빛이 조용해서 잠깐 멈춰 보고 싶었다.',
+    journalAnswer: '길가 잎사귀에 남은 빛이 조용해서 천천히 멈춰 보게 됐다.',
     missionLabel: '부드러운 세이지',
-    missionPrompt: '오늘은 차분한 초록을 찾아봐요. 잎, 컵, 가방, 표지판처럼 작은 초록들!',
-    storyTemplateId: 'mongle',
-    storyStickers: [
-      { uid: 'seed-leaf-lines', stickerId: 'wavy-lines', x: 15, y: 70, scale: 0.72, rotation: 8 },
-    ],
-    locationName: '서울숲 근처',
+    missionPrompt: '오늘은 차분한 초록을 찾아봐요.',
+    storyTemplateId: 'soft-passport',
     weatherGroup: 'clouds',
     timeBucket: 'day',
+    photoCount: 6,
   },
   {
     offset: 2,
-    asset: 'mongle-edge.webp',
     missionHex: '#A9CBE4',
-    capturedHex: '#9EC4DA',
-    matchRate: 88,
     customColorName: '유리창 하늘',
-    journalAnswer: '창문에 비친 하늘색이 오늘 기분을 조금 가볍게 만들었다.',
+    journalAnswer: '창문에 비친 파랑이 오늘 기분을 조금 가볍게 만들어줬다.',
     missionLabel: '맑은 하늘 블루',
-    missionPrompt: '오늘은 맑은 파랑을 찾아봐요. 하늘, 유리, 옷, 포장지 속 파랑!',
-    storyTemplateId: 'travel',
-    storyStickers: [
-      { uid: 'seed-plane', stickerId: 'airplane', x: 68, y: 18, scale: 0.78, rotation: 12 },
-      { uid: 'seed-route', stickerId: 'dotted-route', x: 59, y: 25, scale: 0.7, rotation: -8 },
-    ],
-    locationName: '한강 산책로',
+    missionPrompt: '오늘은 맑은 파랑을 찾아봐요.',
+    storyTemplateId: 'air-trip',
     weatherGroup: 'clear',
     timeBucket: 'day',
+    photoCount: 8,
   },
   {
     offset: 3,
-    asset: 'earth-fiber-line.webp',
     missionHex: '#F4C56E',
-    capturedHex: '#F1CF88',
-    matchRate: 79,
     customColorName: '주말 크림 골드',
     journalAnswer: '작은 조명 아래에서 본 노란빛이 생각보다 포근했다.',
-    missionLabel: '작은 노란빛',
-    missionPrompt: '오늘은 환한 노랑을 찾아봐요. 조명, 과일, 문구류, 간판 속 노랑!',
-    storyTemplateId: 'newspaper',
-    storyStickers: [
-      { uid: 'seed-stars', stickerId: 'sparkle-stars', x: 72, y: 18, scale: 0.7, rotation: -4 },
-    ],
-    locationName: '동네 카페',
+    missionLabel: '작은 전구빛',
+    missionPrompt: '오늘은 은은한 노랑을 찾아봐요.',
+    storyTemplateId: 'newsprint',
     weatherGroup: 'clear',
     timeBucket: 'night',
+    photoCount: 5,
   },
   {
     offset: 4,
-    asset: 'mongle-tape.webp',
     missionHex: '#D7C2E8',
-    capturedHex: '#CDBDE6',
-    matchRate: 86,
     customColorName: '구름 뒤 라벤더',
-    journalAnswer: '느린 오후의 보라빛이 평소보다 조금 특별하게 느껴졌다.',
+    journalAnswer: '흐린 오후의 보라빛이 평소보다 조금 더 선명하게 남았다.',
     missionLabel: '몽글 라벤더',
-    missionPrompt: '오늘은 부드러운 보라를 찾아봐요. 꽃, 노트, 포스터, 그림자 속 보라!',
-    storyTemplateId: 'polaroid',
-    storyStickers: [
-      { uid: 'seed-heart', stickerId: 'heart-outline', x: 12, y: 65, scale: 0.7, rotation: -12 },
-    ],
-    locationName: '집 근처 골목',
+    missionPrompt: '오늘은 부드러운 보라를 찾아봐요.',
+    storyTemplateId: 'polaroid-grid',
     weatherGroup: 'clouds',
     timeBucket: 'sunset',
+    photoCount: 8,
   },
 ]
 
@@ -175,7 +272,6 @@ async function main() {
 
   const url = process.env.VITE_SUPABASE_URL
   const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY
-  const inviteCode = process.env.VITE_BETA_INVITE_CODE
   const testAccount = getTestAccount()
 
   if (!url || !key) throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY.')
@@ -203,7 +299,6 @@ async function main() {
         gender: testAccount.gender,
         birthYear: testAccount.birthYear,
         locale: testAccount.locale,
-        inviteCode,
       },
     })
 
@@ -233,36 +328,72 @@ async function main() {
   }, { onConflict: 'id' })
   if (profileError) throw profileError
 
-  const list = await supabase.storage.from('post-images').list(userId, { limit: 100 })
+  const seedDates = seedPosts.map((seed) => toDateKey(seed.offset))
+  const allSeedPosts = await fetchAllSeedPosts(supabase, userId)
+  const staleSeedDates = allSeedPosts
+    .map((post) => post.local_date)
+    .filter((localDate) => localDate && !seedDates.includes(localDate))
+  if (staleSeedDates.length) {
+    const deleted = await supabase
+      .from('posts')
+      .delete()
+      .eq('user_id', userId)
+      .in('local_date', staleSeedDates)
+    if (deleted.error) throw deleted.error
+  }
+
+  const existingPostImagePaths = await fetchExistingSeedPostImagePaths(supabase, userId, seedDates)
+
+  const list = await supabase.storage.from('post-images').list(userId, { limit: 200 })
   if (list.error) throw list.error
   const oldSeedFiles = (list.data ?? [])
     .map((item) => `${userId}/${item.name}`)
     .filter((name) => name.includes('-seed-'))
-  if (oldSeedFiles.length) {
-    const removed = await supabase.storage.from('post-images').remove(oldSeedFiles)
+  const filesToRemove = Array.from(new Set([...oldSeedFiles, ...existingPostImagePaths]))
+  if (filesToRemove.length) {
+    const removed = await supabase.storage.from('post-images').remove(filesToRemove)
     if (removed.error) throw removed.error
   }
 
   const seededDates = []
+  let fallbackPostCount = 0
 
   for (const seed of seedPosts) {
     const localDate = toDateKey(seed.offset)
-    const imagePath = `${userId}/${localDate}-seed-${seed.asset}`
-    const blob = await getAssetBlob(seed.asset)
+    const gridImages = []
 
-    const upload = await supabase.storage.from('post-images').upload(imagePath, blob, {
-      contentType: 'image/webp',
-      upsert: true,
-    })
-    if (upload.error) throw upload.error
+    for (let index = 0; index < seed.photoCount; index += 1) {
+      const asset = assetPool[(index + seed.offset) % assetPool.length]
+      const imagePath = `${userId}/${localDate}-seed-${index + 1}-${asset}`
+      const blob = await getAssetBlob(asset)
 
-    const { error: postError } = await supabase.from('posts').upsert({
+      const upload = await supabase.storage.from('post-images').upload(imagePath, blob, {
+        contentType: 'image/webp',
+        upsert: true,
+      })
+      if (upload.error) throw upload.error
+
+      const slotOrder = [0, 8, 2, 6, 1, 3, 7, 5]
+      gridImages.push({
+        id: `seed-${localDate}-${index + 1}`,
+        slot: slotOrder[index],
+        path: imagePath,
+        width: 1080,
+        height: 1080,
+        bytes: blob.size,
+        source: 'seed',
+        createdAt: new Date(Date.now() - index * 1000).toISOString(),
+      })
+    }
+
+    const { error: postError, usedFallback } = await upsertPostWithFallback(supabase, {
       user_id: userId,
       local_date: localDate,
       mission_hex: seed.missionHex,
-      captured_hex: seed.capturedHex,
-      match_rate: seed.matchRate,
-      image_path: imagePath,
+      captured_hex: seed.missionHex,
+      match_rate: 0,
+      image_path: gridImages[0]?.path,
+      grid_images: gridImages,
       custom_color_name: seed.customColorName,
       journal_answer: seed.journalAnswer,
       locale: testAccount.locale,
@@ -273,19 +404,23 @@ async function main() {
       mission_prompt: seed.missionPrompt,
       abuse_warning: false,
       story_template_id: seed.storyTemplateId,
-      story_stickers: seed.storyStickers,
-      location_name: seed.locationName,
-      location_latitude: 37.5446,
-      location_longitude: 127.0557,
-      location_accuracy_m: 120,
+      story_stickers: [
+        { uid: `seed-${localDate}-stamp`, stickerId: 'passport-stamp', x: 82, y: 82, scale: 0.52, rotation: -10 },
+      ],
+      location_name: null,
+      location_latitude: null,
+      location_longitude: null,
+      location_accuracy_m: null,
       client_meta: {
         app: 'colorwalk',
         seed: true,
-        seedVersion: 1,
+        seedVersion: 3,
+        feature: '3x3-grid',
         source: 'scripts/seed-beta-test-account.mjs',
       },
-    }, { onConflict: 'user_id,local_date' })
+    })
     if (postError) throw postError
+    if (usedFallback) fallbackPostCount += 1
     seededDates.push(localDate)
   }
 
@@ -294,10 +429,11 @@ async function main() {
   console.log(JSON.stringify({
     ok: true,
     username: testAccount.username,
-    password: testAccount.password,
-    email,
     userId,
     seededDates,
+    gridImageStorage: fallbackPostCount ? 'client_meta_fallback' : 'grid_images',
+    fallbackPostCount,
+    credentialsFile: 'docs/beta-test-account.private.md',
   }, null, 2))
 }
 

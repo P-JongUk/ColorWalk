@@ -1,4 +1,4 @@
-# Release Readiness Notes
+# Hueday Release Readiness Notes
 
 ## What Must Pass Before Sharing
 
@@ -9,15 +9,22 @@
 - `npm run seed:test-account`
 - `npm run cap:sync`
 
+Latest verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`, `seed:test-account`, `cap:sync`, Android debug APK build, Android release AAB build, and Vercel production deploy passed after the safe-zone launcher icon, unlocked shuffle button explanation, post-save draft cleanup, and natural one-line journal UX changes.
+
 ## PWA Beta
 
 - Current HTTPS beta URL: `https://colorwalk-tau.vercel.app`
-- Current friend invite code: `colorwalk-friends`
-- Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_AUTH_EMAIL_DOMAIN`, and `VITE_BETA_INVITE_CODE`.
-- Share the HTTPS URL plus invite code with friends.
+- Latest production deployment id: `dpl_G5ZcjDLTykUB4DNJsRXM5s7FBGGG`
+- Browser invite-code gate: disabled.
+- Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `VITE_AUTH_EMAIL_DOMAIN`.
+- Share the HTTPS URL with friends and have them sign up or sign in through the username/password beta flow.
 - Android Chrome users can install from browser menu -> Add to Home screen / Install app.
 - iOS users can install from Safari Share -> Add to Home Screen.
-- Preferred free deployment path: Vercel Git import of `P-JongUk/ColorWalk`, with the env vars above configured in Vercel.
+- PWA camera now defaults to in-app `getUserMedia` capture instead of opening the phone's native camera app from the shutter. Supported mobile browsers expose an in-app zoom slider through `MediaStreamTrack.applyConstraints({ zoom })`; unsupported browsers keep in-app capture and show a small native camera fallback button.
+- PWA camera quality still depends on each browser/device. `ImageCapture.takePhoto()` is used when available for higher-resolution stills, then save-time WebP compression protects storage size. Physical phone QA remains required for lens choice, zoom range, low-light quality, and share-sheet behavior.
+- Installed PWA icons use padded maskable-safe artwork. If a phone still shows the cropped old icon, remove the old home-screen app and reinstall because Android/iOS launchers cache installed icons aggressively.
+- Story template/sticker tools are enabled by default. Set `VITE_SIMPLE_STORY_EDITOR=true` only if a beta build needs the simplified export-only story editor.
+- Preferred free deployment path: Vercel Git import of `P-JongUk/ColorWalk`, with the env vars above configured in Vercel. Public product name is Hueday; repository/project names may still use the original ColorWalk codename.
 - Fallback path: GitHub Pages workflow in `.github/workflows/deploy-pages.yml`.
 
 ## Security Checklist
@@ -26,7 +33,8 @@
 - RLS enabled on exposed public tables.
 - Storage paths remain owner-scoped under `{auth.uid()}/...`.
 - Uploads are WebP-only and size-guarded before storage upload.
-- Invite code is a beta gate only; do not treat it as strong authentication.
+- Journal/story saves no longer persist the user's current capture location. Location permission is only used for weather/time mission generation.
+- Do not treat the old invite-code gate as security; beta access depends on the authenticated account flow.
 - Keep `docs/*.private.md`, `.env*`, `.design-references/`, and `.lazyweb/` out of git.
 
 ## GitHub
@@ -42,5 +50,8 @@ Push beta work to `main` unless a dedicated review branch is requested.
 ## Remaining Manual QA
 
 - Android emulator QA on `ColorWalkPixel7` passed for location permission, camera permission, camera capture, journal save, same-day replacement confirm, history, native story share sheet, notification permission, and immediate test notification display.
+- Latest Android outputs:
+  - `android/app/build/outputs/apk/debug/app-debug.apk`
+  - `android/app/build/outputs/bundle/release/app-release.aab`
 - Real physical phone QA is still recommended for PWA install, camera feel, share targets installed on the user's phone, and notification behavior while the phone is locked.
 - Android daily reminder delivery may be delayed by exact-alarm policy on Android 12+. The profile "테스트 알림 보내기" button verifies notification permission/channel/display immediately.

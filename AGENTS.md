@@ -1,13 +1,16 @@
-# ColorWalk Codex Handoff
+# Hueday Codex Handoff
 
 Read this file before coding in this repository.
 
 ## Current Product Direction
 
+- Public product brand: `Hueday`. Keep internal repo paths, Supabase namespace, Android package, storage keys, and Vercel project names as `ColorWalk`/`colorwalk` unless a deliberate migration is planned.
 - Main target: Korean beta users, especially teens and young adults.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
+- Reward/badge direction: streak badges are creative keys, not scores. When capture, story, profile, or monetization features change, preserve the milestone-to-creative-unlock loop and update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
+- Product growth direction: see `docs/product-growth-strategy.md`. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
 
 ## Local Commands
 
@@ -47,7 +50,6 @@ Required browser env vars:
 VITE_SUPABASE_URL
 VITE_SUPABASE_PUBLISHABLE_KEY
 VITE_AUTH_EMAIL_DOMAIN
-VITE_BETA_INVITE_CODE
 ```
 
 Only publishable Supabase keys may be used in Vite/browser code. Service role keys are allowed only in Supabase Edge Functions or local admin tooling and must never be committed.
@@ -55,7 +57,7 @@ Only publishable Supabase keys may be used in Vite/browser code. Service role ke
 ## Live Web Beta
 
 - URL: `https://colorwalk-tau.vercel.app`
-- Invite code: `colorwalk-friends`
+- Browser invite gate: disabled. Use the username/password beta account flow.
 - Vercel project: `parkjonguks-projects/colorwalk`
 
 For local Vercel CLI work, keep Vercel config/cache on D because the C drive can be full:
@@ -76,6 +78,7 @@ The last successful production deploy used local `npm run build`, manual `.verce
 - Account creation path: username/password form calls the deployed `beta-signup` Edge Function, then signs in through Supabase Auth.
 - RLS/storage policies are owner-scoped by `auth.uid()`.
 - `npm run verify:supabase` must keep checking anonymous sign-in, anonymous data-write denial, password-user profile upsert, post CRUD, signed storage read, and cross-user denial.
+- Current 3x3-grid beta code writes `posts.grid_images` when the migration exists, and automatically falls back to `posts.client_meta.gridImages` on the live project until the `20260529200000_add_grid_images.sql` migration can be applied with authenticated Supabase admin access.
 
 ## Beta Test Account
 
@@ -100,7 +103,28 @@ Use the D-drive SDK/AVD for emulator QA so the C drive does not fill up:
 $env:ANDROID_SDK_ROOT='D:\Android\Sdk'
 $env:ANDROID_HOME='D:\Android\Sdk'
 $env:ANDROID_AVD_HOME='D:\Android\Avd'
+$env:GRADLE_USER_HOME='D:\GradleCacheColorWalk'
+$env:TEMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:TMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:GRADLE_OPTS='-Djava.io.tmpdir=D:\JongUk\Documents\ColorWalk\.tmp'
 Start-Process -FilePath 'D:\Android\Sdk\emulator\emulator.exe' -ArgumentList '-avd ColorWalkPixel7 -no-snapshot -no-audio -no-boot-anim -camera-back emulated -gpu swiftshader_indirect' -WindowStyle Hidden
+```
+
+For Android Gradle builds on this machine, keep Gradle and Java temp writes on D because C can be completely full:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+$env:ANDROID_SDK_ROOT='D:\Android\Sdk'
+$env:ANDROID_HOME='D:\Android\Sdk'
+$env:ANDROID_AVD_HOME='D:\Android\Avd'
+$env:GRADLE_USER_HOME='D:\GradleCacheColorWalk'
+$env:TEMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:TMP='D:\JongUk\Documents\ColorWalk\.tmp'
+$env:GRADLE_OPTS='-Djava.io.tmpdir=D:\JongUk\Documents\ColorWalk\.tmp'
+cd android
+.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:assembleDebug
+.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:bundleRelease
 ```
 
 Android emulator QA on `ColorWalkPixel7` has verified location permission, camera permission, camera capture, journal save/replace, history, native story share sheet, notification permission, and immediate test notification display. Physical phone PWA install QA is still user-side.
@@ -115,6 +139,6 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## Release Rules
 
 - PWA must be served over HTTPS for camera/location/install behavior.
-- Invite code is a friend-only beta gate, not security.
+- The browser invite-code gate is disabled; do not reintroduce it unless the product direction changes.
 - Browser build must not expose service role keys or local private docs.
 - Before sharing a URL, run lint/test/build/Supabase verification and one browser QA path from login to story export.

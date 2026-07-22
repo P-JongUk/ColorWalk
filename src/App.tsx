@@ -4,19 +4,21 @@ import type { Session } from '@supabase/supabase-js'
 
 import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
-import { InviteGate } from '@/components/InviteGate'
 import { TodayView } from '@/components/TodayView'
 import { getLocalDateKey } from '@/lib/date'
-import { hasBetaAccess, isBetaGateEnabled } from '@/lib/betaGate'
+import { clearCachedDraft, loadCachedDraft, saveCachedDraft } from '@/lib/draftStorage'
+import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
+import { compressBlobToHistoryWebP } from '@/lib/image'
 import { getRandomMission } from '@/lib/mission'
 import { startWebReminderScheduler } from '@/lib/notifications'
-import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage } from '@/lib/supabase'
+import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
-import type { Locale, Post, SavedLocation, StoryDesign, UserProfile } from '@/types'
+import type { GridImage, Locale, Post, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
+const MISSION_SHUFFLE_PREFIX = 'colorwalk:mission-shuffle-count'
 
 const CalendarView = lazy(() => import('@/components/CalendarView').then((module) => ({ default: module.CalendarView })))
 const CameraView = lazy(() => import('@/components/CameraView').then((module) => ({ default: module.CameraView })))
@@ -54,7 +56,6 @@ function App() {
   const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
   const [isSaving, setIsSaving] = useState(false)
   const [isLocalOnly, setIsLocalOnly] = useState(!isSupabaseConfigured)
-  const [betaUnlocked, setBetaUnlocked] = useState(() => hasBetaAccess())
 
   async function hydrateAuthenticatedSession(nextSession: Session) {
     if (nextSession.user.is_anonymous) {
@@ -82,8 +83,16 @@ function App() {
 
     async function boot() {
       try {
-        const nextMission = await loadTodayMission(locale)
+        const [nextMission, cachedDraft] = await Promise.all([
+          loadTodayMission(locale),
+          loadCachedDraft(),
+        ])
         if (!isMounted) return
+        if (cachedDraft) {
+          setDraft(cachedDraft)
+          setMission(cachedDraft.mission, nextMission.usedFallbackLocation)
+          return
+        }
         setMission(nextMission.mission, nextMission.usedFallbackLocation)
       } catch {
         toast.error(t(locale, 'loadingMission'))
@@ -95,7 +104,7 @@ function App() {
     return () => {
       isMounted = false
     }
-  }, [locale, setMission])
+  }, [locale, setDraft, setMission])
 
   useEffect(() => {
     let isMounted = true
@@ -191,30 +200,35 @@ function App() {
     setProfile(null)
     setPosts([])
     setDraft(null)
+    void clearCachedDraft()
     setActiveTab('today')
+  }
+
+  function handleDraftChange(nextDraft: typeof draft) {
+    setDraft(nextDraft)
+    void saveCachedDraft(nextDraft)
   }
 
   async function saveEntry({
     colorName,
     journalAnswer,
     storyDesign,
-    location,
   }: {
     colorName: string
     journalAnswer: string
     storyDesign: StoryDesign
-    location: SavedLocation | null
   }) {
-    if (!mission || !draft) return
+    if (!mission || !draft || draft.gridImages.length === 0) return
 
+    const activeMission = draft.mission ?? mission
     const localDate = getLocalDateKey()
     const existingTodayPost = posts.find((post) => post.local_date === localDate)
 
     if (existingTodayPost) {
       const shouldReplace = window.confirm(
         locale === 'ko'
-          ? '오늘 기록을 새 사진으로 갱신할까요? 기존 사진은 히스토리에서 교체돼요.'
-          : "Replace today's entry with this new photo? The previous one will be replaced in history.",
+          ? '오늘 기록을 새 그리드로 바꿀까요? 기존 사진은 히스토리에서 교체돼요.'
+          : "Replace today's entry with this new grid? The previous photos will be replaced in history.",
       )
       if (!shouldReplace) return
     }
@@ -223,80 +237,132 @@ function App() {
 
     try {
       if (supabase && session) {
-        const imagePath = await uploadPostImage(session.user.id, localDate, draft.imageBlob)
+        const compressedGridImages = await Promise.all(
+          draft.gridImages.map(async (image) => ({
+            source: image,
+            compressed: await compressBlobToHistoryWebP(image.imageBlob),
+          })),
+        )
+        const uploadPaths = await Promise.all(
+          compressedGridImages.map(({ compressed }) => uploadPostImage(session.user.id, localDate, compressed.blob)),
+        )
+        const uploadDraftImages = compressedGridImages.map(({ source, compressed }) => ({
+          ...source,
+          imageBlob: compressed.blob,
+          width: compressed.width,
+          height: compressed.height,
+          bytes: compressed.bytes,
+          quality: compressed.quality,
+        }))
+        const gridImages = toStoredGridImages(uploadDraftImages, uploadPaths)
+        const imagePath = gridImages[0]?.path ?? uploadPaths[0]
         const payload = {
           user_id: session.user.id,
           local_date: localDate,
-          mission_hex: mission.hex,
-          captured_hex: draft.capturedHex,
-          match_rate: draft.matchRate,
+          mission_hex: activeMission.hex,
+          captured_hex: activeMission.hex,
+          match_rate: 0,
           image_path: imagePath,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
           locale,
-          weather_code: mission.weatherCode ?? null,
-          weather_group: mission.weatherGroup,
-          time_bucket: mission.timeBucket,
-          mission_label: mission.label[locale],
-          mission_prompt: mission.prompt[locale],
+          weather_code: activeMission.weatherCode ?? null,
+          weather_group: activeMission.weatherGroup,
+          time_bucket: activeMission.timeBucket,
+          mission_label: activeMission.label[locale],
+          mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
-          location_name: location?.name || null,
-          location_latitude: location?.latitude ?? null,
-          location_longitude: location?.longitude ?? null,
-          location_accuracy_m: location?.accuracyMeters ?? null,
+          location_name: null,
+          location_latitude: null,
+          location_longitude: null,
+          location_accuracy_m: null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
+          grid_images: gridImages,
           client_meta: {
             app: 'colorwalk',
             savedFrom: 'journal',
-            version: 'beta',
-            compression: draft.compression ?? null,
+            feature: '3x3-grid',
+            version: 'beta-3x3',
+            gridPhotoCount: gridImages.length,
+            compression: {
+              stage: 'upload',
+              images: compressedGridImages.map(({ source, compressed }) => ({
+                id: source.id,
+                source: source.source,
+                originalWidth: source.originalWidth ?? source.width,
+                originalHeight: source.originalHeight ?? source.height,
+                originalBytes: source.originalBytes ?? source.bytes,
+                uploadWidth: compressed.width,
+                uploadHeight: compressed.height,
+                uploadBytes: compressed.bytes,
+                uploadQuality: compressed.quality,
+              })),
+            },
           },
         }
 
-        const { error } = await supabase
-          .from('posts')
-          .upsert(payload, { onConflict: 'user_id,local_date' })
+        const { error } = await upsertPostWithGridFallback(payload)
 
         if (error) throw error
 
-        if (existingTodayPost?.image_path && existingTodayPost.image_path !== imagePath) {
-          await deletePostImage(existingTodayPost.image_path).catch((error) => {
-            console.warn('Failed to remove replaced post image', error)
-          })
-        }
+        await Promise.all(
+          getPostImagePaths(existingTodayPost)
+            .filter((path) => !uploadPaths.includes(path))
+            .map((path) =>
+              deletePostImage(path).catch((error) => {
+                console.warn('Failed to remove replaced post image', error)
+              }),
+            ),
+        )
 
         setPosts(await fetchPosts(session.user.id))
       } else {
+        const localGridImages: GridImage[] = draft.gridImages.map((image) => ({
+          id: image.id,
+          slot: image.slot,
+          path: image.previewUrl,
+          signedUrl: image.previewUrl,
+          previewUrl: image.previewUrl,
+          width: image.width,
+          height: image.height,
+          bytes: image.bytes,
+          source: image.source,
+          createdAt: image.createdAt,
+        }))
+        const primaryImage = localGridImages[0]?.previewUrl ?? ''
         const localPost: Post = {
           id: crypto.randomUUID(),
           user_id: 'local',
           created_at: new Date().toISOString(),
           local_date: localDate,
-          mission_hex: mission.hex,
-          captured_hex: draft.capturedHex,
-          match_rate: draft.matchRate,
-          image_path: draft.previewUrl,
-          signedImageUrl: draft.previewUrl,
+          mission_hex: activeMission.hex,
+          captured_hex: activeMission.hex,
+          match_rate: 0,
+          image_path: primaryImage,
+          signedImageUrl: primaryImage,
           custom_color_name: colorName || null,
           journal_answer: journalAnswer || null,
           locale,
-          weather_code: mission.weatherCode ?? null,
-          weather_group: mission.weatherGroup,
-          time_bucket: mission.timeBucket,
-          mission_label: mission.label[locale],
-          mission_prompt: mission.prompt[locale],
+          weather_code: activeMission.weatherCode ?? null,
+          weather_group: activeMission.weatherGroup,
+          time_bucket: activeMission.timeBucket,
+          mission_label: activeMission.label[locale],
+          mission_prompt: activeMission.prompt[locale],
           abuse_warning: draft.abuseWarning,
-          location_name: location?.name || null,
-          location_latitude: location?.latitude ?? null,
-          location_longitude: location?.longitude ?? null,
-          location_accuracy_m: location?.accuracyMeters ?? null,
+          location_name: null,
+          location_latitude: null,
+          location_longitude: null,
+          location_accuracy_m: null,
           story_template_id: storyDesign.templateId,
           story_stickers: storyDesign.stickers,
+          grid_images: localGridImages,
           client_meta: {
             app: 'colorwalk',
             savedFrom: 'local-journal',
-            version: 'beta',
+            feature: '3x3-grid',
+            version: 'beta-3x3',
+            gridPhotoCount: localGridImages.length,
             compression: draft.compression ?? null,
           },
         }
@@ -306,6 +372,7 @@ function App() {
       }
 
       setDraft(null)
+      void clearCachedDraft()
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
     } catch (error) {
@@ -318,12 +385,32 @@ function App() {
 
   function shuffleMission() {
     if (!mission) return
+    const localDate = getLocalDateKey()
+    const hasCapturedToday = Boolean(draft?.gridImages.length) || posts.some((post) => post.local_date === localDate)
+
+    if (hasCapturedToday) {
+      toast.message(
+        locale === 'ko'
+          ? '사진을 찍은 뒤에는 오늘의 색을 바꿀 수 없어요.'
+          : "Today's color is locked after you start capturing.",
+      )
+      return
+    }
+
+    const storageKey = `${MISSION_SHUFFLE_PREFIX}:${localDate}`
+    const storedCount = Number(localStorage.getItem(storageKey) ?? '0')
+    const count = Number.isFinite(storedCount) ? Math.max(0, storedCount) : 0
+    const broaden = count >= 4
 
     setMission(
-      getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode),
+      getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode, {
+        broaden,
+        excludeId: mission.id,
+      }),
       usedFallbackLocation,
     )
-    toast.success(locale === 'ko' ? '오늘의 색을 다시 골랐어요.' : "Today's color was shuffled.")
+    localStorage.setItem(storageKey, String(count + 1))
+    toast.success(locale === 'ko' ? (broaden ? '전체 팔레트에서 새 색을 골랐어요.' : '오늘 날씨에 맞는 다른 색을 골랐어요.') : "Today's color was shuffled.")
   }
 
   const content = (() => {
@@ -332,9 +419,11 @@ function App() {
         <CameraView
           locale={locale}
           mission={mission}
+          initialDraft={draft}
           onBack={() => setActiveTab('today')}
-          onCaptured={(nextDraft) => {
-            setDraft(nextDraft)
+          onDraftChange={handleDraftChange}
+          onComplete={(nextDraft) => {
+            handleDraftChange(nextDraft)
             setActiveTab('journal')
           }}
         />
@@ -355,7 +444,7 @@ function App() {
     }
 
     if (activeTab === 'calendar') {
-      return <CalendarView locale={locale} posts={posts} />
+      return <CalendarView locale={locale} posts={posts} currentDraft={draft} />
     }
 
     if (activeTab === 'profile') {
@@ -381,21 +470,12 @@ function App() {
         onStartCamera={() => setActiveTab('camera')}
         onToggleLocale={toggleLocale}
         onShuffleMission={shuffleMission}
+        canShuffleMission={!draft?.gridImages.length && !posts.some((post) => post.local_date === getLocalDateKey())}
       />
     )
   })()
 
   const showNav = activeTab !== 'camera'
-
-  if (isBetaGateEnabled() && !betaUnlocked) {
-    return (
-      <div className="phone-shell flex justify-center">
-        <div className="app-frame">
-          <InviteGate locale={locale} onUnlock={() => setBetaUnlocked(true)} />
-        </div>
-      </div>
-    )
-  }
 
   if (isSupabaseConfigured && isAuthLoading) {
     return (

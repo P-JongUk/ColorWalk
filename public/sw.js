@@ -1,5 +1,15 @@
-const CACHE_NAME = 'colorwalk-shell-v2'
-const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']
+const CACHE_NAME = 'hueday-shell-v3-safe-icons'
+const APP_SHELL = [
+  '/',
+  '/manifest.webmanifest',
+  '/favicon.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
+  '/brand/hueday-app-icon.png',
+  '/brand/hueday-mark-transparent.png',
+  '/brand/hueday-wordmark.png',
+]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

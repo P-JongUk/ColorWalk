@@ -5,6 +5,7 @@ import { Share } from '@capacitor/share'
 import { Download, Eraser, Minus, Plus, RotateCcw, Search, Share2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { GridCollage } from '@/components/GridCollage'
 import { StoryCard, type StoryCardData } from '@/components/StoryCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,6 +23,9 @@ import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import type { Locale, StoryDesign, StoryStickerCategory, StoryStickerItem, StoryTemplateId } from '@/types'
 
+const STORY_DECORATION_TOOLS_ENABLED = import.meta.env.VITE_SIMPLE_STORY_EDITOR !== 'true'
+const SIMPLE_STORY_TEMPLATE_ID: StoryTemplateId = 'modern-grid'
+
 type StoryStudioProps = {
   locale: Locale
   data: Omit<StoryCardData, 'locale' | 'templateId'>
@@ -29,10 +33,10 @@ type StoryStudioProps = {
   onDesignChange?: (design: StoryDesign) => void
 }
 
-async function exportElement(element: HTMLElement, filename: string) {
+async function exportElement(element: HTMLElement, filename: string, size = { width: 1080, height: 1920 }) {
   const { default: html2canvas } = await import('html2canvas')
   const bounds = element.getBoundingClientRect()
-  const scale = 1080 / bounds.width
+  const scale = size.width / bounds.width
   element.classList.add('story-exporting')
   let sourceCanvas: HTMLCanvasElement
   try {
@@ -45,8 +49,8 @@ async function exportElement(element: HTMLElement, filename: string) {
     element.classList.remove('story-exporting')
   }
   const canvas = document.createElement('canvas')
-  canvas.width = 1080
-  canvas.height = 1920
+  canvas.width = size.width
+  canvas.height = size.height
   const context = canvas.getContext('2d')
   if (!context) throw new Error('Failed to render story')
   context.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height)
@@ -63,9 +67,9 @@ async function exportElement(element: HTMLElement, filename: string) {
   })
 }
 
-function storyFilename() {
+function exportFilename(kind: 'story' | 'grid') {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
-  return `colorwalk-story-${stamp}.png`
+  return kind === 'grid' ? `hueday-3x3-${stamp}.png` : `hueday-story-${stamp}.png`
 }
 
 function fileToBase64(file: File) {
@@ -80,11 +84,11 @@ function fileToBase64(file: File) {
   })
 }
 
-async function shareNativeStory(file: File, locale: Locale, mode: 'download' | 'share') {
-  const path = `stories/${file.name}`
+async function shareNativeStory(file: File, locale: Locale, mode: 'download' | 'share', kind: 'story' | 'grid') {
+  const path = `${kind === 'grid' ? 'grids' : 'stories'}/${file.name}`
 
   await Filesystem.mkdir({
-    path: 'stories',
+    path: kind === 'grid' ? 'grids' : 'stories',
     directory: Directory.Cache,
     recursive: true,
   }).catch(() => undefined)
@@ -102,25 +106,26 @@ async function shareNativeStory(file: File, locale: Locale, mode: 'download' | '
   })
 
   await Share.share({
-    title: 'ColorWalk Story',
+    title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story',
     dialogTitle:
       mode === 'download'
         ? locale === 'ko'
-          ? '스토리 사진 저장 또는 공유'
-          : 'Save or share story image'
+          ? kind === 'grid' ? '3x3 이미지 저장 또는 공유' : '스토리 사진 저장 또는 공유'
+          : kind === 'grid' ? 'Save or share 3x3 image' : 'Save or share story image'
         : locale === 'ko'
-          ? '스토리 공유하기'
-          : 'Share story',
+          ? kind === 'grid' ? '3x3 공유하기' : '스토리 공유하기'
+          : kind === 'grid' ? 'Share 3x3' : 'Share story',
     files: [uri],
   })
 }
 
 export function StoryStudio({ locale, data, initialDesign, onDesignChange }: StoryStudioProps) {
   const exportRef = useRef<HTMLDivElement | null>(null)
+  const gridExportRef = useRef<HTMLDivElement | null>(null)
   const cardBoundsRef = useRef<DOMRect | null>(null)
   const stickerIndexRef = useRef(0)
-  const [templateId, setTemplateId] = useState<StoryTemplateId>(initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId)
-  const [stickers, setStickers] = useState<StoryStickerItem[]>(initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers)
+  const [templateId, setTemplateId] = useState<StoryTemplateId>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId : SIMPLE_STORY_TEMPLATE_ID)
+  const [stickers, setStickers] = useState<StoryStickerItem[]>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers : [])
   const [selectedStickerUid, setSelectedStickerUid] = useState<string | null>(stickers[0]?.uid ?? null)
   const [activeCategory, setActiveCategory] = useState<StoryStickerCategory>('all')
   const [activeTemplateCategory, setActiveTemplateCategory] = useState<StoryTemplateCategory>('recommended')
@@ -210,19 +215,24 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
     )
   }
 
-  async function saveOrShare(mode: 'download' | 'share') {
-    if (!exportRef.current) return
+  async function saveOrShare(mode: 'download' | 'share', kind: 'story' | 'grid' = 'story') {
+    const target = kind === 'grid' ? gridExportRef.current : exportRef.current
+    if (!target) return
 
     try {
-      const file = await exportElement(exportRef.current, storyFilename())
+      const file = await exportElement(
+        target,
+        exportFilename(kind),
+        kind === 'grid' ? { width: 1080, height: 1080 } : { width: 1080, height: 1920 },
+      )
       if (Capacitor.isNativePlatform()) {
-        await shareNativeStory(file, locale, mode)
+        await shareNativeStory(file, locale, mode, kind)
         toast.success(t(locale, 'storySaved'))
         return
       }
 
       if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'ColorWalk Story' })
+        await navigator.share({ files: [file], title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story' })
         return
       }
 
@@ -256,7 +266,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           {...data}
           locale={locale}
           templateId={templateId}
-          stickers={stickers}
+          stickers={STORY_DECORATION_TOOLS_ENABLED ? stickers : []}
           exportRef={exportRef}
           selectedStickerUid={selectedStickerUid}
           onStickerPointerDown={beginDrag}
@@ -264,6 +274,20 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
         />
       </div>
 
+      <div className="story-grid-export-source" aria-hidden="true">
+        <div ref={gridExportRef} className="grid-export-card">
+          <GridCollage
+            locale={locale}
+            missionHex={data.missionHex}
+            colorName={data.colorName || data.missionLabel}
+            images={data.gridImages}
+            variant="story"
+            className="color-grid-export-square"
+          />
+        </div>
+      </div>
+
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="template-gallery">
         <div className="template-tabs">
           {TEMPLATE_CATEGORIES.map((category) => (
@@ -286,9 +310,8 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
               onClick={() => selectTemplate(template.id)}
             >
               <div className={cn('template-thumb', template.className)}>
-                <span style={{ backgroundColor: data.missionHex }} />
-                <span style={{ backgroundColor: data.capturedHex }} />
-                <b>{template.id === 'travel' ? 'AIR' : template.id === 'newspaper' ? 'NEWS' : template.id === 'polaroid' ? 'PHOTO' : 'COLOR'}</b>
+                <span className="template-thumb-grid" style={{ backgroundColor: data.missionHex }} />
+                <b>{template.id === 'air-trip' ? 'AIR' : template.id === 'newsprint' ? 'NEWS' : template.id === 'life-cut' ? 'CUT' : 'GRID'}</b>
               </div>
               <strong>{template.name[locale]}</strong>
               <small>{template.caption[locale]}</small>
@@ -296,18 +319,24 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           ))}
         </div>
       </div>
+      ) : null}
 
       <div className="story-export-actions">
-        <Button type="button" variant="outline" onClick={() => void saveOrShare('download')}>
+        <Button type="button" variant="outline" onClick={() => void saveOrShare('download', 'grid')}>
+          <Download data-icon="inline-start" aria-hidden="true" />
+          {locale === 'ko' ? '3x3 저장' : 'Save 3x3'}
+        </Button>
+        <Button type="button" variant="outline" onClick={() => void saveOrShare('download', 'story')}>
           <Download data-icon="inline-start" aria-hidden="true" />
           {t(locale, 'saveStory')}
         </Button>
-        <Button type="button" onClick={() => void saveOrShare('share')}>
+        <Button type="button" onClick={() => void saveOrShare('share', 'story')}>
           <Share2 data-icon="inline-start" aria-hidden="true" />
           {t(locale, 'shareStory')}
         </Button>
       </div>
 
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="sticker-drawer">
         <label className="sticker-search">
           <Search aria-hidden="true" />
@@ -337,7 +366,9 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           })}
         </div>
       </div>
+      ) : null}
 
+      {STORY_DECORATION_TOOLS_ENABLED ? (
       <div className="story-controls">
         <Button
           type="button"
@@ -346,7 +377,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) + 0.12 })}
         >
           <Plus data-icon="inline-start" aria-hidden="true" />
-          {locale === 'ko' ? '크게' : 'Size'}
+          {locale === 'ko' ? '크게' : 'Bigger'}
         </Button>
         <Button
           type="button"
@@ -355,7 +386,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           onClick={() => updateSelected({ scale: (selectedSticker?.scale ?? 1) - 0.12 })}
         >
           <Minus data-icon="inline-start" aria-hidden="true" />
-          {locale === 'ko' ? '작게' : 'Size'}
+          {locale === 'ko' ? '작게' : 'Smaller'}
         </Button>
         <Button
           type="button"
@@ -382,6 +413,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
           {t(locale, 'resetStickers')}
         </Button>
       </div>
+      ) : null}
     </section>
   )
 }

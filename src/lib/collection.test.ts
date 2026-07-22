@@ -3,14 +3,14 @@ import { describe, expect, it } from 'vitest'
 import { getCurrentStreak, getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
 import type { Post } from '@/types'
 
-function post(local_date: string, captured_hex = '#FF6B61'): Post {
+function post(local_date: string, mission_hex = '#8BC6E8'): Post {
   return {
     id: local_date,
     user_id: 'user',
     created_at: `${local_date}T00:00:00Z`,
     local_date,
-    mission_hex: '#8BC6E8',
-    captured_hex,
+    mission_hex,
+    captured_hex: mission_hex,
     match_rate: 88,
     image_path: '',
     custom_color_name: null,

@@ -3,9 +3,9 @@ import type { Session } from '@supabase/supabase-js'
 import { LockKeyhole, Sparkles, UserRound } from 'lucide-react'
 
 import { ColorWalkMark } from '@/components/ColorWalkMark'
+import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { getStoredInviteCode } from '@/lib/betaGate'
 import { normalizeUsername, signInWithUsername, signUpWithUsername } from '@/lib/supabase'
 import type { Locale, ProfileGender } from '@/types'
 
@@ -44,7 +44,6 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
               gender,
               birthYear: Number(birthYear),
               locale,
-              inviteCode: getStoredInviteCode(),
             })
           : await signInWithUsername(username, password, locale)
 
@@ -71,8 +70,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
         <div className="auth-brand">
           <ColorWalkMark />
           <div>
-            <p>{locale === 'ko' ? '친구 베타' : 'Friend beta'}</p>
-            <h1>Color Walk</h1>
+            <HuedayWordmark />
           </div>
         </div>
         <p className="auth-copy">
@@ -100,7 +98,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
                 inputMode="text"
-                placeholder="colorwalker"
+                placeholder="hueday"
                 required
               />
             </div>
@@ -172,8 +170,8 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 : 'Checking'
               : mode === 'signup'
                 ? locale === 'ko'
-                  ? 'ColorWalk 시작하기'
-                  : 'Start ColorWalk'
+                  ? 'Hueday 시작하기'
+                  : 'Start Hueday'
                 : locale === 'ko'
                   ? '다시 들어가기'
                   : 'Enter'}

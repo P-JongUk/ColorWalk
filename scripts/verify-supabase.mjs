@@ -34,7 +34,6 @@ loadPrivateTestAccount(path.resolve('docs/beta-test-account.private.md'))
 
 const url = process.env.VITE_SUPABASE_URL
 const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY
-const inviteCode = process.env.VITE_BETA_INVITE_CODE
 
 if (!url || !key) {
   throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY.')
@@ -66,7 +65,6 @@ async function ensurePasswordUser(client, profile) {
         gender: profile.gender,
         birthYear: profile.birthYear,
         locale: profile.locale,
-        inviteCode,
       },
     })
     if (signup.error) throw signup.error
@@ -100,6 +98,72 @@ const verifyDate = '2000-01-02'
 let userId = null
 let otherUserId = null
 let imagePath = null
+let usedGridFallback = false
+
+function needsLegacyPostFallback(error) {
+  if (!error) return false
+  const message = error.message ?? ''
+  return (
+    error.code === 'PGRST204' && message.includes('grid_images')
+  ) || (
+    error.code === '42703' && message.includes('grid_images')
+  ) || (
+    error.code === '23514' && message.includes('posts_story_template_id_check')
+  )
+}
+
+function toLegacyTemplateId(templateId) {
+  return {
+    'soft-passport': 'passport',
+    'life-cut': 'minimal',
+    'air-trip': 'travel',
+    'modern-grid': 'modern',
+    newsprint: 'newspaper',
+    'polaroid-grid': 'polaroid',
+    'sponsor-clean': 'minimal',
+    'color-ticket': 'receipt',
+  }[templateId] ?? 'passport'
+}
+
+function toLegacyPostPayload(payload) {
+  const { grid_images: gridImages = [], story_template_id: storyTemplateId, client_meta: clientMeta, ...rest } = payload
+
+  return {
+    ...rest,
+    story_template_id: toLegacyTemplateId(storyTemplateId),
+    client_meta: {
+      ...(clientMeta ?? {}),
+      storyTemplateId,
+      gridImages,
+      gridImagesStorage: 'client_meta_fallback',
+    },
+  }
+}
+
+async function upsertPostWithFallback(client, payload) {
+  const upsert = await client.from('posts').upsert(payload, { onConflict: 'user_id,local_date' })
+  if (!upsert.error || !needsLegacyPostFallback(upsert.error)) return upsert
+
+  usedGridFallback = true
+  return client.from('posts').upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
+}
+
+async function selectVerifyPost(client) {
+  const fullSelect = await client
+    .from('posts')
+    .select('id,image_path,grid_images,story_template_id,story_stickers,client_meta')
+    .eq('user_id', userId)
+    .eq('local_date', verifyDate)
+
+  if (!needsLegacyPostFallback(fullSelect.error)) return fullSelect
+
+  usedGridFallback = true
+  return client
+    .from('posts')
+    .select('id,image_path,story_template_id,story_stickers,client_meta')
+    .eq('user_id', userId)
+    .eq('local_date', verifyDate)
+}
 
 try {
   const anonymous = await anonClient.auth.signInAnonymously()
@@ -182,54 +246,65 @@ try {
     })
   if (upload.error) throw upload.error
 
-  const upsert = await mainClient.from('posts').upsert(
+  const verifyGridImages = [
     {
-      user_id: userId,
-      local_date: verifyDate,
-      mission_hex: '#8BC6E8',
-      captured_hex: '#8AC4E7',
-      match_rate: 99,
-      image_path: imagePath,
-      locale: 'en',
-      weather_group: 'clear',
-      time_bucket: 'day',
-      mission_label: 'Verification',
-      mission_prompt: 'Verification prompt',
-      location_name: 'Verify Place',
-      location_latitude: 37.5665,
-      location_longitude: 126.978,
-      location_accuracy_m: 50,
-      story_template_id: 'passport',
-      story_stickers: [
-        {
-          uid: 'verify-sticker',
-          stickerId: 'passport-stamp',
-          x: 30,
-          y: 30,
-          scale: 1,
-          rotation: 0,
-        },
-      ],
-      client_meta: {
-        verify: true,
-      },
+      id: 'verify-grid-image',
+      slot: 0,
+      path: imagePath,
+      width: 1,
+      height: 1,
+      bytes: onePixelWebP.length,
+      source: 'camera',
+      createdAt: new Date().toISOString(),
     },
-    { onConflict: 'user_id,local_date' },
-  )
+  ]
+  const upsert = await upsertPostWithFallback(mainClient, {
+    user_id: userId,
+    local_date: verifyDate,
+    mission_hex: '#8BC6E8',
+    captured_hex: '#8BC6E8',
+    match_rate: 0,
+    image_path: imagePath,
+    grid_images: verifyGridImages,
+    locale: 'en',
+    weather_group: 'clear',
+    time_bucket: 'day',
+    mission_label: 'Verification',
+    mission_prompt: 'Verification prompt',
+    location_name: null,
+    location_latitude: null,
+    location_longitude: null,
+    location_accuracy_m: null,
+    story_template_id: 'soft-passport',
+    story_stickers: [
+      {
+        uid: 'verify-sticker',
+        stickerId: 'passport-stamp',
+        x: 30,
+        y: 30,
+        scale: 1,
+        rotation: 0,
+      },
+    ],
+    client_meta: {
+      verify: true,
+    },
+  })
   if (upsert.error) throw upsert.error
 
-  const select = await mainClient
-    .from('posts')
-    .select('id,image_path,story_template_id,story_stickers,client_meta,location_name,location_latitude,location_longitude,location_accuracy_m')
-    .eq('user_id', userId)
-    .eq('local_date', verifyDate)
+  const select = await selectVerifyPost(mainClient)
   if (select.error) throw select.error
   if (!select.data?.length) throw new Error('Post select returned no rows.')
-  if (select.data[0].story_template_id !== 'passport') {
+  const row = select.data[0]
+  const effectiveTemplateId = row.client_meta?.storyTemplateId ?? row.story_template_id
+  if (effectiveTemplateId !== 'soft-passport') {
     throw new Error('Story template metadata was not persisted.')
   }
-  if (select.data[0].location_name !== 'Verify Place' || select.data[0].location_latitude !== 37.5665) {
-    throw new Error('Location metadata was not persisted.')
+  const effectiveGridImages = Array.isArray(row.grid_images)
+    ? row.grid_images
+    : row.client_meta?.gridImages
+  if (!Array.isArray(effectiveGridImages) || effectiveGridImages[0]?.path !== imagePath) {
+    throw new Error('3x3 grid image metadata was not persisted.')
   }
 
   const signed = await mainClient.storage.from('post-images').createSignedUrl(imagePath, 60)
@@ -260,7 +335,9 @@ try {
         storageSignedUrl: true,
         postUpsertAndSelect: true,
         storyMetadata: true,
-        locationMetadata: true,
+        gridImageMetadata: true,
+        gridImageStorage: usedGridFallback ? 'client_meta_fallback' : 'grid_images',
+        locationMetadataDisabled: true,
         postRlsBlocksOtherUser: true,
         storageRlsBlocksOtherUser: true,
         otherUserId,

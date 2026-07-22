@@ -1,56 +1,47 @@
-import { Camera, Flame, Gauge, ChevronLeft, ChevronRight, MapPin, Share2 } from 'lucide-react'
+import { CalendarDays, Camera, ChevronLeft, ChevronRight, Flame, Share2 } from 'lucide-react'
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
+import { GridCollage } from '@/components/GridCollage'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
 import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
+import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { DEFAULT_STORY_DESIGN, normalizeTemplateId, parseStoryStickers } from '@/lib/story'
 import { cn } from '@/lib/utils'
-import type { Locale, Post } from '@/types'
-
-const calendarPalette = ['#F5A8AD', '#F5C765', '#FFA88D', '#8FD3C0', '#ABD5EF', '#C7B8E8', '#D9D894', '#F2B7B7', '#9AD9C8']
-
-function calendarTint(day: number) {
-  return calendarPalette[(day - 1) % calendarPalette.length]
-}
-
-function resolvePostImageUrl(post: Post | undefined) {
-  if (!post) return undefined
-  if (post.signedImageUrl) return post.signedImageUrl
-  if (/^(blob:|data:image\/|https?:\/\/)/.test(post.image_path)) return post.image_path
-  return undefined
-}
+import type { CaptureDraft, Locale, Post } from '@/types'
 
 type CalendarViewProps = {
   locale: Locale
   posts: Post[]
+  currentDraft?: CaptureDraft | null
 }
 
-export function CalendarView({ locale, posts }: CalendarViewProps) {
+export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
-  const [brokenImages, setBrokenImages] = useState<Record<string, true>>({})
   const postsByDate = useMemo(() => new Map(posts.map((post) => [post.local_date, post])), [posts])
   const selectedPost = postsByDate.get(selectedDate)
-  const selectedImageUrl = resolvePostImageUrl(selectedPost)
   const days = getMonthMatrix(visibleMonth)
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
   const streak = getCurrentStreak(posts)
+  const todayKey = getLocalDateKey()
+  const todayOriginalDraftImages =
+    selectedDate === todayKey && currentDraft?.gridImages.length
+      ? currentDraft.gridImages
+      : null
+  const selectedGridImages = todayOriginalDraftImages ?? getPostGridImages(selectedPost)
   const selectedStoryData = selectedPost
     ? {
-        imageUrl: selectedImageUrl,
         dateLabel: formatDisplayDate(selectedPost.local_date, localeCode),
         missionLabel: selectedPost.mission_label || t(locale, 'todayColor'),
         missionHex: selectedPost.mission_hex,
-        capturedHex: selectedPost.captured_hex,
-        matchRate: selectedPost.match_rate,
         colorName: selectedPost.custom_color_name ?? undefined,
         moodText: selectedPost.journal_answer ?? undefined,
-        placeName: selectedPost.location_name ?? undefined,
+        gridImages: selectedGridImages,
       }
     : null
   const selectedStoryDesign = selectedPost
@@ -99,10 +90,7 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
     <main className="screen-flow history-screen">
       <header className="app-header">
         <div>
-          <h1 className="inline-flex items-center gap-1">
-            {t(locale, 'calendar')}
-            <MapPin className="title-accent-icon history-title-pin" aria-hidden="true" />
-          </h1>
+          <h1>{t(locale, 'calendar')}</h1>
         </div>
       </header>
 
@@ -128,6 +116,7 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
             const key = getLocalDateKey(day)
             const post = postsByDate.get(key)
             const isCurrentMonth = day.getMonth() === visibleMonth.getMonth()
+            const isFuture = key > todayKey
             const isSelected = key === selectedDate
 
             return (
@@ -139,8 +128,9 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
                   isSelected && 'calendar-day-selected',
                   !isCurrentMonth && 'calendar-day-muted',
                   !post && 'calendar-day-empty',
+                  isFuture && 'calendar-day-future',
                 )}
-                style={isCurrentMonth ? ({ '--calendar-color': post ? post.captured_hex : calendarTint(day.getDate()) } as CSSProperties) : undefined}
+                style={isCurrentMonth && post && !isFuture ? ({ '--calendar-color': post.mission_hex } as CSSProperties) : undefined}
                 onClick={() => {
                   setSelectedDate(key)
                   setShowStoryStudio(false)
@@ -171,33 +161,20 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
         </div>
 
         {selectedPost ? (
-          <div className="history-entry">
-            {selectedImageUrl && !brokenImages[selectedPost.id] ? (
-              <img
-                src={selectedImageUrl}
-                alt=""
-                onError={() => setBrokenImages((current) => ({ ...current, [selectedPost.id]: true }))}
-              />
-            ) : (
-              <div className="history-entry-fallback" style={{ backgroundColor: selectedPost.captured_hex }} />
-            )}
+          <div className="history-entry history-entry-grid">
+            <GridCollage
+              locale={locale}
+              missionHex={selectedPost.mission_hex}
+              colorName={selectedPost.custom_color_name || selectedPost.mission_label || undefined}
+              images={selectedGridImages}
+              variant="mini"
+            />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-lg font-black">{selectedPost.custom_color_name || selectedPost.mission_label || selectedPost.captured_hex}</p>
+              <p className="truncate text-lg font-black">{selectedPost.custom_color_name || selectedPost.mission_label || selectedPost.mission_hex}</p>
               <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-                {selectedPost.mission_hex} → {selectedPost.captured_hex}
-              </p>
-              {selectedPost.location_name ? <p className="history-place">{locale === 'ko' ? '장소' : 'Place'} · {selectedPost.location_name}</p> : null}
-              <p className="mt-2 text-sm font-bold">
-                {selectedPost.match_rate}% {t(locale, 'match')}
+                {selectedGridImages.length}/8 · {selectedPost.mission_hex}
               </p>
               {selectedPost.journal_answer ? <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{selectedPost.journal_answer}</p> : null}
-            </div>
-            <div
-              className="history-entry-match"
-              style={{ '--match-angle': `${Math.min(100, Math.max(0, selectedPost.match_rate)) * 3.6}deg` } as CSSProperties}
-              aria-label={`${selectedPost.match_rate}% ${t(locale, 'match')}`}
-            >
-              <strong>{selectedPost.match_rate}%</strong>
             </div>
           </div>
         ) : (
@@ -212,13 +189,13 @@ export function CalendarView({ locale, posts }: CalendarViewProps) {
           <span>{t(locale, 'streak')}</span>
         </div>
         <div>
-          <Gauge aria-hidden="true" />
-          <strong>{monthly.count}</strong>
-          <span>{locale === 'ko' ? '수집한 색' : 'Colors'}</span>
+          <CalendarDays aria-hidden="true" />
+          <strong>{monthly.completedGridCount}</strong>
+          <span>{locale === 'ko' ? '완성 그리드' : 'Grids'}</span>
         </div>
         <div>
           <Camera aria-hidden="true" />
-          <strong>{posts.length}</strong>
+          <strong>{monthly.photoCount}</strong>
           <span>{t(locale, 'photoRecord')}</span>
         </div>
       </section>

@@ -1,13 +1,14 @@
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js'
 
 import { getPerceptualDeltaE, hexToRgb } from '@/lib/colors'
-import { parseStoryStickers, normalizeTemplateId } from '@/lib/story'
-import type { Locale, Post, ProfileGender, UserProfile } from '@/types'
+import { normalizeGridImages } from '@/lib/grid'
+import { parseStoryStickers, normalizeTemplateId, toLegacyDatabaseTemplateId } from '@/lib/story'
+import type { GridImage, Locale, Post, ProfileGender, UserProfile } from '@/types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
 const authEmailDomain = (import.meta.env.VITE_AUTH_EMAIL_DOMAIN as string | undefined) || 'gmail.com'
-const MAX_UPLOAD_BYTES = 420 * 1024
+const MAX_UPLOAD_BYTES = 500 * 1024
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey)
 
@@ -27,6 +28,12 @@ function createColorWalkSupabaseClient() {
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? ((globalThis as GlobalWithSupabase).__colorWalkSupabaseClient ??= createColorWalkSupabaseClient())
   : null
+
+type PostUpsertPayload = Record<string, unknown> & {
+  grid_images?: GridImage[]
+  story_template_id?: string | null
+  client_meta?: Record<string, unknown> | null
+}
 
 let pendingAnonymousSession: Promise<Session | null> | null = null
 
@@ -128,7 +135,6 @@ export async function signUpWithUsername({
   gender,
   birthYear,
   locale,
-  inviteCode,
 }: {
   username: string
   password: string
@@ -136,7 +142,6 @@ export async function signUpWithUsername({
   gender: ProfileGender
   birthYear: number
   locale: Locale
-  inviteCode?: string
 }) {
   if (!supabase) throw new Error('Supabase is not configured')
 
@@ -154,7 +159,6 @@ export async function signUpWithUsername({
       gender,
       birthYear,
       locale,
-      inviteCode,
     },
   })
 
@@ -209,27 +213,40 @@ export async function fetchPosts(userId: string): Promise<Post[]> {
 
   const posts = ((data ?? []) as Post[]).map((post) => ({
     ...post,
-    story_template_id: normalizeTemplateId(post.story_template_id),
+    story_template_id: normalizeTemplateId(post.client_meta?.storyTemplateId ?? post.story_template_id),
     story_stickers: parseStoryStickers(post.story_stickers),
+    grid_images: normalizeGridImages(post.grid_images).length
+      ? normalizeGridImages(post.grid_images)
+      : normalizeGridImages(post.client_meta?.gridImages),
     client_meta: post.client_meta ?? {},
   }))
 
   return Promise.all(
     posts.map(async (post) => {
-      if (/^(blob:|data:image\/|https?:\/\/)/.test(post.image_path)) {
-        return {
-          ...post,
-          signedImageUrl: post.image_path,
-        }
+      async function signPath(path: string) {
+        if (/^(blob:|data:image\/|https?:\/\/)/.test(path)) return path
+
+        const { data: signed } = await supabase!.storage
+          .from('post-images')
+          .createSignedUrl(path, 60 * 60)
+
+        return signed?.signedUrl
       }
 
-      const { data: signed } = await supabase.storage
-        .from('post-images')
-        .createSignedUrl(post.image_path, 60 * 60)
+      const signedGridImages: GridImage[] = await Promise.all(
+        normalizeGridImages(post.grid_images).map(async (image) => ({
+          ...image,
+          signedUrl: await signPath(image.path),
+        })),
+      )
+      const signedImageUrl = post.image_path
+        ? await signPath(post.image_path)
+        : signedGridImages[0]?.signedUrl
 
       return {
         ...post,
-        signedImageUrl: signed?.signedUrl ?? undefined,
+        grid_images: signedGridImages,
+        signedImageUrl: signedImageUrl ?? undefined,
       }
     }),
   )
@@ -249,6 +266,47 @@ export async function uploadPostImage(userId: string, localDate: string, blob: B
   if (error) throw error
 
   return path
+}
+
+function needsLegacyPostFallback(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false
+  const message = error.message ?? ''
+  return (
+    error.code === 'PGRST204' && message.includes('grid_images')
+  ) || (
+    error.code === '42703' && message.includes('grid_images')
+  ) || (
+    error.code === '23514' && message.includes('posts_story_template_id_check')
+  )
+}
+
+function toLegacyPostPayload(payload: PostUpsertPayload): PostUpsertPayload {
+  const { grid_images: gridImages = [], story_template_id: storyTemplateId, client_meta: clientMeta, ...rest } = payload
+
+  return {
+    ...rest,
+    story_template_id: toLegacyDatabaseTemplateId(storyTemplateId),
+    client_meta: {
+      ...(clientMeta ?? {}),
+      storyTemplateId: normalizeTemplateId(storyTemplateId),
+      gridImages,
+      gridImagesStorage: 'client_meta_fallback',
+    },
+  }
+}
+
+export async function upsertPostWithGridFallback(payload: PostUpsertPayload) {
+  if (!supabase) throw new Error('Supabase is not configured')
+
+  const result = await supabase
+    .from('posts')
+    .upsert(payload, { onConflict: 'user_id,local_date' })
+
+  if (!result.error || !needsLegacyPostFallback(result.error)) return result
+
+  return supabase
+    .from('posts')
+    .upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
 }
 
 export async function deletePostImage(path: string) {
