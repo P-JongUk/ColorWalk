@@ -17,7 +17,7 @@
 - 통합 브랜치: `main`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
-- 현재 그래프: Graphify 0.9.23, 962개 노드와 967개 연결, 119개 community (2026-07-22 갱신)
+- 현재 그래프: Graphify 0.9.23, 986개 노드와 990개 연결, 119개 community (2026-07-22 갱신)
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
 - Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`

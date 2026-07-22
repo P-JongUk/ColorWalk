@@ -9,6 +9,7 @@ Read this file before coding in this repository.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
+- Monetization source of truth: `docs/product-growth-strategy.md` under `Monetization Model`. Keep the free core promise and earned badge rewards useful when paid packs or subscriptions are designed.
 - Reward/badge direction: streak badges are creative keys, not scores. When capture, story, profile, or monetization features change, preserve the milestone-to-creative-unlock loop and update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
 - Product strategy source of truth: read `docs/hueday-breakout-strategy.md` first, then `docs/product-growth-strategy.md` for the detailed feature backlog. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
 

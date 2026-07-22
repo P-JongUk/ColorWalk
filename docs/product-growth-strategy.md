@@ -376,6 +376,102 @@ Backend 후보:
 - popular palette packs.
 - generated monthly/yearly recaps.
 
+## Monetization Model
+
+이 절은 Hueday 수익화의 실행 기준이다. 시장 사례와 판단 근거는 `docs/hueday-breakout-strategy.md`에서 관리하고, 실제 상품 범위·도입 순서·측정 기준은 이 절을 source of truth로 삼는다.
+
+### Current Status
+
+- 2026-07-22 현재 결제, 구독, 광고, 스폰서 미션은 구현되어 있지 않다.
+- 베타에서는 daily mission, 촬영, 기록, history, 기본 story export와 공유를 무료로 유지한다.
+- 리텐션과 공유 루프가 검증되기 전에는 광고나 core paywall을 추가하지 않는다.
+- 디지털 상품을 실제 앱에서 판매할 때는 Apple In-App Purchase와 Google Play Billing 정책을 구현 시점에 다시 확인한다.
+
+### Monetization Principles
+
+1. 사용자의 사진, 과거 기록, 계정 복구를 갑자기 잠그지 않는다.
+2. 돈은 `더 예쁘게 만들기`, `더 오래 보존하기`, `특별한 맥락에서 함께하기`에서 번다.
+3. 친구 초대와 공유처럼 성장을 만드는 행동은 무료로 둔다.
+4. 배지로 획득한 보상은 유료 팩이 생겨도 실제로 쓸 수 있는 무료 creative item으로 남긴다.
+5. 구독은 매달 새 가치와 운영 비용이 함께 생길 때만 도입한다. 단순 템플릿 몇 개를 구독으로 포장하지 않는다.
+6. 광고를 도입하더라도 개인 일기 화면을 방해하지 않고, 사용자가 선택하는 명시적 브랜드 미션을 우선한다.
+
+### Free Product Promise
+
+다음은 Hueday의 무료 핵심 약속으로 유지한다.
+
+- 매일 기본 color mission 받기.
+- 1컷 기록과 3x3 컬렉션 완성.
+- 기본 색 이름과 짧은 journal.
+- calendar/history에서 내 기록 다시 보기.
+- 기본 9:16 story와 3x3 이미지 export.
+- 친구가 공유한 color card 보기와 `나도 이 색 찾기` 참여.
+- streak/milestone으로 획득한 기본 frame, stamp, sticker 사용.
+
+### Revenue Ladder
+
+| 단계 | 수익 모델 | 판매 가치 | 시작 조건 |
+| --- | --- | --- | --- |
+| Beta | 무료 | 결제 없음. core loop와 공유 행동 측정 | 저장 안정성과 D1/D7 사용 패턴 확인 |
+| 1 | 1회 구매 Creative Pack | 계절·여행·커플·졸업 palette, premium frame, typography, sticker | recap/story export의 반복 사용과 구매 의향 확인 |
+| 2 | Hueday Plus | 장기 원본 백업, 기기 간 복구, 연간 Hueprint, 고급 export, 정기 premium pack | 매달 제공할 가치와 사용자당 저장 비용 확인 |
+| 3 | Physical Memory | 월간 엽서, 미니 컬러 북, 연간 Hueprint book | digital recap 저장·공유 수요와 인쇄 마진 확인 |
+| 4 | B2B Mission Pack | 미술관·카페·축제·캠퍼스의 기간 한정 color walk | 소규모 커뮤니티 pilot의 참여율과 재계약 의향 확인 |
+| 5 | 선택형 Sponsorship | 명확히 표시된 브랜드 color mission과 한정 creative item | 충분한 활성 사용자, 브랜드 안전, 미성년자 보호 기준 확보 |
+
+### First Products To Test
+
+#### 1. One-Time Creative Pack
+
+- 가장 먼저 시험할 유료 상품이다.
+- 서버 기능 없이 기존 story template/sticker 구조를 확장할 수 있어 구현·운영 비용이 작다.
+- 예시: 벚꽃 산책, 장마의 색, 여름 여행, 졸업 앨범, 둘만의 팔레트.
+- 구매하지 않아도 기본 export와 배지 보상은 온전히 사용할 수 있어야 한다.
+- 첫 가격 탐색 범위는 1,500~4,900원이지만 확정 가격이 아니라 구매 의향 인터뷰용 가설이다.
+
+#### 2. Hueday Plus
+
+- 월 구독은 `매달 달라지는 결과`와 `지속적인 저장 비용`이 있을 때만 성립한다.
+- 후보 가치: 원본 장기 백업, multi-device restore, 월간·연간 Hueprint, 고해상도/무워터마크 export, 매월 새 creative pack.
+- 월 3,900원 또는 연 29,000원은 초기 가격 가설일 뿐이며, 무료 사용자의 기록·기본 공유를 제한하는 근거로 사용하지 않는다.
+- 장기 백업을 판매하기 전 데이터 export, account deletion, 복구 정책을 먼저 완성한다.
+
+#### 3. Physical Memory
+
+- 디지털 기록이 충분히 쌓인 사용자에게만 자연스럽게 제안한다.
+- 월말 recap을 엽서나 접이식 미니북으로 주문하는 가장 작은 pilot부터 시작한다.
+- 인쇄·배송·재제작·환불 비용을 포함한 건당 공헌이익이 확인되기 전 자동 주문 시스템을 만들지 않는다.
+
+#### 4. B2B Color Walk
+
+- 광고 배너 대신 특정 공간을 직접 탐색하게 만드는 sponsored mission을 판매한다.
+- 예시: 미술관 전시 팔레트, 카페 시즌 컬러, 지역 축제 color hunt, 대학 축제 공동 Hueprint.
+- 위치 추적이나 사용자 명단 판매가 아니라 mission 제작, 한정 디자인, 익명 집계 결과에 과금한다.
+- 익명 집계는 작은 그룹이 식별되지 않는 최소 표본과 명시적 개인정보 기준을 충족해야 한다.
+
+### Launch Gates
+
+유료 기능은 일정 날짜가 아니라 아래 증거가 생겼을 때 연다.
+
+- 핵심 저장/복구 실패가 베타 운영을 방해하지 않는다.
+- 사용자가 한 달 동안 반복해서 기록하고 recap 또는 story를 다시 만든다.
+- 무료 공유가 신규 사용자의 첫 capture로 연결된다.
+- 최소 10명 이상의 목표 사용자가 구체적인 상품과 가격을 보고 구매 의향 또는 거절 이유를 말해준다.
+- 상품별 서버·결제·스토리지·CS 비용을 계산할 수 있다.
+- store billing, 환불, 개인정보, 계정 삭제 정책을 구현 범위에 포함했다.
+
+### Monetization Metrics
+
+- paywall view → purchase start → purchase complete conversion.
+- pack별 구매율, 실제 사용률, 30일 후 재사용률.
+- trial start, trial cancellation timing, paid renewal, refund rate.
+- ARPPU와 결제 수수료·스토리지·인쇄/배송을 뺀 contribution margin.
+- 유료 기능 도입 전후의 capture, save, share, D7/D30 변화.
+- 무료 사용자와 유료 사용자 모두의 기록 export·account deletion 성공률.
+- B2B pilot의 참여율, mission completion, 재계약 의향.
+
+매출이 늘어도 capture/save/retention이 악화되면 성공으로 보지 않는다. Hueday의 수익화는 core habit 위에 붙어야 하며 core habit을 대신해서는 안 된다.
+
 ## Data And Security Checklist
 
 새 성장 기능을 구현할 때 반드시 확인한다.
@@ -490,4 +586,4 @@ Design:
    - public feed보다 circle/private board로 작게 시작.
    - friend comparison이 아니라 "서로의 오늘 색 보기"만 구현.
 
-이 문서는 기능이 바뀔 때마다 실제 코드와 대조해 갱신한다. 시장 근거, 수익화, iOS 출시 경로, 냉정한 제품 진단은 `docs/hueday-breakout-strategy.md`에서 관리한다. ColorWalk의 성장은 사진 SNS를 따라가는 것이 아니라, 사용자가 현실에서 발견한 색을 자기만의 정체성으로 쌓아가게 만드는 방향이어야 한다.
+이 문서는 기능이 바뀔 때마다 실제 코드와 대조해 갱신한다. 수익화 상품·도입 조건·측정 기준은 이 문서의 `Monetization Model`에서 관리하고, 시장 근거·Setlog 분석·iOS 출시 경로·냉정한 제품 진단은 `docs/hueday-breakout-strategy.md`에서 관리한다. ColorWalk의 성장은 사진 SNS를 따라가는 것이 아니라, 사용자가 현실에서 발견한 색을 자기만의 정체성으로 쌓아가게 만드는 방향이어야 한다.

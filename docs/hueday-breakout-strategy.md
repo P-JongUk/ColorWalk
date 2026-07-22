@@ -201,6 +201,8 @@ Hueprint는 다른 SNS가 쉽게 복제하기 어려운 Hueday의 장기 데이�
 
 ## 7. Hueday의 수익 모델
 
+이 절은 수익화 방향의 상위 요약이다. 실제 상품 범위, 출시 조건, 측정 지표의 source of truth는 `docs/product-growth-strategy.md`의 `Monetization Model` 절이다.
+
 ### 원칙
 
 1. 처음에는 기록과 친구 유입을 무료로 둔다.
