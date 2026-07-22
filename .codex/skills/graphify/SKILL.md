@@ -7,6 +7,10 @@ description: "Use for any question about a codebase, its architecture, file rela
 
 Turn any folder of files into a navigable knowledge graph with community detection, an honest audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
 
+## Hueday single-agent override
+
+This project forbids subagents. Never call `spawn_agent`, create worker agents, or delegate Graphify extraction to another agent while working in this repository. Existing-graph `query`, `path`, and `explain`, plus direct code-only `update`, remain allowed. If semantic extraction is needed, use an already configured Gemini backend or perform the smallest safe inline extraction in the current agent; otherwise report that semantic refresh was skipped. This override supersedes the subagent requirements later in this skill for Hueday/ColorWalk work.
+
 ## Usage
 
 ```

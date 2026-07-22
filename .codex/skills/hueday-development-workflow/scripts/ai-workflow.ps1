@@ -42,7 +42,7 @@ function Write-WorkflowHeader {
 
 if ($Mode -eq 'session-start') {
     Write-WorkflowHeader
-    Write-Host 'Checklist: Graphify map -> scope/success conditions -> smallest safe change -> verify -> documentation/career impact -> Obsidian note.' -ForegroundColor Yellow
+    Write-Host 'Checklist: current agent only -> Graphify map -> scope/success conditions -> smallest safe change -> verify -> documentation/career impact -> Obsidian note.' -ForegroundColor Yellow
     if (Test-Path $graph) {
         Write-Host 'Graphify graph: ready (use graphify query/path/explain before broad source reads).' -ForegroundColor Green
     } else {
@@ -54,9 +54,10 @@ if ($Mode -eq 'session-start') {
 if ($Mode -eq 'start') {
     Write-WorkflowHeader
     Write-Host 'Before coding:' -ForegroundColor Yellow
-    Write-Host '  1. Ask one focused Graphify question.'
-    Write-Host '  2. Write scope, likely files, success conditions, and smallest safe change.'
-    Write-Host '  3. Check existing helpers/dependencies before adding code or packages.'
+    Write-Host '  1. Keep all work in the current agent; do not create subagents.'
+    Write-Host '  2. Ask one focused Graphify question.'
+    Write-Host '  3. Write scope, likely files, success conditions, and smallest safe change.'
+    Write-Host '  4. Check existing helpers/dependencies before adding code or packages.'
     if ($Question -and (Test-Path $graph) -and (Test-Path $graphify)) {
         Write-Host "`nGraphify answer for: $Question" -ForegroundColor Cyan
         & $graphify query $Question --budget 1200

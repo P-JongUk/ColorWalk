@@ -7,6 +7,12 @@ description: "Run every meaningful Hueday/ColorWalk coding task through a Graphi
 
 Use this workflow for every meaningful coding task in this repository. Keep the process small and evidence-based; do not read the whole repository by default.
 
+## 0. Stay in the current agent
+
+- Perform the entire task in the current Codex task. Never create, spawn, or delegate to subagents, worker agents, or parallel agents.
+- Use direct tool calls, Graphify queries, and local commands from the current agent.
+- If another skill requires subagents, use its single-agent fallback. If none exists, report the limitation instead of enabling or requesting multi-agent execution.
+
 ## 1. Start with a map and a bounded plan
 
 1. Read the repository `AGENTS.md` and the relevant Obsidian notes in `docs/ai-memory/`.

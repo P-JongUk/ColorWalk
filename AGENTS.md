@@ -157,6 +157,8 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## AI Context Workflow
 
 - Every meaningful development task must use the project-scoped `.codex/skills/hueday-development-workflow` skill. The `SessionStart` hook prints its checklist automatically; do not wait for the user to repeat these rules.
+- Execute repository work in the current Codex task only. Do not create, spawn, or delegate to subagents, worker agents, or parallel agents. Use ordinary tools and processes directly from the current agent.
+- If a skill or workflow normally requires subagents, choose its single-agent or direct CLI path instead. For Graphify, `query`, `path`, `explain`, and code-only `update` are allowed; do not start semantic-extraction subagents. If no safe single-agent path exists, report the limitation instead of enabling multi-agent execution.
 - For codebase questions, use the project-scoped Graphify skill first when `graphify-out/graph.json` exists. Query the relevant subgraph before opening broad source files.
 - Before changing code, state the scope, success conditions, and likely files. Follow these four rules: think before coding, start with the simplest solution, change only what is needed, and verify the success conditions.
 - Use the project-scoped Ponytail skills under `.codex/skills/ponytail*` and its minimum-change ladder: first ask whether the change is needed, then reuse an existing helper or pattern, then prefer the standard library, native platform features, or already-installed dependencies before adding abstraction or a package.

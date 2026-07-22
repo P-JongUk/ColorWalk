@@ -17,7 +17,7 @@
 - 통합 브랜치: `main`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
-- 현재 그래프: Graphify 0.9.23, 986개 노드와 990개 연결, 119개 community (2026-07-22 갱신)
+- 현재 그래프: Graphify 0.9.23, 1,001개 노드와 1,004개 연결, 120개 community (2026-07-22 갱신)
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
 - Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`
@@ -25,6 +25,7 @@
 
 ## 작업 방식
 
+0. 모든 작업은 현재 Codex 에이전트가 직접 수행하며 하위 에이전트를 생성하거나 위임하지 않습니다.
 1. Graphify로 관련 구조와 의존 관계를 먼저 확인합니다.
 2. 범위와 성공 조건을 정합니다.
 3. 가장 작은 변경을 구현합니다.
