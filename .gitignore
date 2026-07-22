@@ -11,6 +11,7 @@ node_modules
 .npm-cache/
 .pip-cache/
 .graphify-venv/
+.codex-cli/
 .tmp/
 .gradle-home*/
 dist

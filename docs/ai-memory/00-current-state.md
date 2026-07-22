@@ -13,6 +13,7 @@
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
 - 현재 그래프: Graphify 0.9.23, 약 530개 노드와 585개 연결
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
+- Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`
 - Obsidian 기록 vault: `D:\JongUk\Documents\ColorWalk\docs\ai-memory\`
 

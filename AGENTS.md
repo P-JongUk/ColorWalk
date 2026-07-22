@@ -164,10 +164,12 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## D-Drive AI Tool Storage
 
 - Graphify virtual environment: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
+- Codex CLI package: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify graph and generated Obsidian map: `D:\JongUk\Documents\ColorWalk\graphify-out\`
 - Python package cache: `D:\JongUk\Documents\ColorWalk\.pip-cache\`
 - Obsidian working vault: `D:\JongUk\Documents\ColorWalk\docs\ai-memory\`
 - Keep project caches, generated graphs, and AI working data on D. Do not recreate them on C unless a tool requires a system-level installation.
+- The Codex-managed plugin registry may still keep a small cache under the user profile on C; the CLI package and project data remain on D.
 
 ## graphify
 
