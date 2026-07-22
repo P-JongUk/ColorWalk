@@ -10,7 +10,7 @@ Read this file before coding in this repository.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
 - Reward/badge direction: streak badges are creative keys, not scores. When capture, story, profile, or monetization features change, preserve the milestone-to-creative-unlock loop and update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
-- Product growth direction: see `docs/product-growth-strategy.md`. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
+- Product strategy source of truth: read `docs/hueday-breakout-strategy.md` first, then `docs/product-growth-strategy.md` for the detailed feature backlog. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
 
 ## Local Commands
 
@@ -162,6 +162,15 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - After a meaningful task, record the current state, decisions, failed approaches, verification results, and next tasks in `docs/ai-memory/`. Keep credentials and private account data out of these notes.
 - At task completion, run `.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish ...`; this creates a timestamped session note and refreshes Graphify. Fill in the note's semantic details rather than leaving the scaffold unchanged.
 - Treat `docs/ai-memory/` as an Obsidian-compatible local vault. Keep durable project context there so the next coding session can resume from notes instead of re-reading the repository.
+
+## Documentation Freshness Contract
+
+- Documentation is part of the implementation. At the end of every meaningful task, inspect the actual diff and decide whether `AGENTS.md`, `plan.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `docs/colorwalk-reward-system.md`, and `docs/ai-memory/` are still accurate.
+- Update only documents affected by the task, but never leave a known contradiction between code and documentation. If no durable document changes, record `영향 없음` and the reason in the session note.
+- Keep facts, interpretations, and unvalidated experiments distinct. Do not claim a deployment, migration, test, metric, or external market fact is current unless it was actually verified; preserve the date of historical checks.
+- When a task resolves a meaningful bug, platform constraint, security issue, performance problem, or product tradeoff, add or update a case in `docs/career-problem-solving-log.md` with evidence, alternatives, verification, outcome, and remaining debt.
+- When product positioning, priorities, monetization, market references, or iOS release assumptions change, update `docs/hueday-breakout-strategy.md`. Re-check external primary sources and their access date before treating time-sensitive claims as current.
+- The finish workflow must include documentation impact and career-log impact. Generated scaffolds are reminders only; Codex must replace placeholders with semantic content before committing.
 
 ## D-Drive AI Tool Storage
 

@@ -1,5 +1,7 @@
 # Hueday MVP Development Plan
 
+Last code/document alignment: 2026-07-22 KST. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
+
 ## Status
 - [x] Lazyweb setup and reference verification
 - [x] React/Vite/TypeScript project scaffold
@@ -14,8 +16,9 @@
 - [x] Korean/English localization
 - [x] Capacitor Android scaffold
 - [x] Android SDK/JDK setup and debug APK build
-- [x] Tests and browser QA
-- [x] Supabase cloud verification after Anonymous sign-ins is enabled
+- [x] Helper-level unit tests and historical browser QA baseline
+- [x] Supabase cloud verification for password users, anonymous-write denial, owner CRUD/storage, and cross-user denial
+- [ ] Automated integration/E2E coverage for signup -> capture -> save -> story share
 
 ## Product Direction
 Hueday is a private daily color-walk ritual. The user receives a daily mood color mission based on local weather and time, collects up to eight surrounding photos into a 3x3 grid around that color, writes a short reflection, and keeps a visual history of collected color days. There is no social feed, ranking, or comparison loop.
@@ -34,7 +37,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 - Vitest for unit tests
 
 ## Core Implementation Notes
-- Anonymous Supabase Auth is the MVP identity model.
+- Username/password beta accounts are the current app identity model. Signup calls the deployed `beta-signup` Edge Function and then opens a password session. Anonymous sign-in remains only as a compatibility/security verification target; the app rejects anonymous sessions and RLS denies anonymous app-data writes.
 - Images are compressed in-browser to WebP before upload, targeting a beta-friendly mobile payload while preserving enough detail for story export.
 - Mission color selection is deterministic and zero-AI: weather group plus local time bucket maps to static color missions.
 - The old color-match scoring flow is removed from the product UI. The legacy `posts.match_rate` column is retained as `0` only for schema compatibility until a later cleanup migration.
@@ -46,6 +49,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 - Tables:
   - `public.profiles`
   - `public.posts`
+  - `public.color_name_suggestions`
 - Storage bucket:
   - `post-images`
 - RLS:
@@ -73,6 +77,8 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
   - build and sync verification
 
 ## Future Roadmap
+
+The current code-grounded product diagnosis, monetization sequence, Setlog research, and Windows-to-iOS release options live in `docs/hueday-breakout-strategy.md`. This roadmap must not claim those proposals are implemented until the corresponding code and verification exist.
 
 ### Product Growth Strategy
 - Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
@@ -150,6 +156,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 4. Defer direct Instagram Stories native integration until Android beta sharing demand is proven, because the current Web Share/download route is simpler and more robust for early testing.
 
 ## Current Follow-Ups
-- Supabase anonymous sign-in, profile upsert, storage upload, and post upsert/select verification now pass against the live ColorWalk project.
+- Password-user profile upsert, post CRUD, owner storage access, anonymous-write denial, and cross-user denial passed the last recorded live Supabase verification. Anonymous sign-in is not the product entry flow.
 - Android Gradle build now succeeds locally with Android SDK 36 and JDK 21. Debug APK output: `android/app/build/outputs/apk/debug/app-debug.apk`.
-- Supabase advisors currently warn that anonymous signed-in users can access owner-scoped `profiles`, `posts`, and `post-images` policies. This is expected for the anonymous-auth MVP, but account linking should revisit the policy model.
+- Apply `20260529200000_add_grid_images.sql` to the live Supabase project through an authenticated admin path, then plan removal of the `client_meta.gridImages` compatibility fallback after migration verification.
+- Align the product promise around one-photo progress versus eight-photo 3x3 completion; the current camera allows completion after one image while product copy emphasizes eight shots.

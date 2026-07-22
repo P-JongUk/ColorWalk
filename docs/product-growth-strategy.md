@@ -1,5 +1,8 @@
 # Hueday Product Growth Strategy
 
+마지막 코드·시장 대조: 2026-07-22 KST
+상위 전략과 현재 구현 진단: `docs/hueday-breakout-strategy.md`
+
 이 문서는 Hueday가 베타 이후 어떤 성장 루프를 키울지 정리한 living document다. 새 기능을 추가할 때는 단순히 유행 앱을 따라 만들지 말고, 아래의 고유 루프를 강화하는지 먼저 확인한다.
 
 > 오늘의 색 미션 -> 현실에서 색 찾기 -> 3x3 컬렉션 -> 스토리 공유 -> 내 색 정체성 축적
@@ -22,7 +25,7 @@ Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수�
 | --- | --- | --- | --- |
 | Locket | 가까운 사람에게 자주 보이는 루프, 작고 친밀한 공유 | 친구에게 오늘의 컬러 카드 링크를 보내고, 상대는 가볍게 오늘 색을 본다 | 홈 화면 사진 위젯/친구 사진 피드 복제 |
 | BeReal | 매일 자연스러운 계기, 즉흥적인 기록 | 날씨/시간 기반 오늘의 색 미션을 매일의 계기로 삼는다 | 강제 알림, 친구 비교, dual-camera SNS 구조 |
-| Setlog | 부담 낮은 짧은 기록, 쉽게 올리는 감각 | 3x3 색 컬렉션과 짧은 mood sentence로 빠르게 저장한다 | 원본 영상/사진 중심의 기록 피드 복제 |
+| Setlog | 소규모 친구가 같은 날 올린 2초 안팎 영상을 하나의 group vlog로 묶는 낮은 부담 | 친구의 작은 색 발견이 한 장의 공동 팔레트로 모이게 한다 | 연락처 기반 영상 그룹·원본 영상 피드 복제 |
 | Story apps | 공유하기 쉬운 9:16 결과물 | ColorWalk 전용 스토리 프레임, 스탬프, 월간 리캡으로 발전시킨다 | 범용 템플릿 앱처럼 복잡한 편집기를 만드는 것 |
 
 ## Core Growth Loops
@@ -444,7 +447,7 @@ Design:
 5. 공유되는 정보와 private 정보가 명확히 분리되는가?
 6. 430x932 모바일 화면에서 목업 품질을 해치지 않는가?
 7. story export나 profile/reward surface에 실제로 쓸 수 있는가?
-8. `docs/colorwalk-reward-system.md`, `plan.md`, helper/config 문서가 함께 갱신되어야 하는가?
+8. `docs/hueday-breakout-strategy.md`, `docs/colorwalk-reward-system.md`, `plan.md`, helper/config 문서가 함께 갱신되어야 하는가?
 9. 검증 명령은 무엇인가?
    - `npm run lint`
    - `npm test -- --run`
@@ -487,4 +490,4 @@ Design:
    - public feed보다 circle/private board로 작게 시작.
    - friend comparison이 아니라 "서로의 오늘 색 보기"만 구현.
 
-이 문서는 기능이 바뀔 때마다 갱신한다. ColorWalk의 성장은 사진 SNS를 따라가는 것이 아니라, 사용자가 현실에서 발견한 색을 자기만의 정체성으로 쌓아가게 만드는 방향이어야 한다.
+이 문서는 기능이 바뀔 때마다 실제 코드와 대조해 갱신한다. 시장 근거, 수익화, iOS 출시 경로, 냉정한 제품 진단은 `docs/hueday-breakout-strategy.md`에서 관리한다. ColorWalk의 성장은 사진 SNS를 따라가는 것이 아니라, 사용자가 현실에서 발견한 색을 자기만의 정체성으로 쌓아가게 만드는 방향이어야 한다.

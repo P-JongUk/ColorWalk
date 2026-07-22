@@ -33,12 +33,17 @@ Reference: https://supabase.com/docs/guides/auth/password-security
 
 ## Local Environment Risk
 
-The C drive currently has no free space. This blocks npm's default cache/log writing and Android emulator system image installation.
+The original C-drive capacity blocker has been mitigated at project level as of 2026-07-22. Capacity can still regress, so large project-generated data must remain on D.
 
-Current workaround:
+Current persistent routing includes:
 
 ```powershell
 $env:npm_config_cache='D:\JongUk\Documents\ColorWalk\.npm-cache'
+$env:PIP_CACHE_DIR='D:\JongUk\Documents\ColorWalk\.pip-cache'
+$env:PLAYWRIGHT_BROWSERS_PATH='D:\JongUk\Documents\ColorWalk\.playwright-browsers'
+$env:GRADLE_USER_HOME='D:\GradleCacheColorWalk'
+$env:ANDROID_SDK_ROOT='D:\Android\Sdk'
+$env:ANDROID_AVD_HOME='D:\Android\Avd'
 ```
 
-Before long-term development, free C drive space or move npm/Android SDK/AVD cache paths to D.
+The project workflow also routes task-specific `TEMP`/`TMP` and Vercel data to D. Windows-global temporary folders, Obsidian/JDK executables, and Codex's small global plugin registry remain on C to avoid breaking unrelated applications and desktop integration.

@@ -1,6 +1,6 @@
 ---
 name: hueday-development-workflow
-description: "Run every meaningful Hueday/ColorWalk coding task through a Graphify-first, Ponytail-minimal, verified workflow and persist the outcome in the Obsidian-compatible docs/ai-memory vault. Use for feature work, bug fixes, refactors, QA changes, and architecture questions in this repository."
+description: "Run every meaningful Hueday/ColorWalk coding task through a Graphify-first, Ponytail-minimal, verified workflow, keep durable product/release/career documents aligned with the code, and persist the outcome in the Obsidian-compatible docs/ai-memory vault. Use for feature work, bug fixes, refactors, QA changes, and architecture questions in this repository."
 ---
 
 # Hueday Development Workflow
@@ -48,10 +48,19 @@ For every meaningful change, update the Obsidian-compatible vault at `docs/ai-me
 - `02-next-tasks.md`: concrete follow-up work
 - `sessions/YYYY-MM-DD-HHmm-<short-name>.md`: the task record
 
+Then perform a documentation impact check against the actual diff:
+
+- product reality or priority: `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `plan.md`
+- capture/story/profile/reward/monetization: `docs/colorwalk-reward-system.md` and the reward helper
+- deploy, QA, environment, schema, or security: `docs/release-readiness.md`, `docs/security-audit.md`, `AGENTS.md`
+- meaningful problem, constraint, tradeoff, or failed approach: `docs/career-problem-solving-log.md`
+
+Update only affected documents. If a document has no impact, state that explicitly in the session note. Never replace a historical verification date with a newer date unless the corresponding check actually ran.
+
 Record the goal, scope, Graphify findings, changed files, verification commands/results, failed or deferred approaches, and next tasks. Never record secrets, credentials, or private beta-account data. Start from `03-session-template.md` or use:
 
 ```powershell
-.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Verification "<검증 명령과 결과>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>"
+.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Verification "<검증 명령과 결과>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>" -Documentation "<갱신 문서 또는 영향 없음과 이유>" -Career "<취업 사례 갱신 또는 영향 없음과 이유>"
 ```
 
 ## 5. Git checkpoint

@@ -9,7 +9,11 @@
 - `npm run seed:test-account`
 - `npm run cap:sync`
 
-Latest verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`, `seed:test-account`, `cap:sync`, Android debug APK build, Android release AAB build, and Vercel production deploy passed after the safe-zone launcher icon, unlocked shuffle button explanation, post-save draft cleanup, and natural one-line journal UX changes.
+Latest full release verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`, `seed:test-account`, `cap:sync`, Android debug APK build, Android release AAB build, and Vercel production deploy passed after the safe-zone launcher icon, unlocked shuffle button explanation, post-save draft cleanup, and natural one-line journal UX changes.
+
+Latest code/document alignment audit: 2026-07-22 KST. This audit corrected stale product, auth, Git, storage, and iOS statements; it does not replace the full release verification date above.
+
+Latest local static verification: 2026-07-22 KST. `lint`, the six Hueday unit-test files with 17 tests, and the production `build` passed. Live Supabase, account seeding, Capacitor sync, Android artifacts, physical-device QA, and deployment were not rerun, so the full release checkpoint remains 2026-06-04.
 
 ## PWA Beta
 
@@ -19,7 +23,7 @@ Latest verification: 2026-06-04 KST. `lint`, `test`, `build`, `verify:supabase`,
 - Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `VITE_AUTH_EMAIL_DOMAIN`.
 - Share the HTTPS URL with friends and have them sign up or sign in through the username/password beta flow.
 - Android Chrome users can install from browser menu -> Add to Home screen / Install app.
-- iOS users can install from Safari Share -> Add to Home Screen.
+- iOS users can install the PWA from Safari Share -> Add to Home Screen. This is not an App Store release. Native iOS support is not yet scaffolded because `@capacitor/ios` and an `ios/` project are absent; see `docs/hueday-breakout-strategy.md` for the macOS build/signing paths.
 - PWA camera now defaults to in-app `getUserMedia` capture instead of opening the phone's native camera app from the shutter. Supported mobile browsers expose an in-app zoom slider through `MediaStreamTrack.applyConstraints({ zoom })`; unsupported browsers keep in-app capture and show a small native camera fallback button.
 - PWA camera quality still depends on each browser/device. `ImageCapture.takePhoto()` is used when available for higher-resolution stills, then save-time WebP compression protects storage size. Physical phone QA remains required for lens choice, zoom range, low-light quality, and share-sheet behavior.
 - Installed PWA icons use padded maskable-safe artwork. If a phone still shows the cropped old icon, remove the old home-screen app and reinstall because Android/iOS launchers cache installed icons aggressively.
@@ -45,7 +49,7 @@ This repository is connected to:
 https://github.com/P-JongUk/ColorWalk.git
 ```
 
-Push beta work to `main` unless a dedicated review branch is requested.
+Use `main` as the integration branch. Start large features from the latest `main` on `feature/<feature-name>` without a `codex/` prefix, commit in focused Korean checkpoints, push the feature branch, verify the full diff, and then merge it into `main`.
 
 ## Remaining Manual QA
 

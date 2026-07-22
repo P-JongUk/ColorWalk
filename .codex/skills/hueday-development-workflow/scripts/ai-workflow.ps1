@@ -7,7 +7,9 @@ param(
     [string]$Verification = '',
     [string]$Decision = '',
     [string]$Failure = '',
-    [string]$Next = ''
+    [string]$Next = '',
+    [string]$Documentation = '',
+    [string]$Career = ''
 )
 
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path
@@ -40,7 +42,7 @@ function Write-WorkflowHeader {
 
 if ($Mode -eq 'session-start') {
     Write-WorkflowHeader
-    Write-Host 'Checklist: Graphify map -> scope/success conditions -> smallest safe change -> verify -> Obsidian note.' -ForegroundColor Yellow
+    Write-Host 'Checklist: Graphify map -> scope/success conditions -> smallest safe change -> verify -> documentation/career impact -> Obsidian note.' -ForegroundColor Yellow
     if (Test-Path $graph) {
         Write-Host 'Graphify graph: ready (use graphify query/path/explain before broad source reads).' -ForegroundColor Green
     } else {
@@ -67,6 +69,10 @@ $stamp = Get-Date -Format 'yyyy-MM-dd-HHmm'
 $slug = ($Title.ToLowerInvariant() -replace '[^a-z0-9]+', '-') -replace '(^-|-$)', ''
 if (-not $slug) { $slug = 'session' }
 $notePath = Join-Path $memory "sessions\$stamp-$slug.md"
+$changedFiles = @(git -C $repo status --short)
+$changedFileSummary = if ($changedFiles.Count -gt 0) { $changedFiles -join "`n" } else { '(no working-tree changes at finish)' }
+$documentationImpact = if ($Documentation) { $Documentation } else { '미기재 — 커밋 전 실제 diff를 기준으로 기준 문서 영향을 확인해야 합니다.' }
+$careerImpact = if ($Career) { $Career } else { '미기재 — 커밋 전 문제해결 사례 갱신 여부와 이유를 확인해야 합니다.' }
 $content = @"
 # Session record - $stamp - $Title
 
@@ -91,6 +97,12 @@ $Decision
 
 - (fill in)
 
+## Changed files at finish
+
+~~~text
+$changedFileSummary
+~~~
+
 ## Verification
 
 $Verification
@@ -99,11 +111,23 @@ $Verification
 
 $Failure
 
+## Documentation impact
+
+$documentationImpact
+
+## Career evidence impact
+
+$careerImpact
+
 ## Next tasks
 
 $Next
 "@
 Set-Content -LiteralPath $notePath -Value $content -Encoding UTF8
+
+if (-not $Documentation -or -not $Career) {
+    Write-Warning 'Documentation or career impact was omitted. Complete both sections before committing.'
+}
 
 if (Test-Path $graphify) {
     & $graphify update .
@@ -111,5 +135,5 @@ if (Test-Path $graphify) {
 
 Write-WorkflowHeader
 Write-Host "Session note created: $notePath" -ForegroundColor Green
-Write-Host 'Before commit: complete the note, update durable notes when needed, run relevant checks, and review git diff.' -ForegroundColor Yellow
+Write-Host 'Before commit: complete every note section, resolve documentation/career-log impact, run relevant checks, and review git diff.' -ForegroundColor Yellow
 git status --short
