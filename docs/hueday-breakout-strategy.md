@@ -123,7 +123,7 @@ Hueprint는 다른 SNS가 쉽게 복제하기 어려운 Hueday의 장기 데이�
 
 ## 4. 가장 단순한 실행 순서
 
-아래 Phase는 3개월 일정이 아니라 의존 순서다. 현재 목표는 Phase 0의 출시 차단 요소와 `docs/release-readiness.md`의 필수 검증만 통과한 뒤 외부 베타를 즉시 배포하는 것이다. Phase 1 이후의 공유 링크, Hueprint, 그룹, 수익화 기능은 베타 출시를 늦추는 선행 조건으로 만들지 않는다.
+아래 Phase는 3개월 일정이 아니라 의존 순서다. 현재 목표는 속도를 위해 Hueday의 성공 요소를 삭제하는 최소 베타가 아니라, Phase 0의 제품 진실·측정, Phase 1의 Color Relay, Phase 2의 Hueprint·실제 배지 보상까지 실사용 가능한 첫 버전으로 완성한 뒤 최대한 빨리 출시하는 것이다. Color Capsule은 Hueprint와 함께 구현 가능한 최소 회고부터 포함한다. Phase 3의 close circle과 Phase 4의 사업 확장처럼 운영·동기화·심사 난도가 큰 항목만 효과 대비 난도를 근거로 후순위화한다.
 
 ### Phase 0 — 제품 진실 맞추기와 측정
 

@@ -1,5 +1,7 @@
 ﻿# Session record - 2026-07-22-1455 - fast-beta-release-priority
 
+> 상태: 2026-07-22 사용자 정정으로 폐기됨. `빠른 출시`를 `최소 기능 출시`로 잘못 해석한 기록이며, 현재 기준은 [[2026-07-22-1502-complete-fast-release-correction]]과 `../01-decisions.md`의 `빠르고 완성도 있는 출시` 결정이다.
+
 ## Goal
 
 Hueday 계획을 장기 로드맵이 아니라 안전한 외부 베타 출시까지의 최단 실행 경로로 전환한다.

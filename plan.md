@@ -150,10 +150,11 @@ The current code-grounded product diagnosis, monetization sequence, Setlog resea
   - Fallback to Web Share API or image download when Instagram is not installed or rejects the intent.
 
 ### Beta Priority Recommendation
-1. Treat this as a release critical path, not a three-month roadmap: choose the exact external-beta channel and freeze the minimum scope.
-2. Resolve the one-photo progress versus eight-photo completion promise with the smallest consistent copy/behavior change; do not add new growth features first.
-3. Rerun the complete release checks in `docs/release-readiness.md`, then verify signup -> capture -> save -> share on a physical phone.
-4. Deploy as soon as those gates pass. Defer share links, Hueprint, paid features, close groups, and direct Instagram integration until beta behavior is measured.
+1. Treat this as a compressed release critical path, not a three-month roadmap and not a stripped-down minimum beta.
+2. Complete the high-impact launch package: a fast Color Hunt result with a consistent one-photo/eight-photo promise, the minimum measurable funnel, safe Color Relay links, a useful Hueprint/Color Capsule recap, and badge rewards that unlock real creative items.
+3. Order that package by dependencies and implement independent pieces as separate focused feature branches; every deferral must cite disproportionate technical or operational complexity rather than convenience.
+4. Rerun the complete checks in `docs/release-readiness.md`, then verify signup -> capture -> save -> share/Relay/Hueprint on a physical phone and launch immediately when the complete package passes.
+5. Defer only high-complexity extensions such as close-circle synchronization, a public feed, broad real-time collaboration, large-scale operations, and advanced native integrations. Monetization still follows the evidence gates in `Monetization Direction` rather than blocking the first complete product launch.
 
 ## Current Follow-Ups
 - Password-user profile upsert, post CRUD, owner storage access, anonymous-write denial, and cross-user denial passed the last recorded live Supabase verification. Anonymous sign-in is not the product entry flow.
