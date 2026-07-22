@@ -150,10 +150,10 @@ The current code-grounded product diagnosis, monetization sequence, Setlog resea
   - Fallback to Web Share API or image download when Instagram is not installed or rejects the intent.
 
 ### Beta Priority Recommendation
-1. Add 9:16 story templates and stronger share preview first.
-2. Add streak/collection badges and mood color naming second.
-3. Defer paid features until beta retention and sharing behavior are measured.
-4. Defer direct Instagram Stories native integration until Android beta sharing demand is proven, because the current Web Share/download route is simpler and more robust for early testing.
+1. Treat this as a release critical path, not a three-month roadmap: choose the exact external-beta channel and freeze the minimum scope.
+2. Resolve the one-photo progress versus eight-photo completion promise with the smallest consistent copy/behavior change; do not add new growth features first.
+3. Rerun the complete release checks in `docs/release-readiness.md`, then verify signup -> capture -> save -> share on a physical phone.
+4. Deploy as soon as those gates pass. Defer share links, Hueprint, paid features, close groups, and direct Instagram integration until beta behavior is measured.
 
 ## Current Follow-Ups
 - Password-user profile upsert, post CRUD, owner storage access, anonymous-write denial, and cross-user denial passed the last recorded live Supabase verification. Anonymous sign-in is not the product entry flow.

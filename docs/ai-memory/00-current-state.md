@@ -4,6 +4,7 @@
 
 - 공개 브랜드: Hueday
 - 내부 저장소/패키지/Supabase 이름: ColorWalk 유지
+- 현재 최우선 목표: 출시 후 기능을 미리 늘리지 않고, 필수 품질·보안·데이터 보호·실기기 QA 기준을 통과하는 즉시 외부 베타 출시
 - 핵심 루프: 일일 색 미션 → 현실에서 색 찾기 → 3x3 컬렉션 → 스토리/공유 카드 → 색 정체성 축적
 - 현재 구현: 아이디/비밀번호 인증, 날씨·시간 미션, 최대 8장 촬영과 로컬 초안 복구, Supabase 저장, 짧은 일기, 9:16 스토리/3x3 공유, 달력, 배지 표시, 로컬 알림, PWA/Android
 - 현재 미구현: 공개 안전 공유 링크, 친구/close circle, 월간 Hueprint 결과물, 실제 배지 아이템 해금, 행동 분석, 결제, 네이티브 iOS
@@ -18,7 +19,7 @@
 - 통합 브랜치: `main`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
-- 현재 그래프: Graphify 0.9.23, 1,027개 노드와 1,029개 연결, 121개 community (2026-07-22 갱신)
+- 현재 그래프: Graphify 0.9.23, 1,040개 노드와 1,041개 연결, 122개 community (2026-07-22 갱신)
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
 - Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`

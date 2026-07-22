@@ -6,6 +6,7 @@ Read this file before coding in this repository.
 
 - Public product brand: `Hueday`. Keep internal repo paths, Supabase namespace, Android package, storage keys, and Vercel project names as `ColorWalk`/`colorwalk` unless a deliberate migration is planned.
 - Main target: Korean beta users, especially teens and young adults.
+- Release priority: reach a safe, testable external beta as soon as the minimum release gates pass. Do not turn launch planning into a calendar-based three-month roadmap or delay launch for post-beta growth features; optimize the critical path without skipping security, data-loss protection, or required device QA.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
