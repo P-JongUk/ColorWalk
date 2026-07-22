@@ -12,6 +12,16 @@ Hueday의 보상은 연속 일수 점수, 순위, 압박 루프로 취급하지 
 
 This keeps Hueday aligned with the core product direction: private, emotional, collectible, camera-first, and share-worthy without becoming competitive.
 
+## Color Hunt Completion Contract
+
+- 미션 색은 3x3 중앙에 고정하고, 사용자는 일상에서 비슷한 색을 찾아 주변 8칸을 채운다.
+- 첫 사진은 안전하게 보존되는 `첫 색 발견`이자 `오늘의 색 씨앗`이다. 진행 시작으로 인정하지만 미션·오늘 기록·3x3 페이지 완료로 계산하지 않는다.
+- 8장을 모두 채운 완성 3x3을 오늘의 미션과 한 페이지 완료로 계산한다.
+- 주요 보상 축은 완성 3x3이다. Hue Room 아이템과 배치 영역, Hueprint 반영, 완성형 공유 프레임·결과물을 여기에 연결한다.
+- 부분 진행은 당일 완료를 강제하지 않고 나중에 이어 채울 수 있게 보존한다.
+- 미완성 때문에 기존 보상을 회수하거나 연속 일수를 초기화하지 않으며 실패·죄책감 카피를 사용하지 않는다.
+- 첫 색 씨앗에는 칸 채움, 저장 확인, 부드러운 촉각·시각 피드백을 줄 수 있지만 주요 아이템 해금처럼 완료로 오해할 보상은 주지 않는다.
+
 ## Why Badges Matter
 
 보상의 가치는 연속 숫자가 아니라 반복한 색 발견이 눈에 보이는 정체성, 공간, 창작 자산으로 바뀌는 데 있다.
@@ -43,7 +53,7 @@ Avoid rewards that make users think:
 
 | 진행 축 | 예시 | 보상 방향 |
 | --- | --- | --- |
-| 발견한 날 | 평생 3·7·14·30일 등 | Hue Room 기본 소품, Story mark |
+| 첫 색 씨앗·발견 시작 | 안전하게 저장된 부분 진행 | 저장 확인, 진행 피드백, 이어하기 입구 |
 | 완성한 3x3 | 1·3·5·10페이지 등 | 가구·액자·새 배치 영역 |
 | 미션 팩 | 집·학교·통학·카페 pack 진행 | 문맥별 대표 아이템 |
 | 주간 색 리듬 | 선택한 2/3/5일 목표 | 재질·장식·작은 공간 효과 |
@@ -75,6 +85,8 @@ The permanent rule is:
 When a feature changes, update rewards by preserving these relationships:
 
 - `habit milestone -> creative unlock`
+- `partial color seed -> resumable progress without completion reward`
+- `completed 3x3 -> primary creative unlock`
 - `saved mission color -> room item/color library`
 - `saved posts -> source of truth`
 - `collected colors/photos -> shareable memory`
@@ -82,8 +94,8 @@ When a feature changes, update rewards by preserving these relationships:
 
 Examples:
 
-- If the app stays as a single-photo color diary, badge rewards should unlock marks, passport/ticket details, color-name labels, and simple export treatments based on saved daily posts.
-- If the app moves to a 3x3 grid system, badge rewards should unlock grid frame styles, empty-cell filler patterns, subtle border treatments, and recap layouts based on completed grid days.
+- A first-photo seed may receive a saved-state mark or gentle progress feedback, but not the main reward reserved for a completed page.
+- Completed 3x3 pages should unlock grid frame styles, recap layouts, Hue Room items, or other meaningful creative assets.
 - If Hue Room is available, the primary reward should be a placeable/recolorable item or space change, with story/profile art as a secondary use.
 - If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
 - If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.
@@ -104,6 +116,7 @@ Remapping examples:
 Implementation rule:
 
 - Derive unlock state from persisted user activity, preferably `posts.local_date` plus future post metadata such as grid completion count.
+- The current post/draft model does not yet distinguish a resumable color seed from a completed page. Add that distinction in the M1 implementation instead of weakening the approved product meaning to match current code.
 - Keep the reward mapping in one helper/config layer so design assets can be renamed without rewriting the product loop.
 - When changing capture, story, profile, or monetization features, update this document and the reward mapping in the same PR/commit.
 - Current helper/config location: `src/lib/collection.ts`. Keep the badge reward labels and unlock conditions aligned with this document.
@@ -129,7 +142,7 @@ Hue Room 아이템을 가장 강한 장기 보상으로 사용한다.
 - 아이템은 탄생 색과 원본 3x3 기록을 기억한다.
 - 이후 사용자가 발견한 색으로 자유롭게 다시 칠할 수 있다.
 - 색은 소모하지 않는다.
-- 누적 발견·완성 3x3·미션 팩·월간 참여가 소품과 배치 영역을 연다.
+- 첫 색 씨앗은 안전한 진행으로 남고, 완성 3x3·미션 팩·월간 참여가 주요 소품과 배치 영역을 연다.
 - 접속하지 않아도 방과 아이템은 시들거나 사라지지 않는다.
 
 세부 디자인·데이터 계약은 `docs/hue-room-product-spec.md`를 따른다.
