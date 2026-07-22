@@ -11,13 +11,14 @@
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`
+- 작업별 모델·추론·계획/목표 모드 선택 기준: `docs/ai-model-selection-guide.md`
 
 ## 저장소
 
 - 통합 브랜치: `main`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
-- 현재 그래프: Graphify 0.9.23, 1,001개 노드와 1,004개 연결, 120개 community (2026-07-22 갱신)
+- 현재 그래프: Graphify 0.9.23, 1,027개 노드와 1,029개 연결, 121개 community (2026-07-22 갱신)
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
 - Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`
@@ -26,15 +27,17 @@
 ## 작업 방식
 
 0. 모든 작업은 현재 Codex 에이전트가 직접 수행하며 하위 에이전트를 생성하거나 위임하지 않습니다.
-1. Graphify로 관련 구조와 의존 관계를 먼저 확인합니다.
-2. 범위와 성공 조건을 정합니다.
-3. 가장 작은 변경을 구현합니다.
-4. 관련 검증을 실행합니다.
-5. 결정, 결과, 실패한 접근, 다음 할 일을 이 vault에 기록합니다.
+1. 작업의 모호성·영향·되돌리기 비용·검증 난이도로 모델, 추론, 계획/목표 모드를 고릅니다.
+2. Graphify로 관련 구조와 의존 관계를 먼저 확인합니다.
+3. 범위와 성공 조건을 정합니다.
+4. 가장 작은 변경을 구현합니다.
+5. 관련 검증을 실행합니다.
+6. 결정, 결과, 실패한 접근, 다음 할 일을 이 vault에 기록합니다.
 
 ## 자동화 상태
 
 - 프로젝트 스킬: `.codex/skills/hueday-development-workflow/`
+- `AGENTS.md`가 의미 있는 작업 전 `docs/ai-model-selection-guide.md`를 확인하고, 설정 변경이 유의미할 때 사용자에게 추천하도록 규정합니다.
 - 새 Codex 세션 시작 시 `.codex/hooks.json`의 `SessionStart` hook이 작업 체크리스트를 출력합니다.
 - Graphify의 post-commit/post-checkout hook이 코드 구조 그래프를 갱신합니다.
 - 작업 종료 스크립트가 `docs/ai-memory/sessions/`에 세션 기록을 만들고 Graphify를 갱신합니다.
