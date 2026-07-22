@@ -9,6 +9,8 @@ lerna-debug.log*
 
 node_modules
 .npm-cache/
+.pip-cache/
+.graphify-venv/
 .tmp/
 .gradle-home*/
 dist
@@ -42,3 +44,4 @@ android/local.properties
 *.sw?
 
 .vercel
+graphify-out/
