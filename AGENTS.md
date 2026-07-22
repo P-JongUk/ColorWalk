@@ -146,7 +146,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## Git Workflow
 
 - `main` is the integration branch. Do not develop large features directly on `main`.
-- Before starting a large feature, update local `main` from `origin/main`, then create a dedicated branch using the `codex/<feature-name>` naming convention.
+- Before starting a large feature, update local `main` from `origin/main`, then create a dedicated branch using the `feature/<feature-name>` naming convention. Do not add a `codex/` prefix.
 - Keep each commit focused on one meaningful checkpoint. Use Korean commit messages with a conventional prefix when appropriate, such as `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
 - Push each meaningful, verified checkpoint so work can be resumed safely: use `git push -u origin <branch>` for the first push and `git push` afterward.
 - Run the relevant lint, test, build, Supabase, browser, or Android checks before pushing a checkpoint. Do not hide failing verification behind a commit message.
