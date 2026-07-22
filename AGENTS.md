@@ -142,3 +142,13 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - The browser invite-code gate is disabled; do not reintroduce it unless the product direction changes.
 - Browser build must not expose service role keys or local private docs.
 - Before sharing a URL, run lint/test/build/Supabase verification and one browser QA path from login to story export.
+
+## Git Workflow
+
+- `main` is the integration branch. Do not develop large features directly on `main`.
+- Before starting a large feature, update local `main` from `origin/main`, then create a dedicated branch using the `codex/<feature-name>` naming convention.
+- Keep each commit focused on one meaningful checkpoint. Use Korean commit messages with a conventional prefix when appropriate, such as `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
+- Push each meaningful, verified checkpoint so work can be resumed safely: use `git push -u origin <branch>` for the first push and `git push` afterward.
+- Run the relevant lint, test, build, Supabase, browser, or Android checks before pushing a checkpoint. Do not hide failing verification behind a commit message.
+- Before merging into `main`, review the complete diff and preserve existing product functionality, security rules, and required documentation. Merge only the intended feature branch changes.
+- Never commit secrets, `.env` files, private beta-account documents, generated caches, or local design-reference assets.
