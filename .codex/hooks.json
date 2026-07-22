@@ -1,5 +1,18 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:/JongUk/Documents/ColorWalk/.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1\" -Mode session-start",
+            "timeout": 10,
+            "statusMessage": "Loading Hueday AI workflow..."
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",

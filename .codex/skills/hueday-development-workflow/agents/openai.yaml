@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hueday Development Workflow"
+  short_description: "Graphify-first verified coding workflow"
+  default_prompt: "Use the Hueday development workflow for this task."

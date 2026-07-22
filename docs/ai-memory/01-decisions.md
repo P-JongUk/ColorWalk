@@ -15,3 +15,5 @@
 - Graphify 생성물은 로컬 전용이며 Git에 커밋하지 않습니다.
 - Graphify와 Obsidian 작업 데이터는 C 드라이브 용량을 아끼기 위해 D 드라이브에 둡니다.
 - Ponytail CLI의 전역 lifecycle hook 대신 프로젝트 범위의 공식 Ponytail skill 파일을 `.codex/skills/`에 등록했습니다. Codex 재시작 후 `@ponytail-review` 등을 사용할 수 있습니다.
+- 매 의미 있는 개발 작업에는 `hueday-development-workflow`를 적용합니다. 시작 시 Graphify와 기존 메모리를 확인하고, 종료 시 검증 결과와 세션 기록을 남깁니다.
+- Obsidian vault UI 설정(`docs/ai-memory/.obsidian/`)과 Graphify 생성물은 로컬 전용으로 유지하고 Git에 커밋하지 않습니다.

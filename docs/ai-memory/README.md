@@ -10,8 +10,11 @@ Obsidian에서 `D:\JongUk\Documents\ColorWalk\docs\ai-memory` 폴더를 vault로
 - [[01-decisions]]: 계속 유지해야 하는 결정과 제약
 - [[02-next-tasks]]: 다음 작업 후보
 - [[03-session-template]]: 작업 종료 시 복사해 쓰는 세션 기록 양식
+- `sessions/`: 각 개발 작업의 목표, 변경 파일, 검증 결과, 실패/보류 접근, 다음 할 일
 
 코드 구조 그래프는 로컬 생성물인 `graphify-out/obsidian/`에 저장됩니다. Graphify 그래프는 코드 변경 후 hook으로 갱신됩니다.
+
+Codex는 새 세션이 시작될 때 `.codex/hooks.json`의 `SessionStart` hook으로 이 작업 흐름을 불러옵니다. 실제 개발 작업에서는 Graphify로 범위를 좁히고, Ponytail의 최소 변경 원칙으로 구현한 뒤, 검증 결과를 이 vault에 남깁니다.
 
 ## 기록 원칙
 

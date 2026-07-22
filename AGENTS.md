@@ -155,10 +155,12 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 
 ## AI Context Workflow
 
+- Every meaningful development task must use the project-scoped `.codex/skills/hueday-development-workflow` skill. The `SessionStart` hook prints its checklist automatically; do not wait for the user to repeat these rules.
 - For codebase questions, use the project-scoped Graphify skill first when `graphify-out/graph.json` exists. Query the relevant subgraph before opening broad source files.
 - Before changing code, state the scope, success conditions, and likely files. Follow these four rules: think before coding, start with the simplest solution, change only what is needed, and verify the success conditions.
 - Use the project-scoped Ponytail skills under `.codex/skills/ponytail*` and its minimum-change ladder: first ask whether the change is needed, then reuse an existing helper or pattern, then prefer the standard library, native platform features, or already-installed dependencies before adding abstraction or a package.
 - After a meaningful task, record the current state, decisions, failed approaches, verification results, and next tasks in `docs/ai-memory/`. Keep credentials and private account data out of these notes.
+- At task completion, run `.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish ...`; this creates a timestamped session note and refreshes Graphify. Fill in the note's semantic details rather than leaving the scaffold unchanged.
 - Treat `docs/ai-memory/` as an Obsidian-compatible local vault. Keep durable project context there so the next coding session can resume from notes instead of re-reading the repository.
 
 ## D-Drive AI Tool Storage

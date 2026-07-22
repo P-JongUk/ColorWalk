@@ -11,7 +11,7 @@
 - 통합 브랜치: `main`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
-- 현재 그래프: Graphify 0.9.23, 약 530개 노드와 585개 연결
+- 현재 그래프: Graphify 0.9.23, 855개 노드와 865개 연결
 - Graphify 실행 환경: `D:\JongUk\Documents\ColorWalk\.graphify-venv`
 - Codex CLI 실행 환경: `D:\JongUk\Documents\ColorWalk\.codex-cli`
 - Graphify 생성물: `D:\JongUk\Documents\ColorWalk\graphify-out\`
@@ -24,3 +24,11 @@
 3. 가장 작은 변경을 구현합니다.
 4. 관련 검증을 실행합니다.
 5. 결정, 결과, 실패한 접근, 다음 할 일을 이 vault에 기록합니다.
+
+## 자동화 상태
+
+- 프로젝트 스킬: `.codex/skills/hueday-development-workflow/`
+- 새 Codex 세션 시작 시 `.codex/hooks.json`의 `SessionStart` hook이 작업 체크리스트를 출력합니다.
+- Graphify의 post-commit/post-checkout hook이 코드 구조 그래프를 갱신합니다.
+- 작업 종료 스크립트가 `docs/ai-memory/sessions/`에 세션 기록을 만들고 Graphify를 갱신합니다.
+- Ponytail 프로젝트 스킬은 `.codex/skills/ponytail*`에 연결되어 있습니다.
