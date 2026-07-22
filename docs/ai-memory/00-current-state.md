@@ -22,7 +22,8 @@
 ## 저장소
 
 - 통합 브랜치: `main`
-- 현재 작업 브랜치: `feature/product-roadmap-system`
+- 현재 작업 브랜치: `main` — 전체 로드맵 체계 커밋 `426c707` 통합 완료
+- 최근 완료 기능 브랜치: `feature/product-roadmap-system`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
 - 현재 그래프: Graphify 0.9.23, 1,280개 노드와 1,280개 연결, 133개 community (2026-07-22 갱신)
