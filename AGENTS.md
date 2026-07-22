@@ -11,8 +11,10 @@ Read this file before coding in this repository.
 - Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
 - Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
 - Monetization source of truth: `docs/product-growth-strategy.md` under `Monetization Model`. Keep the free core promise and earned badge rewards useful when paid packs or subscriptions are designed.
-- Reward/badge direction: streak badges are creative keys, not scores. When capture, story, profile, or monetization features change, preserve the milestone-to-creative-unlock loop and update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
-- Product strategy source of truth: read `docs/hueday-breakout-strategy.md` first, then `docs/product-growth-strategy.md` for the detailed feature backlog. Do not clone Locket, BeReal, Setlog, or generic story apps. Preserve Hueday's loop: daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity.
+- Reward direction: use flexible Color Rhythm and cumulative discovery to unlock real Hue Room/story/Hueprint items. Do not make consecutive-day streaks, scores, punishment, or reward loss the primary loop. When capture, mission packs, Hue Room, story, profile, or monetization changes, update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
+- Overall product source of truth: read `docs/hueday-product-blueprint.md`, then check the current phase and next action in `docs/hueday-development-roadmap.md`. Use `docs/development-reference-guide.md` to load only the relevant detailed documents. `docs/hueday-breakout-strategy.md` owns code-grounded diagnosis and market/iOS evidence; `docs/product-growth-strategy.md` owns detailed growth and monetization.
+- Do not clone Locket, BeReal, Setlog, Cyworld, or generic story/decorating apps. Preserve Hueday's loop: everyday mission color -> real-world similar-color finding -> center-color 3x3 collection -> Hue Room/Hueprint identity -> story/Relay sharing.
+- Hue Room source of truth: `docs/hue-room-product-spec.md`; execution status: `docs/hue-room-development-roadmap.md`. The main art direction must be approved from 430x932 concepts before producing the full item set. Never create one asset per item/color combination.
 
 ## Local Commands
 
@@ -137,6 +139,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 2. Save current captures under `.design-references/01-current-screens/`.
 3. Compare against `.design-references/00-target-mockup/` before deciding a design pass is done.
 4. For story/sticker UX, compare against `.design-references/02-lazyweb-story-editor/`, `.design-references/03-stickers/`, and `.design-references/04-template-gallery/`.
+5. For Hue Room, keep local concepts and captures under `.design-references/05-hue-room/`, verify each item against its element contract, and compare empty/partial/full/selected/recolor states at 430x932.
 
 ## Release Rules
 
@@ -158,6 +161,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 ## AI Context Workflow
 
 - Every meaningful development task must use the project-scoped `.codex/skills/hueday-development-workflow` skill. The `SessionStart` hook prints its checklist automatically; do not wait for the user to repeat these rules.
+- At task start, read `docs/hueday-product-blueprint.md`, the current phase and next action in `docs/hueday-development-roadmap.md`, and the task-specific documents routed by `docs/development-reference-guide.md`.
 - Before every meaningful task, consult `docs/ai-model-selection-guide.md` and classify the work by ambiguity, impact, reversibility, and verification cost. When a different setting would materially improve quality or cost, tell the user the recommended model, reasoning effort, Plan mode, Goal mode, and speed setting before implementation. Do not repeat unchanged advice for trivial follow-ups.
 - Prefer the lowest model and reasoning effort that can reliably satisfy the success conditions. Treat current official OpenAI guidance and observed project results as stronger evidence than a single external benchmark chart. Never claim the active model changed automatically; tell the user what to select when a change is needed.
 - Do not use or recommend Ultra because it depends on subagents. Use Plan mode for ambiguous, multi-step, high-rework-cost work, and Goal mode only for an explicit objective that must persist across multiple turns until completion.
@@ -172,7 +176,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 
 ## Documentation Freshness Contract
 
-- Documentation is part of the implementation. At the end of every meaningful task, inspect the actual diff and decide whether `AGENTS.md`, `plan.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `docs/colorwalk-reward-system.md`, and `docs/ai-memory/` are still accurate.
+- Documentation is part of the implementation. At the end of every meaningful task, inspect the actual diff and decide whether `AGENTS.md`, `plan.md`, `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `docs/colorwalk-reward-system.md`, the Hue Room documents, and `docs/ai-memory/` are still accurate.
 - Update only documents affected by the task, but never leave a known contradiction between code and documentation. If no durable document changes, record `영향 없음` and the reason in the session note.
 - Keep facts, interpretations, and unvalidated experiments distinct. Do not claim a deployment, migration, test, metric, or external market fact is current unless it was actually verified; preserve the date of historical checks.
 - When a task resolves a meaningful bug, platform constraint, security issue, performance problem, or product tradeoff, add or update a case in `docs/career-problem-solving-log.md` with evidence, alternatives, verification, outcome, and remaining debt.

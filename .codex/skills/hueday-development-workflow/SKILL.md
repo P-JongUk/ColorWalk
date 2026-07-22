@@ -15,11 +15,12 @@ Use this workflow for every meaningful coding task in this repository. Keep the 
 
 ## 1. Start with a map and a bounded plan
 
-1. Read the repository `AGENTS.md` and the relevant Obsidian notes in `docs/ai-memory/`.
-2. If `graphify-out/graph.json` exists, query Graphify before opening broad source files. Use `query` for a subsystem question, `path` for a relationship, and `explain` for one concept. Prefer the D-drive executable at `D:/JongUk/Documents/ColorWalk/.graphify-venv/Scripts/graphify.exe` when the `graphify` command is not on PATH.
-3. State four things before editing: scope, likely files, success conditions, and the smallest safe implementation.
-4. Apply the four principles: think before coding, choose the simplest viable approach, change only what is needed, and define/verify success conditions.
-5. For a repeatable start checklist, run:
+1. Read the repository `AGENTS.md`, `docs/hueday-product-blueprint.md`, the current phase/next action in `docs/hueday-development-roadmap.md`, and the relevant Obsidian notes in `docs/ai-memory/`.
+2. Use `docs/development-reference-guide.md` to select the feature-specific source documents. For Hue Room work, always include `docs/hue-room-product-spec.md` and `docs/hue-room-development-roadmap.md`.
+3. If `graphify-out/graph.json` exists, query Graphify before opening broad source files. Use `query` for a subsystem question, `path` for a relationship, and `explain` for one concept. Prefer the D-drive executable at `D:/JongUk/Documents/ColorWalk/.graphify-venv/Scripts/graphify.exe` when the `graphify` command is not on PATH.
+4. State four things before editing: scope, likely files, success conditions, and the smallest safe implementation.
+5. Apply the four principles: think before coding, choose the simplest viable approach, change only what is needed, and define/verify success conditions.
+6. For a repeatable start checklist, run:
 
 ```powershell
 .codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode start -Question "<the focused codebase question>"
@@ -40,8 +41,8 @@ Do not remove validation, error handling, security, accessibility, or data-loss 
 
 ## 3. Implement and verify
 
-- Keep the diff focused and preserve Hueday's daily mission → real-world color finding → 3x3 collection → story/share → color identity loop.
-- Update reward documentation and mapping helpers together when capture, story, profile, or monetization behavior changes.
+- Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Hue Room/Hueprint identity → story/Relay sharing loop.
+- Update reward documentation and mapping helpers together when capture, mission packs, Hue Room, story, profile, or monetization behavior changes.
 - Run the narrowest relevant checks first, then the broader check required by the change. Use D-drive npm/temporary paths from `AGENTS.md`.
 - After code changes, keep Graphify current with `graphify update .` or the workflow finish script. Code-only updates are local and do not need an API key.
 
@@ -57,6 +58,8 @@ For every meaningful change, update the Obsidian-compatible vault at `docs/ai-me
 Then perform a documentation impact check against the actual diff:
 
 - product reality or priority: `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `plan.md`
+- overall direction or execution order: `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`
+- Hue Room product/design/implementation: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`, `docs/design-qa-log.md`
 - capture/story/profile/reward/monetization: `docs/colorwalk-reward-system.md` and the reward helper
 - deploy, QA, environment, schema, or security: `docs/release-readiness.md`, `docs/security-audit.md`, `AGENTS.md`
 - meaningful problem, constraint, tradeoff, or failed approach: `docs/career-problem-solving-log.md`
@@ -66,8 +69,10 @@ Update only affected documents. If a document has no impact, state that explicit
 Record the goal, scope, Graphify findings, changed files, verification commands/results, failed or deferred approaches, and next tasks. Never record secrets, credentials, or private beta-account data. Start from `03-session-template.md` or use:
 
 ```powershell
-.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Verification "<검증 명령과 결과>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>" -Documentation "<갱신 문서 또는 영향 없음과 이유>" -Career "<취업 사례 갱신 또는 영향 없음과 이유>"
+.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Scope "<범위와 성공 조건>" -GraphifyFinding "<관련 구조>" -Changes "<실제 변경>" -Verification "<검증 명령과 결과>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>" -Documentation "<갱신 문서 또는 영향 없음과 이유>" -Career "<취업 사례 갱신 또는 영향 없음과 이유>"
 ```
+
+Use `-Mode check` before commit to verify required source documents and roadmap markers and to surface likely documentation omissions from the current diff.
 
 ## 5. Git checkpoint
 

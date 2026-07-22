@@ -79,7 +79,7 @@
 출력: 원하는 순서와 깊이
 ```
 
-같은 규칙을 여러 번 반복하지 않습니다. 프로젝트의 지속 규칙은 `AGENTS.md`와 이 문서에 두고, 작업 프롬프트에는 달라지는 목표·맥락·제약·완료 조건만 씁니다.
+같은 규칙을 여러 번 반복하지 않습니다. 프로젝트의 지속 규칙은 `AGENTS.md`, `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`, `docs/development-reference-guide.md`와 이 문서에 두고, 작업 프롬프트에는 달라지는 목표·맥락·제약·완료 조건만 씁니다.
 
 ## 현재 Hueday 빠르고 완성도 있는 출시 계획 추천
 
@@ -102,10 +102,10 @@
 ```text
 Hueday의 성공 가능성을 만드는 핵심 요소를 갖춘 완성도 있는 제품을 최대한 빨리 출시하기 위한 실행 계획을 세워줘.
 
-목표: Color Hunt의 빠른 첫 결과, 일관된 1컷/8컷 규칙, 측정 가능한 핵심 퍼널, 안전한 Color Relay, 누적 색 정체성을 보여주는 Hueprint/Color Capsule, 실제 창작 아이템을 여는 배지 보상과 가입 → 촬영 → 저장 → 공유의 안정성을 갖춘 상태로 최대한 빨리 출시한다.
-맥락: AGENTS.md, docs/ai-memory/00-current-state.md, docs/ai-memory/02-next-tasks.md, docs/hueday-breakout-strategy.md, docs/product-growth-strategy.md, docs/colorwalk-reward-system.md, docs/release-readiness.md, docs/security-audit.md, plan.md와 실제 구현을 Graphify로 먼저 확인한다.
+목표: 중앙 미션 색 3x3 Color Hunt, 측정 가능한 핵심 퍼널, 일상 미션 팩, 발견 색으로 가꾸는 Hue Room, 비처벌형 Color Rhythm과 실제 아이템 보상, Hueprint/Color Capsule, 안전한 Color Relay와 가입 → 촬영 → 저장 → 공간/회고 → 공유의 안정성을 갖춘 상태로 최대한 빨리 출시한다.
+맥락: AGENTS.md, docs/hueday-product-blueprint.md, docs/hueday-development-roadmap.md, docs/development-reference-guide.md, docs/ai-memory/00-current-state.md, docs/ai-memory/02-next-tasks.md와 현재 단계에 필요한 하위 문서 및 실제 구현을 Graphify로 먼저 확인한다.
 제약: 3개월짜리 기능 로드맵을 만들지 않는다. 성공 가능성을 높이는 요소를 단지 MVP가 아니라는 이유로 빼지 않는다. 후순위 결정은 구현·운영 난도가 출시 가치에 비해 지나치게 큰 경우에만 근거와 함께 허용한다. 기존 데이터 보호, 인증/RLS, 저장 실패 방지, 미성년 사용자 개인정보 보호와 필수 실기기 QA는 생략하지 않는다. 하위 에이전트는 사용하지 않는다.
-완료 조건: 출시 전 핵심 기능 묶음, 후순위 항목과 구체적인 사유, 의존 관계를 최적화한 실행 순서, 기능별 성공 조건과 검증 명령, 사용자에게 필요한 수동 작업, 최종 출시 판정 체크리스트가 포함된다.
+완료 조건: 현재 마스터 단계의 기능별 성공 조건과 검증을 통과하고, 검증된 로드맵 체크박스·다음 한 작업·관련 기준 문서·AI memory가 실제 코드와 일치하며, 최종적으로 전체 출시 판정 체크리스트를 통과한다.
 출력: 각 성공 요소를 `출시 전 필수 / 병렬 가능 / 난도 때문에 후순위`로 분류하고, 후순위에는 난도·기간·효과 근거를 적는다. 날짜를 임의로 늘여 잡지 말고 critical path를 압축한다. 계획 승인 전에는 코드를 수정하지 않는다.
 ```
 

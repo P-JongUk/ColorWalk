@@ -21,7 +21,7 @@ Last code/document alignment: 2026-07-22 KST. The latest full release verificati
 - [ ] Automated integration/E2E coverage for signup -> capture -> save -> story share
 
 ## Product Direction
-Hueday is a private daily color-walk ritual. The user receives a daily mood color mission based on local weather and time, collects up to eight surrounding photos into a 3x3 grid around that color, writes a short reflection, and keeps a visual history of collected color days. There is no social feed, ranking, or comparison loop.
+Hueday is a private everyday color-discovery ritual. The user receives or chooses a contextual mission color, finds objects that feel similar, collects eight surrounding photos into a 3x3 grid around that center color, writes a short reflection, and turns accumulated colors into Hue Room items, Hueprint recaps, and optional safe Color Relay sharing. There is no color-match score, public ranking, or comparison loop.
 
 The final visual direction is Candidate 3: soft emotional warmth with restrained trendy color-ticket details. The interface should feel youthful, collectible, and share-worthy, while staying calm enough for daily use in Korean and English markets.
 
@@ -78,16 +78,18 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 
 ## Future Roadmap
 
-The current code-grounded product diagnosis, monetization sequence, Setlog research, and Windows-to-iOS release options live in `docs/hueday-breakout-strategy.md`. This roadmap must not claim those proposals are implemented until the corresponding code and verification exist.
+The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the only current execution status board is `docs/hueday-development-roadmap.md`. Hue Room has separate detailed spec and sub-roadmap documents. The code-grounded diagnosis, monetization sequence, market references, and Windows-to-iOS release options remain in `docs/hueday-breakout-strategy.md` and `docs/product-growth-strategy.md`. This file must not claim proposals are implemented until code and verification exist.
 
 ### Product Growth Strategy
 - Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
 - Hueday's unique loop is `daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity`.
 - Priority growth bets:
-  - Friend-shared "today color card" links.
-  - Monthly color recap.
-  - Badge rewards that unlock story frames/stamps.
-  - School/travel/seasonal color mission packs.
+  - Clear center-mission-color 3x3 Color Hunt without extraction or match percentage.
+  - Home/school/commute/cafe/weather/walk mission packs for everyday discovery.
+  - Hue Room items born from collected colors and recolorable with the user's color library.
+  - Flexible Color Rhythm and cumulative rewards that unlock real room/story/Hueprint items.
+  - Monthly Hueprint and minimum Color Capsule recall.
+  - Friend-shared "today color card" links and safe Color Relay.
   - Close-friend "see each other's today color" without ranking or comparison.
   - Color/mood-first lightweight feed after private and close sharing are proven.
   - Anonymous aggregate color trends only after enough usage and privacy safeguards.
@@ -104,7 +106,7 @@ The current code-grounded product diagnosis, monetization sequence, Setlog resea
 ### Teen Audience Expansion
 - Beta-safe additions:
   - Trendier 9:16 story templates with 3x3 grid frames, mission color, mood name, and short mood text.
-  - Collection badges for 3-day, 7-day, 14-day, and 30-day streaks.
+  - Flexible weekly Color Rhythm and cumulative discovery rewards that unlock real Hue Room, story, and Hueprint items.
   - Share-friendly color identity labels such as "today's mood color" and editable custom color names.
   - Lightweight friend prompt copy, without a public feed or leaderboard.
 - Post-beta additions:
@@ -113,32 +115,13 @@ The current code-grounded product diagnosis, monetization sequence, Setlog resea
   - Optional account linking for backup and device transfer.
 - Safety/privacy note: if directly targeting users under 14 in Korea or under 13 in the US, add age gating, parental consent review, privacy copy, and a stricter data-minimization design before launch.
 
-### Streak Badge Reward System
-- Product principle: streak badges are not scores or pressure mechanics. They are creative keys that unlock prettier ways to remember and share the colors the user already collected.
-- Preferred reward loop:
-  - 3 days: extra empty-grid filler patterns, tiny marks, seed/leaf stamps.
-  - 7 days: weekly grid seal, "Hueday Week" stamp, one soft export detail.
-  - 14 days: modern grid border, collection frame, richer color-name label.
-  - 30 days: signature clover seal, premium-feeling grid frame, monthly passport stamp.
-- Why a badge matters:
-  - It should give the user a visible creative benefit, not just a number.
-  - It should make the story editor, profile, history detail, or monthly recap feel more personal.
-  - It should turn "I used the app several days" into "I unlocked a nicer way to show my collected colors."
-  - It should stay private and self-expressive unless the user chooses to export/share it.
-- UX direction:
-  - Keep badges private, collectible, and share-friendly.
-  - Avoid leaderboards, public comparison, harsh missed-day copy, or rewards that only protect a number.
-  - Tapping a badge should eventually show the period palette/photos and offer a story-making path.
-- Implementation direction: derive badge state from saved `posts.local_date` whenever possible. If templates, sticker packs, or badge visuals change later, preserve the milestone-to-creative-reward relationship.
-- Maintenance rule: whenever the core capture/story/profile/monetization feature changes, update the reward mapping with it so streak milestones keep unlocking creative memory tools rather than becoming a stale counter.
-- Living-system rule: do not hard-code the current badge UI as the product loop. The stable loop is `saved color-walk activity -> milestone -> creative unlock -> story/profile memory`. If Hueday changes from one-photo capture to 3x3 grids, monthly recap, travel mode, or paid template packs, remap each milestone to the closest useful free creative item instead of deleting the reward meaning.
-- Feature-change contract:
-  - If the story editor changes, remap badge rewards to the new filler/frame/export surfaces.
-  - If the profile changes, keep badge stamps or identity labels visible somewhere personal.
-  - If the monthly shelf is removed, preserve the same memory value through a badge detail sheet or recap story.
-  - If paid packs are added, earned badge rewards must remain genuinely useful free creative items.
-  - Any PR that changes capture, story, profile, history, templates, stickers, or monetization should update `docs/colorwalk-reward-system.md` and the reward mapping helper in the same change.
-- Detailed design note: `docs/colorwalk-reward-system.md`.
+### Color Rhythm and Hue Room Reward System
+- Product principle: reward repeated discovery without making consecutive-day streak loss the main emotion.
+- Users can choose a flexible weekly 2/3/5-day Color Rhythm; missed days do not remove accumulated progress, rooms, chapters, or items.
+- Saved mission colors become a reusable color library. Hue Room items keep an origin color and can later be recolored with any discovered color without consuming it.
+- Cumulative discovery days, completed 3x3 pages, mission packs, weekly rhythm, monthly participation, and Relay can unlock real Hue Room, story, and Hueprint assets.
+- Existing 3/7/14/30 rewards must migrate without taking already-earned value away.
+- Any capture, mission, story, profile, Hue Room, or monetization change must check `docs/colorwalk-reward-system.md`, `docs/hue-room-product-spec.md`, both roadmaps, and the reward helper/config.
 
 ### Instagram / SNS Sharing
 - Current MVP: 9:16 story export through `html2canvas`, Web Share API when available, and image download fallback.
@@ -150,13 +133,14 @@ The current code-grounded product diagnosis, monetization sequence, Setlog resea
   - Fallback to Web Share API or image download when Instagram is not installed or rejects the intent.
 
 ### Beta Priority Recommendation
-1. Treat this as a compressed release critical path, not a three-month roadmap and not a stripped-down minimum beta.
-2. Complete the high-impact launch package: a fast Color Hunt result with a consistent one-photo/eight-photo promise, the minimum measurable funnel, safe Color Relay links, a useful Hueprint/Color Capsule recap, and badge rewards that unlock real creative items.
-3. Order that package by dependencies and implement independent pieces as separate focused feature branches; every deferral must cite disproportionate technical or operational complexity rather than convenience.
-4. Rerun the complete checks in `docs/release-readiness.md`, then verify signup -> capture -> save -> share/Relay/Hueprint on a physical phone and launch immediately when the complete package passes.
-5. Defer only high-complexity extensions such as close-circle synchronization, a public feed, broad real-time collaboration, large-scale operations, and advanced native integrations. Monetization still follows the evidence gates in `Monetization Direction` rather than blocking the first complete product launch.
+1. Follow `docs/hueday-development-roadmap.md` from its current master phase; do not invent a separate order in feature conversations.
+2. Align the Color Hunt contract, then stabilize/measure, add everyday mission packs, complete Hue Room and Color Rhythm rewards, build Hueprint/Color Capsule, add safe Color Relay, and finish integrated release QA.
+3. Treat this as a compressed release critical path, not a three-month roadmap and not a stripped-down minimum beta.
+4. Implement each meaningful checkpoint on a focused `feature/<name>` branch and update only verified roadmap checkboxes.
+5. Rerun `docs/release-readiness.md`, then verify signup -> capture -> save -> Hue Room -> Hueprint -> Relay/share on a physical phone and launch when the complete package passes.
 
 ## Current Follow-Ups
+- Current master phase and next action are maintained only in `docs/hueday-development-roadmap.md`.
 - Password-user profile upsert, post CRUD, owner storage access, anonymous-write denial, and cross-user denial passed the last recorded live Supabase verification. Anonymous sign-in is not the product entry flow.
 - Android Gradle build now succeeds locally with Android SDK 36 and JDK 21. Debug APK output: `android/app/build/outputs/apk/debug/app-debug.apk`.
 - Apply `20260529200000_add_grid_images.sql` to the live Supabase project through an authenticated admin path, then plan removal of the `client_meta.gridImages` compatibility fallback after migration verification.
