@@ -19,6 +19,7 @@ node_modules
 dist
 dist-ssr
 .playwright-mcp/
+.playwright-cli/
 .design-references/
 .lazyweb/
 .vercel-local/
