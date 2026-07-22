@@ -3,7 +3,7 @@ param(
     [ValidateSet('session-start', 'start', 'finish')]
     [string]$Mode,
     [string]$Question = '',
-    [string]$Title = '작업 기록',
+    [string]$Title = 'work-log',
     [string]$Verification = '',
     [string]$Decision = '',
     [string]$Failure = '',
@@ -16,8 +16,18 @@ $graphify = Join-Path $repo '.graphify-venv\Scripts\graphify.exe'
 $graph = Join-Path $repo 'graphify-out\graph.json'
 
 $env:npm_config_cache = Join-Path $repo '.npm-cache'
+$env:PIP_CACHE_DIR = Join-Path $repo '.pip-cache'
+$env:UV_CACHE_DIR = Join-Path $repo '.uv-cache'
 $env:TEMP = Join-Path $repo '.tmp'
 $env:TMP = Join-Path $repo '.tmp'
+$env:GRADLE_USER_HOME = 'D:\GradleCacheColorWalk'
+$env:ANDROID_SDK_ROOT = 'D:\Android\Sdk'
+$env:ANDROID_HOME = 'D:\Android\Sdk'
+$env:ANDROID_AVD_HOME = 'D:\Android\Avd'
+$env:XDG_DATA_HOME = Join-Path $repo '.vercel-local\data'
+$env:XDG_CONFIG_HOME = Join-Path $repo '.vercel-local\config'
+$env:VERCEL_TELEMETRY_DISABLED = '1'
+$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $repo '.playwright-browsers'
 New-Item -ItemType Directory -Force (Join-Path $repo '.tmp') | Out-Null
 
 function Write-WorkflowHeader {
@@ -58,38 +68,38 @@ $slug = ($Title.ToLowerInvariant() -replace '[^a-z0-9]+', '-') -replace '(^-|-$)
 if (-not $slug) { $slug = 'session' }
 $notePath = Join-Path $memory "sessions\$stamp-$slug.md"
 $content = @"
-# 세션 기록 — $stamp — $Title
+# Session record - $stamp - $Title
 
-## 목표
+## Goal
 
 $Title
 
-## 범위와 성공 조건
+## Scope and success conditions
 
-- 범위: (기록 필요)
-- 성공 조건: (기록 필요)
+- Scope: (fill in)
+- Success conditions: (fill in)
 
-## Graphify에서 확인한 구조
+## Graphify findings
 
-- (기록 필요)
+- (fill in)
 
-## 결정
+## Decision
 
 $Decision
 
-## 변경 내용
+## Changes
 
-- (기록 필요)
+- (fill in)
 
-## 검증
+## Verification
 
 $Verification
 
-## 실패했거나 보류한 접근
+## Failed or deferred approaches
 
 $Failure
 
-## 다음 할 일
+## Next tasks
 
 $Next
 "@

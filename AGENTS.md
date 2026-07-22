@@ -170,8 +170,20 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - Graphify graph and generated Obsidian map: `D:\JongUk\Documents\ColorWalk\graphify-out\`
 - Python package cache: `D:\JongUk\Documents\ColorWalk\.pip-cache\`
 - Obsidian working vault: `D:\JongUk\Documents\ColorWalk\docs\ai-memory\`
+- npm cache: `D:\JongUk\Documents\ColorWalk\.npm-cache\`
+- Playwright browser cache: `D:\JongUk\Documents\ColorWalk\.playwright-browsers\`
+- Gradle user home: `D:\GradleCacheColorWalk\`
+- Android SDK/AVD: `D:\Android\Sdk\` and `D:\Android\Avd\`
 - Keep project caches, generated graphs, and AI working data on D. Do not recreate them on C unless a tool requires a system-level installation.
 - The Codex-managed plugin registry may still keep a small cache under the user profile on C; the CLI package and project data remain on D.
+
+### Persistent D-drive environment
+
+The user-level environment is configured so new terminals route project tooling to D: `npm_config_cache`, `PIP_CACHE_DIR`, `UV_CACHE_DIR`, `GRADLE_USER_HOME`, `ANDROID_SDK_ROOT`, `ANDROID_HOME`, `ANDROID_AVD_HOME`, `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `PLAYWRIGHT_BROWSERS_PATH`, and `VERCEL_TELEMETRY_DISABLED`. Reopen terminals after changing these values.
+
+`TEMP` and `TMP` remain at their Windows defaults globally because changing them for every application can break unrelated software. The project workflow and Android/npm commands explicitly route temporary writes to `D:\JongUk\Documents\ColorWalk\.tmp`.
+
+The Playwright cache was moved from `C:\Users\JongUk\AppData\Local\ms-playwright` to `D:\JongUk\Documents\ColorWalk\.playwright-browsers` and verified. Obsidian's executable, the JDK, and Codex's global plugin registry remain on C because they are system/user-level installations and moving them manually could break updates or desktop integration; the Obsidian vault and project Codex skills remain on D.
 
 ## graphify
 

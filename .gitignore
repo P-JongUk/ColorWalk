@@ -10,10 +10,12 @@ lerna-debug.log*
 node_modules
 .npm-cache/
 .pip-cache/
+.uv-cache/
 .graphify-venv/
 .codex-cli/
 .tmp/
 .gradle-home*/
+.playwright-browsers/
 dist
 dist-ssr
 .playwright-mcp/

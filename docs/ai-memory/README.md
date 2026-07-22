@@ -16,6 +16,8 @@ Obsidian에서 `D:\JongUk\Documents\ColorWalk\docs\ai-memory` 폴더를 vault로
 
 Codex는 새 세션이 시작될 때 `.codex/hooks.json`의 `SessionStart` hook으로 이 작업 흐름을 불러옵니다. 실제 개발 작업에서는 Graphify로 범위를 좁히고, Ponytail의 최소 변경 원칙으로 구현한 뒤, 검증 결과를 이 vault에 남깁니다.
 
+프로젝트의 캐시와 빌드 데이터는 가능한 한 D 드라이브를 사용합니다. 현재 Obsidian vault, Graphify, Codex 프로젝트 스킬, npm/pip/uv 캐시, Playwright 브라우저, Android SDK/AVD, Gradle 캐시가 D에 있습니다. Obsidian 실행 파일과 JDK, Codex 전역 플러그인 캐시는 정상 작동을 위해 C에 유지합니다.
+
 ## 기록 원칙
 
 - 현재 상태와 다음 행동은 짧고 구체적으로 기록합니다.
