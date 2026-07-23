@@ -21,9 +21,11 @@ type JournalViewProps = {
   onOpenCamera: () => void
   onPersistJournal: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) => void
   onSave: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) => Promise<void>
+  onStoryExported: (kind: 'story' | 'grid', delivery: 'download' | 'share', platform: 'web' | 'android') => void
+  onStoryShareOpened: (kind: 'story' | 'grid', platform: 'web' | 'android') => void
 }
 
-export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, onPersistJournal, onSave }: JournalViewProps) {
+export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, onPersistJournal, onSave, onStoryExported, onStoryShareOpened }: JournalViewProps) {
   const [colorName, setColorName] = useState(() => draft?.journal?.colorName ?? '')
   const [journalAnswer, setJournalAnswer] = useState(() => draft?.journal?.journalAnswer ?? '')
   const [storyDesign, setStoryDesign] = useState<StoryDesign>(() => draft?.journal?.storyDesign ?? DEFAULT_STORY_DESIGN)
@@ -184,6 +186,8 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           data={storyData}
           initialDesign={storyDesign}
           onDesignChange={updateStoryDesign}
+          onExported={onStoryExported}
+          onShareOpened={onStoryShareOpened}
         />
       </section>
     </main>

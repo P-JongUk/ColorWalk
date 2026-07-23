@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { Toaster, toast } from 'sonner'
 import type { Session } from '@supabase/supabase-js'
+import { Capacitor } from '@capacitor/core'
 
 import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
@@ -14,6 +15,7 @@ import { compressBlobToHistoryWebP } from '@/lib/image'
 import { getRandomMission } from '@/lib/mission'
 import { loadDailyMissionState, saveDailyMissionState } from '@/lib/missionState'
 import { startWebReminderScheduler } from '@/lib/notifications'
+import { flushProductEvents, trackProductEvent, type ProductEventName, type ProductEventPayload } from '@/lib/productEvents'
 import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
@@ -44,6 +46,24 @@ function App() {
   const [dailyDrafts, setDailyDrafts] = useState<CaptureDraft[]>([])
   const ownerId = session?.user.id ?? 'local'
   const displayPosts = useMemo(() => mergeDailyRecords(posts, dailyDrafts, ownerId, locale), [dailyDrafts, locale, ownerId, posts])
+
+  const recordProductEvent = useCallback((
+    eventName: ProductEventName,
+    dedupeKey: string,
+    payload: ProductEventPayload,
+    localDate = getLocalDateKey(),
+    eventSession = session,
+  ) => {
+    if (!eventSession || eventSession.user.is_anonymous) return
+    void trackProductEvent({
+      ownerId: eventSession.user.id,
+      eventName,
+      dedupeKey,
+      localDate,
+      platform: Capacitor.isNativePlatform() ? 'android' : 'web',
+      payload,
+    })
+  }, [session])
 
   async function hydrateAuthenticatedSession(nextSession: Session) {
     if (nextSession.user.is_anonymous) {
@@ -123,6 +143,20 @@ function App() {
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [activeTab])
   useEffect(() => { startWebReminderScheduler(locale) }, [locale, session])
+
+  useEffect(() => {
+    if (!session || session.user.is_anonymous) return
+    const flush = () => { void flushProductEvents(session.user.id).catch((error) => console.warn('Product event outbox retry failed', error)) }
+    flush()
+    window.addEventListener('online', flush)
+    return () => window.removeEventListener('online', flush)
+  }, [session])
+
+  useEffect(() => {
+    if (!session || !mission || activeTab !== 'today') return
+    const localDate = getLocalDateKey()
+    recordProductEvent('mission_viewed', `${localDate}:mission_viewed`, { mission_source: mission.source }, localDate)
+  }, [activeTab, mission, recordProductEvent, session])
 
   async function syncDraft(nextDraft: CaptureDraft, clearWhenComplete = false) {
     const localPost = draftToDailyPost(nextDraft, ownerId, locale)
@@ -225,6 +259,14 @@ function App() {
       await saveCachedDraft(nextDraft, ownerId)
       setDraft(nextDraft)
       setDailyDrafts((current) => [nextDraft, ...current.filter((candidate) => candidate.localDate !== nextDraft.localDate)])
+      if (nextDraft.gridImages.length === 1) {
+        recordProductEvent('first_photo_confirmed', `${nextDraft.localDate}:first_photo_confirmed`, {
+          source: nextDraft.gridImages[0].source,
+        }, nextDraft.localDate)
+      }
+      if (nextDraft.gridImages.length === 8) {
+        recordProductEvent('grid_completed', `${nextDraft.localDate}:grid_completed`, { photo_count: 8 }, nextDraft.localDate)
+      }
       const selected = loadDailyMissionState(ownerId, nextDraft.localDate)
       if (selected && !selected.lockedAt) saveDailyMissionState(ownerId, { ...selected, lockedAt: nextDraft.lockedAt ?? new Date().toISOString() })
       void syncDraft(nextDraft).catch((error) => console.warn('Daily record sync will retry later', error))
@@ -243,6 +285,16 @@ function App() {
       await saveCachedDraft(journalDraft, ownerId)
       setDraft(journalDraft)
       setDailyDrafts((current) => [journalDraft, ...current.filter((candidate) => candidate.localDate !== journalDraft.localDate)])
+      recordProductEvent('journal_saved', `${journalDraft.localDate}:journal_saved`, {
+        photo_count: journalDraft.gridImages.length,
+        has_color_label: Boolean(colorName.trim()),
+        has_answer: Boolean(journalAnswer.trim()),
+      }, journalDraft.localDate)
+      if (journalDraft.gridImages.length < 8) {
+        recordProductEvent('partial_record_saved', `${journalDraft.localDate}:partial_record_saved`, {
+          photo_count: journalDraft.gridImages.length,
+        }, journalDraft.localDate)
+      }
       await syncDraft(journalDraft, journalDraft.gridImages.length >= 8)
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
@@ -300,9 +352,31 @@ function App() {
   }, [draft, ownerId])
 
   function toggleLocale() { setLocale(locale === 'ko' ? 'en' : 'ko') }
-  async function handleAuthenticated(nextSession: Session) {
+  async function handleAuthenticated(nextSession: Session, mode: 'signup' | 'login') {
     setIsAuthLoading(true)
-    try { await hydrateAuthenticatedSession(nextSession); setActiveTab('today') } finally { setIsAuthLoading(false) }
+    try {
+      await hydrateAuthenticatedSession(nextSession)
+      if (mode === 'signup') recordProductEvent('signup_completed', 'signup_completed', { auth_method: 'password' }, getLocalDateKey(), nextSession)
+      setActiveTab('today')
+    } finally { setIsAuthLoading(false) }
+  }
+  function startCamera() {
+    const localDate = getLocalDateKey()
+    recordProductEvent('capture_started', `${localDate}:capture_started`, { existing_photo_count: draft?.gridImages.length ?? 0 }, localDate)
+    setActiveTab('camera')
+  }
+  function recordStoryExport(kind: 'story' | 'grid', delivery: 'download' | 'share', platform: 'web' | 'android') {
+    if (!draft) return
+    recordProductEvent('story_exported', `${draft.localDate}:story_exported:${kind}`, {
+      kind,
+      delivery,
+      platform,
+      photo_count: draft.gridImages.length,
+    }, draft.localDate)
+  }
+  function recordStoryShareOpened(kind: 'story' | 'grid', platform: 'web' | 'android') {
+    if (!draft) return
+    recordProductEvent('story_share_opened', `${draft.localDate}:story_share_opened:${kind}`, { kind, platform }, draft.localDate)
   }
   async function signOut() {
     await supabase?.auth.signOut()
@@ -311,10 +385,10 @@ function App() {
 
   const content = (() => {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
-    if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={() => setActiveTab('camera')} onPersistJournal={persistJournal} onSave={saveEntry} />
+    if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
     if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
-    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={() => setActiveTab('camera')} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
+    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()
 
   if (isSupabaseConfigured && isAuthLoading) return <div className="phone-shell flex justify-center"><div className="app-frame"><main className="screen-flow"><section className="passport-panel flex min-h-[70svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main></div></div>

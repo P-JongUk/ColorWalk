@@ -31,6 +31,8 @@ type StoryStudioProps = {
   data: Omit<StoryCardData, 'locale' | 'templateId'>
   initialDesign?: StoryDesign
   onDesignChange?: (design: StoryDesign) => void
+  onExported?: (kind: 'story' | 'grid', delivery: 'download' | 'share', platform: 'web' | 'android') => void
+  onShareOpened?: (kind: 'story' | 'grid', platform: 'web' | 'android') => void
 }
 
 async function exportElement(element: HTMLElement, filename: string, size = { width: 1080, height: 1920 }) {
@@ -119,7 +121,7 @@ async function shareNativeStory(file: File, locale: Locale, mode: 'download' | '
   })
 }
 
-export function StoryStudio({ locale, data, initialDesign, onDesignChange }: StoryStudioProps) {
+export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExported, onShareOpened }: StoryStudioProps) {
   const exportRef = useRef<HTMLDivElement | null>(null)
   const gridExportRef = useRef<HTMLDivElement | null>(null)
   const cardBoundsRef = useRef<DOMRect | null>(null)
@@ -226,12 +228,16 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
         kind === 'grid' ? { width: 1080, height: 1080 } : { width: 1080, height: 1920 },
       )
       if (Capacitor.isNativePlatform()) {
+        onExported?.(kind, mode, 'android')
+        if (mode === 'share') onShareOpened?.(kind, 'android')
         await shareNativeStory(file, locale, mode, kind)
         toast.success(t(locale, 'storySaved'))
         return
       }
 
       if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
+        onExported?.(kind, mode, 'web')
+        onShareOpened?.(kind, 'web')
         await navigator.share({ files: [file], title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story' })
         return
       }
@@ -242,6 +248,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange }: Sto
       anchor.download = file.name
       anchor.click()
       URL.revokeObjectURL(url)
+      onExported?.(kind, mode, 'web')
       toast.success(t(locale, 'storySaved'))
     } catch (error) {
       console.error(error)

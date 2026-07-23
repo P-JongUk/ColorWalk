@@ -11,7 +11,7 @@ import type { Locale, ProfileGender } from '@/types'
 
 type AuthGateProps = {
   locale: Locale
-  onAuthenticated: (session: Session) => Promise<void>
+  onAuthenticated: (session: Session, mode: Mode) => Promise<void>
 }
 
 type Mode = 'signup' | 'login'
@@ -56,7 +56,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
         return
       }
 
-      await onAuthenticated(session)
+      await onAuthenticated(session, mode)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : locale === 'ko' ? '로그인에 실패했어요.' : 'Sign-in failed.')
     } finally {
