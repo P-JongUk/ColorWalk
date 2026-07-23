@@ -221,35 +221,37 @@ export async function fetchPosts(userId: string): Promise<Post[]> {
     client_meta: post.client_meta ?? {},
   }))
 
-  return Promise.all(
-    posts.map(async (post) => {
-      async function signPath(path: string) {
-        if (/^(blob:|data:image\/|https?:\/\/)/.test(path)) return path
+  const imagePaths = Array.from(new Set(
+    posts.flatMap((post) => [
+      post.image_path,
+      ...normalizeGridImages(post.grid_images).map((image) => image.path),
+    ]).filter((path) => path && !/^(blob:|data:image\/|https?:\/\/)/.test(path)),
+  ))
+  const { data: signedUrls } = imagePaths.length
+    ? await supabase.storage.from('post-images').createSignedUrls(imagePaths, 60 * 60)
+    : { data: [] }
+  const signedUrlByPath = new Map((signedUrls ?? []).map((item) => [item.path, item.signedUrl]))
 
-        const { data: signed } = await supabase!.storage
-          .from('post-images')
-          .createSignedUrl(path, 60 * 60)
+  return posts.map((post) => {
+    function signPath(path: string) {
+      if (/^(blob:|data:image\/|https?:\/\/)/.test(path)) return path
+      return signedUrlByPath.get(path)
+    }
 
-        return signed?.signedUrl
-      }
+    const signedGridImages: GridImage[] = normalizeGridImages(post.grid_images).map((image) => ({
+      ...image,
+      signedUrl: signPath(image.path) ?? undefined,
+    }))
+    const signedImageUrl = post.image_path
+      ? signPath(post.image_path)
+      : signedGridImages[0]?.signedUrl
 
-      const signedGridImages: GridImage[] = await Promise.all(
-        normalizeGridImages(post.grid_images).map(async (image) => ({
-          ...image,
-          signedUrl: await signPath(image.path),
-        })),
-      )
-      const signedImageUrl = post.image_path
-        ? await signPath(post.image_path)
-        : signedGridImages[0]?.signedUrl
-
-      return {
-        ...post,
-        grid_images: signedGridImages,
-        signedImageUrl: signedImageUrl ?? undefined,
-      }
-    }),
-  )
+    return {
+      ...post,
+      grid_images: signedGridImages,
+      signedImageUrl: signedImageUrl ?? undefined,
+    }
+  })
 }
 
 export async function uploadPostImage(userId: string, localDate: string, blob: Blob) {

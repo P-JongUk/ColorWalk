@@ -2,38 +2,16 @@ import type { Locale, Post } from '@/types'
 import { getColorFamily, type ColorFamily } from '@/lib/colors'
 import { getPostGridImageCount } from '@/lib/grid'
 
-export const STREAK_BADGES = [3, 7, 14, 30] as const
+export const COMPLETED_PAGE_BADGES = [3, 7, 14, 30] as const
 
-export type StreakBadgeDays = (typeof STREAK_BADGES)[number]
+export type CompletedPageBadgeCount = (typeof COMPLETED_PAGE_BADGES)[number]
 
 // Keep this mapping aligned with docs/colorwalk-reward-system.md.
-// Streaks should unlock creative memory tools, not score pressure.
-const badgeRewards: Record<StreakBadgeDays, Record<Locale, string>> = {
+const badgeRewards: Record<CompletedPageBadgeCount, Record<Locale, string>> = {
   3: { ko: '빈칸 패턴', en: 'Filler patterns' },
   7: { ko: '위클리 그리드', en: 'Weekly grid' },
   14: { ko: '모던 테두리', en: 'Modern border' },
   30: { ko: '시그니처 씰', en: 'Signature seal' },
-}
-
-function toDateKey(date: Date) {
-  const year = date.getFullYear()
-  const month = `${date.getMonth() + 1}`.padStart(2, '0')
-  const day = `${date.getDate()}`.padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
-export function getCurrentStreak(posts: Post[], today = new Date()) {
-  const dates = new Set(posts.map((post) => post.local_date))
-  const cursor = new Date(today)
-  let streak = 0
-
-  while (dates.has(toDateKey(cursor))) {
-    streak += 1
-    cursor.setDate(cursor.getDate() - 1)
-  }
-
-  return streak
 }
 
 export function getCompletedGridCount(posts: Post[]) {
@@ -44,12 +22,12 @@ export function getTotalGridPhotoCount(posts: Post[]) {
   return posts.reduce((sum, post) => sum + getPostGridImageCount(post), 0)
 }
 
-export function getUnlockedBadges(streak: number, posts: Post[] = [], locale: Locale = 'ko') {
+export function getUnlockedBadges(posts: Post[] = [], locale: Locale = 'ko') {
   const completedGrids = getCompletedGridCount(posts)
 
-  return STREAK_BADGES.map((days) => ({
+  return COMPLETED_PAGE_BADGES.map((days) => ({
     days,
-    unlocked: streak >= days || completedGrids >= days,
+    unlocked: completedGrids >= days,
     reward: badgeRewards[days][locale],
     completedGrids,
   }))
@@ -122,15 +100,4 @@ function hashMoodSeed(value: string) {
     .replace('#', '')
     .split('')
     .reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619), 2166136261)
-}
-
-export function getCollectionSummary(posts: Post[], locale: Locale, today = new Date()) {
-  const streak = getCurrentStreak(posts, today)
-  const monthly = getMonthlyCollection(posts, today)
-
-  if (locale === 'ko') {
-    return `${streak}일 연속 · 이번 달 ${monthly.completedGridCount}그리드`
-  }
-
-  return `${streak} day streak · ${monthly.completedGridCount} grids this month`
 }

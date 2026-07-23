@@ -200,7 +200,7 @@ async function fetchAllSeedPosts(client, userId) {
 
 const seedPosts = [
   {
-    offset: 0,
+    offset: 1,
     missionHex: '#FF8A7A',
     customColorName: '피치 멜로우',
     journalAnswer: '따뜻한 햇살 아래에서 마음이 느긋해진 오후. 8컷으로 오늘의 산책을 묶어뒀다.',
@@ -212,7 +212,7 @@ const seedPosts = [
     photoCount: 8,
   },
   {
-    offset: 1,
+    offset: 2,
     missionHex: '#A7C8B3',
     customColorName: '비 온 뒤 세이지',
     journalAnswer: '길가 잎사귀에 남은 빛이 조용해서 천천히 멈춰 보게 됐다.',
@@ -224,7 +224,7 @@ const seedPosts = [
     photoCount: 6,
   },
   {
-    offset: 2,
+    offset: 3,
     missionHex: '#A9CBE4',
     customColorName: '유리창 하늘',
     journalAnswer: '창문에 비친 파랑이 오늘 기분을 조금 가볍게 만들어줬다.',
@@ -236,7 +236,7 @@ const seedPosts = [
     photoCount: 8,
   },
   {
-    offset: 3,
+    offset: 4,
     missionHex: '#F4C56E',
     customColorName: '주말 크림 골드',
     journalAnswer: '작은 조명 아래에서 본 노란빛이 생각보다 포근했다.',
@@ -248,7 +248,7 @@ const seedPosts = [
     photoCount: 5,
   },
   {
-    offset: 4,
+    offset: 5,
     missionHex: '#D7C2E8',
     customColorName: '구름 뒤 라벤더',
     journalAnswer: '흐린 오후의 보라빛이 평소보다 조금 더 선명하게 남았다.',
@@ -414,8 +414,16 @@ async function main() {
       client_meta: {
         app: 'colorwalk',
         seed: true,
-        seedVersion: 3,
-        feature: '3x3-grid',
+        seedVersion: 4,
+        feature: 'color-hunt-m1',
+        colorHunt: {
+          version: 1,
+          status: seed.photoCount >= 8 ? 'completed' : 'recorded',
+          photoCount: seed.photoCount,
+          lockedAt: new Date(`${localDate}T12:00:00+09:00`).toISOString(),
+          closedAt: new Date(`${localDate}T23:59:59+09:00`).toISOString(),
+          timeZone: 'Asia/Seoul',
+        },
         source: 'scripts/seed-beta-test-account.mjs',
       },
     })

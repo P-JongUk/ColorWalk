@@ -6,7 +6,7 @@ import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
-import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
+import { getMonthlyCollection } from '@/lib/collection'
 import { t } from '@/lib/i18n'
 import { cancelDailyReminder, getReminderSettings, scheduleDailyReminder, sendTestReminderNotification } from '@/lib/notifications'
 import type { Locale, Post, UserProfile } from '@/types'
@@ -21,7 +21,6 @@ type ProfileViewProps = {
 }
 
 export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocale, onSignOut }: ProfileViewProps) {
-  const streak = getCurrentStreak(posts)
   const monthly = getMonthlyCollection(posts)
   const initialReminder = getReminderSettings()
   const [reminderTime, setReminderTime] = useState(initialReminder.time)
@@ -77,8 +76,8 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
         <p>{profile?.nickname ? `${profile.nickname} · ${t(locale, 'profileSubtitle')}` : t(locale, 'profileSubtitle')}</p>
         <div className="profile-stats">
           <div>
-            <strong>{streak}</strong>
-            <span>{t(locale, 'streak')}</span>
+            <strong>{monthly.count}</strong>
+            <span>{locale === 'ko' ? '기록한 날' : 'Recorded days'}</span>
           </div>
           <div>
             <strong>{monthly.completedGridCount}</strong>
@@ -94,11 +93,11 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
       <section className="soft-section">
         <div className="section-heading">
           <div>
-            <p>{t(locale, 'streak')}</p>
+            <p>{locale === 'ko' ? '완성 페이지' : 'Completed pages'}</p>
             <h2>{locale === 'ko' ? '컬러 리워드 배지' : 'Color reward badges'}</h2>
           </div>
         </div>
-        <BadgeShelf locale={locale} streak={streak} posts={posts} />
+        <BadgeShelf locale={locale} posts={posts} />
       </section>
 
       <section className="soft-section">

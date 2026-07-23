@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getDailyMission, getMission, getTimeBucket, mapWeatherCodeToGroup } from '@/lib/mission'
+import { getDailyMission, getMission, getRandomMission, getTimeBucket, mapWeatherCodeToGroup } from '@/lib/mission'
 
 describe('mission helpers', () => {
   it('maps Open-Meteo weather codes to supported groups', () => {
@@ -38,5 +38,12 @@ describe('mission helpers', () => {
     ].map((date) => getDailyMission('rain', 'morning', 'live', 61, new Date(date)).id)
 
     expect(new Set(ids).size).toBeGreaterThan(1)
+  })
+
+  it('uses a deterministic RNG after three contextual rerolls and never keeps the current hex', () => {
+    const contextual = getRandomMission('rain', 'morning', 'live', 61, { excludeHex: '#5F7F83', rng: () => 0 })
+    const broad = getRandomMission('rain', 'morning', 'live', 61, { broaden: true, excludeHex: '#5F7F83', rng: () => 0.999999 })
+    expect(contextual.hex).not.toBe('#5F7F83')
+    expect(broad.hex).not.toBe('#5F7F83')
   })
 })

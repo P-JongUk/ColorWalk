@@ -15,6 +15,7 @@ import {
 } from '@/lib/camera'
 import { capturePhotoBlob, fileToDraftImageBlob } from '@/lib/image'
 import { t } from '@/lib/i18n'
+import { getLocalDateKey } from '@/lib/date'
 import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
 import type { CaptureDraft, GridDraftImage, Locale, Mission } from '@/types'
 
@@ -23,15 +24,26 @@ type CameraViewProps = {
   mission: Mission
   initialDraft: CaptureDraft | null
   onBack: () => void
-  onDraftChange: (draft: CaptureDraft) => void
+  onDraftChange: (draft: CaptureDraft) => Promise<boolean>
   onComplete: (draft: CaptureDraft) => void
 }
 
-function buildDraft(mission: Mission, images: GridDraftImage[], compression?: CaptureDraft['compression']): CaptureDraft {
+function buildDraft(
+  mission: Mission,
+  images: GridDraftImage[],
+  compression?: CaptureDraft['compression'],
+  previous?: CaptureDraft | null,
+  localDate = previous?.localDate ?? getLocalDateKey(),
+): CaptureDraft {
   return {
     mission,
     gridImages: images,
-    abuseWarning: false,
+    abuseWarning: previous?.abuseWarning ?? false,
+    localDate,
+    lockedAt: previous?.lockedAt ?? new Date().toISOString(),
+    closedAt: previous?.closedAt,
+    syncState: 'pending',
+    journal: previous?.journal,
     compression,
   }
 }
@@ -51,7 +63,9 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const cameraFileInputRef = useRef<HTMLInputElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const openedLocalDate = useRef(getLocalDateKey())
   const [images, setImages] = useState<GridDraftImage[]>(() => initialDraft?.gridImages ?? [])
+  const [pendingImage, setPendingImage] = useState<{ image: GridDraftImage; compression: NonNullable<CaptureDraft['compression']> } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
@@ -126,13 +140,15 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
     }
   }, [facingMode, locale])
 
-  function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
-    const nextDraft = buildDraft(mission, nextImages, compression)
+  async function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
+    const nextDraft = buildDraft(mission, nextImages, compression, initialDraft, initialDraft?.localDate ?? openedLocalDate.current)
+    const saved = await onDraftChange(nextDraft)
+    if (!saved) return false
     setImages(nextImages)
-    onDraftChange(nextDraft)
     if (nextImages.length === MAX_GRID_IMAGES) {
       toast.success(locale === 'ko' ? '8컷을 모두 채웠어요.' : 'All 8 shots are collected.')
     }
+    return true
   }
 
   async function addBlobToGrid(
@@ -164,17 +180,31 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
         source,
         createdAt: new Date().toISOString(),
       }
-      commitImages([...images, nextImage], {
+      setPendingImage({ image: nextImage, compression: {
         width: imageMeta.width,
         height: imageMeta.height,
         bytes: imageMeta.bytes,
         quality: 1,
         source,
         stage: 'draft',
-      })
+      } })
     } finally {
       setIsCapturing(false)
     }
+  }
+
+  async function acceptPendingImage() {
+    if (!pendingImage) return
+    setIsCapturing(true)
+    const accepted = await commitImages([...images, pendingImage.image], pendingImage.compression)
+    if (accepted) setPendingImage(null)
+    else toast.error(locale === 'ko' ? '이 사진을 기기에 저장하지 못했어요. 다시 시도해 주세요.' : 'Could not save this photo on this device. Try again.')
+    setIsCapturing(false)
+  }
+
+  function discardPendingImage() {
+    if (pendingImage) URL.revokeObjectURL(pendingImage.image.previewUrl)
+    setPendingImage(null)
   }
 
   async function capture() {
@@ -280,6 +310,23 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
       />
       <div className="camera-vignette" />
 
+      {pendingImage ? (
+        <section className="absolute inset-x-4 top-20 z-20 rounded-[28px] bg-background/95 p-4 shadow-2xl backdrop-blur">
+          <img src={pendingImage.image.previewUrl} alt="Captured preview" className="aspect-[3/4] w-full rounded-[20px] object-cover" />
+          <p className="mt-3 text-center text-sm font-semibold">
+            {locale === 'ko' ? '이 사진을 오늘의 색 기록에 사용할까요?' : 'Use this photo for today’s color?'}
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Button type="button" variant="outline" onClick={discardPendingImage} disabled={isCapturing}>
+              {locale === 'ko' ? '다시 찍기' : 'Retake'}
+            </Button>
+            <Button type="button" onClick={() => void acceptPendingImage()} disabled={isCapturing}>
+              {locale === 'ko' ? '이 사진 사용' : 'Use photo'}
+            </Button>
+          </div>
+        </section>
+      ) : null}
+
       <header className="camera-header">
         <Button type="button" variant="soft" size="icon" onClick={onBack} aria-label="Back">
           <X aria-hidden="true" />
@@ -384,8 +431,8 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
           <Button
             type="button"
             className="camera-done-button"
-            disabled={!canComplete}
-            onClick={() => onComplete(buildDraft(mission, images))}
+            disabled={!canComplete || Boolean(pendingImage)}
+            onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current))}
           >
             <Check data-icon="inline-start" aria-hidden="true" />
             {locale === 'ko' ? '저널 쓰기' : 'Write journal'}

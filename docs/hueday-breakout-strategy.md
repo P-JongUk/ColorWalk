@@ -347,3 +347,28 @@ Codex는 의미 있는 개발 작업이 끝날 때 아래를 작업의 일부로
 - [Apple App Store 제출 요구사항](https://developer.apple.com/app-store/submitting/)
 - [Apple Xcode Cloud](https://developer.apple.com/xcode-cloud/)
 - [Capacitor iOS 공식 문서](https://capacitorjs.com/docs/ios)
+
+## 2026-07-23 KST 경쟁 사례와 성공 루프 검토
+
+### 고정할 성공 루프
+
+> 개인 일일 색 기록 → 편집 없이도 공유하고 싶은 3×3/9:16 카드 → 받은 친구의 나도 이 색 찾기 → 두 결과의 공동 팔레트·엽서·Hueprint → 다음 기록으로 재진입
+
+개인 기록만으로도 완전해야 한다. 공유와 친구 참여는 무료 성장 행동이며, 공개 랭킹·색 매칭 점수·강제 streak는 이 루프에 넣지 않는다.
+
+### 확인한 외부 사실 — 2026-07-23 KST
+
+| 사례 | 원문에서 확인한 사실 | 한계 |
+| --- | --- | --- |
+| [컬러워크 - 색을 따라 걷는 마음휴식](https://apps.apple.com/kr/app/id6748350863) | iPhone 앱, 2025-07-09 출시. 랜덤/직접 색 선택, 9컷 콜라주, 달력·통계, 마음챙김을 설명한다. 한국 App Store 확인 시점에는 2개 평가와 4.5점이 표시됐고, 리뷰에는 하루 한 색을 더 오래 추가하고 싶다는 요구와 촬영 중 확인·삭제 요구가 있었다. | 평가 표본은 2개라 시장 규모 또는 유지율 근거가 아니다. |
+| [Daily Hue - Social Photo Game](https://apps.apple.com/us/app/id6757629056) | iPhone 앱. App Store 1.0은 2026-02-18이며, 전 세계 공통 일일 색·9장 3×3·색 정확도 점수·리더보드·피드·친구 초대·Instagram 카드·streak를 설명한다. 확인 시점 미국 App Store에는 186개 평가, 4.9점이 표시됐다. | 다운로드·리텐션·매출은 공개되지 않아 대성공 증거가 아니다. |
+| [Color Hunter](https://play.google.com/store/apps/details?id=ai.digitalya.android.colorhunt) | Google Play의 설명은 오늘의 색/선택 색, 9장 완성, 콜라주·히스토리, streak·랭크·색 매칭 점수·친구 비교를 포함하며 2026-06-17 업데이트로 표시한다. | 설치·평가 규모는 이번 확인에서 신뢰할 만한 근거로 사용하지 않는다. 기능 사례다. |
+| [Color Walk Photo Collage](https://apps.apple.com/gb/app/id6752438777) | iPhone 앱. 6~12장 색 탐색, 공유 카드, 기기 내 사진 저장, AI 콜라주/영상 구독을 설명한다. App Store는 평가 개요를 표시할 만큼 리뷰가 충분하지 않다고 표기한다. | 기능·수익화 사례일 뿐 성공 증거가 아니다. |
+| [TheColorWalk](https://thecolorwalk.com/) | 72개 색 프롬프트, 간단 체크인, 누적 팔레트 중심의 사진 없는 저진입 흐름을 설명한다. | 인접 제품 설계 사례이며 규모 지표는 확인하지 않았다. |
+
+### 해석과 제품 결론
+
+- `매일 색 찾기 + 3×3` 자체는 이미 여러 앱이 제공하므로 Hueday의 독점 차별점이 아니다.
+- Hueday의 후보 차별점은 날씨·시간 개인화, 1~7장도 정상 기록인 비처벌형 UX, 매칭 점수·랭킹·streak 압박 없음, 한국 일상 미션 팩, 발견 색의 Hue Canvas/Hueprint 재료화, 비교 없는 Color Relay 공동 결과물이다.
+- 국내 동일명 컬러워크와 해외 Daily Hue가 있으므로 공개 브랜드 Hueday도 유사성·검색 혼동을 출시 전 상표·스토어 검색·ASO 게이트에서 검토한다. 이 근거만으로 브랜드는 변경하지 않는다.
+- 국내 컬러워크의 작은 리뷰 표본은 날짜별 한 색·부분 기록·사진 확정 UX를 지지하는 정성 신호이며, Daily Hue의 평가는 색 탐색과 친구 공유 수요의 초기 신호다. 둘 다 베타 측정으로 검증해야 한다.

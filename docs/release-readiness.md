@@ -15,6 +15,8 @@ Latest code/document alignment audit: 2026-07-22 KST. This audit corrected stale
 
 Latest development preflight: 2026-07-23 KST. `lint`, six test files/17 tests, production `build`, `cap:sync`, live `verify:supabase`, and Android release AAB generation passed. The generated `app-release.aab` is unsigned, and account seeding, physical-device QA, Play Console upload, and deployment were not rerun, so this is not a store-release checkpoint.
 
+M1 final pre-merge verification: 2026-07-24 KST on `feature/color-hunt-contract`. `npm run lint`, 8 test files/19 tests, production `build`, live `verify:supabase`, `cap:sync`, Android debug APK, and release AAB passed. The shared test account was reseeded with five M1 `colorHunt` demo records on 2026-07-23 through 19 so today starts empty. 430×932 browser QA covered Color Hunt start/reroll/capture confirmation/recovery/progress/completion/date boundary and journal/story/history/profile. A separate `ColorWalkM1QA` AVD verified actual camera permission, capture/retake/confirmation, 1/8 save, background/foreground recovery, and 2/8·5/8 sequential capture without touching `ColorWalkPixel7`. A global date mock was not valid for Android date QA because it advanced Supabase authentication time; afterward, a clean `wipe-data` cold boot reproduced ANRs in System UI, phone, and Google Play services before the app was installed. The remaining Android 7/8·8/8 completion/badge, foreground date transition, journal save, and native Story share checks remain required on a stable emulator or physical device. This is not a store-release checkpoint and does not replace physical-device QA.
+
 ## 2026-07-23 Google Play Structure Audit
 
 Ready foundations:

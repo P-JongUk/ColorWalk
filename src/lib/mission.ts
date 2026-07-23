@@ -884,12 +884,17 @@ function getAllMissionCandidates() {
   )
 }
 
-function chooseMissionCandidate(candidates: MissionCore[], excludeId?: string) {
-  const filtered = excludeId && candidates.length > 1
-    ? candidates.filter((candidate) => candidate.id !== excludeId)
-    : candidates
+export function chooseMissionCandidate(
+  candidates: MissionCore[],
+  options: { excludeId?: string; excludeHex?: string; rng?: () => number } = {},
+) {
+  const withoutCurrent = candidates.filter((candidate) =>
+    candidate.id !== options.excludeId && candidate.hex.toUpperCase() !== options.excludeHex?.toUpperCase(),
+  )
+  const filtered = withoutCurrent.length ? withoutCurrent : candidates
+  const index = Math.min(filtered.length - 1, Math.floor((options.rng ?? Math.random)() * filtered.length))
 
-  return filtered[Math.floor(Math.random() * filtered.length)] ?? candidates[0]
+  return filtered[index] ?? candidates[0]
 }
 
 export function getTimeBucket(date = new Date()): TimeBucket {
@@ -949,10 +954,12 @@ export function getRandomMission(
   timeBucket: TimeBucket,
   source: Mission['source'],
   weatherCode?: number,
-  options: { broaden?: boolean; excludeId?: string } = {},
+  options: { broaden?: boolean; excludeId?: string; excludeHex?: string; rng?: () => number } = {},
 ): Mission {
-  const candidates = options.broaden ? getAllMissionCandidates() : getMissionCandidates(weatherGroup, timeBucket)
-  const selected = chooseMissionCandidate(candidates, options.excludeId)
+  const candidates = options.broaden
+    ? Array.from(new Map(getAllMissionCandidates().map((candidate) => [candidate.hex.toUpperCase(), candidate])).values())
+    : getMissionCandidates(weatherGroup, timeBucket)
+  const selected = chooseMissionCandidate(candidates, options)
 
   return {
     ...selected,
