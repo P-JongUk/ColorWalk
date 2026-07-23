@@ -1,14 +1,14 @@
 # Hueday 전체 개발 마스터 로드맵
 
-마지막 갱신: 2026-07-23 KST
+마지막 갱신: 2026-07-24 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M1 — 컬러 헌트 제품 진실 정렬**
-- 현재 작업: D — Chromatic Archive 외부 UI, Hue Canvas 제품 계약, 로컬 우선 저장·수익화·출시 전제의 문서 기준을 확정하고 실제 개발에 넘기는 체크포인트
-- 다음 한 작업: **최신 `main`에서 `feature/color-hunt-contract`를 만들고 현지 날짜별 새 색 선택·첫 사진 잠금·1~7장 일일 기록·8장 완성 보상·매칭률 제거를 실제 코드에 반영하기**
+- 마스터 단계: **M2 — 안정성·데이터·측정 기반**
+- 현재 작업: M1 Color Hunt 계약을 `c22d7a3`으로 `main`에 통합했고, 앱 설치 전부터 재현된 전용 AVD 시스템 ANR 때문에 남은 Android 실기기 QA를 출시 전 필수 항목으로 추적한다.
+- 다음 한 작업: **최신 `main`에서 `feature/core-funnel-observability`를 만들기 전에 M2의 이벤트·E2E·저장 안정성 범위를 의존 순서와 체크포인트로 계획하고 승인받기**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -88,7 +88,7 @@ M0 문서·자동화 기반
 
 #### 구현·최종 QA 상태 — 2026-07-24 KST
 
-`feature/color-hunt-contract`의 `e6036c5`, `f135aae`, `326276e`가 아래 제품 계약을 구현했다. 2026-07-24 KST에 lint·19개 unit test·production build·라이브 Supabase 검증·Capacitor sync·Android debug/release build를 다시 통과했다. 아래 상태가 같은 의미의 과거 미체크 항목을 대체한다.
+`feature/color-hunt-contract`의 구현·QA 결과를 `c22d7a3`으로 `main`에 통합했다. 2026-07-24 KST에 lint·19개 unit test·production build·라이브 Supabase 검증·Capacitor sync·Android debug/release build를 통과했고, 병합된 `main`에서도 lint·19개 test·production build·`git diff --check`를 다시 통과했다. 아래 상태가 같은 의미의 과거 미체크 항목을 대체한다.
 
 - [x] 사용자 ID+현지 날짜별 0장 mission/재추천 상태, 첫 추천과 3회 문맥 재추천 뒤 HEX 중복 제거·현재 색 제외 전체 선택
 - [x] 촬영 미리보기와 `이 사진 사용` 확정 뒤 첫 사진 잠금

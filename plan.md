@@ -1,6 +1,6 @@
 # Hueday MVP Development Plan
 
-Last code/document alignment: 2026-07-23 KST. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
+Last code/document alignment: 2026-07-24 KST. M1 Color Hunt is integrated into `main` at `c22d7a3`. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
 
 ## Status
 - [x] Lazyweb setup and reference verification
@@ -23,7 +23,7 @@ Last code/document alignment: 2026-07-23 KST. The latest full release verificati
 ## Product Direction
 Hueday is a private everyday color-discovery ritual. On each device-local day the user receives or chooses a contextual mission color, may request three more contextual recommendations and then uniformly random colors from the curated catalog, and locks the color with the first accepted photo. One to seven photos remain a valid daily record; eight surrounding photos complete the 3x3 page and major reward. Local midnight closes the current record and the next day starts with a new color. There is no color-match score, public ranking, comparison loop, incomplete-day penalty, or cross-day active mission.
 
-The final visual direction is Candidate 3: soft emotional warmth with restrained trendy color-ticket details. The interface should feel youthful, collectible, and share-worthy, while staying calm enough for daily use in Korean and English markets.
+The approved working direction for the external app UI is D — Chromatic Archive: modern, clean, restrained, and color-led. Hue Canvas has its own stained-glass creative contract, while Hue Room and its room/furniture art directions remain deferred post-launch hypotheses.
 
 ## Technical Stack
 - React + Vite + TypeScript
