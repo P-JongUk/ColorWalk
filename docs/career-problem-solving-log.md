@@ -27,6 +27,7 @@
 | CW-008 | 2026-07-23 | 대표 보상이 별도 꾸미기 게임으로 팽창하는 범위를 교정 | 제품 범위·재사용 설계·의사결정 | 결정 완료, 프로토타입 후속 |
 | CW-009 | 2026-07-23 | 사진 품질·복구·클라우드 비용을 분리한 로컬 우선 구조 | 데이터 아키텍처·비용·복구 | 결정 완료, 구현 후속 |
 | CW-010 | 2026-07-23 | 매일 새 색의 기대감과 8컷 부담을 함께 해결한 일일 기록 계약 | 제품 설계·리텐션·상태 경계 | 결정 완료, 구현·검증 후속 |
+| CW-011 | 2026-07-24 | 기록 복구의 이미지 서명 요청 폭주를 배치화 | 복구 성능·최소 변경·회귀 검증 | 구현·브라우저 QA 완료, Android 잔여 QA |
 
 ## CW-001 — D 드라이브 우선 개발 환경
 
@@ -463,12 +464,35 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 - 0장 mission/재추천 상태는 사용자 ID+현지 날짜 localStorage에 저장한다.
 - 사진은 `이 사진 사용` 확정 뒤 IndexedDB에 먼저 저장하고, 새 사진만 업로드한다. 업로드 경로는 Post 실패 뒤에도 보존한다.
 - 로컬 초안은 같은 `local_date`의 서버 Post보다 최신 상태로 병합되며, 8장 로컬 완성도 배지에 즉시 반영된다.
-- `npm run lint`, `npm test -- --run`(19 tests), `npm run build`, `npm run verify:supabase`, `npm run cap:sync`, Android debug/release build를 통과했다. 브라우저 시각·Android 상호작용 QA는 후속 체크포인트다.
+- 2026-07-24 KST에 `npm run lint`, `npm test -- --run`(8 files/19 tests), `npm run build`, `npm run verify:supabase`, `npm run cap:sync`, Android debug/release build를 다시 통과했다. 430×932 브라우저에서 재추천, 촬영 확정, 1장 복구, 2~7장, 8장, 달력 단일 병합, 저널·Story·프로필과 날짜 mock 경계를 확인했다. 별도 AVD에서 실제 카메라 촬영·확정·1/8 저장·강제 종료 복구도 확인했다.
 
 ### 남은 부채
 
 - 동기화 재시도 스케줄링과 충돌 관찰은 M2에서 관측 이벤트와 함께 강화한다.
-- 브라우저/Android 실기기 날짜 경계·강제 종료 QA를 수행한다.
+- 안정적인 Android AVD 또는 실기기에서 2~8장, 완료 배지, foreground 날짜 전환, 저널 저장, Story 네이티브 공유를 수행한다. 2026-07-24의 별도 AVD는 System UI ANR로 이 항목을 끝내지 못했으며, 기존 Pixel 7 데이터는 보존했다.
+
+## CW-011 — 기록 복구의 이미지 서명 요청 폭주를 배치화
+
+### 문제와 증거
+
+430×932 브라우저에서 1장 저장 후 새로고침 복구를 실제로 확인하던 중, 기록 목록의 각 `grid_images` 경로마다 개별 Signed URL 요청이 발생했다. QA 계정의 여러 3×3 기록에서는 요청이 누적되고 한 요청이 504가 되어 복구가 약 48초까지 지연됐다. 저장 데이터는 남아 있었지만, 첫 색 발견을 바로 다시 볼 수 있다는 M1 복구 경험을 훼손했다.
+
+### 비교와 결정
+
+1. 화면마다 요청 수를 그대로 두고 timeout만 늘린다.
+2. 이미 읽어온 Post의 고유 경로를 모아 Storage의 `createSignedUrls` 한 번으로 서명하고, 기존 읽기 모델에 매핑한다.
+
+2를 선택했다. 새 저장소·캐시·의존성을 만들지 않고 기존 Supabase Storage API와 `normalizeGridImages`를 재사용하므로, fallback Post와 `image_path` 호환을 유지하는 최소 변경이다.
+
+### 검증과 결과
+
+- `fetchPosts`가 중복을 제거한 경로 목록을 한 번에 서명하고 grid/대표 이미지에 동일한 URL 맵을 사용하도록 변경했다.
+- 변경 후 1장 씨앗을 새로고침해 복구 화면을 다시 확인했다. `document.fonts.ready` 무한 대기가 아닌 직접 screenshot 방식으로 QA 캡처 대기도 분리했다.
+- lint, 19개 unit test, production build, 라이브 Supabase 검증, Capacitor sync, Android debug/release build를 통과했다.
+
+### 남은 일
+
+- 실제 저속 네트워크와 많은 고유 이미지 수에서 복구 시간·실패율을 측정하지 않았으므로 성능 수치로 주장하지 않는다.
 
 ## 작업 종료 시 갱신 규칙
 

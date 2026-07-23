@@ -101,4 +101,3 @@ function hashMoodSeed(value: string) {
     .split('')
     .reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619), 2166136261)
 }
-

@@ -13,7 +13,7 @@
 - [x] 발견 색 대표 콘텐츠를 Hue Canvas로 확정하고 큰 가상 격자·발견 횟수 사용량·자유/도안·스테인드글라스 계약 문서화
 - [x] 로컬 우선 저장·Hueday Cloud·Hueday Studio·D 드라이브 디자인 자료 관리 계약 문서화
 - [x] M1 구현: `feature/color-hunt-contract`에서 현지 날짜별 새 색, 문맥 재추천 3회와 이후 균등 무작위, 첫 사진 확정 잠금, 1–7장 일일 기록, 같은 날 재진입, 자정 마감, 8장 주요 보상, 매칭률 제거 계약을 코드와 카피에 반영하기
-- [ ] M1 최종 QA: 430×932 브라우저와 Android 카메라·강제 종료 복구·날짜 전환, 테스트 데이터 재시드와 체크포인트 문서 상태 확인 (lint·단위 테스트·build·라이브 Supabase·Capacitor sync·Android debug/release build는 통과; 기존 에뮬레이터 APK 서명 불일치 해소 필요)
+- [ ] M1 Android 잔여 QA: 안정적인 별도 AVD 또는 실제 기기에서 2~8장 이어서 촬영, 8장 완료·배지, foreground 날짜 전환, 저널 저장, Story 네이티브 공유 시트를 확인하기. 2026-07-24 KST에 430×932 브라우저 전체 흐름, 테스트 재시드, Android 실제 촬영·확정·1/8 저장·강제 종료 복구, lint·19개 test·build·라이브 Supabase·Capacitor sync·Android debug/release build는 통과했다. `ColorWalkM1QA`의 System UI ANR 때문에 나머지는 통과로 기록하지 않는다.
 - [ ] 출시 전 브랜드 게이트: Hueday와 국내 컬러워크·Daily Hue의 상표/스토어 검색/ASO 혼동 검토. 별도 승인 전 브랜드 변경 금지
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M3: 집·학교·캠퍼스·통학·카페·비 오는 날·날씨·시간·컬러 산책 일상 미션 팩 구현하기
