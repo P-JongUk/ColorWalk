@@ -4,13 +4,13 @@
 >
 > - **작업명·목표:** M2-1 `feature/core-funnel-observability` — 핵심 퍼널의 개인정보 최소 이벤트 계약, IndexedDB 중복 방지 outbox, additive `product_events` 수집, 최소 회귀 E2E를 구현한다.
 > - **현재 브랜치 / 기준 main:** `feature/core-funnel-observability` / `f76710a` (`origin/main`과 일치 확인)
-> - **현재 HEAD / 마지막 원격 push:** `f76710a` / `f76710a` (`origin/feature/core-funnel-observability` 생성·push 완료)
-> - **현재 체크포인트:** CP1 완료 대기 — 이벤트 계약·영속 outbox 기반. 다음 CP2는 Supabase 수집 함수와 additive migration 준비이며 예상 수정은 `src/lib/productEvents.ts`, `src/lib/supabase.ts`, `supabase/migrations/`, `scripts/verify-supabase.mjs`, 관련 테스트다. `grid_images` 전환·backfill·fallback 종료는 범위 밖이다.
-> - **완료한 내용:** 깨끗한 작업 트리와 `main == origin/main == f76710a` 확인, feature 원격 브랜치 생성, Graphify 관측 경로 조회, draft DB v2의 `product-events` object store 및 안전 payload 이벤트 계약 구현 완료.
-> - **수정 중이거나 dirty인 파일:** `docs/ai-memory/02-next-tasks.md`, `src/lib/draftStorage.ts`, `src/lib/productEvents.ts`, `src/lib/productEvents.test.ts`
-> - **마지막 통과 검증:** `npm test -- --run src/lib/productEvents.test.ts` (2 tests), `npm run lint`.
-> - **실패한 검증과 이유:** 없음.
-> - **다음 한 가지 작업:** CP1의 `git diff --check`를 실행하고 검증된 변경을 한국어 커밋·원격 push한다.
+> - **현재 HEAD / 마지막 원격 push:** `87b8575` / `87b8575` (CP1 `feat: 퍼널 이벤트 outbox 기반 추가`)
+> - **현재 체크포인트:** CP2 완료 대기 — Supabase 수집·additive migration. `product_events`는 새 테이블·새 인덱스·새 테이블 owner-scoped insert/select RLS만 추가한다. 다음 CP는 이 검증된 CP2를 commit·push한 뒤 Supabase CLI 연결 상태를 확인하고, 조건을 재확인해 live apply/verify를 실행한다. `grid_images` 전환·backfill·fallback 종료는 범위 밖이다.
+> - **완료한 내용:** 깨끗한 작업 트리와 `main == origin/main == f76710a` 확인, feature 원격 브랜치 생성, Graphify 관측 경로 조회, draft DB v2의 `product-events` object store 및 안전 payload 이벤트 계약 구현·검증·push 완료. `product_events` migration/flush/verify를 준비했고 migration diff의 destructive statement 0개, 대상 project ref 일치, live verify의 현재 schema 상태 `migration_pending`을 확인했다.
+> - **수정 중이거나 dirty인 파일:** `docs/ai-memory/02-next-tasks.md`, `src/lib/productEvents.ts`, `supabase/migrations/20260724030000_add_product_events.sql`, `scripts/verify-supabase.mjs`
+> - **마지막 통과 검증:** `npm test -- --run src/lib/productEvents.test.ts` (2 tests), `npm run lint`, `npm run build`, `npm run verify:supabase` (기존 경로 통과, `productEvents.migration_pending`은 적용 전 기대 결과).
+> - **실패한 검증과 이유:** 없음. `npx supabase migration list --linked`는 local project link가 없어 현재 schema 조회에 사용할 수 없었고, publishable-key live verify로 새 테이블 부재를 확인했다.
+> - **다음 한 가지 작업:** `git diff --check` 후 CP2를 한국어 커밋·원격 push하고, live apply에 필요한 Supabase CLI 링크/권한을 확인한다.
 > - **사용자 승인·외부 권한 필요:** additive `product_events` 테이블·인덱스·새 테이블 owner-scoped RLS는 migration diff, 프로젝트 `nhsvmypztjyhqunixxeg`, 현재 스키마, rollback/비활성화 경로, 비밀정보 부재를 확인하고 검증하면 자동 적용할 수 있다. `grid_images` migration/cutover처럼 기존 행을 변경하는 작업은 이 브랜치에서 실행하지 않는다.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.

@@ -100,6 +100,58 @@ let otherUserId = null
 let imagePath = null
 let usedGridFallback = false
 
+function isProductEventsMigrationPending(error) {
+  if (!error) return false
+  return error.code === 'PGRST205' || error.code === '42P01' || (error.message ?? '').includes('product_events')
+}
+
+async function verifyProductEvents(anonymousUserId) {
+  const event = {
+    id: crypto.randomUUID(),
+    owner_id: userId,
+    event_name: 'mission_viewed',
+    dedupe_key: 'verify:mission_viewed',
+    local_date: verifyDate,
+    occurred_at: new Date().toISOString(),
+    platform: 'web',
+    app_version: 1,
+    payload: { verification: true },
+  }
+  const upsert = await mainClient
+    .from('product_events')
+    .upsert(event, { onConflict: 'owner_id,dedupe_key', ignoreDuplicates: true })
+
+  if (isProductEventsMigrationPending(upsert.error)) return { status: 'migration_pending' }
+  if (upsert.error) throw upsert.error
+
+  const ownRead = await mainClient
+    .from('product_events')
+    .select('event_name,dedupe_key,payload')
+    .eq('owner_id', userId)
+    .eq('dedupe_key', event.dedupe_key)
+  if (ownRead.error) throw ownRead.error
+  if (ownRead.data?.length !== 1 || ownRead.data[0]?.event_name !== event.event_name) {
+    throw new Error('Product event insert/deduplication was not persisted exactly once.')
+  }
+
+  const otherRead = await otherClient
+    .from('product_events')
+    .select('id')
+    .eq('owner_id', userId)
+  if (otherRead.error) throw otherRead.error
+  if (otherRead.data?.length) throw new Error('Product events RLS failed: another user could read an event.')
+
+  const anonymousWrite = await anonClient.from('product_events').insert({
+    ...event,
+    id: crypto.randomUUID(),
+    owner_id: anonymousUserId,
+    dedupe_key: 'verify:anonymous_write',
+  })
+  if (!anonymousWrite.error) throw new Error('Anonymous users can still write product events. RLS should block this.')
+
+  return { status: 'ready', ownerRead: true, duplicateSafe: true, anonymousWriteBlocked: true, crossUserReadBlocked: true }
+}
+
 function needsLegacyPostFallback(error) {
   if (!error) return false
   const message = error.message ?? ''
@@ -307,6 +359,8 @@ try {
     throw new Error('3x3 grid image metadata was not persisted.')
   }
 
+  const productEvents = await verifyProductEvents(anonymous.data.user.id)
+
   const signed = await mainClient.storage.from('post-images').createSignedUrl(imagePath, 60)
   if (signed.error || !signed.data?.signedUrl) throw signed.error ?? new Error('Signed URL was not created.')
 
@@ -340,6 +394,7 @@ try {
         locationMetadataDisabled: true,
         postRlsBlocksOtherUser: true,
         storageRlsBlocksOtherUser: true,
+        productEvents,
         otherUserId,
       },
       null,
