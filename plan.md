@@ -1,6 +1,6 @@
 # Hueday MVP Development Plan
 
-Last code/document alignment: 2026-07-22 KST. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
+Last code/document alignment: 2026-07-23 KST. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
 
 ## Status
 - [x] Lazyweb setup and reference verification
@@ -21,7 +21,7 @@ Last code/document alignment: 2026-07-22 KST. The latest full release verificati
 - [ ] Automated integration/E2E coverage for signup -> capture -> save -> story share
 
 ## Product Direction
-Hueday is a private everyday color-discovery ritual. The user receives or chooses a contextual mission color, finds objects that feel similar, collects eight surrounding photos into a 3x3 grid around that center color, writes a short reflection, and uses accumulated colors as creative materials for Hueprints, stories, and optional safe Color Relay sharing. There is no color-match score, public ranking, or comparison loop.
+Hueday is a private everyday color-discovery ritual. On each device-local day the user receives or chooses a contextual mission color, may request three more contextual recommendations and then uniformly random colors from the curated catalog, and locks the color with the first accepted photo. One to seven photos remain a valid daily record; eight surrounding photos complete the 3x3 page and major reward. Local midnight closes the current record and the next day starts with a new color. There is no color-match score, public ranking, comparison loop, incomplete-day penalty, or cross-day active mission.
 
 The final visual direction is Candidate 3: soft emotional warmth with restrained trendy color-ticket details. The interface should feel youthful, collectible, and share-worthy, while staying calm enough for daily use in Korean and English markets.
 
@@ -39,7 +39,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 ## Core Implementation Notes
 - Username/password beta accounts are the current app identity model. Signup calls the deployed `beta-signup` Edge Function and then opens a password session. Anonymous sign-in remains only as a compatibility/security verification target; the app rejects anonymous sessions and RLS denies anonymous app-data writes.
 - Images are compressed in-browser to WebP before upload, targeting a beta-friendly mobile payload while preserving enough detail for story export.
-- Mission color selection is deterministic and zero-AI: weather group plus local time bucket maps to static color missions.
+- Mission color selection is zero-AI: weather, local time, and optional coarse location map to static recommendations for the initial color and three rerolls; later rerolls draw uniformly from the curated catalog while excluding the displayed color.
 - The old color-match scoring flow is removed from the product UI. The legacy `posts.match_rate` column is retained as `0` only for schema compatibility until a later cleanup migration.
 - Calendar cells use collected color data, not social data.
 - Story export uses code-native 9:16 frames rendered to image.
@@ -85,7 +85,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 - Hueday's unique loop is `daily color mission -> real-world color finding -> 3x3 collection -> story/share card -> accumulated color identity`.
 - Priority growth bets:
   - Clear center-mission-color 3x3 Color Hunt without extraction or match percentage.
-  - Home/school/commute/cafe/weather/walk mission packs for everyday discovery.
+  - Home/school/campus/commute/cafe/rainy-day/weather/time/walk mission packs for everyday discovery.
   - Hue Canvas, where each completed 3x3 increases that mission color's per-artwork stained-glass tile budget and every color links to its source memories.
   - Flexible Color Rhythm and cumulative rewards that unlock real Hue Canvas/story/Hueprint options.
   - Monthly Hueprint and minimum Color Capsule recall.
@@ -121,7 +121,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 - Users can choose a flexible weekly 2/3/5-day Color Rhythm; missed days do not remove accumulated progress, rooms, chapters, or items.
 - Saved mission colors become Hue Palette entries. Each completed 3x3 increases the same color's placement budget by one per artwork; editing returns usage, colors are not permanently consumed, and every color links back to source records.
 - Cumulative discovery days, completed 3x3 pages, mission packs, weekly rhythm, monthly participation, and Relay can unlock real Hueprint, story, composition, material, and export assets.
-- Existing 3/7/14/30 rewards must migrate without taking already-earned value away.
+- Because the product has no released users yet, existing 3/7/14/30 badges switch immediately to completed-3x3-page counts; no legacy transition layer is needed.
 - Any capture, mission, story, profile, found-color content, or monetization change must check `docs/colorwalk-reward-system.md`, `docs/discovered-color-content-strategy.md`, the master roadmap, and the reward helper/config.
 
 ### Instagram / SNS Sharing
@@ -135,7 +135,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 
 ### Beta Priority Recommendation
 1. Follow `docs/hueday-development-roadmap.md` from its current master phase; do not invent a separate order in feature conversations.
-2. Align the Color Hunt contract, then stabilize/measure, add everyday mission packs, approve and implement the complete found-color replacement with Color Rhythm rewards, build Hueprint/Color Capsule, add safe Color Relay, and finish integrated release QA.
+2. Align the Color Hunt contract—daily fresh color, three contextual rerolls, later uniform random, first-photo lock, 1–7 valid daily record, 8-photo completion, and local-midnight close—then stabilize/measure, add everyday mission packs, approve and implement the complete found-color replacement with Color Rhythm rewards, build Hueprint/Color Capsule, add safe Color Relay, and finish integrated release QA.
 3. Treat this as a compressed release critical path, not a three-month roadmap and not a stripped-down minimum beta.
 4. Implement each meaningful checkpoint on a focused `feature/<name>` branch and update only verified roadmap checkboxes.
 5. Rerun `docs/release-readiness.md`, then verify signup -> capture -> save -> found-color creation -> Hueprint -> Relay/share on a physical phone and launch when the complete package passes.
