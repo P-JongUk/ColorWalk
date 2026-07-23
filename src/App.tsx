@@ -254,6 +254,14 @@ function App() {
     }
   }
 
+  function persistJournal({ colorName, journalAnswer, storyDesign }: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) {
+    if (!draft?.gridImages.length) return
+    const nextDraft: CaptureDraft = { ...draft, journal: { colorName, journalAnswer, storyDesign } }
+    setDraft(nextDraft)
+    setDailyDrafts((current) => [nextDraft, ...current.filter((candidate) => candidate.localDate !== nextDraft.localDate)])
+    void saveCachedDraft(nextDraft, ownerId).catch((error) => console.warn('Failed to persist journal draft', error))
+  }
+
   function shuffleMission() {
     if (!mission) return
     const localDate = getLocalDateKey()
@@ -303,7 +311,7 @@ function App() {
 
   const content = (() => {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
-    if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={() => setActiveTab('camera')} onSave={saveEntry} />
+    if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={() => setActiveTab('camera')} onPersistJournal={persistJournal} onSave={saveEntry} />
     if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
     return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={() => setActiveTab('camera')} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />

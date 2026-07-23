@@ -19,13 +19,14 @@ type JournalViewProps = {
   draft: CaptureDraft | null
   isSaving: boolean
   onOpenCamera: () => void
+  onPersistJournal: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) => void
   onSave: (payload: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) => Promise<void>
 }
 
-export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, onSave }: JournalViewProps) {
-  const [colorName, setColorName] = useState('')
-  const [journalAnswer, setJournalAnswer] = useState('')
-  const [storyDesign, setStoryDesign] = useState<StoryDesign>(DEFAULT_STORY_DESIGN)
+export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, onPersistJournal, onSave }: JournalViewProps) {
+  const [colorName, setColorName] = useState(() => draft?.journal?.colorName ?? '')
+  const [journalAnswer, setJournalAnswer] = useState(() => draft?.journal?.journalAnswer ?? '')
+  const [storyDesign, setStoryDesign] = useState<StoryDesign>(() => draft?.journal?.storyDesign ?? DEFAULT_STORY_DESIGN)
   const [remoteSuggestions, setRemoteSuggestions] = useState<string[]>([])
   const activeHex = mission.hex
   const prompt = useMemo(
@@ -68,6 +69,21 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
       cancelled = true
     }
   }, [activeHex, locale])
+
+  function updateColorName(value: string) {
+    setColorName(value)
+    onPersistJournal({ colorName: value, journalAnswer, storyDesign })
+  }
+
+  function updateJournalAnswer(value: string) {
+    setJournalAnswer(value)
+    onPersistJournal({ colorName, journalAnswer: value, storyDesign })
+  }
+
+  function updateStoryDesign(value: StoryDesign) {
+    setStoryDesign(value)
+    onPersistJournal({ colorName, journalAnswer, storyDesign: value })
+  }
 
   if (!draft || draft.gridImages.length === 0) {
     return (
@@ -130,7 +146,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           <div className="journal-input-action">
             <Input
               value={colorName}
-              onChange={(event) => setColorName(event.target.value)}
+              onChange={(event) => updateColorName(event.target.value)}
               placeholder={suggestions[0] ?? t(locale, 'colorNamePlaceholder')}
               maxLength={colorNameLimit}
             />
@@ -140,7 +156,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
 
         <div className="suggestion-row">
           {suggestions.map((suggestion) => (
-            <button key={suggestion} type="button" onClick={() => setColorName(suggestion)}>
+            <button key={suggestion} type="button" onClick={() => updateColorName(suggestion)}>
               {suggestion}
             </button>
           ))}
@@ -153,7 +169,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           missionLabel={mission.label[locale]}
           prompt={prompt}
           value={journalAnswer}
-          onChange={setJournalAnswer}
+          onChange={updateJournalAnswer}
         />
       </section>
 
@@ -167,7 +183,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
           locale={locale}
           data={storyData}
           initialDesign={storyDesign}
-          onDesignChange={setStoryDesign}
+          onDesignChange={updateStoryDesign}
         />
       </section>
     </main>
