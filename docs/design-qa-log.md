@@ -31,7 +31,7 @@ Latest 430x932 captures:
 - 0장 시작 전, 1~3회 날씨·시간 문맥 재추천, 네 번째 전체 큐레이션 재추천, 촬영 미리보기·다시 찍기·`이 사진 사용` 확정, 1장 씨앗 재시작 복구, 2~7장 진행, 8장 완료, 저널, Story, 기록함, 프로필을 실제 브라우저에서 확인했다.
 - 달력은 동일 `local_date`의 로컬 최신 기록과 서버 Post를 한 항목으로 보여 주었고, QA 계정에서는 8/8 완료 일일 기록이 중복되지 않았다.
 - Playwright의 이전 캡처 지연은 `document.fonts.ready`를 무한 대기한 앱 문제가 아니라 QA 스크립트의 대기 방식이었다. `document.fonts.status`는 `loaded`였으며, 직접 `page.screenshot`으로 제한 시간 없는 폰트 대기를 제거했다. 앱 표시 코드는 변경하지 않았다.
-- Android 별도 QA AVD의 실제 캡처는 `android-camera-active.png`, `android-photo-preview.png`, `android-first-saved.png`, `android-recovery.png`에 남겼다. 실제 촬영·확정·1/8 저장·강제 종료 복구까지 확인했지만, AVD 재기동 후 System UI ANR이 반복되어 2~8장·완료 배지·foreground 날짜 전환·저널 저장·Story 네이티브 공유 시트는 미통과 상태로 남긴다.
+- Android 별도 QA AVD의 실제 캡처는 `android-camera-active.png`, `android-photo-preview.png`, `android-first-saved.png`, `android-recovery.png`에 남겼다. 2026-07-24 KST 추가 시도는 `.design-references/01-current-screens/m1-android-qa-2026-07-24/`에 `camera-active.png`, `preview-1.png`, `retake.png`, `seed-confirmed.png`, `foreground-recovered-1.png`, `progress-2.png`, `progress-5.xml`을 남겼다. 실제 카메라 권한·촬영·다시 찍기·확정, 1/8 저장·background/foreground 복구, 2/8·5/8 순차 촬영까지 확인했다. 다만 전역 날짜 mock은 Supabase 인증 시간과 충돌하므로 유효한 Android 날짜 전환 검증으로 쓰지 않았고, 그 뒤 clean `wipe-data` cold boot에서 앱 설치 전 System UI·전화·Google Play services ANR이 재발했다(`clean-boot-system-anr.log`). 7/8·8/8 완료/배지, foreground 날짜 전환, 저널 저장·Story 네이티브 공유 시트는 미통과 상태로 실제 Android 기기 QA에 남긴다.
 
 ## 2026-07-22 — Design Direction Gate 1
 

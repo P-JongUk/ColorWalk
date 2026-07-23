@@ -10,10 +10,10 @@
 - 백엔드 공급자 결정: 출시와 초기 성장에는 검증된 Supabase Auth·Postgres·RLS·Storage를 유지한다. R2는 유료 고화질 백업 비용이 측정된 뒤, Railway는 장시간 서버 작업이 실제로 필요할 때만 보조 도입한다.
 - 현재 미구현: 일상 미션 팩 선택, Hue Palette/Canvas·리믹스, 로컬 우선 저장·Cloud 계층, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 행동 분석, 결제, 네이티브 iOS
 - 확정된 Color Hunt 의미: 기기 현지 날짜마다 날씨·시간·선택적 대략 위치 기반 색을 새로 추천하고 최대 3회까지 같은 문맥으로 바꾼 뒤 전체 큐레이션 색 균등 무작위를 제공한다. 첫 사진을 확정하면 그날 색이 잠긴다. 1–7장도 유효한 일일 기록이며 8장만 3×3 한 페이지와 주요 보상을 완성한다. 현지 자정에는 현재 장수로 닫고 다음 날 새 색을 선택한다.
-- M1 구현 상태: `feature/color-hunt-contract`의 `e6036c5`·`f135aae`·`326276e`가 3회 문맥 재추천 뒤 HEX 중복 제거 전체 선택, 사진 사용 확정 잠금, 부분 기록 복구·병합, 8장 기반 배지, foreground 날짜 마감, 매칭률/streak UI 제거를 구현했다. 2026-07-24 KST lint·19개 unit test·build·라이브 Supabase 검증·Capacitor sync·Android debug/release build와 430×932 브라우저 QA를 통과했다. 별도 `ColorWalkM1QA` AVD에서는 실제 카메라 촬영·확정·1/8 저장·강제 종료 복구까지 확인했으나, AVD 재기동 뒤 System UI ANR이 반복되어 Android 2~8장·완료 배지·foreground 날짜 전환·저널/Story 공유 QA는 남아 있다. 기존 `ColorWalkPixel7` 데이터는 건드리지 않았다.
+- M1 구현 상태: `feature/color-hunt-contract`의 `e6036c5`·`f135aae`·`326276e`가 3회 문맥 재추천 뒤 HEX 중복 제거 전체 선택, 사진 사용 확정 잠금, 부분 기록 복구·병합, 8장 기반 배지, foreground 날짜 마감, 매칭률/streak UI 제거를 구현했다. 2026-07-24 KST lint·19개 unit test·build·라이브 Supabase 검증·Capacitor sync·Android debug/release build와 430×932 브라우저 QA를 통과했다. 별도 `ColorWalkM1QA` AVD에서는 실제 카메라 촬영·다시 찍기·확정, 1/8 저장·background/foreground 복구와 2/8·5/8 순차 촬영까지 확인했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 Android 날짜 QA의 유효한 방법이 아니었고, clean `wipe-data` cold boot에서는 앱 설치 전 System UI·전화·Google Play services ANR이 반복됐다. 따라서 Android 7/8·8/8 완료/배지·foreground 날짜 전환·저널/Story 네이티브 공유는 실제 기기 또는 안정적인 AVD에서 남아 있다. 기존 `ColorWalkPixel7` 데이터는 건드리지 않았다.
 - 현재 마스터 단계: M1 컬러 헌트 제품 진실 정렬의 구현·문서·기기 검증 체크포인트.
 - 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.
-- 현재 다음 작업: 안정적인 Android 환경 또는 실제 기기에서 M1의 2~8장·완료 배지·foreground 날짜 전환·저널/Story 네이티브 공유를 확인한 뒤, M2 관측·오프라인 안정성 범위를 실행한다.
+- 현재 다음 작업: 실제 Android 기기 또는 안정적인 AVD에서 M1의 7/8·8/8 완료·배지, foreground 날짜 전환, 저널 저장·Story 네이티브 공유를 확인한 뒤, M2 관측·오프라인 안정성 범위를 실행한다. Android 날짜 전환은 인증 시간을 바꾸지 않는 테스트 방법으로 검증한다.
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`

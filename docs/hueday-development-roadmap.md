@@ -100,7 +100,7 @@ M0 문서·자동화 기반
 - [x] 430×932 브라우저: 시작 전, 1~3회 문맥 재추천, 네 번째 전체 큐레이션 재추천, 촬영 미리보기·다시 찍기·확정, 1장 복구, 2~7장, 8장 완성, 저널·스토리·달력 단일 병합·프로필 확인
 - [x] 브라우저 날짜 mock: 전날 1장 기록의 마감·비이월·새 날짜 새 mission과 달력의 닫힌 부분 기록 확인
 - [x] 테스트 계정 재시드: 오늘을 비워 M1 시작 상태를 재현하고, 2026-07-23~19의 5개 데모 일일 기록을 M1 `colorHunt` 메타데이터로 갱신
-- [!] 별도 `ColorWalkM1QA` AVD: 실제 카메라 권한, 촬영→미리보기→`이 사진 사용`, 1/8 저장, 앱 강제 종료 뒤 1장 복구까지 확인. AVD 재기동 뒤 `System UI isn't responding`이 반복되어 2~8장, 완료 배지, foreground 날짜 전환, 저널 저장·Story 공유 시트는 통과로 처리하지 않음. 기존 `ColorWalkPixel7` 앱·데이터는 삭제하거나 변경하지 않음.
+- [!] 별도 `ColorWalkM1QA` AVD: 실제 카메라 권한, 촬영→미리보기→다시 찍기→`이 사진 사용`, 1/8 저장, background/foreground 뒤 1장 복구와 2/8·5/8 순차 촬영까지 확인했다. 날짜를 전역 `Date`로 바꾸는 QA mock은 Supabase 인증 시간을 미래로 인식시켜 유효한 2~8 완주 방법이 아니었으며, 그 전환 중 WebView 권한 콜백 예외가 한 번 발생했다. 이어 clean `wipe-data` cold boot에서는 앱 설치 전 `com.android.systemui`·`com.android.phone`·Google Play services ANR이 다시 발생했다. 따라서 7/8·8/8 완료/배지, foreground 날짜 전환, 저널 저장·Story 네이티브 공유 시트는 통과로 처리하지 않고 안정적인 환경 또는 실제 Android 기기 QA로 남긴다. 기존 `ColorWalkPixel7` 앱·데이터는 삭제하거나 변경하지 않았다. 근거는 무시되는 `.design-references/01-current-screens/m1-android-qa-2026-07-24/`에 보존했다.
 
 확정된 의미:
 
