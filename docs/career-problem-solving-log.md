@@ -445,6 +445,31 @@ Hueday의 장기 보상으로 계획한 Hue Room을 더 예쁘게 만들기 위�
 - STAR 요약 한 문장:
 ```
 
+## CW-009 — 부분 일일 기록을 잃지 않는 날짜별 Color Hunt 저장 계약
+
+### 문제와 증거
+
+기존 촬영 흐름은 셔터 직후 사진을 확정하고 당일 단일 초안만 저장했으며, 날짜가 지나면 초안을 삭제했다. 따라서 1~7장을 유효한 기록으로 남기고, 업로드/Post 저장 실패 뒤 8장 완성을 복구하며, 같은 날짜의 로컬과 서버 기록을 하나로 보여주는 승인 계약을 만족하지 못했다.
+
+### 선택지와 결정
+
+1. 새 Supabase 테이블·migration으로 초안 상태를 모델링한다.
+2. 기존 IndexedDB object store와 `posts(user_id, local_date)` upsert/fallback을 확장한다.
+
+M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 추가하고 기존 `grid_images`/`client_meta.gridImages` fallback을 유지했다. 이는 출시 전 사용자 데이터 migration 없이 로컬 우선 복구와 날짜별 단일 기록 병합을 제공하는 최소 구조다.
+
+### 구현과 검증
+
+- 0장 mission/재추천 상태는 사용자 ID+현지 날짜 localStorage에 저장한다.
+- 사진은 `이 사진 사용` 확정 뒤 IndexedDB에 먼저 저장하고, 새 사진만 업로드한다. 업로드 경로는 Post 실패 뒤에도 보존한다.
+- 로컬 초안은 같은 `local_date`의 서버 Post보다 최신 상태로 병합되며, 8장 로컬 완성도 배지에 즉시 반영된다.
+- `npm run lint`, `npm test -- --run`(19 tests), `npm run build`, `npm run verify:supabase`, `npm run cap:sync`, Android debug/release build를 통과했다. 브라우저 시각·Android 상호작용 QA는 후속 체크포인트다.
+
+### 남은 부채
+
+- 동기화 재시도 스케줄링과 충돌 관찰은 M2에서 관측 이벤트와 함께 강화한다.
+- 브라우저/Android 실기기 날짜 경계·강제 종료 QA를 수행한다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.

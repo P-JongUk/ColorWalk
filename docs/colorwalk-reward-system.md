@@ -216,16 +216,14 @@ Candidate English labels:
 
 ## Implementation Notes
 
-The current app can derive streaks from `posts.local_date`. Future reward logic should continue to use persisted posts as the source of truth.
+M1의 3·7·14·30 배지는 `local_date`별 8장 완성 페이지 수만으로 계산한다. 연속 기록, 그 손실, 또는 일별 색 정확도는 보상 입력이 아니다.
 
 Current beta implementation:
 
-- Milestones are fixed at 3, 7, 14, and 30.
-- `getCurrentStreak(posts)` counts consecutive saved `posts.local_date` values backward from today.
-- `getCompletedGridCount(posts)` counts saved posts with 8 or more grid images.
-- `getUnlockedBadges(streak, posts)` unlocks a milestone when either the current streak reaches the milestone or the user has completed that many full 3x3 grids.
-- This means a user can unlock rewards through daily consistency or through enough completed color grids, but the unlock still comes from persisted posts rather than a fragile local counter.
-- Current visible rewards are still mostly labels and badge states. The next product step should make each unlocked milestone visibly usable in story/export/profile surfaces.
+- `getCompletedGridCount(posts)`는 8장 이상인 저장·병합 일일 기록만 센다.
+- `getUnlockedBadges(posts)`는 3·7·14·30 완성 페이지 기준으로만 해금한다.
+- 로컬 동기화 대기 완료도 서버 Post와 병합해 즉시 계산하며, 서버 동기화 후 같은 날짜를 중복 계산하지 않는다.
+- 현재 보상 화면은 milestone 표시 상태다. 실제 창작 자산은 M5에서 연결한다.
 - Color Rhythm, Hue Canvas color budgets, mission-pack rewards, and reward migration are not implemented yet.
 
 Target implementation:
@@ -234,7 +232,7 @@ Target implementation:
 - 8장 그리드 완료 수, 미션 팩 metadata, 월간 참여를 별도 진행 축으로 계산한다.
 - unlock 결과는 Hue Canvas color/tool/template ID, Story asset ID, Hueprint asset ID 같은 실제 사용 대상을 반환한다.
 - UI component는 조건을 다시 계산하지 않고 한 reward helper/config의 결과를 사용한다.
-- 기존 badge unlock은 새 reward ledger에 무손실로 매핑한다.
+- 기존 badge unlock의 streak 호환 계층은 출시 전 전환 정책에 따라 만들지 않는다.
 
 Potential helper shape:
 
@@ -260,3 +258,10 @@ If story templates, sticker packs, or badge visuals are renamed later, keep the 
 - Premium packs that complement earned rewards, without replacing the free badge unlocks.
 - Color Relay postcard and paired Duet Print styles.
 - 월간 Hueprint에서 얻는 표지·재질·구도.
+
+## M1 구현 상태 — 2026-07-23 KST
+
+- `src/lib/collection.ts`은 3·7·14·30 배지를 8장 완성 일일 기록 수로만 계산한다.
+- 배지 입력은 Supabase 동기화 여부와 관계없이 로컬·서버 병합 결과다. 로컬에서 완성했지만 동기화가 실패한 페이지도 즉시 해금에 반영되며, 이후 서버 Post가 생겨도 같은 `local_date` 기록은 한 번만 계산한다.
+- 1~7장 기록은 유효한 일일 기록이지만 주요 완성 보상과 페이지 배지에는 포함하지 않는다.
+- 현재 보상 화면은 milestone 표시에 머물며, 실제 Hue Canvas/Hueprint 창작 자산 연결은 M5 범위다.
