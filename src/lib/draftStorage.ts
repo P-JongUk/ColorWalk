@@ -1,9 +1,11 @@
 import { getLocalDateKey } from '@/lib/date'
+import type { ProductEvent } from '@/lib/productEvents'
 import type { CaptureDraft, GridDraftImage } from '@/types'
 
 const DB_NAME = 'colorwalk-cache'
-const DB_VERSION = 1
-const STORE_NAME = 'drafts'
+const DB_VERSION = 2
+const DRAFT_STORE_NAME = 'drafts'
+const PRODUCT_EVENT_STORE_NAME = 'product-events'
 const LEGACY_TODAY_DRAFT_KEY = 'today-grid-draft'
 
 type StoredGridDraftImage = Omit<GridDraftImage, 'previewUrl'>
@@ -29,7 +31,8 @@ function openDraftDb() {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
     request.onupgradeneeded = () => {
       const db = request.result
-      if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'key' })
+      if (!db.objectStoreNames.contains(DRAFT_STORE_NAME)) db.createObjectStore(DRAFT_STORE_NAME, { keyPath: 'key' })
+      if (!db.objectStoreNames.contains(PRODUCT_EVENT_STORE_NAME)) db.createObjectStore(PRODUCT_EVENT_STORE_NAME, { keyPath: 'key' })
     }
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error ?? new Error('Failed to open draft cache'))
@@ -38,8 +41,8 @@ function openDraftDb() {
 
 function runDraftTransaction<T>(mode: IDBTransactionMode, callback: (store: IDBObjectStore) => IDBRequest<T> | void) {
   return openDraftDb().then((db) => new Promise<T | undefined>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, mode)
-    const request = callback(transaction.objectStore(STORE_NAME))
+    const transaction = db.transaction(DRAFT_STORE_NAME, mode)
+    const request = callback(transaction.objectStore(DRAFT_STORE_NAME))
     let result: T | undefined
     if (request) {
       request.onsuccess = () => { result = request.result }
@@ -106,4 +109,43 @@ export async function loadCachedDrafts(ownerId: string) {
 
 export async function clearCachedDraft(ownerId: string, localDate = getLocalDateKey()) {
   await runDraftTransaction('readwrite', (store) => store.delete(draftKey(ownerId, localDate)))
+}
+
+export async function enqueueProductEvent(event: ProductEvent) {
+  const db = await openDraftDb()
+  return new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(PRODUCT_EVENT_STORE_NAME, 'readwrite')
+    const store = transaction.objectStore(PRODUCT_EVENT_STORE_NAME)
+    const existing = store.get(event.key)
+    existing.onsuccess = () => {
+      if (!existing.result) store.add(event)
+    }
+    existing.onerror = () => reject(existing.error ?? new Error('Product event lookup failed'))
+    transaction.oncomplete = () => { db.close(); resolve() }
+    transaction.onerror = () => { db.close(); reject(transaction.error ?? new Error('Product event cache transaction failed')) }
+  })
+}
+
+export async function loadPendingProductEvents(ownerId: string) {
+  const db = await openDraftDb()
+  return new Promise<ProductEvent[]>((resolve, reject) => {
+    const transaction = db.transaction(PRODUCT_EVENT_STORE_NAME, 'readonly')
+    const request = transaction.objectStore(PRODUCT_EVENT_STORE_NAME).getAll()
+    request.onsuccess = () => resolve((request.result as ProductEvent[]).filter((event) => event.ownerId === ownerId))
+    request.onerror = () => reject(request.error ?? new Error('Product event cache read failed'))
+    transaction.oncomplete = () => db.close()
+    transaction.onerror = () => { db.close(); reject(transaction.error ?? new Error('Product event cache transaction failed')) }
+  })
+}
+
+export async function removePendingProductEvents(keys: string[]) {
+  if (!keys.length) return
+  const db = await openDraftDb()
+  return new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(PRODUCT_EVENT_STORE_NAME, 'readwrite')
+    const store = transaction.objectStore(PRODUCT_EVENT_STORE_NAME)
+    keys.forEach((key) => store.delete(key))
+    transaction.oncomplete = () => { db.close(); resolve() }
+    transaction.onerror = () => { db.close(); reject(transaction.error ?? new Error('Product event cache transaction failed')) }
+  })
 }
