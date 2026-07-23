@@ -1,5 +1,11 @@
 # 지속 결정
 
+## 2026-07-24 — additive Supabase 변경의 자동 적용 경계 (approved)
+
+- 새 테이블·새 nullable/default-safe 컬럼·새 인덱스·새 테이블의 owner-scoped RLS처럼 기존 데이터를 삭제·덮어쓰기·재해석하지 않는 되돌리기 쉬운 변경은 migration diff, 대상 project, 현재 schema, 비파괴적 비활성화/rollback, 비밀정보 부재를 확인하고 검증하면 별도 승인 없이 적용한다.
+- DROP/TRUNCATE·기존 데이터 삭제·type/rename·기존 행을 실패시킬 수 있는 강한 제약·대량 backfill/변환·기존 RLS/Storage/Auth 접근 확대 또는 의미 변경·비용/보안/복구 영향이 큰 변경은 계속 적용 직전 명시 승인이 필요하다. 불확실하면 승인 대상으로 분류한다.
+- Edge Function 배포와 실제 계정 삭제 QA의 별도 게이트는 유지한다. `product_events`는 이 기준의 additive 후보이나, 현재 환경에는 Supabase 관리자 access token이 없어 live apply 전 상태다.
+
 ## 2026-07-22 — Git 작업 방식
 
 - `main`은 통합 전용으로 사용합니다.

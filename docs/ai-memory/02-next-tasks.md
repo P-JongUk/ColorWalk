@@ -5,12 +5,12 @@
 > - **작업명·목표:** M2-1 `feature/core-funnel-observability` — 핵심 퍼널의 개인정보 최소 이벤트 계약, IndexedDB 중복 방지 outbox, additive `product_events` 수집, 최소 회귀 E2E를 구현한다.
 > - **현재 브랜치 / 기준 main:** `feature/core-funnel-observability` / `f76710a` (`origin/main`과 일치 확인)
 > - **현재 HEAD / 마지막 원격 push:** `b25ce99` / `b25ce99` (CP2 `feat: 퍼널 이벤트 Supabase 수집 준비`)
-> - **현재 체크포인트:** CP3 완료 대기 — 핵심 퍼널 이벤트 연결. 다음 CP4는 설치된 Playwright CLI만 쓰는 local 430×932 최소 E2E이며 예상 수정은 이 인계 블록, `scripts/`의 E2E runner, 필요한 안정 locator와 테스트 이미지 fixture다. `grid_images` 전환·backfill·fallback 종료는 범위 밖이다.
+> - **현재 체크포인트:** CP4 중단 상태 저장 — local 430×932 최소 E2E. `VITE_E2E_LOCAL_ONLY=true` test-only switch와 Playwright CLI runner를 추가했다. 이 환경의 Vite dev server가 `127.0.0.1:4174`에서 응답하지 않아 runner 완주를 검증하지 못했다. `grid_images` 전환·backfill·fallback 종료는 범위 밖이다.
 > - **완료한 내용:** 깨끗한 작업 트리와 `main == origin/main == f76710a` 확인, feature 원격 브랜치 생성, Graphify 관측 경로 조회, draft DB v2의 `product-events` object store 및 안전 payload 이벤트 계약 구현·검증·push 완료. `product_events` migration/flush/verify를 준비했고 migration diff의 destructive statement 0개, 대상 project ref 일치, live verify의 현재 schema 상태 `migration_pending`을 확인했다. CP2 커밋·push 완료. 인증 완료·미션 표시·촬영 시작·첫 사진 확정·부분 기록 저장·8장 완성·저널 저장·Story export/share 이벤트를 기존 저장 성공 지점 뒤에 비차단으로 연결했다.
-> - **수정 중이거나 dirty인 파일:** `docs/ai-memory/02-next-tasks.md`, `src/App.tsx`, `src/components/AuthGate.tsx`, `src/components/JournalView.tsx`, `src/components/StoryStudio.tsx`
-> - **마지막 통과 검증:** `npm test -- --run` (21 tests), `npm run lint`, `npm run build`; `npm run verify:supabase` (기존 경로 통과, `productEvents.migration_pending`은 적용 전 기대 결과).
-> - **실패한 검증과 이유:** `npx supabase migration list --linked`는 local project link가 없어 사용할 수 없었고, Supabase CLI `projects list`는 `SUPABASE_ACCESS_TOKEN`이 없어 관리자 연결을 만들 수 없었다. publishable-key live verify로 새 테이블 부재를 확인했다.
-> - **다음 한 가지 작업:** `git diff --check` 후 CP3를 한국어 커밋·원격 push하고, Playwright skill 지침과 현재 CLI 사용 경로를 읽는다.
+> - **수정 중이거나 dirty인 파일:** `AGENTS.md`, `docs/ai-memory/01-decisions.md`, `docs/ai-memory/02-next-tasks.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `scripts/e2e-core-funnel.ps1`, `src/lib/supabase.ts`
+> - **마지막 통과 검증:** `npm test -- --run` (21 tests, CP3), `npm run build` 및 E2E runner PowerShell parse (CP4); `npm run verify:supabase` (기존 경로 통과, `productEvents.migration_pending`은 적용 전 기대 결과).
+> - **실패한 검증과 이유:** `npx supabase migration list --linked`는 local project link가 없어 사용할 수 없었고, Supabase CLI `projects list`는 `SUPABASE_ACCESS_TOKEN`이 없어 관리자 연결을 만들 수 없었다. publishable-key live verify로 새 테이블 부재를 확인했다. CP4에서 Vite E2E server가 4174에 응답하지 않았고, 최종 `npm run lint`는 124초 실행 제한으로 결과 없이 timeout됐다.
+> - **다음 한 가지 작업:** `npx eslint src/lib/supabase.ts`로 좁은 lint를 확인하고, `git diff --check` 후 실패를 명시한 WIP checkpoint를 remote feature branch에 push한다. 재개 시 Vite server process/port를 진단한 뒤 `scripts/e2e-core-funnel.ps1`을 실제 완주한다.
 > - **사용자 승인·외부 권한 필요:** additive `product_events` 테이블·인덱스·새 테이블 owner-scoped RLS는 migration diff, 프로젝트 `nhsvmypztjyhqunixxeg`, 현재 스키마, rollback/비활성화 경로, 비밀정보 부재를 확인하고 검증하면 자동 적용할 수 있다. `grid_images` migration/cutover처럼 기존 행을 변경하는 작업은 이 브랜치에서 실행하지 않는다.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.

@@ -83,6 +83,7 @@ The last successful production deploy used local `npm run build`, manual `.verce
 - Project id: `nhsvmypztjyhqunixxeg`
 - App tables: `profiles`, `posts`, `color_name_suggestions`
 - Storage bucket: `post-images`
+- Additive Supabase changes that do not rewrite existing data (new table, nullable/default-safe column, index, or owner-scoped RLS on a new table) may be applied and verified without a separate user approval only after confirming the migration diff, target project id, current schema, a non-destructive disable/rollback path, and that no secret is exposed. Still require explicit approval immediately before destructive or uncertain changes: DROP/TRUNCATE, data deletion, type/rename/strong constraint changes that can reject existing rows, bulk backfills/transforms, access-expanding or meaning-changing existing RLS/Storage/Auth policies, and changes with material recovery, cost, security, or user-data impact. Edge Function deploys and account-deletion QA remain separate gates.
 - Account creation path: username/password form calls the deployed `beta-signup` Edge Function, then signs in through Supabase Auth.
 - RLS/storage policies are owner-scoped by `auth.uid()`.
 - `npm run verify:supabase` must keep checking anonymous sign-in, anonymous data-write denial, password-user profile upsert, post CRUD, signed storage read, and cross-user denial.

@@ -1,5 +1,10 @@
 # Hueday Release Readiness Notes
 
+## M2 observability gate (2026-07-24)
+
+- Core funnel events and local outbox are implemented on `feature/core-funnel-observability`; live `product_events` collection remains pending until an authenticated Supabase admin path is available. Before enabling it, rerun migration diff/project/schema/rollback checks and `npm run verify:supabase`.
+- The local 430×932 Playwright core-funnel runner uses `VITE_E2E_LOCAL_ONLY=true` and no private account. It is a regression path for M1 capture→8 photos→journal save; real Android device/AVD QA remains a separate release gate.
+
 ## What Must Pass Before Sharing
 
 - `npm run lint`

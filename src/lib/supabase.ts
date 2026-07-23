@@ -10,7 +10,7 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | un
 const authEmailDomain = (import.meta.env.VITE_AUTH_EMAIL_DOMAIN as string | undefined) || 'gmail.com'
 const MAX_UPLOAD_BYTES = 500 * 1024
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey)
+export const isSupabaseConfigured = import.meta.env.VITE_E2E_LOCAL_ONLY !== 'true' && Boolean(supabaseUrl && supabaseKey)
 
 type GlobalWithSupabase = typeof globalThis & {
   __colorWalkSupabaseClient?: SupabaseClient
