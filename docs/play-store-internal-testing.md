@@ -7,7 +7,8 @@ Use this when you want friends to install Hueday through Google Play instead of 
 - A Google Play Console developer account.
 - The Hueday app created in Play Console.
 - Tester Google account emails.
-- A release `.aab` file.
+- A signed release `.aab` file.
+- A confirmed permanent package ID and upload key.
 
 ## Build Locally
 
@@ -38,13 +39,21 @@ Expected output:
 android/app/build/outputs/bundle/release/app-release.aab
 ```
 
-Latest local AAB build: 2026-06-04 KST, using `D:\GradleCacheColorWalk` and D-drive temp paths because C drive had 0 GB free.
+Latest local AAB build: 2026-07-23 KST, using `D:\GradleCacheColorWalk` and D-drive temp paths. The build succeeded with `targetSdk 36`, but `jarsigner -verify` confirmed that the current release AAB is unsigned. Configure an upload key and Play App Signing before upload.
+
+Current identity:
+
+- Public app name: `Hueday`
+- Current package/application ID: `com.colorwalk.app`
+- Current version: `versionCode 1`, `versionName 1.0`
+
+Confirm `com.colorwalk.app` before creating the first Play app. A package ID should be treated as permanent after the first upload. Increase `versionCode` for every uploaded bundle.
 
 ## Play Console Steps
 
 1. Open Play Console.
 2. Create or open the Hueday app.
-3. Complete required app content sections enough for internal testing.
+3. Complete the required app content sections, privacy policy, Data Safety, account deletion, and permission declarations.
 4. Go to Testing -> Internal testing.
 5. Create a testers list with friend Google account emails.
 6. Upload `app-release.aab`.
@@ -82,3 +91,4 @@ Hueday stores each tester's entries under their Supabase user ID. Entries are pr
 - Internal testing is easier for friends than APK sideloading, but it still requires Play Console setup.
 - The web beta remains the fastest path for same-day feedback.
 - Direct Instagram Stories native integration is not part of this beta. Testers can save/share the generated story image manually.
+- `android:allowBackup="true"` still needs a privacy/data-extraction review before store release; Hueday's explicit local archive/Cloud design is the product backup contract.

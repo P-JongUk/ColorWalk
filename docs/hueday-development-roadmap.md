@@ -1,14 +1,14 @@
 # Hueday 전체 개발 마스터 로드맵
 
-마지막 갱신: 2026-07-22 KST
+마지막 갱신: 2026-07-23 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
 
 ## 현재 진행 위치
 
 - 마스터 단계: **M1 — 컬러 헌트 제품 진실 정렬**
-- 현재 작업: 현재 코드의 1장 진행·8장 완성 동작과 노출 카피를 추적해 합의가 필요한 선택지를 정리
-- 다음 한 작업: **1장 진행과 8장 완성의 의미를 현재 코드 근거와 함께 사용자에게 제안하고 승인받기**
+- 현재 작업: D — Chromatic Archive 외부 UI, Hue Canvas 제품 계약, 로컬 우선 저장·수익화·출시 전제의 문서 기준을 확정하고 실제 개발에 넘기는 체크포인트
+- 다음 한 작업: **최신 `main`에서 `feature/color-hunt-contract`를 만들고 1장 진행·8장 완성·재진입·매칭률 제거를 실제 코드에 반영하기**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -33,8 +33,8 @@ M0 문서·자동화 기반
 → M1 컬러 헌트 제품 진실 정렬
 → M2 안정성·데이터·측정 기반
 → M3 일상 미션 팩
-→ M4 Hue Room 시각 검증·렌더 기반
-→ M5 Hue Room 저장·재채색·보상 완성
+→ M4 발견 색 대표 콘텐츠 승인·프로토타입
+→ M5 발견 색 창작·Color Rhythm 보상 완성
 → M6 Hueprint·Color Capsule
 → M7 Color Relay·안전한 공유 성장
 → M8 통합 디자인·접근성·성능 완성
@@ -52,7 +52,9 @@ M0 문서·자동화 기반
 
 - [x] 전체 합의를 `docs/hueday-product-blueprint.md`에 정리
 - [x] 전체 의존 순서를 이 문서에 정리
-- [x] Hue Room 상세 명세와 하위 로드맵 연결
+- [x] 발견 색 대표 콘텐츠 전략과 보류된 Hue Room 문서 연결
+- [x] Hue Canvas 제품 명세·저장/동기화 전략·D 드라이브 디자인 인덱스 연결
+- [x] 승인·후보·보류·역사 상태와 사용자 재승인 없는 방향 변경 금지 계약
 - [x] 기존 breakout/growth/reward/plan 문서의 모순 제거
 - [x] `docs/development-reference-guide.md`를 전체 기능 라우팅 기준으로 확장
 - [x] SessionStart가 핵심 문서와 현재 단계·다음 작업을 자동 출력
@@ -64,14 +66,14 @@ M0 문서·자동화 기반
 ### 성공 조건
 
 - 새 세션에서 전체 제품 기준, 현재 단계, 다음 한 작업이 자동으로 보인다.
-- Hue Room뿐 아니라 모든 주요 작업 유형이 문서 라우팅 표에 있다.
+- 발견 색 창작 콘텐츠를 포함한 모든 주요 작업 유형이 문서 라우팅 표에 있다.
 - 같은 내용을 여러 문서에 복제할 때 역할과 우선순위가 명확하다.
 - 문서가 존재하지 않거나 링크가 끊기면 자동 검사에서 경고한다.
 
 ### 검증
 
 - `ai-workflow.ps1 -Mode session-start`
-- `ai-workflow.ps1 -Mode start -Question "Hue Room 재채색 구현"`
+- `ai-workflow.ps1 -Mode start -Question "발견 색 Hueprint 리믹스 구현"`
 - `ai-workflow.ps1 -Mode start -Question "Color Relay RLS 설계"`
 - Markdown 경로 존재 검사
 - `git diff --check`
@@ -85,13 +87,21 @@ M0 문서·자동화 기반
 ### 작업
 
 - [ ] 현재 홈·카메라·저널·저장·히스토리의 1장/8장 동작 추적
-- [!] 1장 진행과 8장 완성의 최종 의미 사용자 승인
+- [x] 1장 진행과 8장 완성의 최종 의미 사용자 승인 — B안 확정
 - [ ] 중앙 미션 색 + 주변 8장 규칙을 모든 카피에 일치
 - [ ] 사진 색 추출과 매칭률 UI·스토리·히스토리 잔재 제거
 - [ ] legacy `match_rate`는 DB 호환과 제거 migration 계획을 분리
 - [ ] 부분 진행을 허용하면 같은 날 이어 채우는 안전한 복귀 흐름 구현
-- [ ] 8장 완성 상태가 보상·Hue Room unlock에 전달될 계약 정의
+- [ ] 8장 완성 상태가 발견 색 재료·Hueprint·공유 보상에 전달될 계약 정의
 - [ ] `오늘의 색 찾기` 중심 CTA와 `산책 전용` 카피 제거
+
+확정된 의미:
+
+- 첫 사진은 안전하게 저장되는 `첫 색 발견`이자 `오늘의 색 씨앗`이다. 진행 시작이며 오늘 기록이나 미션의 최종 완료가 아니다.
+- 중앙 미션 색 주위의 8칸을 모두 채우면 오늘의 미션과 3×3 한 페이지가 완성되고 발견 색 재료·Hueprint·공유 결과물의 주요 보상으로 연결된다.
+- 부분 진행은 당일 완성을 강제하지 않고 나중에 이어서 채울 수 있다. 미완성 실패, 보상 손실, 연속 일수 초기화, 죄책감 카피, 색 매칭 점수는 사용하지 않는다.
+- 현재 1장 저장·저널 진입·초안 복구 구현은 B안의 부담 없는 중간 저장 기반이다. 완료 의미와 보상 계약의 차이는 이 단계의 후속 구현으로 해결한다.
+- 디자인 조사 자료는 `feature/design-direction`에 보존한다. M1에 필요한 1장/8장 제품 의미와 D 외부 UI는 승인됐으므로 Hue Canvas HC-2를 기다리지 않고 별도 `feature/color-hunt-contract`에서 구현한다.
 
 ### 성공 조건
 
@@ -115,7 +125,7 @@ M0 문서·자동화 기반
 - 전체 제품 청사진
 - `docs/hueday-breakout-strategy.md`
 - `docs/colorwalk-reward-system.md`
-- Hue Room 명세
+- `docs/discovered-color-content-strategy.md`
 - `plan.md`
 
 ## M2 — 안정성·데이터·측정 기반
@@ -132,6 +142,11 @@ M0 문서·자동화 기반
 - [ ] 가입 → 촬영 → 초안 → 저장 → 히스토리 → 공유의 자동 E2E 최소 경로
 - [ ] `grid_images` 라이브 migration 적용 권한과 fallback 종료 조건
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
+- [ ] 로컬 고화질 마스터·무료 작은 preview·cloud 고화질 백업 계층 분리
+- [ ] IndexedDB metadata + Capacitor Filesystem 기반 offline-first 저장과 동기화 큐
+- [ ] 암호화된 `.hueday` 수동 archive 내보내기·가져오기
+- [ ] 계정 삭제·데이터 export·복구 정책과 앱/웹 진입점
+- [ ] 이미지 품질 샘플 비교와 목적별 압축 preset
 - [ ] 이벤트 도구를 선택하기 전 비용·개인정보·웹/Android 호환 비교
 
 ### 성공 조건
@@ -140,6 +155,9 @@ M0 문서·자동화 기반
 - 분석 payload에 사진·일기·정확한 위치·계정 비밀 정보가 없다.
 - E2E 한 경로가 주요 회귀를 검출한다.
 - 라이브 스키마 fallback의 종료 조건이 명확하다.
+- 네트워크 없이 최근 기록과 로컬 사진을 열 수 있고 앱 종료 뒤 초안이 복구된다.
+- 사용자의 유일한 고화질 사본을 검증 없이 파괴하지 않는다.
+- 무료 수동 기기 이전과 유료 자동 Cloud 복구의 경계가 동작한다.
 
 ### 검증
 
@@ -151,7 +169,7 @@ M0 문서·자동화 기반
 
 ## M3 — 일상 미션 팩
 
-목표: 걷지 않는 날에도 오늘의 상황에서 색을 찾고, 이후 Hue Room 보상과 연결할 문맥을 만든다.
+목표: 걷지 않는 날에도 오늘의 상황에서 색을 찾고, 이후 발견 색 창작 보상과 연결할 문맥을 만든다.
 
 권장 브랜치: `feature/everyday-mission-packs`
 
@@ -160,7 +178,7 @@ M0 문서·자동화 기반
 - [ ] 집·학교·통학·카페·날씨·시간·관심사·컬러 산책 정적 pack 구조
 - [ ] 날씨·시간 기본 추천과 사용자 직접 선택
 - [ ] 위치 권한 없이 모든 pack 사용
-- [ ] 미션 팩별 카피와 대표 아이템 mapping 초안
+- [ ] 미션 팩별 카피와 대표 재질·스탬프 mapping 초안
 - [ ] mission ID 변경과 과거 기록 호환 규칙
 - [ ] 한국어·영어 번역
 - [ ] 미션 팩 선택 이벤트
@@ -179,54 +197,59 @@ M0 문서·자동화 기반
 - 위치 거부 상태 QA
 - Android/PWA 검증
 
-## M4 — Hue Room 시각 검증·렌더 기반
+## M4 — 발견 색 대표 콘텐츠 승인·프로토타입
 
-목표: 대량 제작 전에 Hueday다운 공간과 무한 색 조합이 실제로 아름답게 작동하는지 증명한다.
+목표: 승인된 Hue Canvas가 사용자가 찾은 색으로 실제로 만들고 다시 찾고 공유하게 하는 대표 콘텐츠인지 실제 렌더와 조작으로 증명한다.
 
-세부 순서: `docs/hue-room-development-roadmap.md`의 HR-0~HR-2
+핵심 문서: `docs/hue-canvas-product-spec.md`, `docs/discovered-color-content-strategy.md`
 
 ### 작업
 
-- [ ] 세 가지 430x932 스타일 시안
-- [!] 사용자 메인 스타일 승인
-- [ ] 핵심 5개 아이템 요소별 디자인 계약
-- [ ] 동적 SVG와 톤 생성 helper
-- [ ] 극단 색과 9:16 내보내기 스파이크
-- [ ] 방 캔버스, 배치 슬롯, 하단 트레이
-- [ ] Hue Room 진입 구조 확정
+- [x] Hue Room을 첫 출시 critical path에서 완전히 제외하고 출시 후 가설로 보류
+- [x] Hue Studio, Hue Loom, Hue Glass, Hue Cinema, Hue Constellation, Hue Deck, Hue Soundscape 등 대안 발산
+- [x] 대표 시스템 Hue Canvas, 큰 가상 격자, 발견 횟수 사용량, 스테인드글라스 재질 사용자 승인
+- [ ] 빈 상태·Palette·자유 작업·도안 크기 조절·완성/export 430x932 흐름 시안
+- [ ] 같은 데이터로 생성 시안과 실제 Canvas 2D 렌더를 비교해 재현성 검증
+- [ ] 256x256 희소 격자와 10,000개 채운 셀 저장·복구·pan/zoom 스파이크
+- [ ] 극단 HEX, 색 부족, 기록 1개/많음, Android, 9:16 내보내기 검증
+- [ ] 기존 D — Chromatic Archive 외부 UI와 내비게이션 연결안
+- [!] Hue Canvas 첫 시각·조작 프로토타입 사용자 승인
 
 ### 성공 조건
 
-- 색상별 에셋 복제 없이 임의 HEX를 적용한다.
-- 기존 목업과 시각 언어가 이어지고 싸이월드 복제품처럼 보이지 않는다.
-- 브라우저·Android·공유 이미지에서 핵심 5개가 동일하게 보인다.
-- 작은 화면에서 배치와 선택이 안정적이다.
+- 선택한 발견 색과 발견 횟수가 유리 타일의 색·배치 가능량으로 즉시 보인다.
+- 큰 캔버스와 도안 채우기가 단순 팔레트 선반이나 다른 이름의 방이 아닌 창작 재미를 준다.
+- 결과물의 각 색에서 원본 3x3과 일기로 돌아갈 수 있다.
+- 색상별 에셋 복제와 생성형 AI 없이 임의 HEX를 안정적으로 처리한다.
+- 작은 화면에서 색 선택·수량·칠하기·이동·저장·리믹스가 이해하기 쉽다.
+- 시각·조작 승인 전에는 전체 에셋, 대형 migration, 복잡한 렌더러를 만들지 않는다.
 
-## M5 — Hue Room 저장·재채색·보상 완성
+## M5 — 발견 색 창작·Color Rhythm 보상 완성
 
-목표: 기록이 실제 공간 변화로 돌아오고 안전하게 저장되는 핵심 retention loop를 완성한다.
+목표: 승인된 대체 콘텐츠를 실제 retention loop로 구현하고, 완성한 3x3이 사용 가능한 창작 재료와 표현 옵션으로 돌아오게 한다.
 
-세부 순서: Hue Room 로드맵의 HR-3~HR-6
+권장 브랜치: `feature/hue-canvas-core`
 
 ### 작업
 
-- [ ] room state migration과 owner RLS
-- [ ] 저장·복구·오류 상태
-- [ ] `posts.mission_hex` 기반 색 보관함
-- [ ] 탄생 색·현재 색·원본 기록 연결
-- [ ] 재채색·보관·복원
+- [ ] `posts.mission_hex`와 원본 post 기반 Hue Palette·발견 횟수
+- [ ] 완성 3x3만 해당 색의 Canvas 사용량을 +1 하는 상태 계약
+- [ ] 자유 캔버스·기본 도안·스테인드글라스 렌더·칠하기·지우기·undo/redo
+- [ ] sparse recipe 로컬 저장·복구·삭제와 작은 cloud snapshot·owner RLS
+- [ ] 새 색으로 과거 작품 리믹스
+- [ ] 작품의 색 타일/Palette에서 원본 기록 열기
+- [ ] 9:16 저장·공유와 프로필 대표 작품
 - [ ] 주간 2/3/5 색 리듬
-- [ ] 누적 발견·완성 3x3·미션 팩 기반 unlock
+- [ ] 누적 발견·완성 3x3·미션 팩 기반 창작 옵션 unlock
 - [ ] 기존 3·7·14·30 보상 무손실 전환
-- [ ] 고품질 기본 아이템 목표 16개
 
 ### 성공 조건
 
-- 기록을 저장하면 방에서 눈에 보이는 변화가 생긴다.
-- 놓친 날 때문에 보상이나 방이 줄지 않는다.
-- 발견 색을 여러 아이템에 자유롭게 적용한다.
-- 다른 사용자가 방이나 source post를 읽지 못한다.
-- 새로고침·로그인·기기 재실행 뒤 상태가 복구된다.
+- 기록을 완성하면 해당 색을 Hue Canvas에서 한 칸 더 사용할 수 있고 실제 창작 옵션이 열린다.
+- 놓친 날 때문에 색, 작품, 보상이 줄거나 망가지지 않는다.
+- 사용량은 작품별 배치 한도이며 영구 소모되지 않고, 여러 작품에 재사용하고 새 색으로 리믹스한다.
+- 다른 사용자가 개인 작품 recipe나 source post를 읽지 못한다.
+- 새로고침·로그인·기기 재실행 뒤 작품과 원본 연결이 복구된다.
 
 ## M6 — Hueprint·Color Capsule
 
@@ -239,7 +262,7 @@ M0 문서·자동화 기반
 - [ ] 기존 monthly collection helper 기반 월간 Hueprint
 - [ ] 대표 팔레트·완성 3x3·자주 붙인 색 이름·대표 사진
 - [ ] 9:16 월간 리캡
-- [ ] Hue Room 포스터·벽지 연결
+- [ ] 사용자가 만든 Hue Canvas 작품과 월간 자동 Hueprint 연결
 - [ ] 30일 뒤 과거 기록을 보여 주는 최소 Capsule
 - [ ] 빈 달·1개 기록·많은 기록 상태
 - [ ] 감정/성격을 단정하지 않는 카피
@@ -249,7 +272,7 @@ M0 문서·자동화 기반
 
 - 서버 AI 없이 기존 저장 데이터로 첫 리캡을 만든다.
 - 기록 수가 적어도 깨지지 않는 결과가 나온다.
-- Hueprint가 Story, Profile, Hue Room에서 같은 색 정체성을 보여 준다.
+- Hueprint가 Story, Profile, Hue Palette/Canvas에서 같은 색 정체성을 보여 준다.
 - 과거 기록 공유 시 개인정보 기본값을 유지한다.
 
 ### 검증
@@ -274,7 +297,7 @@ M0 문서·자동화 기반
 - [ ] 로그인 없는 카드 보기
 - [ ] `나도 이 색 찾기`와 로컬 첫 체험 범위
 - [ ] 가입 시 로컬 체험을 안전하게 이어 저장
-- [ ] 두 결과의 공동 팔레트·엽서·Hue Room 타일
+- [ ] 두 결과의 공동 팔레트·엽서·Duet Print
 - [ ] 카카오톡·인스타그램 DM·문자 링크 미리보기
 - [ ] Relay 이벤트와 abuse 기본 방어
 
@@ -284,7 +307,7 @@ M0 문서·자동화 기반
 - owner가 링크를 폐기하면 더 이상 열리지 않는다.
 - 받은 사용자는 가입 전 Hueday의 핵심 행동을 이해한다.
 - 결과에 승패·퍼센트·좋아요 수가 없다.
-- Relay가 없어도 개인 기록과 Hue Room이 완전하다.
+- Relay가 없어도 개인 기록과 발견 색 창작 경험이 완전하다.
 
 ### 검증
 
@@ -302,12 +325,12 @@ M0 문서·자동화 기반
 
 ### 작업
 
-- [ ] auth, home, mission packs, camera, journal, story, history, Hue Room, Hueprint, Relay, profile 430x932 전수 캡처
+- [ ] auth, home, mission packs, camera, journal, story, history, Hue Palette/Canvas, Hueprint, Relay, profile 430x932 전수 캡처
 - [ ] `.design-references/00-target-mockup/`과 전후 비교
 - [ ] 컬러·타이포·여백·버튼·상태·모션 통일
 - [ ] 로딩·빈 상태·권한 거부·오류·오프라인 상태
 - [ ] 스크린리더·키보드·터치 영역·모션 줄이기
-- [ ] 번들·이미지·방 첫 렌더·저사양 Android 성능
+- [ ] 번들·이미지·첫 작품 렌더·저사양 Android 성능
 - [ ] 한국어·영어 잘림과 안전 영역
 - [ ] 실제 공유 결과 가독성
 
@@ -328,7 +351,7 @@ M0 문서·자동화 기반
 - [ ] `npm test -- --run`
 - [ ] `npm run build`
 - [ ] `npm run verify:supabase`
-- [ ] 가입 → 촬영 → 저장 → 방 → Hueprint → Relay E2E
+- [ ] 가입 → 촬영 → 저장 → 발견 색 창작 → Hueprint → Relay E2E
 - [ ] `npm run cap:sync`
 - [ ] Android debug/release build
 
@@ -340,14 +363,14 @@ M0 문서·자동화 기반
 - [ ] 카메라·위치·앨범·알림·공유 권한
 - [ ] 네트워크 중단과 복구
 - [ ] 계정 교차 접근·링크 만료·폐기
-- [ ] 스토리·방·Hueprint 실제 공유
+- [ ] 스토리·작품·Hueprint 실제 공유
 - [ ] 430x932 디자인 전수 비교
 
 ### 출시 판정
 
 - 데이터 손실·권한 우회·다른 사용자 노출이 없다.
 - 가입부터 핵심 결과 공유까지 막히지 않는다.
-- Hue Room 보상은 실제 사용 가능하다.
+- 발견 색 보상은 실제 창작에 사용할 수 있다.
 - 핵심 이벤트가 중복이나 개인정보 없이 기록된다.
 - `docs/release-readiness.md`에 실제 검증 날짜와 결과가 있다.
 - 알려진 부채는 사용자 피해, 종료 조건, 후속 작업과 함께 기록된다.
@@ -357,14 +380,15 @@ M0 문서·자동화 기반
 출시 전에는 만들지 않되, 실제 사용 증거가 생기면 아래 순서로 검토한다.
 
 1. 첫 이탈 구간과 저장 실패 개선
-2. 가장 많이 쓰는 미션 팩과 Hue Room 아이템 확장
+2. 가장 많이 쓰는 미션 팩과 창작 재질·구도 확장
 3. Hueprint 공유가 검증되면 연간/실물 결과물
 4. Relay가 검증되면 2~8명 close circle
 5. 구매 의향이 확인되면 Creative Pack
-6. 반복 가치와 저장 비용이 생기면 Plus
+6. 창작 도구 구매 의향이 생기면 Studio, 반복 저장 비용과 복구 가치가 생기면 Cloud
 7. 커뮤니티 파일럿 뒤 B2B 미션
 8. 충분한 표본과 개인정보 기준 뒤 익명 색 트렌드
-9. Mac 빌드 환경과 Apple 계정 준비 뒤 iOS/TestFlight/App Store
+9. 사용자가 꾸미기 공간을 명시적으로 원하고 제작 비용 대비 반복 사용 증거가 생길 때만 Hue Room 가설 재검토
+10. Mac 빌드 환경과 Apple 계정 준비 뒤 iOS/TestFlight/App Store
 
 공개 피드, 팔로워 수, 인기 순위, 실시간 공동 편집, 3D 방, 아이템 거래는 별도 증거 없이 자동으로 다음 단계가 되지 않는다.
 
@@ -376,8 +400,8 @@ M0 문서·자동화 기반
 | M1 | blueprint, breakout, reward | Terra high | 필요 | `feature/color-hunt-contract` |
 | M2 | release, security, metrics | Terra/Sol high | 켬 | `feature/core-funnel-observability` |
 | M3 | growth, mission code | Terra high | 필요 | `feature/everyday-mission-packs` |
-| M4 | Hue Room spec/roadmap, design QA | Sol high | 켬 | `feature/hue-room-renderer` |
-| M5 | Hue Room, reward, Supabase | Terra/Sol high | 켬 | 단계별 feature branch |
+| M4 | found-color strategy, design QA | Sol high | 켬 | `feature/design-direction` |
+| M5 | approved content spec, reward, Supabase | Terra/Sol high | 켬 | 승인 뒤 이름 결정 |
 | M6 | growth, Hueprint, story | Terra high | 필요 | `feature/hueprint-capsule` |
 | M7 | growth, security, release | Sol high | 켬 | `feature/color-relay` |
 | M8 | design QA, release | Terra high | 필요 | `feature/release-polish` |
@@ -405,8 +429,8 @@ M0 문서·자동화 기반
 Codex가 임의로 확정하지 않고 사용자에게 결과를 먼저 보여 줄 항목:
 
 - 1장/8장 최종 제품 규칙
-- Hue Room 세 시안 중 메인 스타일
-- 내비게이션에서 Hue Room의 위치
+- 발견 색 대표 콘텐츠와 첫 재질·조작 범위
+- 내비게이션에서 Hue Palette/Canvas의 위치
 - Hue Chapter 최종 명칭과 보상 속도
 - 공개 카드에 포함할 사진 범위
 - 실제 Android 휴대폰 QA 결과

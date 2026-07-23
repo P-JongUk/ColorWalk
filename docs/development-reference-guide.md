@@ -21,12 +21,14 @@
 | 작업 유형/키워드 | 구현 전 필수 문서 | 완료 시 영향 확인 |
 | --- | --- | --- |
 | 전체 제품 방향, 기능 우선순위, 출시 범위 | `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`, breakout/growth strategy | 마스터 단계·다음 작업, plan, AI memory, 영향받은 하위 명세 |
-| Hue Room, 색방, 방, 아이템, 꾸미기, 재채색 | `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`, `docs/colorwalk-reward-system.md`, `docs/design-qa-log.md` | 제품 명세, 로드맵 상태, 보상 문서/helper, 디자인 QA, AI memory |
-| 미션, 카메라, 1컷/8컷, 3x3, 색 찾기 | `docs/hueday-breakout-strategy.md`, Hue Room 명세의 결정 상태, `docs/colorwalk-reward-system.md` | 제품 진실, 보상 연결, 계획, 필요 시 Hue Room 로드맵 |
-| 색 리듬, 배지, 보상, 레벨, 해금 | `docs/colorwalk-reward-system.md`, `docs/hue-room-product-spec.md`, 성장 전략 | reward helper, Hue Room 로드맵, 무료/유료 경계 |
-| 미션 팩, 성장, 리텐션, 친구, Relay, Hueprint | `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, Hue Room 명세 | 성장 우선순위, 수익화, 보상, 로드맵 |
+| Hue Canvas, 발견 색, Palette, 유리 타일, 도안, 작품, 리믹스 | `docs/hue-canvas-product-spec.md`, `docs/discovered-color-content-strategy.md`, `docs/colorwalk-reward-system.md`, 저장 전략, 디자인 인덱스 | 승인 계약, 마스터 M4~M5, 보상 helper, AI memory |
+| Hue Room, 색방, 방, 가구, 꾸미기, 재채색 | `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`, 발견 색 전략 | 보류·재개 조건 확인. 새 사용자 승인 없이는 구현·시안 제작 금지 |
+| 미션, 카메라, 1컷/8컷, 3x3, 색 찾기 | `docs/hueday-breakout-strategy.md`, 발견 색 전략의 결정 상태, `docs/colorwalk-reward-system.md` | 제품 진실, 보상 연결, 계획 |
+| 색 리듬, 배지, 보상, 레벨, 해금 | `docs/colorwalk-reward-system.md`, 발견 색 전략, 성장 전략 | reward helper, M4~M5, 무료/유료 경계 |
+| 미션 팩, 성장, 리텐션, 친구, Relay, Hueprint | `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, 발견 색 전략 | 성장 우선순위, 수익화, 보상, 로드맵 |
 | 스토리, 스티커, 템플릿, 공유 | 성장 전략, 보상 문서, `docs/release-readiness.md` | Story/Reward 연결, 실제 공유 QA, 디자인 QA |
-| 디자인, CSS, 반응형, 접근성 | `.design-references/00-target-mockup/`, `docs/design-qa-log.md`, 관련 제품 명세 | 430x932 캡처, 전후 비교, 접근성 결과 |
+| 디자인, CSS, 반응형, 접근성 | `docs/design-reference-index.md`, `.design-references/00-target-mockup/`, `docs/design-qa-log.md`, 관련 제품 명세 | D 자료 상태, 430x932 캡처, 실제 프로토타입, 접근성 결과 |
+| 로컬 저장, 사진 품질, 동기화, 기기 이전, 비용 | `docs/data-storage-sync-and-cost-strategy.md`, `docs/security-audit.md`, `docs/release-readiness.md` | 구현/목표 구분, migration, 복구, RLS, 비용 측정 |
 | Supabase, Auth, RLS, Storage, migration | `docs/security-audit.md`, `docs/release-readiness.md`, `AGENTS.md`의 Supabase 절 | migration, verify script, 보안 문서, fallback 종료 조건 |
 | Android, PWA, 카메라 권한, 알림 | `docs/android-local-environment.md`, `docs/release-readiness.md`, 관련 QA 기록 | 실기기/에뮬레이터 결과와 검증 날짜 |
 | 배포, 출시, 스토어, iOS | `docs/release-readiness.md`, `docs/hueday-breakout-strategy.md`, `plan.md` | 실제 배포 상태, 사용자 수동 작업, 보안/스토어 요구사항 |
@@ -52,8 +54,11 @@
 | 전체 기능 의존 순서·현재 진행 상태 | `docs/hueday-development-roadmap.md` |
 | 제품 진단·차별화·iOS·시장 근거 | `docs/hueday-breakout-strategy.md` |
 | 성장 기능·수익화 | `docs/product-growth-strategy.md` |
-| Hue Room 제품·디자인·기술 경계 | `docs/hue-room-product-spec.md` |
-| Hue Room 실행 순서와 상태 | `docs/hue-room-development-roadmap.md` |
+| 발견 색 콘텐츠 결정·후보·보류 | `docs/discovered-color-content-strategy.md` |
+| Hue Canvas 상세 계약 | `docs/hue-canvas-product-spec.md` |
+| 저장·동기화·비용 | `docs/data-storage-sync-and-cost-strategy.md` |
+| 디자인 자료 상태·경로·품질 | `docs/design-reference-index.md` |
+| 보류된 Hue Room 가설 | `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md` |
 | 색 리듬·배지·아이템 해금 | `docs/colorwalk-reward-system.md` |
 | 전체 개발 현황 | `plan.md` |
 | 배포·검증 사실 | `docs/release-readiness.md` |
@@ -72,7 +77,7 @@
 - 현재 에이전트만 사용한다는 규칙
 - 항상 읽을 핵심 문서
 - 전체 마스터 단계와 다음 한 작업
-- 현재 Hue Room 단계와 다음 한 작업
+- 현재 발견 색 대표 콘텐츠 게이트와 다음 한 작업
 - Graphify 사용 안내
 - D 드라이브 작업 경로
 
@@ -108,26 +113,38 @@
 .codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode check
 ```
 
-## 5. Hue Room 작업의 특별 계약
+## 5. 발견 색 대표 콘텐츠의 특별 계약
 
-Hue Room은 시각 품질이 핵심이므로 다음을 추가로 지킨다.
+- Hue Room을 축소하거나 다른 이름의 방으로 만들지 않는다.
+- 코드 전에 `docs/hue-canvas-product-spec.md`의 승인 상태와 `docs/discovered-color-content-strategy.md`의 후보/보류 상태를 확인한다.
+- Hue Canvas 제품·재질은 승인됐지만 첫 430x932 시각·조작은 미승인이다. HC-2 승인 전에는 대형 migration, 복잡한 렌더러, 전체 에셋 세트를 만들지 않는다.
+- 발견 색은 사진 추출값이 아니라 완성 기록의 미션 색이다.
+- 색은 영구 소모하지 않되 한 작품의 배치 가능량은 해당 색 발견 횟수로 제한하고, 모든 작품에서 원본 3x3으로 돌아갈 수 있어야 한다.
+- 첫 프로토타입은 샘플 데이터, 기존 helper, SVG/Canvas, 로컬 상태를 우선한다.
+- 디자인 변경은 `docs/design-reference-index.md`의 상태 기록과 430x932 캡처 없이 완료 처리하지 않는다. Hue Canvas는 실제 Canvas 2D/SVG 재현을 추가로 요구한다.
+- 검증된 로드맵 항목만 `[x]`로 바꾸고 단계가 끝나면 `현재 단계`와 `다음 한 작업`을 갱신한다.
 
-- 코드 전에 현재 HR 단계와 요소별 디자인 계약을 확인한다.
-- 시안 승인 전 대량 아이템 제작을 하지 않는다.
-- 아이템 하나마다 실루엣, 색 영역, 극단 색, 배치, 상태, 상호작용, 접근성, 공유 결과를 확인한다.
-- 디자인 변경은 430x932 캡처 없이 완료 처리하지 않는다.
-- SVG를 색상별로 복제하지 않는다.
-- 발견 색은 사진 추출값이 아니라 미션 색이다.
-- 검증된 로드맵 항목만 `[x]`로 바꾼다.
-- 단계가 끝나면 `현재 단계`와 `다음 한 작업`을 반드시 갱신한다.
+Hue Room 문서는 역사적 가설로만 읽는다. 사용자가 재개를 명시적으로 승인하기 전에는 HR 단계나 로컬 시안을 다음 작업으로 자동 선택하지 않는다.
 
-## 6. 작업 종료 문서 영향표
+## 6. 방향 변경 승인 계약
+
+작업 시작 시 관련 항목을 `승인`, `후보`, `보류`, `역사적`, `구현 사실`로 분류한다.
+
+- 후보를 승인으로 바꾸거나 보류 기능을 재개하지 않는다.
+- 현재 코드가 다르다는 이유로 승인된 제품 계약을 코드에 맞춰 약화하지 않는다.
+- 핵심 루프, Hue Canvas, 디자인 방향, 보상 경제, 무료/유료 경계, 저장 모델, 패키지 ID, 출시 범위를 바꿔야 한다면 현재 결정·충돌 근거·영향·선택지를 먼저 사용자에게 보여 준다.
+- 명시적 승인 뒤 기준 문서, 로드맵, AI memory, 관련 코드를 같은 체크포인트에서 정렬한다.
+- 승인된 계약을 보존하는 세부 구현 선택과 버그 수정은 Codex가 최소 변경으로 진행하고 검증한다.
+
+## 7. 작업 종료 문서 영향표
 
 | 실제 변경 | 최소 확인 문서 |
 | --- | --- |
 | 제품 행동·카피 | breakout strategy, product spec, plan, AI memory |
-| Hue Room 렌더·아이템·배치 | Hue Room spec/roadmap, design QA, AI memory |
-| 보상·미션 팩 | reward system, growth strategy, Hue Room spec/roadmap |
+| Hue Canvas·Palette·도안·작품·리믹스 | Hue Canvas spec, found-color strategy, reward system, design index/QA, AI memory |
+| 로컬 저장·동기화·사진 품질·기기 이전 | storage strategy, security audit, release readiness, roadmap, AI memory |
+| Hue Room 재개 결정 | Hue Room spec/roadmap, found-color strategy, master roadmap, AI memory |
+| 보상·미션 팩 | reward system, growth strategy, found-color strategy |
 | DB·RLS·Storage | security audit, release readiness, roadmap, verify script |
 | 공유·분석 | growth strategy, security, release readiness, metrics |
 | 중요한 제약·트레이드오프 해결 | career problem-solving log |
