@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getCurrentStreak, getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
+import { getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
 import type { Post } from '@/types'
 
 function post(local_date: string, mission_hex = '#8BC6E8'): Post {
@@ -11,7 +11,7 @@ function post(local_date: string, mission_hex = '#8BC6E8'): Post {
     local_date,
     mission_hex,
     captured_hex: mission_hex,
-    match_rate: 88,
+    match_rate: 0,
     image_path: '',
     custom_color_name: null,
     journal_answer: null,
@@ -26,13 +26,13 @@ function post(local_date: string, mission_hex = '#8BC6E8'): Post {
 }
 
 describe('collection helpers', () => {
-  it('calculates current streak from today backwards', () => {
-    const today = new Date('2026-05-28T12:00:00')
-    expect(getCurrentStreak([post('2026-05-28'), post('2026-05-27'), post('2026-05-25')], today)).toBe(2)
-  })
-
-  it('unlocks streak badges at thresholds', () => {
-    expect(getUnlockedBadges(7).map((badge) => badge.unlocked)).toEqual([true, true, false, false])
+  it('unlocks badges only from completed 8-photo pages', () => {
+    const completed = Array.from({ length: 3 }, (_, index) => ({
+      ...post(`2026-05-${String(index + 1).padStart(2, '0')}`),
+      grid_images: Array.from({ length: 8 }, (_, slot) => ({ id: `${index}-${slot}`, slot: slot < 4 ? slot : slot + 1, path: `image-${index}-${slot}.webp` })),
+    }))
+    const partial = { ...post('2026-05-04'), grid_images: [{ id: 'partial', slot: 0, path: 'partial.webp' }] }
+    expect(getUnlockedBadges([...completed, partial]).map((badge) => badge.unlocked)).toEqual([true, false, false, false])
   })
 
   it('collects colors for the visible month', () => {

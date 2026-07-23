@@ -26,6 +26,15 @@ export type CaptureDraft = {
   mission: Mission
   gridImages: GridDraftImage[]
   abuseWarning: boolean
+  localDate: string
+  lockedAt?: string
+  closedAt?: string
+  syncState?: 'pending' | 'syncing' | 'synced'
+  journal?: {
+    colorName: string
+    journalAnswer: string
+    storyDesign: StoryDesign
+  }
   compression?: {
     width: number
     height: number
@@ -53,6 +62,7 @@ export type GridDraftImage = {
   originalBytes?: number
   source: Extract<GridImageSource, 'camera' | 'album'>
   createdAt: string
+  uploadPath?: string
 }
 
 export type GridImage = {
@@ -103,7 +113,6 @@ export type UserProfile = {
   id: string
   created_at?: string
   updated_at?: string
-  current_streak?: number
   locale: Locale
   username?: string | null
   nickname?: string | null

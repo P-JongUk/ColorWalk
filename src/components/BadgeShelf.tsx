@@ -7,7 +7,6 @@ import type { Locale, Post } from '@/types'
 
 type BadgeShelfProps = {
   locale: Locale
-  streak: number
   posts?: Post[]
   compact?: boolean
 }
@@ -19,10 +18,10 @@ function RewardIcon({ days }: { days: number }) {
   return <Frame aria-hidden="true" />
 }
 
-export function BadgeShelf({ locale, streak, posts = [], compact = false }: BadgeShelfProps) {
+export function BadgeShelf({ locale, posts = [], compact = false }: BadgeShelfProps) {
   return (
     <div className={cn('badge-shelf', compact && 'badge-shelf-compact')}>
-      {getUnlockedBadges(streak, posts, locale).map((badge) => {
+      {getUnlockedBadges(posts, locale).map((badge) => {
         return (
           <div
             key={badge.days}

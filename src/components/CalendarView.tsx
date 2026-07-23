@@ -1,10 +1,10 @@
-import { CalendarDays, Camera, ChevronLeft, ChevronRight, Flame, Share2 } from 'lucide-react'
+import { CalendarDays, Camera, ChevronLeft, ChevronRight, Share2 } from 'lucide-react'
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
-import { getCurrentStreak, getMonthlyCollection } from '@/lib/collection'
+import { getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
@@ -27,7 +27,6 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
   const days = getMonthMatrix(visibleMonth)
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
-  const streak = getCurrentStreak(posts)
   const todayKey = getLocalDateKey()
   const todayOriginalDraftImages =
     selectedDate === todayKey && currentDraft?.gridImages.length
@@ -184,9 +183,9 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
 
       <section className="history-stats-card" aria-label={locale === 'ko' ? '히스토리 통계' : 'History stats'}>
         <div>
-          <Flame aria-hidden="true" />
-          <strong>{streak}</strong>
-          <span>{t(locale, 'streak')}</span>
+          <CalendarDays aria-hidden="true" />
+          <strong>{monthly.count}</strong>
+          <span>{locale === 'ko' ? '기록한 날' : 'Recorded days'}</span>
         </div>
         <div>
           <CalendarDays aria-hidden="true" />
