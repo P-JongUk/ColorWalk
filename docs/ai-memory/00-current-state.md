@@ -7,12 +7,13 @@
 - 현재 최우선 목표: 전체 마스터 로드맵을 따라 Color Hunt 규칙, 안정성·측정, 일상 미션 팩, 발견 색 대표 창작 콘텐츠·Color Rhythm 보상, Hueprint/Color Capsule, 안전한 Color Relay를 완성하고 품질·보안·실기기 QA를 통과해 최대한 빠르게 출시
 - 핵심 루프: 일상 미션 색 → 현실에서 비슷한 색 찾기 → 중앙 색 3x3 컬렉션 → 발견 색을 창작 재료로 조합·리믹스 → Hueprint/스토리/Relay 공유
 - 현재 구현: 아이디/비밀번호 인증, 날씨·시간 미션, 최대 8장 촬영과 로컬 초안 복구, Supabase 저장, 짧은 일기, 9:16 스토리/3x3 공유, 달력, 배지 표시, 로컬 알림, PWA/Android
+- 백엔드 공급자 결정: 출시와 초기 성장에는 검증된 Supabase Auth·Postgres·RLS·Storage를 유지한다. R2는 유료 고화질 백업 비용이 측정된 뒤, Railway는 장시간 서버 작업이 실제로 필요할 때만 보조 도입한다.
 - 현재 미구현: 일상 미션 팩 선택, Hue Palette/Canvas·리믹스, 로컬 우선 저장·Cloud 계층, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 행동 분석, 결제, 네이티브 iOS
 - 확정된 Color Hunt 의미: 첫 사진은 안전하게 저장되는 `첫 색 발견`과 `오늘의 색 씨앗`이며 진행 시작이다. 중앙 미션 색 주위의 8칸을 모두 채워야 오늘의 미션과 3×3 한 페이지가 완성되고 주요 보상으로 이어진다.
 - 현재 제품 불일치: 코드는 1장부터 저장·저널 진입·초안 복구를 지원하지만 부분 진행과 8장 완성을 별도 상태·카피·보상 계약으로 구분하지 않는다. 이 구현은 A안 완료 근거가 아니라 B안의 부담 없는 중간 저장 기반이다.
 - 현재 마스터 단계: M1 컬러 헌트 제품 진실 정렬. 부분 저장·이어하기와 8장 완성·주요 보상을 구분하는 런타임 구현은 후속 기능 브랜치 작업으로 남아 있다.
 - 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.
-- 현재 다음 작업: 이 문서 체크포인트를 main에 병합한 뒤 `feature/color-hunt-contract`에서 1장 진행·8장 완성·중간 저장·재진입·매칭률 제거 계약을 구현한다.
+- 현재 다음 작업: 최신 `main`에서 `feature/color-hunt-contract`를 만들고 1장 진행·8장 완성·중간 저장·재진입·매칭률 제거 계약을 구현한다.
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`
@@ -29,8 +30,8 @@
 ## 저장소
 
 - 통합 브랜치: `main`
-- 현재 작업 브랜치: `feature/design-direction` — 디자인 게이트 1 B 결정, D 외부 UI, Hue Room 보류, Hue Canvas·저장·수익화·출시 전제 문서 확정
-- 최근 완료 기능 브랜치: `feature/product-roadmap-system`
+- 최근 완료 기능 브랜치: `feature/design-direction` — 디자인 게이트 1 B 결정, D 외부 UI, Hue Room 보류, Hue Canvas·저장·수익화·출시 전제 문서 확정
+- 다음 개발 브랜치: `feature/color-hunt-contract`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
 - 현재 그래프: Graphify 0.9.23, 1,454개 노드와 1,447개 연결, 152개 community (2026-07-23 코드 전용 갱신)

@@ -126,6 +126,14 @@ Hueday는 **로컬 우선 + 작은 필수 클라우드 + 선택형 유료 고화
 - 가격: <https://supabase.com/pricing>
 - egress 계산: <https://supabase.com/docs/guides/platform/manage-your-usage/egress>
 
+### 공급자 역할 결정
+
+- 출시와 초기 성장 단계의 주 데이터 계층은 Supabase Auth·Postgres·RLS·Storage로 유지한다. 이미 검증된 인증·소유자 권한·서명 이미지 접근을 Railway로 선제 이전하지 않는다.
+- Cloudflare R2는 지금 추가하지 않는다. Hueday Cloud 출시가 확정되고 Supabase 저장량 또는 전송량이 포함 한도의 70~80%에 접근하거나 실제 비용 측정에서 분리 이익이 확인될 때, 고화질 백업 객체만 옮기는 후보로 검토한다. 메타데이터와 소유권 기준은 Supabase에 둔다.
+- Railway는 주 DB나 인증 대체재가 아니라 이미지 변환, 예약 작업, 알림처럼 앱 요청과 분리된 장시간 서버 작업이 실제로 필요할 때만 보조 실행 환경으로 검토한다.
+- Neon·Firebase·Appwrite 등으로의 전체 이전은 현재 병목이 없으므로 보류한다. 공급자 교체는 추측이 아니라 비용·성능·지역·규제 한계가 측정된 뒤 결정한다.
+- 이식성을 위해 표준 Postgres migration, 공급자에 종속되지 않는 object key와 메타데이터를 유지하되, 아직 필요하지 않은 다중 공급자 추상화는 만들지 않는다.
+
 ## 9. 수익화 연결
 
 ### 무료
