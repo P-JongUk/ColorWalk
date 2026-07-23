@@ -1,14 +1,14 @@
 # Hueday Color Rhythm·Reward System Direction
 
 전체 제품 기준: `docs/hueday-product-blueprint.md`
-Hue Room 상세 기준: `docs/hue-room-product-spec.md`
+발견 색 대표 콘텐츠 기준: `docs/discovered-color-content-strategy.md`
 현재 구현 순서: `docs/hueday-development-roadmap.md`
 
 ## Product Principle
 
-Hueday의 보상은 연속 일수 점수, 순위, 압박 루프로 취급하지 않는다. 유연한 Color Rhythm과 누적 발견이 실제 창작·공간 아이템으로 이어지는 시스템이어야 한다.
+Hueday의 보상은 연속 일수 점수, 순위, 압박 루프로 취급하지 않는다. 유연한 Color Rhythm과 누적 발견이 실제 색 재료와 창작 옵션으로 이어지는 시스템이어야 한다.
 
-> 보상은 사용자가 발견한 색을 더 예쁘게 기억하고, Hue Room에서 가꾸고, 원할 때 공유하게 해 주는 실제 열쇠다.
+> 보상은 사용자가 발견한 색을 작품 재료로 조합하고, 다시 편집하고, 원할 때 공유하게 해 주는 실제 열쇠다.
 
 This keeps Hueday aligned with the core product direction: private, emotional, collectible, camera-first, and share-worthy without becoming competitive.
 
@@ -17,7 +17,7 @@ This keeps Hueday aligned with the core product direction: private, emotional, c
 - 미션 색은 3x3 중앙에 고정하고, 사용자는 일상에서 비슷한 색을 찾아 주변 8칸을 채운다.
 - 첫 사진은 안전하게 보존되는 `첫 색 발견`이자 `오늘의 색 씨앗`이다. 진행 시작으로 인정하지만 미션·오늘 기록·3x3 페이지 완료로 계산하지 않는다.
 - 8장을 모두 채운 완성 3x3을 오늘의 미션과 한 페이지 완료로 계산한다.
-- 주요 보상 축은 완성 3x3이다. Hue Room 아이템과 배치 영역, Hueprint 반영, 완성형 공유 프레임·결과물을 여기에 연결한다.
+- 주요 보상 축은 완성 3x3이다. 비소모성 색 재료, Hueprint 반영, 창작 재질·구도, 완성형 공유 프레임·결과물을 여기에 연결한다.
 - 부분 진행은 당일 완료를 강제하지 않고 나중에 이어 채울 수 있게 보존한다.
 - 미완성 때문에 기존 보상을 회수하거나 연속 일수를 초기화하지 않으며 실패·죄책감 카피를 사용하지 않는다.
 - 첫 색 씨앗에는 칸 채움, 저장 확인, 부드러운 촉각·시각 피드백을 줄 수 있지만 주요 아이템 해금처럼 완료로 오해할 보상은 주지 않는다.
@@ -70,7 +70,7 @@ Avoid rewards that make users think:
 - Profile: passport stamp, identity label, collected-period badge, or favorite color mark.
 - History detail: period palette, representative photos, and a shortcut to make a story from that badge.
 - Monthly recap: a generated 9:16 card that uses the unlocked badge art as a seal or frame.
-- Hue Room: 발견 색이 적용된 소품, 새로운 배치 영역, 재질, 포스터 또는 Relay 타일.
+- Found-color creation: 발견 색 재료, 새로운 재질·구도, Hueprint 표지 또는 Relay Duet Print.
 
 Do not ship a badge that only changes a locked/unlocked icon. The reward can be small, but it should be usable, visible, and emotionally connected to the user's saved colors.
 
@@ -80,7 +80,7 @@ This reward system should move with the product whenever the core capture, story
 
 The permanent rule is:
 
-> 반복한 일상 속 색 발견은 더 개인적이고 예쁘며 공유 가능한 기억 방식과 Hue Room 표현을 열어야 한다.
+> 반복한 일상 속 색 발견은 더 개인적이고 예쁘며 공유 가능한 색 조합·작품·기억 방식을 열어야 한다.
 
 When a feature changes, update rewards by preserving these relationships:
 
@@ -95,8 +95,8 @@ When a feature changes, update rewards by preserving these relationships:
 Examples:
 
 - A first-photo seed may receive a saved-state mark or gentle progress feedback, but not the main reward reserved for a completed page.
-- Completed 3x3 pages should unlock grid frame styles, recap layouts, Hue Room items, or other meaningful creative assets.
-- If Hue Room is available, the primary reward should be a placeable/recolorable item or space change, with story/profile art as a secondary use.
+- Completed 3x3 pages should unlock reusable Hue Materials, grid frame styles, recap layouts, or other meaningful creative assets.
+- The primary reward should be immediately usable in the approved found-color content, with story/profile art as a secondary use. Hue Room is a deferred post-launch hypothesis, not a launch reward target.
 - If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
 - If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.
 - If monetization adds paid packs later, earned badge rewards should remain useful free items, not previews that immediately feel locked or inferior.
@@ -130,22 +130,21 @@ Before shipping a change that touches camera, journal, story export, profile, hi
 - Is the unlock based on saved posts rather than a fragile local counter?
 - Can the reward help the user make a better story, recap, profile stamp, or memory card?
 - Are free earned rewards still desirable after adding premium packs?
-- Did this document, both Hueday/Hue Room roadmaps, `plan.md`, and the reward helper/config stay in sync?
+- Did this document, the Hueday roadmap, found-color strategy, `plan.md`, and the reward helper/config stay in sync?
 
 ## Reward Types
 
-### 1. Hue Room Items and Space
+### 1. Hue Materials and Creative Options
 
-Hue Room 아이템을 가장 강한 장기 보상으로 사용한다.
+발견 색을 직접 써 보는 창작 자산을 가장 강한 장기 보상으로 사용한다.
 
-- 저장된 미션 색으로 아이템이 태어난다.
-- 아이템은 탄생 색과 원본 3x3 기록을 기억한다.
-- 이후 사용자가 발견한 색으로 자유롭게 다시 칠할 수 있다.
-- 색은 소모하지 않는다.
-- 첫 색 씨앗은 안전한 진행으로 남고, 완성 3x3·미션 팩·월간 참여가 주요 소품과 배치 영역을 연다.
-- 접속하지 않아도 방과 아이템은 시들거나 사라지지 않는다.
+- 완성된 3x3의 저장된 미션 색이 원본 기록과 연결된 Hue Material이 된다.
+- 색은 소모하지 않으며 여러 Hueprint와 Story 결과물에 반복 사용한다.
+- 새 색을 얻으면 과거 작품의 한 색을 교체해 리믹스할 수 있다.
+- 첫 색 씨앗은 안전한 진행으로 남고, 완성 3x3·미션 팩·월간 참여가 재질·구도·레이어·표지 같은 실제 옵션을 연다.
+- 접속하지 않아도 색, 작품, 열린 보상은 줄거나 망가지지 않는다.
 
-세부 디자인·데이터 계약은 `docs/hue-room-product-spec.md`를 따른다.
+세부 후보·승인 게이트는 `docs/discovered-color-content-strategy.md`를 따른다.
 
 ### 2. Story Stickers
 
@@ -225,13 +224,13 @@ Current beta implementation:
 - `getUnlockedBadges(streak, posts)` unlocks a milestone when either the current streak reaches the milestone or the user has completed that many full 3x3 grids.
 - This means a user can unlock rewards through daily consistency or through enough completed color grids, but the unlock still comes from persisted posts rather than a fragile local counter.
 - Current visible rewards are still mostly labels and badge states. The next product step should make each unlocked milestone visibly usable in story/export/profile surfaces.
-- Color Rhythm, Hue Room items, mission-pack rewards, and reward migration are not implemented yet.
+- Color Rhythm, Hue Materials, mission-pack rewards, and reward migration are not implemented yet.
 
 Target implementation:
 
 - `posts.local_date`에서 주간 색 리듬과 평생 발견일을 계산한다.
 - 8장 그리드 완료 수, 미션 팩 metadata, 월간 참여를 별도 진행 축으로 계산한다.
-- unlock 결과는 Hue Room item ID, Story asset ID, Hueprint asset ID 같은 실제 사용 대상을 반환한다.
+- unlock 결과는 Hue Material/Studio option ID, Story asset ID, Hueprint asset ID 같은 실제 사용 대상을 반환한다.
 - UI component는 조건을 다시 계산하지 않고 한 reward helper/config의 결과를 사용한다.
 - 기존 badge unlock은 새 reward ledger에 무손실로 매핑한다.
 
@@ -257,5 +256,5 @@ If story templates, sticker packs, or badge visuals are renamed later, keep the 
 - Badge detail sheet with period palette and favorite captured photo.
 - Seasonal badge art for school break, spring flowers, rain season, exams, and travel.
 - Premium packs that complement earned rewards, without replacing the free badge unlocks.
-- Color Relay postcard and paired Hue Room tiles.
-- 월간 Hueprint에서 얻는 방 포스터·벽지.
+- Color Relay postcard and paired Duet Print styles.
+- 월간 Hueprint에서 얻는 표지·재질·구도.

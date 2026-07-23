@@ -3,7 +3,8 @@
 Local reference screenshots are stored under `.design-references/` and ignored by git.
 
 Overall visual contract: `docs/hueday-product-blueprint.md`
-Hue Room element contract: `docs/hue-room-product-spec.md`
+Found-color content contract: `docs/discovered-color-content-strategy.md`
+Hue Room concepts: deferred historical references only
 
 Latest 430x932 captures:
 
@@ -35,7 +36,9 @@ Latest 430x932 captures:
 
 ## Next Visual Pass
 
-- Before visual production, compare the product blueprint, growth strategy, reward system, and Hue Room decisions; surface any conflict instead of silently changing the product contract.
-- Gate 2 uses the same content and partial-progress state for four directions: Modern Editorial Photo, Cozy Tactile Healing, Soft Paper Editorial / Diorama, and Chromatic Archive.
-- Produce only one moodboard, one 430x932 home, one 430x932 center-color 3x3, and one partial Hue Room texture sample per direction; select the top two before expanding screens.
+- Keep D — Chromatic Archive as the working direction for the external app UI.
+- Hue Room H1/H2/H3 boards are not approved launch screens. Preserve them locally and stop room/furniture/2.5D/3D production until the post-launch hypothesis is explicitly reopened.
+- Before visual production, compare the product blueprint, growth strategy, reward system, and found-color replacement strategy; surface any conflict instead of silently changing the product contract.
+- Gate 3 compares Color Archive, 2–5 color selection, Glass/Ink/Loom output, remix, and 9:16 Hueprint states using the same source 3x3 data.
+- Produce a small interaction prototype and representative 430x932 states first; do not expand the full screen set before the user approves the replacement content and first material.
 - Keep all moodboard sources and large rendered images under `.design-references/06-design-direction/` and `.lazyweb/` as ignored local artifacts.

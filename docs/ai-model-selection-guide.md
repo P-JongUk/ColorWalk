@@ -102,7 +102,7 @@
 ```text
 Hueday의 성공 가능성을 만드는 핵심 요소를 갖춘 완성도 있는 제품을 최대한 빨리 출시하기 위한 실행 계획을 세워줘.
 
-목표: 중앙 미션 색 3x3 Color Hunt, 측정 가능한 핵심 퍼널, 일상 미션 팩, 발견 색으로 가꾸는 Hue Room, 비처벌형 Color Rhythm과 실제 아이템 보상, Hueprint/Color Capsule, 안전한 Color Relay와 가입 → 촬영 → 저장 → 공간/회고 → 공유의 안정성을 갖춘 상태로 최대한 빨리 출시한다.
+목표: 중앙 미션 색 3x3 Color Hunt, 측정 가능한 핵심 퍼널, 일상 미션 팩, 발견 색을 직접 조합·리믹스하는 대표 창작 콘텐츠, 비처벌형 Color Rhythm과 실제 창작 보상, Hueprint/Color Capsule, 안전한 Color Relay와 가입 → 촬영 → 저장 → 창작/회고 → 공유의 안정성을 갖춘 상태로 최대한 빨리 출시한다. Hue Room은 출시 후 가설로 보류한다.
 맥락: AGENTS.md, docs/hueday-product-blueprint.md, docs/hueday-development-roadmap.md, docs/development-reference-guide.md, docs/ai-memory/00-current-state.md, docs/ai-memory/02-next-tasks.md와 현재 단계에 필요한 하위 문서 및 실제 구현을 Graphify로 먼저 확인한다.
 제약: 3개월짜리 기능 로드맵을 만들지 않는다. 성공 가능성을 높이는 요소를 단지 MVP가 아니라는 이유로 빼지 않는다. 후순위 결정은 구현·운영 난도가 출시 가치에 비해 지나치게 큰 경우에만 근거와 함께 허용한다. 기존 데이터 보호, 인증/RLS, 저장 실패 방지, 미성년 사용자 개인정보 보호와 필수 실기기 QA는 생략하지 않는다. 하위 에이전트는 사용하지 않는다.
 완료 조건: 현재 마스터 단계의 기능별 성공 조건과 검증을 통과하고, 검증된 로드맵 체크박스·다음 한 작업·관련 기준 문서·AI memory가 실제 코드와 일치하며, 최종적으로 전체 출시 판정 체크리스트를 통과한다.

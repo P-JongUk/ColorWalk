@@ -1,20 +1,21 @@
 # Hueday Product Growth Strategy
 
-마지막 코드·시장 대조: 2026-07-22 KST
+마지막 코드·시장 대조: 2026-07-23 KST
 상위 전략과 현재 구현 진단: `docs/hueday-breakout-strategy.md`
 전체 제품 합의: `docs/hueday-product-blueprint.md`
 실제 실행 순서와 상태: `docs/hueday-development-roadmap.md`
+발견 색 대표 콘텐츠 후보: `docs/discovered-color-content-strategy.md`
 
 이 문서는 Hueday가 베타 이후 어떤 성장 루프를 키울지 정리한 living document다. 새 기능을 추가할 때는 단순히 유행 앱을 따라 만들지 말고, 아래의 고유 루프를 강화하는지 먼저 확인한다.
 
-> 일상 미션 색 -> 현실에서 비슷한 색 찾기 -> 중앙 색 3x3 컬렉션 -> Hue Room/Hueprint 정체성 -> 스토리/Relay 공유
+> 일상 미션 색 -> 현실에서 비슷한 색 찾기 -> 중앙 색 3x3 컬렉션 -> 발견 색 창작/Hueprint 정체성 -> 스토리/Relay 공유
 
 ## Product North Star
 
 Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수집하고 자기만의 무드 정체성으로 쌓아가는 color diary다.
 
 - Main target: 한국 베타 사용자, 특히 10대와 20대 초반.
-- Core emotion: 산책을 포함한 일상 속 색 발견, 감성적인 기록, 내 색으로 공간을 가꾸고 친구에게 보여주고 싶은 기쁨.
+- Core emotion: 산책을 포함한 일상 속 색 발견, 감성적인 기록, 내 색을 작품 재료로 조합하고 친구에게 보여주고 싶은 기쁨.
 - Core habit: 첫 색을 부담 없이 씨앗으로 저장하고, 당일 또는 나중에 돌아와 오늘의 3x3 한 페이지를 완성하는 것.
 - Core sharing: 얼굴/원본 사진보다 색, 무드, 작은 이야기 중심의 공유.
 - Core safety: 공개 랭킹, 비교 피드, 압박형 streak를 피하고 가까운 사람끼리의 낮은 부담을 유지한다.
@@ -68,7 +69,7 @@ Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수�
 기록을 많이 쓰는 부담 대신 "채우고 싶다"는 마음을 만든다.
 
 1. 첫 사진은 안전하게 저장되는 `오늘의 색 씨앗`이며, 진행 시작이지 하루 기록이나 미션 완료가 아니다.
-2. 8장을 채운 3x3은 오늘의 한 페이지와 미션을 완성하고 Hue Room 아이템, story/Hueprint 창작 보상을 연다.
+2. 8장을 채운 3x3은 오늘의 한 페이지와 미션을 완성하고 재사용 가능한 발견 색 재료, story/Hueprint 창작 보상을 연다.
 3. 부분 진행은 당일 완료를 강제하지 않고 나중에 이어 채울 수 있으며, 미완성에 실패·손실·연속일 초기화를 사용하지 않는다.
 4. 한 달이 끝나면 월간 컬러 리캡이 생성된다.
 5. 프로필에는 사용자의 색 정체성이 축적된다.
@@ -77,29 +78,30 @@ Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수�
 
 - 배지는 점수나 순위가 아니라 creative unlock이어야 한다.
 - unlocked item은 스토리/프로필/리캡에서 실제로 쓸 수 있어야 한다.
-- 놓친 날 때문에 보상이나 공간이 줄어들지 않아야 한다.
+- 놓친 날 때문에 보상, 색 재료, 작품이 줄어들지 않아야 한다.
 - 자세한 배지 원칙은 `docs/colorwalk-reward-system.md`를 따른다.
 
-### 4. Hue Room Identity Loop
+### 4. Found-Color Creation Identity Loop
 
-사용자가 새 색을 찾을수록 개인 공간의 표현 가능성이 넓어진다.
+사용자가 새 색을 찾을수록 직접 만들고 리믹스할 수 있는 개인 작품의 조합 가능성이 넓어진다.
 
-1. 저장된 미션 색이 아이템의 탄생 색 또는 unlock 진행도가 된다.
-2. 사용자는 발견 색 보관함에서 기존 아이템을 다시 칠한다.
-3. 아이템을 누르면 탄생한 3x3 기록과 일기로 돌아간다.
-4. 월간 Hueprint는 방의 포스터·벽지와 9:16 공유 결과가 된다.
-5. Relay는 친구의 색 엽서나 짝 컬러 타일로 방에 남는다.
+1. 완성된 3x3의 저장된 미션 색이 원본 기억이 붙은 비소모성 Hue Material이 된다.
+2. 사용자는 Color Archive에서 2~5색을 골라 재질과 구도로 조합한다.
+3. 작품의 색을 누르면 해당 3x3 기록과 일기로 돌아간다.
+4. 새 색을 얻으면 과거 작품을 리믹스하고 월간 Hueprint Gallery에 함께 보관한다.
+5. Relay는 서로 한 색씩 보태는 엽서나 Duet Print가 된다.
 
 구현 기준:
 
-- 색상별 에셋을 만들지 않고 동적 SVG를 사용한다.
-- 방은 접속하지 않아도 시들거나 망가지지 않는다.
-- 공개 인기 방이나 친구 비교보다 개인 기억과 표현을 우선한다.
-- 상세 기준은 `docs/hue-room-product-spec.md`를 따른다.
+- 색상별 에셋이나 생성형 AI 없이 결정적 SVG/Canvas 규칙을 우선한다.
+- 색과 작품은 접속하지 않아도 줄거나 망가지지 않는다.
+- 공개 인기 순위나 친구 비교보다 개인 기억과 표현을 우선한다.
+- 후보와 승인 기준은 `docs/discovered-color-content-strategy.md`를 따른다.
+- Hue Room은 완전히 별도의 출시 후 가설이며 대체 콘텐츠 안에 축소 형태로 넣지 않는다.
 
 ## Current Master Sequencing
 
-아래 Priority와 Phased Roadmap은 성장 아이디어의 상세 backlog다. 실제 구현 순서는 `docs/hueday-development-roadmap.md`의 M0~M10을 따른다. 현재 핵심 순서는 컬러 헌트 규칙 정렬 → 안정성·측정 → 일상 미션 팩 → Hue Room·보상 → Hueprint/Capsule → Color Relay → 통합 출시 검증이다.
+아래 Priority와 Phased Roadmap은 성장 아이디어의 상세 backlog다. 실제 구현 순서는 `docs/hueday-development-roadmap.md`의 M0~M10을 따른다. 현재 핵심 순서는 컬러 헌트 규칙 정렬 → 안정성·측정 → 일상 미션 팩 → 발견 색 대표 콘텐츠·보상 → Hueprint/Capsule → Color Relay → 통합 출시 검증이다.
 
 ## Priority Features
 
@@ -190,17 +192,17 @@ Success metrics:
 - export/download/share rate.
 - 리캡을 본 다음 달 D1/D7 retention.
 
-### Priority 3. Color Rhythm으로 Hue Room·스토리·Hueprint 해금
+### Priority 3. Color Rhythm으로 발견 색 창작·스토리·Hueprint 해금
 
-목표: 연속 숫자 압박이 아니라 일상 속 색 발견이 실제 공간과 예쁜 결과물을 열게 한다.
+목표: 연속 숫자 압박이 아니라 일상 속 색 발견이 실제 창작 재료와 예쁜 결과물을 열게 한다.
 
 MVP UX:
 
 - 첫 색 씨앗: 저장 확인, 이어하기 입구, tiny progress mark. 주요 아이템 해금으로 표시하지 않는다.
-- 완성 3x3 누적: Hue Room 아이템, 가구·액자·새 배치 영역.
-- 주간 2/3/5일 Color Rhythm: 장식·재질·soft story detail.
-- 미션 팩 완성: 학교·집·통학·카페 문맥의 대표 아이템.
-- 월간 참여: Hueprint 포스터·벽지·recap frame.
+- 완성 3x3 누적: 비소모성 Hue Material, 새 구도·레이어.
+- 주간 2/3/5일 Color Rhythm: Glass/Ink/Loom 재질 변형·soft story detail.
+- 미션 팩 완성: 학교·집·통학·카페 문맥의 스탬프·텍스처.
+- 월간 참여: Hueprint 표지·recap frame.
 - 기존 3·7·14·30 보상은 새 기준으로 무손실 이전.
 - 스토리 편집기에서 잠금/해금 상태를 자연스럽게 보여준다.
 - 잠긴 아이템은 과도하게 아쉽게 보이지 않게 하고, "3일 색길을 채우면 열려요" 정도의 부드러운 문구를 사용한다.
@@ -567,7 +569,7 @@ Design:
    - color identity
    - close friend loop
    - monthly recap
-   - Hue Room identity
+   - found-color creation identity
    - everyday mission packs
 2. 사용자에게 더 많은 부담을 주는가, 더 쉽게 기록하게 하는가?
 3. 사진 원본 중심이 아니라 색/무드 중심을 유지하는가?
@@ -608,11 +610,11 @@ Design:
 2. Everyday mission pack config:
    - 집/학교/통학/카페/날씨/컬러 산책 정적 pack.
    - remote DB pack은 운영 필요가 생긴 뒤 이동.
-3. Hue Room renderer and reward loop:
-   - 핵심 5개 SVG와 동적 색상을 먼저 검증.
-   - room state, 색 보관함, 재채색, 실제 unlock 순으로 확장.
+3. Found-color creation prototype and reward loop:
+   - 2~5색 선택과 Glass/Ink/Loom 결과를 샘플 데이터로 먼저 검증.
+   - 사용자 승인 뒤 Color Archive, recipe 저장, 리믹스, 실제 unlock 순으로 확장.
 4. Monthly recap client MVP:
-   - 현재 월 posts를 가져와 9:16 recap과 Hue Room 포스터 생성.
+   - 현재 월 posts와 저장 작품을 가져와 9:16 recap과 Hueprint 표지 생성.
    - 서버 캐시는 나중에.
 5. `shared_cards` MVP:
    - post에서 제한된 public card를 만들고 링크로 공유.

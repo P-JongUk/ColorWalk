@@ -4,14 +4,15 @@
 
 - 공개 브랜드: Hueday
 - 내부 저장소/패키지/Supabase 이름: ColorWalk 유지
-- 현재 최우선 목표: 전체 마스터 로드맵을 따라 Color Hunt 규칙, 안정성·측정, 일상 미션 팩, Hue Room·Color Rhythm 보상, Hueprint/Color Capsule, 안전한 Color Relay를 완성하고 품질·보안·실기기 QA를 통과해 최대한 빠르게 출시
-- 핵심 루프: 일상 미션 색 → 현실에서 비슷한 색 찾기 → 중앙 색 3x3 컬렉션 → Hue Room/Hueprint 정체성 → 스토리/Relay 공유
+- 현재 최우선 목표: 전체 마스터 로드맵을 따라 Color Hunt 규칙, 안정성·측정, 일상 미션 팩, 발견 색 대표 창작 콘텐츠·Color Rhythm 보상, Hueprint/Color Capsule, 안전한 Color Relay를 완성하고 품질·보안·실기기 QA를 통과해 최대한 빠르게 출시
+- 핵심 루프: 일상 미션 색 → 현실에서 비슷한 색 찾기 → 중앙 색 3x3 컬렉션 → 발견 색을 창작 재료로 조합·리믹스 → Hueprint/스토리/Relay 공유
 - 현재 구현: 아이디/비밀번호 인증, 날씨·시간 미션, 최대 8장 촬영과 로컬 초안 복구, Supabase 저장, 짧은 일기, 9:16 스토리/3x3 공유, 달력, 배지 표시, 로컬 알림, PWA/Android
-- 현재 미구현: 일상 미션 팩 선택, Hue Room·색 보관함·재채색, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 아이템 해금, 행동 분석, 결제, 네이티브 iOS
+- 현재 미구현: 일상 미션 팩 선택, 발견 색 대표 콘텐츠·Color Archive·리믹스, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 행동 분석, 결제, 네이티브 iOS
 - 확정된 Color Hunt 의미: 첫 사진은 안전하게 저장되는 `첫 색 발견`과 `오늘의 색 씨앗`이며 진행 시작이다. 중앙 미션 색 주위의 8칸을 모두 채워야 오늘의 미션과 3×3 한 페이지가 완성되고 주요 보상으로 이어진다.
 - 현재 제품 불일치: 코드는 1장부터 저장·저널 진입·초안 복구를 지원하지만 부분 진행과 8장 완성을 별도 상태·카피·보상 계약으로 구분하지 않는다. 이 구현은 A안 완료 근거가 아니라 B안의 부담 없는 중간 저장 기반이다.
 - 현재 마스터 단계: M1 컬러 헌트 제품 진실 정렬. 부분 저장·이어하기와 8장 완성·주요 보상을 구분하는 런타임 구현은 후속 기능 브랜치 작업으로 남아 있다.
-- 현재 다음 작업: `feature/design-direction`의 게이트 2에서 제품 청사진·성장 전략·보상 시스템·Hue Room 기준을 먼저 대조한 뒤 네 디자인 방향을 비교한다.
+- 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.
+- 현재 다음 작업: `docs/discovered-color-content-strategy.md`의 완전 대체 후보와 Hue Studio 1순위안을 사용자에게 설명하고 대표 콘텐츠, 첫 재질, 첫 조작 범위를 승인받는다.
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`
@@ -19,12 +20,13 @@
 - 전체 제품 합의: `docs/hueday-product-blueprint.md`
 - 현재 마스터 단계·다음 한 작업: `docs/hueday-development-roadmap.md`
 - 작업 유형별 문서 라우팅: `docs/development-reference-guide.md`
-- Hue Room 상세: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`
+- 발견 색 대표 콘텐츠 후보·승인 게이트: `docs/discovered-color-content-strategy.md`
+- Hue Room 역사적 보류 자료: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`
 
 ## 저장소
 
 - 통합 브랜치: `main`
-- 현재 작업 브랜치: `feature/design-direction` — 디자인 게이트 1 B 결정 확정, 게이트 2 조사 진행
+- 현재 작업 브랜치: `feature/design-direction` — 디자인 게이트 1 B 결정, D 외부 UI 방향, Hue Room 보류와 완전 대체 콘텐츠 탐색
 - 최근 완료 기능 브랜치: `feature/product-roadmap-system`
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용

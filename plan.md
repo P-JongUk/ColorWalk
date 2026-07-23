@@ -21,7 +21,7 @@ Last code/document alignment: 2026-07-22 KST. The latest full release verificati
 - [ ] Automated integration/E2E coverage for signup -> capture -> save -> story share
 
 ## Product Direction
-Hueday is a private everyday color-discovery ritual. The user receives or chooses a contextual mission color, finds objects that feel similar, collects eight surrounding photos into a 3x3 grid around that center color, writes a short reflection, and turns accumulated colors into Hue Room items, Hueprint recaps, and optional safe Color Relay sharing. There is no color-match score, public ranking, or comparison loop.
+Hueday is a private everyday color-discovery ritual. The user receives or chooses a contextual mission color, finds objects that feel similar, collects eight surrounding photos into a 3x3 grid around that center color, writes a short reflection, and uses accumulated colors as creative materials for Hueprints, stories, and optional safe Color Relay sharing. There is no color-match score, public ranking, or comparison loop.
 
 The final visual direction is Candidate 3: soft emotional warmth with restrained trendy color-ticket details. The interface should feel youthful, collectible, and share-worthy, while staying calm enough for daily use in Korean and English markets.
 
@@ -78,7 +78,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 
 ## Future Roadmap
 
-The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the only current execution status board is `docs/hueday-development-roadmap.md`. Hue Room has separate detailed spec and sub-roadmap documents. The code-grounded diagnosis, monetization sequence, market references, and Windows-to-iOS release options remain in `docs/hueday-breakout-strategy.md` and `docs/product-growth-strategy.md`. This file must not claim proposals are implemented until code and verification exist.
+The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the only current execution status board is `docs/hueday-development-roadmap.md`. The complete Hue Room replacement exploration lives in `docs/discovered-color-content-strategy.md`; the old Hue Room spec and sub-roadmap are preserved as deferred post-launch evidence. The code-grounded diagnosis, monetization sequence, market references, and Windows-to-iOS release options remain in `docs/hueday-breakout-strategy.md` and `docs/product-growth-strategy.md`. This file must not claim proposals are implemented until code and verification exist.
 
 ### Product Growth Strategy
 - Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
@@ -86,7 +86,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 - Priority growth bets:
   - Clear center-mission-color 3x3 Color Hunt without extraction or match percentage.
   - Home/school/commute/cafe/weather/walk mission packs for everyday discovery.
-  - Hue Room items born from collected colors and recolorable with the user's color library.
+  - A found-color creative system where completed 3x3 colors become reusable, non-consumable materials linked to their source memories.
   - Flexible Color Rhythm and cumulative rewards that unlock real room/story/Hueprint items.
   - Monthly Hueprint and minimum Color Capsule recall.
   - Friend-shared "today color card" links and safe Color Relay.
@@ -106,7 +106,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 ### Teen Audience Expansion
 - Beta-safe additions:
   - Trendier 9:16 story templates with 3x3 grid frames, mission color, mood name, and short mood text.
-  - Flexible weekly Color Rhythm and cumulative discovery rewards that unlock real Hue Room, story, and Hueprint items.
+  - Flexible weekly Color Rhythm and cumulative discovery rewards that unlock real Hueprint, story, and found-color creation options.
   - Share-friendly color identity labels such as "today's mood color" and editable custom color names.
   - Lightweight friend prompt copy, without a public feed or leaderboard.
 - Post-beta additions:
@@ -115,13 +115,13 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
   - Optional account linking for backup and device transfer.
 - Safety/privacy note: if directly targeting users under 14 in Korea or under 13 in the US, add age gating, parental consent review, privacy copy, and a stricter data-minimization design before launch.
 
-### Color Rhythm and Hue Room Reward System
+### Color Rhythm and Found-Color Reward System
 - Product principle: reward repeated discovery without making consecutive-day streak loss the main emotion.
 - Users can choose a flexible weekly 2/3/5-day Color Rhythm; missed days do not remove accumulated progress, rooms, chapters, or items.
-- Saved mission colors become a reusable color library. Hue Room items keep an origin color and can later be recolored with any discovered color without consuming it.
-- Cumulative discovery days, completed 3x3 pages, mission packs, weekly rhythm, monthly participation, and Relay can unlock real Hue Room, story, and Hueprint assets.
+- Saved mission colors become a reusable creative-material library. Completed 3x3 colors can be combined and reused without consuming them, and every material links back to its source record.
+- Cumulative discovery days, completed 3x3 pages, mission packs, weekly rhythm, monthly participation, and Relay can unlock real Hueprint, story, composition, material, and export assets.
 - Existing 3/7/14/30 rewards must migrate without taking already-earned value away.
-- Any capture, mission, story, profile, Hue Room, or monetization change must check `docs/colorwalk-reward-system.md`, `docs/hue-room-product-spec.md`, both roadmaps, and the reward helper/config.
+- Any capture, mission, story, profile, found-color content, or monetization change must check `docs/colorwalk-reward-system.md`, `docs/discovered-color-content-strategy.md`, the master roadmap, and the reward helper/config.
 
 ### Instagram / SNS Sharing
 - Current MVP: 9:16 story export through `html2canvas`, Web Share API when available, and image download fallback.
@@ -134,10 +134,10 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 
 ### Beta Priority Recommendation
 1. Follow `docs/hueday-development-roadmap.md` from its current master phase; do not invent a separate order in feature conversations.
-2. Align the Color Hunt contract, then stabilize/measure, add everyday mission packs, complete Hue Room and Color Rhythm rewards, build Hueprint/Color Capsule, add safe Color Relay, and finish integrated release QA.
+2. Align the Color Hunt contract, then stabilize/measure, add everyday mission packs, approve and implement the complete found-color replacement with Color Rhythm rewards, build Hueprint/Color Capsule, add safe Color Relay, and finish integrated release QA.
 3. Treat this as a compressed release critical path, not a three-month roadmap and not a stripped-down minimum beta.
 4. Implement each meaningful checkpoint on a focused `feature/<name>` branch and update only verified roadmap checkboxes.
-5. Rerun `docs/release-readiness.md`, then verify signup -> capture -> save -> Hue Room -> Hueprint -> Relay/share on a physical phone and launch when the complete package passes.
+5. Rerun `docs/release-readiness.md`, then verify signup -> capture -> save -> found-color creation -> Hueprint -> Relay/share on a physical phone and launch when the complete package passes.
 
 ## Current Follow-Ups
 - Current master phase and next action are maintained only in `docs/hueday-development-roadmap.md`.
