@@ -16,7 +16,7 @@ Use this workflow for every meaningful coding task in this repository. Keep the 
 ## 1. Start with a map and a bounded plan
 
 1. Read the repository `AGENTS.md`, `docs/hueday-product-blueprint.md`, the current phase/next action in `docs/hueday-development-roadmap.md`, and the relevant Obsidian notes in `docs/ai-memory/`.
-2. Use `docs/development-reference-guide.md` to select the feature-specific source documents. For Hue Room work, always include `docs/hue-room-product-spec.md` and `docs/hue-room-development-roadmap.md`.
+2. Use `docs/development-reference-guide.md` to select the feature-specific source documents. Hue Canvas work must include `docs/hue-canvas-product-spec.md`, storage work must include `docs/data-storage-sync-and-cost-strategy.md`, and design work must include `docs/design-reference-index.md`. For explicitly reopened Hue Room work, include its historical spec and roadmap and first verify new user approval.
 3. If `graphify-out/graph.json` exists, query Graphify before opening broad source files. Use `query` for a subsystem question, `path` for a relationship, and `explain` for one concept. Prefer the D-drive executable at `D:/JongUk/Documents/ColorWalk/.graphify-venv/Scripts/graphify.exe` when the `graphify` command is not on PATH.
 4. State four things before editing: scope, likely files, success conditions, and the smallest safe implementation.
 5. Apply the four principles: think before coding, choose the simplest viable approach, change only what is needed, and define/verify success conditions.
@@ -41,8 +41,9 @@ Do not remove validation, error handling, security, accessibility, or data-loss 
 
 ## 3. Implement and verify
 
-- Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Hue Room/Hueprint identity → story/Relay sharing loop.
-- Update reward documentation and mapping helpers together when capture, mission packs, Hue Room, story, profile, or monetization behavior changes.
+- Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Hue Palette/Canvas → Hueprint/story/Relay sharing loop.
+- Update reward documentation and mapping helpers together when capture, mission packs, Hue Canvas, story, profile, or monetization behavior changes.
+- Treat product statements as approved, candidate, deferred, historical, or implementation fact. Never change an approved core loop, Hue Canvas contract, visual direction, reward economy, free/paid boundary, storage model, package identity, or release scope without presenting the conflict and obtaining explicit user approval.
 - Run the narrowest relevant checks first, then the broader check required by the change. Use D-drive npm/temporary paths from `AGENTS.md`.
 - After code changes, keep Graphify current with `graphify update .` or the workflow finish script. Code-only updates are local and do not need an API key.
 
@@ -59,7 +60,9 @@ Then perform a documentation impact check against the actual diff:
 
 - product reality or priority: `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `plan.md`
 - overall direction or execution order: `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`
-- Hue Room product/design/implementation: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`, `docs/design-qa-log.md`
+- Hue Canvas product/design/implementation: `docs/hue-canvas-product-spec.md`, `docs/discovered-color-content-strategy.md`, `docs/design-reference-index.md`, `docs/design-qa-log.md`
+- local storage, sync, image quality, device transfer, or cost: `docs/data-storage-sync-and-cost-strategy.md`, release/security docs
+- explicitly reopened Hue Room: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`
 - capture/story/profile/reward/monetization: `docs/colorwalk-reward-system.md` and the reward helper
 - deploy, QA, environment, schema, or security: `docs/release-readiness.md`, `docs/security-audit.md`, `AGENTS.md`
 - meaningful problem, constraint, tradeoff, or failed approach: `docs/career-problem-solving-log.md`

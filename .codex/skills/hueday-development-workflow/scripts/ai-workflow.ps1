@@ -22,7 +22,6 @@ $memory = Join-Path $repo 'docs\ai-memory'
 $graphify = Join-Path $repo '.graphify-venv\Scripts\graphify.exe'
 $graph = Join-Path $repo 'graphify-out\graph.json'
 $roadmap = Join-Path $repo 'docs\hueday-development-roadmap.md'
-$hueRoomRoadmap = Join-Path $repo 'docs\hue-room-development-roadmap.md'
 
 $env:npm_config_cache = Join-Path $repo '.npm-cache'
 $env:PIP_CACHE_DIR = Join-Path $repo '.pip-cache'
@@ -83,14 +82,17 @@ function Get-RoutedReferences {
 
     $query = $Text.ToLowerInvariant()
 
-    if ($query -match 'hue.?room|색방|꾸미|아이템|재채색|room') {
+    if ($query -match 'hue.?room|색방|가구|room') {
         $references += @('docs/hue-room-product-spec.md', 'docs/hue-room-development-roadmap.md', 'docs/colorwalk-reward-system.md', 'docs/design-qa-log.md')
     }
+    if ($query -match 'hue.?canvas|canvas|팔레트|palette|유리|glass|도안|타일|발견.?색|리믹스|remix') {
+        $references += @('docs/hue-canvas-product-spec.md', 'docs/discovered-color-content-strategy.md', 'docs/data-storage-sync-and-cost-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/design-reference-index.md', 'docs/design-qa-log.md')
+    }
     if ($query -match '미션|카메라|촬영|3x3|격자|1컷|8컷|color.?hunt|capture|camera') {
-        $references += @('docs/hueday-breakout-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/hue-room-product-spec.md')
+        $references += @('docs/hueday-breakout-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/discovered-color-content-strategy.md')
     }
     if ($query -match '보상|배지|리듬|연속|레벨|해금|reward|badge|streak') {
-        $references += @('docs/colorwalk-reward-system.md', 'docs/hue-room-product-spec.md', 'docs/product-growth-strategy.md')
+        $references += @('docs/colorwalk-reward-system.md', 'docs/hue-canvas-product-spec.md', 'docs/product-growth-strategy.md')
     }
     if ($query -match '팩|성장|리텐션|relay|hueprint|capsule|친구|공유|growth|mission.?pack|recap') {
         $references += @('docs/hueday-breakout-strategy.md', 'docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md')
@@ -99,16 +101,16 @@ function Get-RoutedReferences {
         $references += @('docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/release-readiness.md', 'docs/design-qa-log.md')
     }
     if ($query -match '디자인|css|반응형|접근성|visual|design|responsive|accessibility') {
-        $references += @('docs/design-qa-log.md', 'docs/hue-room-product-spec.md')
+        $references += @('docs/design-reference-index.md', 'docs/design-qa-log.md')
     }
-    if ($query -match 'supabase|auth|rls|storage|migration|보안|인증|db|database') {
-        $references += @('docs/security-audit.md', 'docs/release-readiness.md')
+    if ($query -match 'supabase|auth|rls|storage|migration|보안|인증|db|database|저장|동기화|백업|복구|archive|sync|backup|압축|화질|비용') {
+        $references += @('docs/data-storage-sync-and-cost-strategy.md', 'docs/security-audit.md', 'docs/release-readiness.md')
     }
     if ($query -match 'android|pwa|카메라 권한|알림|emulator|capacitor') {
         $references += @('docs/android-local-environment.md', 'docs/release-readiness.md')
     }
-    if ($query -match '배포|출시|스토어|ios|app.?store|release|deploy') {
-        $references += @('docs/release-readiness.md', 'docs/hueday-breakout-strategy.md', 'plan.md')
+    if ($query -match '배포|출시|스토어|플레이|ios|app.?store|play.?store|release|deploy') {
+        $references += @('docs/release-readiness.md', 'docs/play-store-internal-testing.md', 'docs/hueday-breakout-strategy.md', 'plan.md')
     }
     if ($query -match '수익|결제|구독|유료|monetization|payment|subscription') {
         $references += @('docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md')
@@ -132,6 +134,10 @@ function Test-DocumentationContract {
         'docs/hueday-product-blueprint.md',
         'docs/hueday-development-roadmap.md',
         'docs/development-reference-guide.md',
+        'docs/hue-canvas-product-spec.md',
+        'docs/data-storage-sync-and-cost-strategy.md',
+        'docs/design-reference-index.md',
+        'docs/discovered-color-content-strategy.md',
         'docs/hue-room-product-spec.md',
         'docs/hue-room-development-roadmap.md',
         'docs/hueday-breakout-strategy.md',
@@ -163,6 +169,9 @@ function Test-DocumentationContract {
     if ($changedText -match '(HueRoom|hue-room|src[\\/]lib[\\/]room|room_states)' -and $changedText -notmatch 'docs[\\/]hue-room-development-roadmap\.md') {
         Write-Warning 'Hue Room implementation changed but its roadmap has no visible update.'
     }
+    if ($changedText -match '(HueCanvas|hue-canvas|hueCanvas|canvas_recipe)' -and $changedText -notmatch 'docs[\\/](hue-canvas-product-spec|discovered-color-content-strategy)\.md') {
+        Write-Warning 'Hue Canvas implementation changed; confirm its product spec and strategy impact.'
+    }
     if ($changedText -match '(CameraView|TodayView|GridCollage|Story|ProfileView|collection\.ts|mission\.ts)' -and $changedText -notmatch 'docs[\\/]colorwalk-reward-system\.md') {
         Write-Warning 'Capture/story/profile/reward-related code changed; confirm reward documentation impact.'
     }
@@ -178,7 +187,6 @@ if ($Mode -eq 'session-start') {
     Write-WorkflowHeader
     Write-Host 'Checklist: current agent only -> roadmap/docs -> Graphify map -> scope/success conditions -> smallest safe change -> verify -> documentation/career impact -> Obsidian note.' -ForegroundColor Yellow
     Write-RoadmapSnapshot -Path $roadmap -Label 'Hueday master'
-    Write-RoadmapSnapshot -Path $hueRoomRoadmap -Label 'Hue Room'
     Write-Host ''
     Write-RoutedReferences -Text ''
     if (Test-Path $graph) {

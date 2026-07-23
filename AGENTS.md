@@ -8,13 +8,16 @@ Read this file before coding in this repository.
 - Main target: Korean beta users, especially teens and young adults.
 - Release priority: ship as quickly as possible, but launch with the complete set of feasible high-impact elements that make Hueday distinctive and likely to succeed. Do not reduce the product to a bare minimum beta; defer only features whose implementation or operational complexity is disproportionate to their launch value. Optimize dependencies and scope without skipping product coherence, security, data-loss protection, or required device QA.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
-- Visual source of truth: the original mobile mockups saved locally under `.design-references/00-target-mockup/`. These folders are local-only and ignored by git because they contain heavy screenshots/reference assets.
-- Do not add ad monetization before beta. Future monetization ideas are premium story templates, palette packs, and monthly reports.
+- Visual source of truth and artifact status: `docs/design-reference-index.md`. Large source images remain on D under `.design-references/` and `.lazyweb/` and are ignored by git.
+- Do not add ad monetization before beta. The approved monetization hypotheses are optional creative packs, `Hueday Studio` one-time tools, and `Hueday Cloud` recurring storage; details and prices live only in the monetization source of truth.
 - Monetization source of truth: `docs/product-growth-strategy.md` under `Monetization Model`. Keep the free core promise and earned badge rewards useful when paid packs or subscriptions are designed.
 - Reward direction: use flexible Color Rhythm and cumulative discovery to unlock real Story/Hueprint/found-color creative tools. Do not make consecutive-day streaks, scores, punishment, or reward loss the primary loop. When capture, mission packs, found-color content, story, profile, or monetization changes, update `docs/colorwalk-reward-system.md` plus the reward mapping helper in the same change.
 - Overall product source of truth: read `docs/hueday-product-blueprint.md`, then check the current phase and next action in `docs/hueday-development-roadmap.md`. Use `docs/development-reference-guide.md` to load only the relevant detailed documents. `docs/hueday-breakout-strategy.md` owns code-grounded diagnosis and market/iOS evidence; `docs/product-growth-strategy.md` owns detailed growth and monetization.
 - Do not clone Locket, BeReal, Setlog, Cyworld, or generic story/decorating apps. Preserve Hueday's loop: everyday mission color -> real-world similar-color finding -> center-color 3x3 collection -> found colors used as creative materials -> Hueprint/Story/Relay sharing.
-- Found-color replacement content source of truth: `docs/discovered-color-content-strategy.md`. Hue Room is completely removed from the first-release critical path and deferred as a post-launch hypothesis; preserve its historical spec and local concepts, but do not resume room, furniture, placement, or art-production work without a new explicit user decision and evidence that it is worth the cost.
+- Found-color replacement content source of truth: `docs/discovered-color-content-strategy.md`; detailed approved product contract: `docs/hue-canvas-product-spec.md`. Hue Canvas is the selected representative content. Hue Room is completely removed from the first-release critical path and deferred as a post-launch hypothesis; preserve its historical spec and local concepts, but do not resume room, furniture, placement, or art-production work without a new explicit user decision and evidence that it is worth the cost.
+- Storage, sync, image-quality, migration, and cost source of truth: `docs/data-storage-sync-and-cost-strategy.md`. Treat local-first storage as an approved target architecture, not as already implemented.
+- Product decisions have four explicit states: `approved`, `candidate`, `deferred`, and `historical`. Do not promote a candidate, resume a deferred feature, or reinterpret an approved contract to match current code without the user's explicit approval.
+- Before changing a core loop, representative content, visual direction, reward economy, free/paid boundary, persistence model, package identity, or release scope, present the current decision, conflict/evidence, user impact, and at least two choices in text. Change documents or code only after explicit approval. Implementation details that preserve the approved contract may be chosen autonomously and verified.
 
 ## Local Commands
 
@@ -83,6 +86,7 @@ The last successful production deploy used local `npm run build`, manual `.verce
 - RLS/storage policies are owner-scoped by `auth.uid()`.
 - `npm run verify:supabase` must keep checking anonymous sign-in, anonymous data-write denial, password-user profile upsert, post CRUD, signed storage read, and cross-user denial.
 - Current 3x3-grid beta code writes `posts.grid_images` when the migration exists, and automatically falls back to `posts.client_meta.gridImages` on the live project until the `20260529200000_add_grid_images.sql` migration can be applied with authenticated Supabase admin access.
+- Latest live verification: 2026-07-23 KST. Auth, profile/post CRUD, storage upload/signed read, grid/story metadata, anonymous-write denial, and cross-user denial passed; `grid_images` still used `client_meta_fallback`.
 
 ## Beta Test Account
 
@@ -140,6 +144,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 3. Compare against `.design-references/00-target-mockup/` before deciding a design pass is done.
 4. For story/sticker UX, compare against `.design-references/02-lazyweb-story-editor/`, `.design-references/03-stickers/`, and `.design-references/04-template-gallery/`.
 5. For the approved found-color replacement, compare archive/selection/result/remix states at 430x932 and verify that every used color can return to its source 3x3. Hue Room concepts under `.design-references/05-hue-room/` are historical post-launch evidence only.
+6. For Hue Canvas, follow `docs/design-reference-index.md`: preserve source/reference/status notes on D, compare empty/palette/free-canvas/template-resize/complete/export states, and reproduce the chosen look with a real Canvas 2D/SVG prototype before approval.
 
 ## Release Rules
 
@@ -147,6 +152,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - The browser invite-code gate is disabled; do not reintroduce it unless the product direction changes.
 - Browser build must not expose service role keys or local private docs.
 - Before sharing a URL, run lint/test/build/Supabase verification and one browser QA path from login to story export.
+- Before the first Play Console upload, get explicit user confirmation for permanent package ID `com.colorwalk.app`, configure an upload key and Play App Signing, increment version metadata, and complete account deletion, privacy policy, and Data Safety requirements. Never commit keystores or passwords.
 
 ## Git Workflow
 
@@ -163,6 +169,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - Every meaningful development task must use the project-scoped `.codex/skills/hueday-development-workflow` skill. The `SessionStart` hook prints its checklist automatically; do not wait for the user to repeat these rules.
 - At task start, read `docs/hueday-product-blueprint.md`, the current phase and next action in `docs/hueday-development-roadmap.md`, and the task-specific documents routed by `docs/development-reference-guide.md`.
 - Before every meaningful task, consult `docs/ai-model-selection-guide.md` and classify the work by ambiguity, impact, reversibility, and verification cost. When a different setting would materially improve quality or cost, tell the user the recommended model, reasoning effort, Plan mode, Goal mode, and speed setting before implementation. Do not repeat unchanged advice for trivial follow-ups.
+- At task start, classify every relevant product statement as approved, candidate, deferred, historical, or implementation fact. If the requested work conflicts with an approved statement, stop that conflicting part and ask for a decision instead of silently normalizing the documents.
 - Prefer the lowest model and reasoning effort that can reliably satisfy the success conditions. Treat current official OpenAI guidance and observed project results as stronger evidence than a single external benchmark chart. Never claim the active model changed automatically; tell the user what to select when a change is needed.
 - Do not use or recommend Ultra because it depends on subagents. Use Plan mode for ambiguous, multi-step, high-rework-cost work, and Goal mode only for an explicit objective that must persist across multiple turns until completion.
 - Execute repository work in the current Codex task only. Do not create, spawn, or delegate to subagents, worker agents, or parallel agents. Use ordinary tools and processes directly from the current agent.
@@ -176,7 +183,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 
 ## Documentation Freshness Contract
 
-- Documentation is part of the implementation. At the end of every meaningful task, inspect the actual diff and decide whether `AGENTS.md`, `plan.md`, `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `docs/discovered-color-content-strategy.md`, `docs/colorwalk-reward-system.md`, the deferred Hue Room documents, and `docs/ai-memory/` are still accurate.
+- Documentation is part of the implementation. At the end of every meaningful task, inspect the actual diff and decide whether `AGENTS.md`, `plan.md`, `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`, `docs/release-readiness.md`, `docs/security-audit.md`, `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `docs/discovered-color-content-strategy.md`, `docs/hue-canvas-product-spec.md`, `docs/data-storage-sync-and-cost-strategy.md`, `docs/design-reference-index.md`, `docs/colorwalk-reward-system.md`, the deferred Hue Room documents, and `docs/ai-memory/` are still accurate.
 - Update only documents affected by the task, but never leave a known contradiction between code and documentation. If no durable document changes, record `영향 없음` and the reason in the session note.
 - Keep facts, interpretations, and unvalidated experiments distinct. Do not claim a deployment, migration, test, metric, or external market fact is current unless it was actually verified; preserve the date of historical checks.
 - When a task resolves a meaningful bug, platform constraint, security issue, performance problem, or product tradeoff, add or update a case in `docs/career-problem-solving-log.md` with evidence, alternatives, verification, outcome, and remaining debt.

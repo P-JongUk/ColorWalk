@@ -12,6 +12,9 @@ Obsidian에서 `D:\JongUk\Documents\ColorWalk\docs\ai-memory` 폴더를 vault로
 - [[03-session-template]]: 작업 종료 시 복사해 쓰는 세션 기록 양식
 - [[../hueday-product-blueprint|Hueday 전체 제품 청사진]]: 지금까지 합의한 전체 제품 방향
 - [[../hueday-development-roadmap|Hueday 전체 개발 마스터 로드맵]]: 현재 단계와 다음 한 작업
+- [[../hue-canvas-product-spec|Hue Canvas 제품 명세]]: 승인된 발견 색 대표 콘텐츠 계약
+- [[../data-storage-sync-and-cost-strategy|저장·동기화·비용 전략]]: 로컬 우선 저장과 Cloud 경계
+- [[../design-reference-index|디자인 레퍼런스 인덱스]]: D 드라이브 시안·근거의 상태와 경로
 - [[../development-reference-guide|개발 참고 문서 가이드]]: 작업 유형별 필수 문서와 갱신 대상
 - [[../discovered-color-content-strategy|발견 색 대표 콘텐츠 전략]]: Hue Room 완전 대체 후보와 현재 승인 게이트
 - [[../hue-room-product-spec|Hue Room 제품·디자인 명세]]: 출시 후로 보류된 역사적 가설

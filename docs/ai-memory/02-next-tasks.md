@@ -9,12 +9,13 @@
 - [x] M1 게이트 1: B안 `1장은 오늘의 색 씨앗과 진행 시작, 8장은 미션과 3×3 한 페이지 완성` 승인·문서 정렬
 - [x] 디자인 게이트 2: 네 외부 UI 방향 비교 뒤 D — Chromatic Archive를 작업 방향으로 선택
 - [x] Hue Room을 첫 출시에서 완전히 보류하고 기존 시안·명세를 출시 후 역사적 가설로 전환
-- [ ] 디자인 게이트 3: 발견 색 대체 후보와 Hue Studio 1순위안을 검토해 대표 콘텐츠, 첫 재질, 첫 2~5색 조작을 사용자 승인받기
-- [ ] M1 구현: 최종 디자인 승인 뒤 별도 기능 브랜치에서 부분 진행과 완성 상태, 중간 저장·재진입, 8장 주요 보상, 매칭률 제거 계약을 코드와 카피에 반영하기
-- [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트 기반 완성하기
+- [x] 발견 색 대표 콘텐츠를 Hue Canvas로 확정하고 큰 가상 격자·발견 횟수 사용량·자유/도안·스테인드글라스 계약 문서화
+- [x] 로컬 우선 저장·Hueday Cloud·Hueday Studio·D 드라이브 디자인 자료 관리 계약 문서화
+- [ ] M1 구현: `feature/color-hunt-contract`에서 부분 진행과 완성 상태, 중간 저장·재진입, 8장 주요 보상, 매칭률 제거 계약을 코드와 카피에 반영하기
+- [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M3: 집·학교·통학·카페·날씨·컬러 산책 일상 미션 팩 구현하기
-- [ ] M4: 승인된 발견 색 대표 콘텐츠의 Color Archive·선택·결과·리믹스 430x932 프로토타입과 결정적 SVG/Canvas 스파이크 검증하기
-- [ ] M5: 승인된 발견 색 창작, recipe 저장·복구, 원본 기록 연결, Color Rhythm·실제 창작 보상 완성하기
+- [ ] M4: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기
+- [ ] M5: Hue Palette 발견 횟수, sparse recipe 저장·복구, 원본 기록, Color Rhythm·실제 창작 보상 완성하기
 - [ ] M6: 월간 Hueprint와 최소 Color Capsule 구현하기
 - [ ] M7: 만료·폐기 가능한 안전한 Color Relay 구현하기
 - [ ] M8~M9: 통합 디자인·접근성·성능·보안·실기기 출시 검증 통과하기
@@ -29,4 +30,5 @@
 - [ ] 가입 → 첫 사진 → 저장 → 공유의 최소 이벤트와 기준 시간을 정의하기
 - [ ] 첫 대형 성장 기능으로 만료·폐기 가능한 오늘의 색 공유 링크를 `feature/share-color-card`에서 설계하기
 - [ ] `20260529200000_add_grid_images.sql`을 라이브 Supabase에 적용할 인증된 admin 경로를 마련하고 fallback 종료 조건 정하기
+- [ ] 최초 Play 업로드 전에 `com.colorwalk.app` 영구 사용을 확정하고 업로드 키/Play App Signing, versionCode, 계정 삭제, 개인정보처리방침, Data Safety를 완성하기
 - [ ] 실제 iPhone/App Store가 필요해질 때 Apple Developer 가입과 Mac mini/단기 Mac/cloud CI 중 초기 빌드 경로 확정하기

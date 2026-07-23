@@ -54,7 +54,7 @@ Avoid rewards that make users think:
 | 진행 축 | 예시 | 보상 방향 |
 | --- | --- | --- |
 | 첫 색 씨앗·발견 시작 | 안전하게 저장된 부분 진행 | 저장 확인, 진행 피드백, 이어하기 입구 |
-| 완성한 3x3 | 1·3·5·10페이지 등 | 가구·액자·새 배치 영역 |
+| 완성한 3x3 | 1·3·5·10페이지 등 | 해당 미션 색의 Hue Canvas 배치량·기본 도안/도구 |
 | 미션 팩 | 집·학교·통학·카페 pack 진행 | 문맥별 대표 아이템 |
 | 주간 색 리듬 | 선택한 2/3/5일 목표 | 재질·장식·작은 공간 효과 |
 | 월간 참여 | 한 달 안의 유연한 참여 | Hueprint 포스터·벽지·리캡 프레임 |
@@ -87,7 +87,7 @@ When a feature changes, update rewards by preserving these relationships:
 - `habit milestone -> creative unlock`
 - `partial color seed -> resumable progress without completion reward`
 - `completed 3x3 -> primary creative unlock`
-- `saved mission color -> room item/color library`
+- `saved completed mission color -> Hue Palette count and Canvas tile budget`
 - `saved posts -> source of truth`
 - `collected colors/photos -> shareable memory`
 - `free earned reward -> genuinely useful creative item`
@@ -95,7 +95,7 @@ When a feature changes, update rewards by preserving these relationships:
 Examples:
 
 - A first-photo seed may receive a saved-state mark or gentle progress feedback, but not the main reward reserved for a completed page.
-- Completed 3x3 pages should unlock reusable Hue Materials, grid frame styles, recap layouts, or other meaningful creative assets.
+- Completed 3x3 pages should increase the matching Hue Canvas color budget and may unlock grid frames, recap layouts, or other meaningful creative assets.
 - The primary reward should be immediately usable in the approved found-color content, with story/profile art as a secondary use. Hue Room is a deferred post-launch hypothesis, not a launch reward target.
 - If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
 - If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.
@@ -134,14 +134,14 @@ Before shipping a change that touches camera, journal, story export, profile, hi
 
 ## Reward Types
 
-### 1. Hue Materials and Creative Options
+### 1. Hue Canvas Colors and Creative Options
 
 발견 색을 직접 써 보는 창작 자산을 가장 강한 장기 보상으로 사용한다.
 
-- 완성된 3x3의 저장된 미션 색이 원본 기록과 연결된 Hue Material이 된다.
-- 색은 소모하지 않으며 여러 Hueprint와 Story 결과물에 반복 사용한다.
+- 완성된 3x3의 저장된 미션 색이 원본 기록과 연결된 Hue Palette 색이 되고 해당 색의 작품별 배치 가능량이 1 늘어난다.
+- 색은 영구 소모하지 않는다. 지우거나 바꾸면 작품 내 사용량이 돌아오며 여러 Canvas·Hueprint·Story 결과물에 반복 사용한다.
 - 새 색을 얻으면 과거 작품의 한 색을 교체해 리믹스할 수 있다.
-- 첫 색 씨앗은 안전한 진행으로 남고, 완성 3x3·미션 팩·월간 참여가 재질·구도·레이어·표지 같은 실제 옵션을 연다.
+- 첫 색 씨앗은 안전한 진행으로 남고, 완성 3x3·미션 팩·월간 참여가 Canvas 색 수량·도안·재질·도구·표지 같은 실제 옵션을 연다.
 - 접속하지 않아도 색, 작품, 열린 보상은 줄거나 망가지지 않는다.
 
 세부 후보·승인 게이트는 `docs/discovered-color-content-strategy.md`를 따른다.
@@ -224,13 +224,13 @@ Current beta implementation:
 - `getUnlockedBadges(streak, posts)` unlocks a milestone when either the current streak reaches the milestone or the user has completed that many full 3x3 grids.
 - This means a user can unlock rewards through daily consistency or through enough completed color grids, but the unlock still comes from persisted posts rather than a fragile local counter.
 - Current visible rewards are still mostly labels and badge states. The next product step should make each unlocked milestone visibly usable in story/export/profile surfaces.
-- Color Rhythm, Hue Materials, mission-pack rewards, and reward migration are not implemented yet.
+- Color Rhythm, Hue Canvas color budgets, mission-pack rewards, and reward migration are not implemented yet.
 
 Target implementation:
 
 - `posts.local_date`에서 주간 색 리듬과 평생 발견일을 계산한다.
 - 8장 그리드 완료 수, 미션 팩 metadata, 월간 참여를 별도 진행 축으로 계산한다.
-- unlock 결과는 Hue Material/Studio option ID, Story asset ID, Hueprint asset ID 같은 실제 사용 대상을 반환한다.
+- unlock 결과는 Hue Canvas color/tool/template ID, Story asset ID, Hueprint asset ID 같은 실제 사용 대상을 반환한다.
 - UI component는 조건을 다시 계산하지 않고 한 reward helper/config의 결과를 사용한다.
 - 기존 badge unlock은 새 reward ledger에 무손실로 매핑한다.
 

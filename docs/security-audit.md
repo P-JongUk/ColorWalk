@@ -1,6 +1,6 @@
 # Security Audit Notes
 
-Last checked: 2026-06-04 KST.
+Last checked: 2026-07-23 KST.
 
 ## Completed
 
@@ -22,6 +22,23 @@ Last checked: 2026-06-04 KST.
 - `rg` found no `service_role`/`SUPABASE_SERVICE_ROLE_KEY` usage in browser code.
 - `docs/*.private.md`, `.env*`, `.design-references/`, `.lazyweb/`, and Vercel local cache paths are ignored by git and Vercel upload rules.
 - Supabase MCP Advisor could not run in this Codex session because the connector token had expired. The local `verify:supabase` script passed and still covers Auth, RLS, Storage owner checks, post CRUD, and signed URL denial for another user.
+
+## 2026-07-23 Live Verification
+
+`npm run verify:supabase` loaded the local browser environment without printing credentials and passed:
+
+- anonymous sign-in compatibility
+- anonymous data-write denial
+- password-user profile upsert and beta metadata
+- color-name suggestions
+- owner storage upload and signed URL
+- post upsert/select, story metadata, and grid image metadata
+- cross-user post and storage denial
+- capture-location metadata disabled
+
+The live project still lacks the `posts.grid_images` migration and the app used `client_meta_fallback`. Apply `20260529200000_add_grid_images.sql` through an authenticated admin path, verify it live, then retire the fallback in a later compatible change.
+
+The local-first/high-quality storage design in `docs/data-storage-sync-and-cost-strategy.md` is not implemented yet. Its migration must preserve existing cloud records, add owner RLS for new snapshots, avoid logging photo/journal/canvas content, and include export/account-deletion tests.
 
 ## Remaining Manual Dashboard Item
 

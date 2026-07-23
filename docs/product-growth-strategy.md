@@ -4,7 +4,8 @@
 상위 전략과 현재 구현 진단: `docs/hueday-breakout-strategy.md`
 전체 제품 합의: `docs/hueday-product-blueprint.md`
 실제 실행 순서와 상태: `docs/hueday-development-roadmap.md`
-발견 색 대표 콘텐츠 후보: `docs/discovered-color-content-strategy.md`
+Hue Canvas 상세 계약: `docs/hue-canvas-product-spec.md`
+발견 색 확장 후보·보류: `docs/discovered-color-content-strategy.md`
 
 이 문서는 Hueday가 베타 이후 어떤 성장 루프를 키울지 정리한 living document다. 새 기능을 추가할 때는 단순히 유행 앱을 따라 만들지 말고, 아래의 고유 루프를 강화하는지 먼저 확인한다.
 
@@ -85,18 +86,18 @@ Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수�
 
 사용자가 새 색을 찾을수록 직접 만들고 리믹스할 수 있는 개인 작품의 조합 가능성이 넓어진다.
 
-1. 완성된 3x3의 저장된 미션 색이 원본 기억이 붙은 비소모성 Hue Material이 된다.
-2. 사용자는 Color Archive에서 2~5색을 골라 재질과 구도로 조합한다.
+1. 완성된 3x3의 `mission_hex`가 Hue Palette에 들어가고 같은 색 발견 횟수가 한 작품의 타일 배치량이 된다.
+2. 사용자는 큰 Hue Canvas에 자유롭게 그리거나 크기 조절 가능한 선 도안을 반투명 유리 타일로 채운다.
 3. 작품의 색을 누르면 해당 3x3 기록과 일기로 돌아간다.
-4. 새 색을 얻으면 과거 작품을 리믹스하고 월간 Hueprint Gallery에 함께 보관한다.
-5. Relay는 서로 한 색씩 보태는 엽서나 Duet Print가 된다.
+4. 색은 영구 소모하지 않으며, 새 색을 얻으면 과거 작품을 리믹스하고 월간 Hueprint에 함께 보관한다.
+5. Relay는 서로 한 색씩 보태는 공동 Canvas·엽서로 확장할 수 있다.
 
 구현 기준:
 
 - 색상별 에셋이나 생성형 AI 없이 결정적 SVG/Canvas 규칙을 우선한다.
 - 색과 작품은 접속하지 않아도 줄거나 망가지지 않는다.
 - 공개 인기 순위나 친구 비교보다 개인 기억과 표현을 우선한다.
-- 후보와 승인 기준은 `docs/discovered-color-content-strategy.md`를 따른다.
+- 제품·승인 기준은 `docs/hue-canvas-product-spec.md`, 확장 후보는 `docs/discovered-color-content-strategy.md`를 따른다.
 - Hue Room은 완전히 별도의 출시 후 가설이며 대체 콘텐츠 안에 축소 형태로 넣지 않는다.
 
 ## Current Master Sequencing
@@ -199,8 +200,8 @@ Success metrics:
 MVP UX:
 
 - 첫 색 씨앗: 저장 확인, 이어하기 입구, tiny progress mark. 주요 아이템 해금으로 표시하지 않는다.
-- 완성 3x3 누적: 비소모성 Hue Material, 새 구도·레이어.
-- 주간 2/3/5일 Color Rhythm: Glass/Ink/Loom 재질 변형·soft story detail.
+- 완성 3x3 누적: 해당 미션 색의 Hue Canvas 배치량, 기본 도안·도구.
+- 주간 2/3/5일 Color Rhythm: 유리 재질 변형·soft story detail.
 - 미션 팩 완성: 학교·집·통학·카페 문맥의 스탬프·텍스처.
 - 월간 참여: Hueprint 표지·recap frame.
 - 기존 3·7·14·30 보상은 새 기준으로 무손실 이전.
@@ -413,7 +414,7 @@ Backend 후보:
 
 ### Current Status
 
-- 2026-07-22 현재 결제, 구독, 광고, 스폰서 미션은 구현되어 있지 않다.
+- 2026-07-23 현재 결제, 구독, 광고, 스폰서 미션은 구현되어 있지 않다.
 - 베타에서는 daily mission, 촬영, 기록, history, 기본 story export와 공유를 무료로 유지한다.
 - 리텐션과 공유 루프가 검증되기 전에는 광고나 core paywall을 추가하지 않는다.
 - 디지털 상품을 실제 앱에서 판매할 때는 Apple In-App Purchase와 Google Play Billing 정책을 구현 시점에 다시 확인한다.
@@ -438,17 +439,20 @@ Backend 후보:
 - 기본 9:16 story와 3x3 이미지 export.
 - 친구가 공유한 color card 보기와 `나도 이 색 찾기` 참여.
 - Color Rhythm과 누적 발견으로 획득한 기본 frame, stamp, sticker 사용.
+- 기본 Hue Palette와 Hue Canvas, 기본 스테인드글라스 재질, 기본 도안, 로컬 저장과 기본 export.
+- 현재 기기의 고화질 기록, 작은 클라우드 메타데이터·미리보기, 수동 `.hueday` archive 내보내기·가져오기.
 
 ### Revenue Ladder
 
 | 단계 | 수익 모델 | 판매 가치 | 시작 조건 |
 | --- | --- | --- | --- |
 | Beta | 무료 | 결제 없음. core loop와 공유 행동 측정 | 저장 안정성과 D1/D7 사용 패턴 확인 |
-| 1 | 1회 구매 Creative Pack | 계절·여행·커플·졸업 palette, premium frame, typography, sticker | recap/story export의 반복 사용과 구매 의향 확인 |
-| 2 | Hueday Plus | 장기 원본 백업, 기기 간 복구, 연간 Hueprint, 고급 export, 정기 premium pack | 매달 제공할 가치와 사용자당 저장 비용 확인 |
-| 3 | Physical Memory | 월간 엽서, 미니 컬러 북, 연간 Hueprint book | digital recap 저장·공유 수요와 인쇄 마진 확인 |
-| 4 | B2B Mission Pack | 미술관·카페·축제·캠퍼스의 기간 한정 color walk | 소규모 커뮤니티 pilot의 참여율과 재계약 의향 확인 |
-| 5 | 선택형 Sponsorship | 명확히 표시된 브랜드 color mission과 한정 creative item | 충분한 활성 사용자, 브랜드 안전, 미성년자 보호 기준 확보 |
+| 1 | 1회 구매 Creative Pack | 계절·여행·커플·졸업 palette, 도안, frame, typography, sticker | recap/story/Canvas의 반복 사용과 구매 의향 확인 |
+| 2 | Hueday Studio 1회 구매 | 고급 Hue Canvas 재질·도안·레이어·편집·로컬 이력·고해상도 창작 export | 창작 도구 가치와 store 1회 결제 의향 확인 |
+| 3 | Hueday Cloud 구독 | 5GB 고화질 백업, 자동 기기 복구, 고화질 다시 받기, 30일 휴지통 | 복구 신뢰와 사용자당 storage/egress 비용 확인 |
+| 4 | Physical Memory | 월간 엽서, 미니 컬러 북, 연간 Hueprint book | digital recap 저장·공유 수요와 인쇄 마진 확인 |
+| 5 | B2B Mission Pack | 미술관·카페·축제·캠퍼스의 기간 한정 color walk | 소규모 커뮤니티 pilot의 참여율과 재계약 의향 확인 |
+| 6 | 선택형 Sponsorship | 명확히 표시된 브랜드 color mission과 한정 creative item | 충분한 활성 사용자, 브랜드 안전, 미성년자 보호 기준 확보 |
 
 ### First Products To Test
 
@@ -458,22 +462,32 @@ Backend 후보:
 - 서버 기능 없이 기존 story template/sticker 구조를 확장할 수 있어 구현·운영 비용이 작다.
 - 예시: 벚꽃 산책, 장마의 색, 여름 여행, 졸업 앨범, 둘만의 팔레트.
 - 구매하지 않아도 기본 export와 배지 보상은 온전히 사용할 수 있어야 한다.
-- 첫 가격 탐색 범위는 1,500~4,900원이지만 확정 가격이 아니라 구매 의향 인터뷰용 가설이다.
+- 첫 가격 탐색 범위는 1,500~3,900원이지만 확정 가격이 아니라 구매 의향 인터뷰용 가설이다.
 
-#### 2. Hueday Plus
+#### 2. Hueday Studio — 1회 구매
 
-- 월 구독은 `매달 달라지는 결과`와 `지속적인 저장 비용`이 있을 때만 성립한다.
-- 후보 가치: 원본 장기 백업, multi-device restore, 월간·연간 Hueprint, 고해상도/무워터마크 export, 매월 새 creative pack.
-- 월 3,900원 또는 연 29,000원은 초기 가격 가설일 뿐이며, 무료 사용자의 기록·기본 공유를 제한하는 근거로 사용하지 않는다.
-- 장기 백업을 판매하기 전 데이터 export, account deletion, 복구 정책을 먼저 완성한다.
+- 가격 가설은 19,900원이며 초기 반응 확인용 출시 프로모션 14,900원을 검토할 수 있다.
+- 서버 반복 비용이 거의 없는 기기 내 고급 창작 도구를 묶는다.
+- 후보 범위: 고급 유리 재질, 추가 도안, 레이어, 선택·복제·일괄 재채색, 로컬 고급 편집 이력, 고해상도 Hue Canvas/Hueprint/Story export.
+- 구매 당시의 Studio 도구와 이후 핵심 편집 도구 개선은 계속 사용할 수 있게 한다.
+- 무기한 클라우드 저장, 요청당 비용이 드는 AI, 실물 상품, 외부 라이선스 협업, 모든 미래 시즌 팩을 포함한다고 약속하지 않는다.
 
-#### 3. Physical Memory
+#### 3. Hueday Cloud — 구독
+
+- 월 1,500원, 연간 출시 가설 9,900원으로 시작하고 가치가 확인된 뒤 정상가 12,000원을 검토한다.
+- 5GB 고화질 백업, Wi-Fi 자동 백업, 기기 간 자동 복구, 클라우드 고화질 다시 받기, 30일 휴지통, 저장 공간 표시를 제공한다.
+- 창작 팩을 억지로 끼워 월 가격을 높이지 않는다.
+- 반복 storage/egress/복구 운영 비용이 있으므로 평생 이용권으로 판매하지 않는다.
+- 해지 시 새 백업을 멈추되 유예 기간·export를 제공하고, 작은 메타데이터·미리보기·로컬 기록을 즉시 잠그거나 삭제하지 않는다.
+- 판매 전에 데이터 export, account deletion, 복구 정책, 비용 측정, 업로드 실패 복구를 완성한다.
+
+#### 4. Physical Memory
 
 - 디지털 기록이 충분히 쌓인 사용자에게만 자연스럽게 제안한다.
 - 월말 recap을 엽서나 접이식 미니북으로 주문하는 가장 작은 pilot부터 시작한다.
 - 인쇄·배송·재제작·환불 비용을 포함한 건당 공헌이익이 확인되기 전 자동 주문 시스템을 만들지 않는다.
 
-#### 4. B2B Color Walk
+#### 5. B2B Color Walk
 
 - 광고 배너 대신 특정 공간을 직접 탐색하게 만드는 sponsored mission을 판매한다.
 - 예시: 미술관 전시 팔레트, 카페 시즌 컬러, 지역 축제 color hunt, 대학 축제 공동 Hueprint.
@@ -610,9 +624,9 @@ Design:
 2. Everyday mission pack config:
    - 집/학교/통학/카페/날씨/컬러 산책 정적 pack.
    - remote DB pack은 운영 필요가 생긴 뒤 이동.
-3. Found-color creation prototype and reward loop:
-   - 2~5색 선택과 Glass/Ink/Loom 결과를 샘플 데이터로 먼저 검증.
-   - 사용자 승인 뒤 Color Archive, recipe 저장, 리믹스, 실제 unlock 순으로 확장.
+3. Hue Canvas prototype and reward loop:
+   - 빈/Palette/자유 작업/도안 크기/완성·export를 같은 데이터로 시안화하고 실제 Canvas 2D로 재현.
+   - 시각·조작 승인 뒤 sparse recipe 저장, 발견 횟수 배치량, 리믹스, 실제 unlock 순으로 확장.
 4. Monthly recap client MVP:
    - 현재 월 posts와 저장 작품을 가져와 9:16 recap과 Hueprint 표지 생성.
    - 서버 캐시는 나중에.

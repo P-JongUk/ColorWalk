@@ -78,7 +78,7 @@ The final visual direction is Candidate 3: soft emotional warmth with restrained
 
 ## Future Roadmap
 
-The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the only current execution status board is `docs/hueday-development-roadmap.md`. The complete Hue Room replacement exploration lives in `docs/discovered-color-content-strategy.md`; the old Hue Room spec and sub-roadmap are preserved as deferred post-launch evidence. The code-grounded diagnosis, monetization sequence, market references, and Windows-to-iOS release options remain in `docs/hueday-breakout-strategy.md` and `docs/product-growth-strategy.md`. This file must not claim proposals are implemented until code and verification exist.
+The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the only current execution status board is `docs/hueday-development-roadmap.md`. Hue Canvas is the approved Hue Room replacement; its product contract lives in `docs/hue-canvas-product-spec.md`, alternatives/deferred ideas in `docs/discovered-color-content-strategy.md`, storage/cost architecture in `docs/data-storage-sync-and-cost-strategy.md`, and D-drive visual evidence status in `docs/design-reference-index.md`. The old Hue Room spec and sub-roadmap are preserved as deferred post-launch evidence. This file must not claim proposals are implemented until code and verification exist.
 
 ### Product Growth Strategy
 - Growth principle: do not clone Locket, BeReal, Setlog, or generic story-template apps. Use them only as reference patterns for close sharing, low-burden logging, and daily prompts.
@@ -86,8 +86,8 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 - Priority growth bets:
   - Clear center-mission-color 3x3 Color Hunt without extraction or match percentage.
   - Home/school/commute/cafe/weather/walk mission packs for everyday discovery.
-  - A found-color creative system where completed 3x3 colors become reusable, non-consumable materials linked to their source memories.
-  - Flexible Color Rhythm and cumulative rewards that unlock real room/story/Hueprint items.
+  - Hue Canvas, where each completed 3x3 increases that mission color's per-artwork stained-glass tile budget and every color links to its source memories.
+  - Flexible Color Rhythm and cumulative rewards that unlock real Hue Canvas/story/Hueprint options.
   - Monthly Hueprint and minimum Color Capsule recall.
   - Friend-shared "today color card" links and safe Color Relay.
   - Close-friend "see each other's today color" without ranking or comparison.
@@ -97,10 +97,11 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 
 ### Monetization Direction
 - Keep beta free and avoid in-app ads. Ads conflict with the calm daily ritual and make the first impression feel cheap.
-- Use a freemium path after retention is proven:
-  - Free: daily mission, 3x3 grid capture, basic journal, history, and basic story frame export.
-  - Paid one-time packs: premium story frames, seasonal palette packs, special typography styles, icon/sticker overlays.
-  - Paid subscription only if there is enough ongoing value: monthly color report, long-term backup, advanced calendar insights, multi-device sync, exclusive monthly templates.
+- Use a freemium path after retention and storage safety are proven:
+  - Free: daily mission, 3x3 grid capture, journal/history, basic Hue Canvas/story export, local high-quality records, small cloud metadata/preview, and manual archive transfer.
+  - Creative packs: optional 1,500~3,900원 hypothesis.
+  - Hueday Studio one-time: 19,900원 hypothesis for on-device advanced Canvas/Hueprint/Story tools; no lifetime cloud promise.
+  - Hueday Cloud: 월 1,500원·연 9,900원 hypothesis for 5GB backup, automatic restore, high-quality re-download, and trash.
 - Store policy note: paid digital templates, reports, and premium app features should be implemented through Apple In-App Purchase / Google Play Billing when distributed through those stores.
 
 ### Teen Audience Expansion
@@ -118,7 +119,7 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 ### Color Rhythm and Found-Color Reward System
 - Product principle: reward repeated discovery without making consecutive-day streak loss the main emotion.
 - Users can choose a flexible weekly 2/3/5-day Color Rhythm; missed days do not remove accumulated progress, rooms, chapters, or items.
-- Saved mission colors become a reusable creative-material library. Completed 3x3 colors can be combined and reused without consuming them, and every material links back to its source record.
+- Saved mission colors become Hue Palette entries. Each completed 3x3 increases the same color's placement budget by one per artwork; editing returns usage, colors are not permanently consumed, and every color links back to source records.
 - Cumulative discovery days, completed 3x3 pages, mission packs, weekly rhythm, monthly participation, and Relay can unlock real Hueprint, story, composition, material, and export assets.
 - Existing 3/7/14/30 rewards must migrate without taking already-earned value away.
 - Any capture, mission, story, profile, found-color content, or monetization change must check `docs/colorwalk-reward-system.md`, `docs/discovered-color-content-strategy.md`, the master roadmap, and the reward helper/config.
@@ -145,3 +146,4 @@ The overall agreed product lives in `docs/hueday-product-blueprint.md`, and the 
 - Android Gradle build now succeeds locally with Android SDK 36 and JDK 21. Debug APK output: `android/app/build/outputs/apk/debug/app-debug.apk`.
 - Apply `20260529200000_add_grid_images.sql` to the live Supabase project through an authenticated admin path, then plan removal of the `client_meta.gridImages` compatibility fallback after migration verification.
 - Align the product promise around one-photo progress versus eight-photo 3x3 completion; the current camera allows completion after one image while product copy emphasizes eight shots.
+- Configure Android release signing, confirm permanent package ID `com.colorwalk.app`, add account deletion/privacy/Data Safety paths, and increment version metadata before the first Play Console upload.

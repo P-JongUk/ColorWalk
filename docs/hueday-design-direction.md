@@ -1,7 +1,7 @@
 # Hueday 디자인 방향 결정 초안
 
 마지막 갱신: 2026-07-23 KST
-상태: 게이트 1 확정, 게이트 2에서 D 외부 UI 선택, Hue Room 시안 중단, 발견 색 대체 콘텐츠 게이트 준비
+상태: 게이트 1 확정, 게이트 2에서 D 외부 UI 선택, Hue Room 시안 중단, Hue Canvas 제품 방향 승인·시각 게이트 준비
 작업 브랜치: `feature/design-direction`
 
 이 문서는 디자인 조사와 승인 게이트의 결정·평가·다음 작업만 추적한다. 대형 이미지, 무드보드 원본, 외부 레퍼런스 캡처와 렌더 산출물은 `.design-references/`와 `.lazyweb/` 아래에 로컬 전용으로 보존한다.
@@ -80,14 +80,14 @@ A안은 `첫 사진으로 오늘 기록을 완료하고 나머지 7장은 선택
 - Hue Room 관련 보드와 시안은 `.design-references/05-hue-room/`에 역사적 자료로 보존하되 현재 승인·구현 대상에서는 제외한다.
 - D 외부 UI 선택은 유지하지만, D 안에 들어갈 대표 콘텐츠는 Hue Room이 아니라 발견 색 완전 대체 콘텐츠로 다시 설계한다.
 
-## 게이트 3 — 발견 색 대표 콘텐츠
+## 게이트 3 — Hue Canvas 시각·조작
 
-다음 비교는 방이나 가구 시안이 아니라 동일한 사용자의 실제 발견 색 데이터로 만든다.
+다음 비교는 방이나 가구 시안이 아니라 동일한 사용자의 실제 3x3, `mission_hex`, 발견 횟수로 만든다.
 
-- Color Archive의 색 재료와 원본 3×3 연결
-- 2~5색 선택
-- Glass / Ink / Loom 결과 비교
-- 저장된 작품에 새 색을 넣는 리믹스
-- 9:16 Hueprint와 Relay Duet Print
+사용자는 Hue Canvas, 큰 가상 격자, 발견 횟수 기반 색 사용량, 자유/가변 도안, 반투명 스테인드글라스 재질을 승인했다. 다음 게이트는 `docs/hue-canvas-product-spec.md`의 HC-2다.
 
-`docs/discovered-color-content-strategy.md`의 1순위 Hue Studio 구조와 대안들을 먼저 사용자에게 설명하고, 대표 콘텐츠·첫 재질·첫 조작을 승인받기 전에는 전체 화면 제작이나 코드 구현으로 넘어가지 않는다.
+- 빈 상태·Hue Palette·자유 작업·도안 크기 조절·완성/export를 같은 430x932 데이터로 비교한다.
+- 생성 이미지와 실제 Canvas 2D/SVG 프로토타입을 함께 만들어 시각 재현성을 검증한다.
+- D — Chromatic Archive의 정돈된 외부 UI를 유지하고 Canvas만 따뜻한 유리 빛으로 감정적 보상을 준다.
+- 첫 시각·조작 승인 전에는 전체 에셋 세트나 복잡한 렌더러를 만들지 않는다.
+- 산출물 상태와 D 드라이브 경로는 `docs/design-reference-index.md`에서 관리한다.
