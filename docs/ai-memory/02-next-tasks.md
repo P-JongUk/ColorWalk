@@ -7,6 +7,8 @@
 > - **그 다음:** `feature/living-hue-deck`에서 기존 일일 기록을 파생하는 1/3/5/8 카드·Color Volume·초기 컬렉션으로 구현한다. 새 카드 테이블/이미지 업로드/AI/Canvas/친구 기능을 추가하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
+> - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.
+> - **첫 소셜 업데이트:** Hue Drop은 Canvas와 별도 release로 진행하고 공개/익명 UGC를 열지 않는다.
 
 
 > ## 진행 중 작업 인계

@@ -1,6 +1,6 @@
 # 현재 상태
 
-> **2026-07-26 최신 상태 — 이 블록이 아래의 이전 Canvas/Relay 출시 우선순위보다 우선한다.** `main == origin/main == 87da427`에서 문서 정렬 브랜치 `feature/living-deck-launch-contract`를 시작했다. 첫 출시 대표 콘텐츠는 Living Hue Deck이며, 개인 Color Hunt 기록이 1/3/5/8 카드·Color Volume·최대 3개 초기 컬렉션·주간 Hueprint로 이어진다. Hue Canvas G1은 보존됐지만 deferred이고, Hue Drop은 첫 출시 뒤 우선순위 1이다. 공개/익명 UGC와 친구 기능은 첫 출시 범위가 아니다. 다음 구현 순서는 M2-3 업데이트 안전 → M3 Living Hue Deck이다. 상세은 `docs/launch-scope-and-update-safety-contract.md`.
+> **2026-07-26 최신 상태 — 이 블록이 아래의 이전 Canvas/Relay 출시 우선순위보다 우선한다.** `main == origin/main == c602eaa`에서 업데이트 안전 계약 정렬을 진행한다. 첫 출시 대표 콘텐츠는 Living Hue Deck이며, 개인 Color Hunt 기록이 1/3/5/8 카드·Color Volume·최대 3개 초기 컬렉션·주간 Hueprint로 이어진다. Hue Canvas G1은 `feature/hue-canvas-prototype`에 보존됐고, 버전 1 출시 후 가능한 한 빠르게 반드시 제공할 초기 기능 업데이트다. Hue Drop은 첫 소셜 업데이트다. 다음 구현 순서는 M2-3 업데이트 안전 → M3 Living Hue Deck → 버전 1 출시 → M8A Hue Canvas → M8B Hue Drop이다.
 
 ## 제품
 

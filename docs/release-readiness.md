@@ -6,6 +6,15 @@
 - Before a version that changes persistence ships, verify one Android in-place update and one PWA Service Worker update with existing login, daily draft/master, history, Deck source record, and Story retained. Additive DB changes must preserve ordinary reads/writes from a supported prior app version.
 - The release journey to verify is login → mission → capture/recover → Deck state → source 3×3/history → Hueprint/Story export; do not substitute a future social flow for this gate.
 
+## Hue Canvas post-launch update gate (2026-07-26)
+
+- Hue Canvas is a mandatory early post-launch feature update, not part of version 1. Hue Drop remains the first social update.
+- Build the release candidate from a fresh production branch; review and selectively port G1 code from `feature/hue-canvas-prototype` instead of merging the prototype branch wholesale.
+- Test an in-place Android update signed through the same package/signing lineage and a PWA Service Worker update using a populated prior-version fixture. Retain auth, 1/7/8-photo records, pending/error sync state, local masters, history, Deck, journal, and Story.
+- Palette must be derived from existing completed records. Do not rewrite Posts or local masters into Canvas data.
+- Recipe migrations must keep the previous readable copy until the new version is opened, rendered, saved, closed, and reopened successfully.
+- A feature-gate rollback may hide Canvas but must not delete recipes. Additive cloud schema, if required, must keep prior app Color Hunt/Post reads and writes working.
+
 ## M2 observability gate (2026-07-26)
 
 - Core funnel events and local outbox are implemented on `feature/core-funnel-observability`; `20260724030000_add_product_events.sql` is live on `nhsvmypztjyhqunixxeg`. `npm run verify:supabase` confirmed `productEvents.ready`, owner read, duplicate safety, anonymous-write denial, and cross-user read denial. No additional analytics deployment is required for beta aggregate queries.

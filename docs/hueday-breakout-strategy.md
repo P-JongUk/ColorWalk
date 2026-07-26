@@ -1,6 +1,6 @@
 # Hueday Breakout Strategy
 
-> **제품 방향 갱신(2026-07-26):** 첫 출시의 차별점은 사용자가 별도 그림을 만들어야 하는 창작 도구가 아니라, 실제로 찾은 색이 `Living Hue Deck`의 성장 카드·Color Volume·주간 Hueprint가 되는 개인 아카이브다. Hue Canvas는 보류된 G1 실험이며, Hue Drop은 개인 루프 반응 뒤의 첫 친구 업데이트다. 공개/익명 이미지 커뮤니티는 모더레이션 운영을 별도 승인하기 전까지 제품 가설에 포함하지 않는다. 이 변경은 외부 시장 사실이 아니라 사용자 승인 제품 결정이며 상세 계약은 `docs/launch-scope-and-update-safety-contract.md`에 있다.
+> **제품 방향 갱신(2026-07-26):** 첫 출시의 차별점은 실제로 찾은 색이 `Living Hue Deck`의 성장 카드·Color Volume·주간 Hueprint가 되는 개인 아카이브다. Hue Canvas는 G1을 보존한 출시 후 초기 필수 기능 업데이트로, 발견 색을 능동적으로 쓰는 창작 확장이다. Hue Drop은 첫 소셜 업데이트다. 공개/익명 이미지 커뮤니티는 모더레이션 운영을 별도 승인하기 전까지 제품 가설에 포함하지 않는다. 이 변경은 외부 시장 사실이 아니라 사용자 승인 제품 결정이며 상세 계약은 `docs/launch-scope-and-update-safety-contract.md`에 있다.
 
 마지막 코드 대조: 2026-07-22 KST · 제품 방향 갱신: 2026-07-26 KST
 문서 성격: 현재 구현, 시장 근거, 제품 가설을 분리해서 관리하는 living document

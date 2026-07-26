@@ -2,9 +2,9 @@
 
 ## 2026-07-26 product-direction gate
 
-- Hue Canvas G1 captures remain preserved evidence, but are not a first-release visual approval.
+- Hue Canvas G1 captures remain preserved evidence for the mandatory early post-launch update, but are not a version-1 visual approval or production integration approval.
 - Next design gate is Living Hue Deck: D exterior UI, 1/3/5/8 card growth, Color Volume, initial collection, weekly Hueprint, and Story export at 430×932.
-- No Hue Drop, public community, or Canvas G2 design QA is scheduled before launch evidence and explicit approval.
+- No Hue Drop, public community, or Canvas G2 design QA is scheduled before version-1 launch and update-safety readiness. After launch, Canvas G2 resumes before production integration.
 
 Local reference screenshots are stored under `.design-references/` and ignored by git.
 

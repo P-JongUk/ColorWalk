@@ -1,5 +1,13 @@
 # 지속 결정
 
+## 2026-07-26 — Hue Canvas 출시 후 초기 필수 업데이트와 데이터 보존 (approved)
+
+- Hue Canvas는 버전 1에는 포함하지 않지만 출시 후 가능한 한 빠르게 반드시 기능 업데이트한다. Hue Drop의 “우선순위 1”은 첫 소셜 업데이트라는 의미로 좁혀 두 기능의 충돌을 없앤다.
+- 앱 업데이트는 `com.colorwalk.app`과 동일한 Play App Signing 계보를 유지하고 재설치·데이터 삭제·새 package를 요구하지 않는다.
+- 기존 Color Hunt Post, 일일 draft, local master, Deck, Story는 Canvas migration 대상이 아니다. Palette는 완료 3×3에서 파생하고 발견 색을 소모하지 않는다.
+- G1 prototype 브랜치는 main에 통째로 병합하지 않는다. 출시 후 새 production 브랜치에서 필요한 코드만 가져오고 versioned recipe, copy-forward migration, 실패 시 원본 보존, 기능 gate 롤백을 구현한다.
+- 미래 Canvas DB를 버전 1에 미리 만들지 않는다. cloud recipe가 실제로 필요할 때 additive schema와 owner RLS를 추가하고 구버전 Color Hunt 읽기/쓰기를 보존한다.
+
 ## 2026-07-26 — Living Hue Deck 출시 전환과 Hue Drop 보류 (approved)
 
 - 첫 출시의 발견 색 대표 콘텐츠는 Hue Canvas가 아니라 Living Hue Deck이다. Color Hunt 일일 기록은 1/3/5/8의 자동 카드 성장, Color Volume, 최대 3개 초기 컬렉션, 주간 Hueprint로 보상한다. 그림 실력·별도 창작 노동·streak·랜덤 가챠는 핵심 루프가 아니다.

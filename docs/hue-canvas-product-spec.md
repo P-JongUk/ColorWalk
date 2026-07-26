@@ -1,9 +1,9 @@
 # Hue Canvas 제품 명세
 
-> **상태 정정(2026-07-26): deferred / historical G1.** 이 문서는 사용자가 승인했던 Canvas 계약과 `feature/hue-canvas-prototype`의 G1 근거를 보존한다. 첫 출시 대표 콘텐츠나 현재 구현 지시는 아니다. 첫 출시는 `docs/living-hue-deck-product-spec.md`를 따르며, Canvas G2·탭·도안·resize·export·유료 기능은 사용자의 명시적 재개 결정과 출시 후 사용 근거 전까지 진행하지 않는다.
+> **상태 정정(2026-07-26): approved — 출시 후 초기 필수 업데이트.** 이 문서는 `feature/hue-canvas-prototype`의 G1 근거와 production 계약을 보존한다. 첫 출시 대표 콘텐츠는 아니지만 버전 1 출시 후 가능한 한 빠르게 반드시 제공한다. G1 브랜치를 main에 그대로 병합하지 않고, 출시 데이터 보존·인플레이스 업데이트 gate를 통과하는 새 production 브랜치에서 필요한 부분만 가져온다.
 
 마지막 갱신: 2026-07-26 KST
-상태: **사용자 승인된 발견 색 대표 콘텐츠**
+상태: **approved — 출시 후 초기 필수 기능 업데이트**
 상위 기준: `docs/hueday-product-blueprint.md`
 실행 순서: `docs/hueday-development-roadmap.md`
 
@@ -67,7 +67,7 @@ Hue Canvas는 Hue Room의 축소판이 아니다. 가구·방·캐릭터를 만�
 - 도구 패널과 색 보유량 표시는 절제된 아카이브 언어를 사용하고, 캔버스 작품보다 시각적으로 앞서지 않는다.
 - 산호색 액센트는 선택·완료·해금 같은 제한된 피드백에만 쓴다.
 
-## 4. 첫 출시 범위
+## 4. 첫 Hue Canvas 업데이트 범위
 
 ### 필수
 
@@ -84,7 +84,7 @@ Hue Canvas는 Hue Room의 축소판이 아니다. 가구·방·캐릭터를 만�
 - 사용 색에서 원본 3x3 열기
 - 기본 반투명 유리 재질
 
-### 출시 후 후보
+### 후속 후보
 
 - 협업 캔버스
 - 움직이는 빛 효과
@@ -93,7 +93,7 @@ Hue Canvas는 Hue Room의 축소판이 아니다. 가구·방·캐릭터를 만�
 - 고급 레이어와 선택 영역 도구
 - Hue Charm·Hue Deck으로 같은 색 재고를 활용하는 별도 콘텐츠
 
-### 첫 출시에서 만들지 않음
+### 첫 Hue Canvas 업데이트에서 만들지 않음
 
 - 무한 캔버스 서버 동기화
 - 실시간 다중 사용자 편집
@@ -198,10 +198,22 @@ Hueday Cloud 구독 후보:
 
 ### 실행 우선순위 (approved)
 
-- 공개 출시에는 최소하지만 완성된 Hue Canvas를 포함한다. 빈 Hue Canvas 탭이나 Coming Soon 전용 탭은 만들지 않는다.
-- M2-2 저장 안정성 완료 뒤에는 전체 미션 팩보다 430x932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 먼저 검증한다.
-- 이 프로토타입이 승인된 뒤 M2-3 local master 수동 정리(자동 삭제 금지, 복구 불가 경고와 사용자 확인)와 최소 미션 팩을 진행한다.
-- 그 다음 출시용 Hue Canvas·Palette·Color Rhythm 보상을 완성한다. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지한다.
+- 버전 1은 Living Hue Deck 중심의 개인 앱으로 먼저 출시하고 Hue Canvas를 포함하지 않는다. 빈 탭이나 Coming Soon 전용 탭도 만들지 않는다.
+- G1 시각·조작 prototype은 `feature/hue-canvas-prototype`의 `a0e6fc7`까지 완료·push됐고 main에는 병합하지 않았다.
+- 버전 1의 M2-3·저장 복구·Android/PWA 인플레이스 업데이트 gate를 먼저 닫는다.
+- 출시 후 새 `feature/hue-canvas-production` 브랜치에서 G1을 검토해 필요한 Canvas 2D·Palette·격리 저장 코드만 가져오고 G2 도안/resize/export를 완성한다.
+- Hue Canvas는 출시 후 초기 필수 기능 업데이트다. Hue Drop은 첫 소셜 업데이트이므로 두 기능의 schema·QA·배포를 한 release에 억지로 묶지 않는다.
+
+### Gate HC-U — 기존 사용자 업데이트 안전
+
+- [ ] 동일 package ID·Play App Signing으로 기존 설치본 위에 업데이트
+- [ ] 로그인·1–7장 draft·8장 Post·local master·기록함·Deck·Story 보존
+- [ ] Palette가 기존 완료 3×3에서 중복·손실 없이 재파생
+- [ ] prototype DB를 production 사용자 데이터로 자동 승격하지 않음
+- [ ] recipe v1 생성·앱 종료·재시작 복구
+- [ ] migration 실패 시 원본 recipe와 Color Hunt 기록 유지
+- [ ] PWA Service Worker 업데이트 중 열린 draft·recipe 보존
+- [ ] 기능 gate 롤백 시 recipe 보존과 기존 앱 핵심 흐름 정상
 
 ### Gate HC-1 — 제품 계약
 

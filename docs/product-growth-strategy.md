@@ -1,6 +1,6 @@
 # Hueday Product Growth Strategy
 
-> **최신 성장·수익화 기준(2026-07-26):** 첫 출시 성장 루프는 개인 Color Hunt → Living Hue Deck 1/3/5/8 성장 → Color Volume/제한 컬렉션 → 주간 Hueprint·Story 공유다. 친구·공개 커뮤니티는 성장 전제가 아니며 Hue Drop은 출시 후 우선순위 1이다. 무료 핵심은 기록·Deck·기본 Hueprint/Story·로컬 고화질 보존이며, 가격은 선택형 팩 1,500–3,900원·Studio 14,900/19,900원 후보·Cloud 월 1,500원/연 9,900원 5GB 후보로만 유지한다. 상세은 `docs/launch-scope-and-update-safety-contract.md`.
+> **최신 성장·수익화 기준(2026-07-26):** 첫 출시 성장 루프는 개인 Color Hunt → Living Hue Deck 1/3/5/8 성장 → Color Volume/제한 컬렉션 → 주간 Hueprint·Story 공유다. 출시 후에는 Hue Canvas를 초기 필수 기능 업데이트로 제공해 발견 색의 능동적 사용을 확장하고, Hue Drop은 첫 소셜 업데이트로 검증한다. 무료 핵심은 기록·Deck·기본 Hueprint/Story·기본 Hue Canvas·로컬 고화질 보존이며, 가격은 선택형 팩 1,500–3,900원·Studio 14,900/19,900원 후보·Cloud 월 1,500원/연 9,900원 5GB 후보로만 유지한다. 상세은 `docs/launch-scope-and-update-safety-contract.md`.
 
 ## 2026-07-26 출시 전 성장 가설 정렬
 
@@ -21,9 +21,9 @@
 ### 출시 후 순서
 
 1. 개인 루프가 재방문·공유를 만드는지 측정한다.
-2. 필요한 경우에만 초대 전용 Hue Drop을 작은 베타로 연다.
-3. Hue Drop의 초대 수락·완성·안전·이미지 비용 신호를 확인한다.
-4. 그 뒤에만 Canvas 또는 다른 후보 콘텐츠를 다시 비교한다.
+2. 업데이트 안전 gate를 통과한 Hue Canvas를 초기 기능 업데이트로 제공한다.
+3. 초대 전용 Hue Drop을 첫 소셜 업데이트의 작은 베타로 연다.
+4. Canvas 사용·Hue Drop 초대 수락·완성·안전·비용 신호를 확인한 뒤 다른 후보를 비교한다.
 
 친구 기능이 없다는 이유만으로 첫 출시 완성도를 낮추지 않는다. 반대로 개인 루프가 검증되기 전 친구/공개 기능을 앞당겨 운영 위험을 만들지도 않는다.
 

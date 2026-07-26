@@ -2,6 +2,15 @@
 
 > **2026-07-26 추가 계약:** 첫 출시에서는 Living Hue Deck을 기존 일일 기록에서 파생해 별도 카드 이미지/서버 테이블을 만들지 않는다. 앱·저장 모델 변경 시 local copy-forward→읽기/복구 검증→이전 형식 제거, 서버 expand/contract, Android 인플레이스 업데이트와 PWA Service Worker 업데이트 보존 QA를 따른다. Hue Drop은 출시 후에만 preview/thumbnail·초대 멤버 권한·원자 슬롯 예약을 별도 additive 설계로 추가하며 현재 테이블/Realtime 뼈대를 만들지 않는다.
 
+## 2026-07-26 Hue Canvas 출시 후 업데이트 보존 계약
+
+- Hue Canvas는 출시 후 초기 필수 업데이트지만 production 저장소·Supabase table을 버전 1에 미리 만들지 않는다.
+- production recipe는 기존 일일 기록 DB의 동기화 인덱스와 분리하고 `version`, `ownerId`, `updatedAt`을 가진다. 기존 Post/local master는 read-only Palette source이며 migration 대상이 아니다.
+- 첫 업데이트는 기존 완료 페이지를 읽어 Palette 수량을 파생한다. 색 수량을 별도 영구 재고로 복제하거나 발견 색을 소모하지 않는다.
+- recipe migration은 copy-forward와 검증 뒤에만 이전 표현을 정리한다. 실패·강제 종료·저장 공간 부족 시 기존 recipe와 일일 기록을 유지한다.
+- 클라우드 recipe는 실제 기기 간 복구 요구가 있을 때 additive schema와 owner RLS로 추가한다. raw/master와 전체 export 이미지를 매 편집마다 업로드하지 않는다.
+- Android/PWA 업데이트 fixture에는 1장·7장·8장 기록, pending/error sync, local master, Story, Deck, Canvas recipe를 포함하되 현실적인 일반 경로만 검증한다.
+
 ## 2026-07-26 비용과 이미지 품질 추가 기준
 
 - 개인 Deck/Hueprint는 이미 동기화되는 일일 preview와 메타데이터를 조합해 표시한다. 카드 화면 때문에 사진 원본·local master·별도 합성 PNG를 중복 업로드하지 않는다.

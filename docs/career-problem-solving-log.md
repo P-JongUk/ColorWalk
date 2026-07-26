@@ -570,6 +570,18 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 - 이 사례는 출시 전 제품·아키텍처 결정이며 사용자 지표를 아직 주장하지 않는다.
 - 출시 후에는 Deck 재방문, 원본 3×3 재진입, Hueprint 열기, Story 내보내기와 Hue Drop 베타의 초대 수락/완성/신고/이미지 비용을 기록해 가설을 재평가한다.
 
+### 2026-07-26 후속 결정 — Canvas를 안전한 초기 업데이트로 재배치
+
+사용자는 Hue Canvas를 포기하거나 사용 근거가 생길 때까지 무기한 보류하는 대신, 버전 1 출시 후 가능한 한 빠르게 반드시 제공하기로 확정했다. 기능을 앞당기는 대신 기존 사용자의 기록을 위험에 노출하지 않도록 다음 경계를 추가했다.
+
+- 영구 package ID·동일 signing 계보의 인플레이스 업데이트
+- 기존 Post/draft/local master/Deck/Story를 migration하지 않고 Palette source로만 읽기
+- prototype 브랜치 전체 병합 금지와 production 코드 선별 이식
+- versioned recipe, copy-forward, 실패 시 원본 보존, 기능 gate 롤백 시 recipe 보존
+- cloud recipe가 필요할 때만 additive schema와 owner RLS 추가
+
+출시 후 첫 Canvas 후보 버전에서 Android/PWA 이전 버전 데이터 fixture의 보존 수와 migration 성공/실패 결과를 수치로 기록한다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.

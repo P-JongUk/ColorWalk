@@ -6,6 +6,13 @@
 - If Hue Drop is approved after launch, invite viewing must be isolated from public discovery and authenticated membership must be required before upload. Add member-scoped RLS, atomic server-side slot reservation, file/type/size checks, EXIF location stripping, invite revocation, remove/report/block controls, and member-only preview reads before rollout. These controls are planned, not implemented or live.
 - Deck screens must derive from existing owner records and analytics must not contain photos, journal text, exact location, tokens, or device fingerprints.
 
+## Hue Canvas post-launch boundary (2026-07-26)
+
+- Canvas recipes are owner-private data. Local records must be owner-scoped; cloud sync, when introduced, requires owner-only RLS and cross-user denial before rollout.
+- Existing Post, local master, journal, and Story records are read-only Canvas sources. A recipe migration must never broaden access to those records or upload raw/master images.
+- Canvas analytics may include screen/action, recipe cell-count bucket, save/export success, and error stage; it must not include cell contents, source photos, journal text, exact location, recipe titles, or full palettes.
+- A disabled/rolled-back Canvas release preserves recipes. Account export/delete must include Canvas metadata when cloud sync is added.
+
 ## Maintenance and verification scope (2026-07-26)
 
 - Initial architecture protects likely harm: owner isolation, unauthenticated write denial, duplicate-safe writes, offline recovery, and update compatibility. It does not pretend to operate a 100-million-user social network before there are users.

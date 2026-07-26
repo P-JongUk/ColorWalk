@@ -1,6 +1,6 @@
 # Hueday 전체 개발 마스터 로드맵
 
-> **2026-07-26 실행 순서 정정 — 이 블록이 아래의 이전 M4 Canvas·M7 Relay 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 출시 → `M8 Hue Drop(출시 후 우선순위 1)` → 사용 데이터 기반 후보 재검토. Hue Canvas G1은 보류이고 G2는 시작하지 않는다. 상세 계약: `docs/launch-scope-and-update-safety-contract.md`, `docs/living-hue-deck-product-spec.md`, `docs/hue-drop-post-launch-spec.md`.
+> **2026-07-26 실행 순서 정정 — 이 블록이 아래의 이전 M4 Canvas·M7 Relay 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 버전 1 출시 → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 상세 계약: `docs/launch-scope-and-update-safety-contract.md`, `docs/living-hue-deck-product-spec.md`, `docs/hue-canvas-product-spec.md`, `docs/hue-drop-post-launch-spec.md`.
 
 마지막 갱신: 2026-07-26 KST
 제품 기준: `docs/hueday-product-blueprint.md`
@@ -16,8 +16,18 @@
 | M5 | Hueprint·Color DNA·Color Capsule | 주간 회고와 Story 공유를 Deck 원본 기록 위에서 연결한다. 완성 강제·연속 출석·랜덤 보상을 넣지 않는다. |
 | M6 | 통합 디자인·접근성·성능 | 430×932의 일반 사용자 경로와 기본 Android/PWA 성능을 다듬는다. 고위험/비현실 조합은 P2 보류다. |
 | M7 | 출시 검증 | 인증/RLS/저장·복구/인플레이스 업데이트/공유/실기기 QA와 문서를 마감한다. |
-| M8 (출시 후) | Hue Drop | 개인 출시의 실제 신호를 확인한 뒤 초대 전용 친구 3×3을 작은 베타로 도입한다. 공개/익명 UGC는 열지 않는다. |
-| M9 (출시 후) | 데이터 기반 후보 재검토 | Hue Canvas, Charm/Loom/Bouquet, Circle/Drift는 측정·인터뷰 근거가 있을 때만 선택한다. |
+| M8A (출시 후 필수) | Hue Canvas production | G1에서 검증한 Canvas 2D를 업데이트 안전 gate 위에서 production 기능으로 완성한다. 기존 사용자 기록과 package/signing을 그대로 유지한다. |
+| M8B (출시 후 소셜) | Hue Drop | 개인 출시의 실제 신호를 확인한 뒤 초대 전용 친구 3×3을 작은 베타로 도입한다. 공개/익명 UGC는 열지 않는다. |
+| M9 (출시 후) | 데이터 기반 후보 재검토 | Charm/Loom/Bouquet, Circle/Drift는 측정·인터뷰 근거가 있을 때만 선택한다. |
+
+### M8A Hue Canvas 업데이트 완료 조건
+
+- [ ] 기존 버전 사용자 데이터가 채워진 Android 설치본과 PWA에서 인플레이스 업데이트를 통과한다.
+- [ ] 기존 Color Hunt·local master·Deck·Story 데이터를 변환하거나 삭제하지 않고 Palette를 파생한다.
+- [ ] versioned recipe의 저장·재시작·copy-forward·실패 복구가 검증된다.
+- [ ] 구버전 앱과 새 버전 앱의 기본 Color Hunt/Post 저장이 additive DB 변경 뒤에도 공존한다.
+- [ ] Canvas 기능 gate를 끄더라도 recipe와 기존 개인 기록이 보존된다.
+- [ ] G2 도안 3개·resize·export와 실제 Android 조작/성능 QA가 통과한다.
 
 ### M3 Living Hue Deck 완료 조건
 
@@ -39,7 +49,7 @@
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
 - 현재 작업: M2-1 관측성과 M2-2 local master·offline sync를 각각 feature 브랜치에서 완료하고, M2-2는 `e495501`까지 2026-07-26 KST에 `main`으로 fast-forward 통합했다. M2-2 Android 실경로 QA와 M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
-- 다음 한 작업: **빈 탭이나 Coming Soon 화면 없이 Hue Canvas의 430x932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 검증하고 사용자 승인을 받는다.**
+- 다음 한 작업: **M2-3 local master 수동 정리와 Android/PWA 인플레이스 업데이트 보존 gate를 계획·구현한다. Hue Canvas G1은 이미 별도 브랜치에 보존됐으며 production 작업은 버전 1 출시 후 M8A에서 재개한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙

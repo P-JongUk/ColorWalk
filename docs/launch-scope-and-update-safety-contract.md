@@ -22,7 +22,7 @@
 - 생성형 AI 사진→도안, 이미지 생성, 공개 커뮤니티 모더레이션
 - 미래 기능 전용 테이블·서버·Realtime 채널·feature flag 프레임워크
 
-제외는 기능을 포기한다는 뜻이 아니라, 개인 루프와 업데이트 안전성을 먼저 증명한다는 뜻이다. Hue Drop은 출시 후 우선순위 1이며, 나머지는 사용 근거가 생긴 뒤에만 재검토한다.
+제외는 기능을 포기한다는 뜻이 아니라, 개인 루프와 업데이트 안전성을 먼저 증명한다는 뜻이다. Hue Canvas는 출시 후 가능한 한 빠르게 제공할 **필수 초기 기능 업데이트**다. Hue Drop은 **첫 소셜 업데이트**이며, 두 기능을 한 번에 묶어 위험을 키우지 않는다.
 
 ## 3. 유지보수·아키텍처 원칙
 
@@ -44,6 +44,17 @@
 
 이 계약은 출시 직전 한 번만 확인하는 것이 아니라, 저장 모델·DB·앱 버전을 바꾸는 기능마다 적용한다. 다만 UI로 만들 수 없는 입력, 존재하지 않는 사용자 조합, 대규모 부하 추정은 telemetry·보안 경계·실제 장애 신호가 생길 때까지 P2 보류로 둔다.
 
+### Hue Canvas 업데이트 특별 계약
+
+- Play Store 업데이트는 영구 package ID와 동일한 Play App Signing 계보를 유지한다. 재설치·앱 데이터 삭제·새 package로의 교체를 업데이트 절차로 사용하지 않는다.
+- production recipe는 `version`이 있는 별도 로컬 저장 경계에 둔다. Color Hunt의 `daily-record`/`media-asset` key, pending/error 동기화 조회, local master 파일을 이동하거나 재해석하지 않는다.
+- 첫 production 실행은 기존 완료 3×3에서 Palette를 다시 **파생**한다. 발견 색을 소모하거나 기존 Post를 Canvas 형식으로 변환하지 않는다.
+- G1 prototype DB와 production DB는 자동 병합하지 않는다. G1은 출시 전 실험 데이터이므로, 필요한 코드만 검토해 옮기고 실제 사용자 데이터 migration 대상으로 취급하지 않는다.
+- recipe 형식 변경은 `v1 읽기 유지 → v2 copy-forward → 새 recipe 읽기/렌더/저장 검증 → 충분한 출시 기간 뒤 구형 쓰기 제거` 순서를 따른다. migration 실패 시 원본 recipe와 일일 기록을 그대로 남긴다.
+- 클라우드 recipe가 필요해질 때만 additive table/RLS를 추가한다. 구버전 앱은 Canvas 필드가 없어도 Color Hunt·Deck·Story를 계속 읽고 저장할 수 있어야 한다.
+- 기능을 끄거나 롤백할 때 Canvas 진입점만 숨길 수 있어야 하며 recipe를 삭제하지 않는다. 범용 원격 설정 플랫폼은 만들지 않고 최소한의 기능 gate만 사용한다.
+- Android 기존 사용자 데이터가 채워진 기준 버전 → Canvas 버전 인플레이스 업데이트, PWA 열린 draft 상태 → 새 Service Worker 활성화를 각각 검증한다.
+
 ## 5. 수익화 경계
 
 무료 핵심은 Color Hunt, 3×3, Living Hue Deck, 기본 Hueprint/Story, 로컬 고화질 기록과 기본 내보내기다. 친구 참여는 훗날 Hue Drop이 추가되더라도 무료다.
@@ -60,4 +71,4 @@
 
 ## 6. 방향 변경 절차
 
-Living Hue Deck을 다른 대표 콘텐츠로 바꾸거나, Hue Drop을 첫 출시로 앞당기거나, 공개 UGC를 열거나, 무료/유료 경계를 바꾸려면 현재 계약·근거·사용자 영향·최소 두 선택지를 텍스트로 먼저 제시하고 사용자의 명시 승인을 받는다.
+Living Hue Deck을 다른 첫 출시 대표 콘텐츠로 바꾸거나, Hue Canvas를 버전 1로 앞당기거나 무기한 보류하거나, Hue Drop을 첫 출시로 앞당기거나, 공개 UGC를 열거나, 무료/유료 경계를 바꾸려면 현재 계약·근거·사용자 영향·최소 두 선택지를 텍스트로 먼저 제시하고 사용자의 명시 승인을 받는다.

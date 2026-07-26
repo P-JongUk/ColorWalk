@@ -1,12 +1,12 @@
 # Hue Drop 출시 후 우선 업데이트 명세
 
 마지막 갱신: 2026-07-26 KST  
-상태: **deferred — 첫 출시 이후 우선순위 1**  
+상태: **deferred — 첫 출시 이후 첫 소셜 업데이트**
 상위 기준: `docs/launch-scope-and-update-safety-contract.md`
 
 ## 1. 결정
 
-Hue Drop은 첫 출시에서 구현하지 않는다. 개인 Color Hunt·Living Hue Deck의 실제 사용과 업데이트 안전성을 먼저 검증한 뒤, 반응이 있을 때 추가하는 첫 번째 친구 기능이다.
+Hue Drop은 첫 출시에서 구현하지 않는다. 개인 Color Hunt·Living Hue Deck과 초기 필수 Hue Canvas 업데이트의 안전성을 먼저 지키면서 추가하는 첫 번째 친구 기능이다. Hue Canvas와 Hue Drop을 하나의 대형 업데이트로 묶을 필요는 없다.
 
 첫 출시에는 Hue Drop 탭, 빈 Coming Soon 화면, 미래 Relay 테이블, 공개 피드, 익명 참여를 만들지 않는다. 미래 확장용 뼈대가 현재 앱의 복잡도·오류 표면을 늘리기 때문이다.
 

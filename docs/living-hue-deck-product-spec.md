@@ -64,7 +64,7 @@ Color Hunt의 본질은 현실에서 색을 찾는 일이다. Deck은 그 행동
 
 ## 6. 명시적 제외와 보류
 
-- **Hue Canvas**: G1 프로토타입은 `feature/hue-canvas-prototype`과 D 드라이브 참고 자료에 보존한다. 그러나 첫 출시 탭·G2 도안/resize/export·수익 기능으로 진행하지 않는다. 재개는 사용자 명시 승인과 출시 후 사용 증거가 있을 때만 가능하다.
+- **Hue Canvas**: G1 프로토타입은 `feature/hue-canvas-prototype`과 D 드라이브 참고 자료에 보존한다. 첫 출시에는 넣지 않지만 출시 후 가능한 한 빠르게 제공할 필수 초기 업데이트로 승인됐다. production 구현은 Deck/Color Hunt 데이터를 변경하지 않고 Palette를 파생하며, 업데이트 안전 gate를 먼저 통과한다.
 - 사진을 자동 도안으로 바꾸는 생성형 AI: 현재 보류다. 비용·대기 시간·개인정보·결과 품질을 감수할 이유가 검증된 뒤에만 후보로 재검토한다.
 - Hue Charm, Hue Loom, Hue Bouquet 등은 후보 아이디어다. Living Hue Deck의 우선순위를 빼앗지 않는다.
 - 친구/공동 기능은 첫 출시 범위가 아니다. `Hue Drop`은 출시 후 첫 번째 업데이트 후보이며 `docs/hue-drop-post-launch-spec.md`를 따른다.

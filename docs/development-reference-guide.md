@@ -1,6 +1,6 @@
 # Hueday 개발 참고 문서 가이드
 
-> **2026-07-26 라우팅 정정:** Color Hunt/Deck/보상/출시 범위 작업은 먼저 `docs/launch-scope-and-update-safety-contract.md`와 `docs/living-hue-deck-product-spec.md`를 읽는다. Hue Drop은 출시 후에만 `docs/hue-drop-post-launch-spec.md`를 읽고, Hue Canvas는 명시적 재개 요청일 때만 역사적 명세를 읽는다.
+> **2026-07-26 라우팅 정정:** Color Hunt/Deck/보상/출시 범위 작업은 먼저 `docs/launch-scope-and-update-safety-contract.md`와 `docs/living-hue-deck-product-spec.md`를 읽는다. Hue Canvas는 출시 후 초기 필수 업데이트이므로 관련 작업에서 `docs/hue-canvas-product-spec.md`, 저장 전략, release readiness를 함께 읽는다. Hue Drop은 첫 소셜 업데이트로 `docs/hue-drop-post-launch-spec.md`를 따른다.
 
 ## 최신 우선 라우팅 (2026-07-26)
 
@@ -10,7 +10,7 @@
 | 저장 모델·앱 업데이트·migration | `docs/launch-scope-and-update-safety-contract.md` | 저장 전략, 보안 감사, release readiness |
 | 첫 출시 수익화 | `docs/launch-scope-and-update-safety-contract.md` | 성장 전략, 보상 시스템 |
 | Hue Drop 검토/구현 | `docs/hue-drop-post-launch-spec.md` | 보안 감사, 저장 전략, 출시 준비도 |
-| Hue Canvas 재검토 | `docs/hue-canvas-product-spec.md` | 발견 색 전략; 사용자의 명시 승인 없이는 구현하지 않음 |
+| Hue Canvas 출시 후 구현 | `docs/hue-canvas-product-spec.md` | 출시/업데이트 안전 계약, 저장 전략, release readiness; G1 브랜치 전체 병합 금지 |
 
 이 표는 아래의 이전 Canvas/Relay 라우팅보다 우선한다.
 
