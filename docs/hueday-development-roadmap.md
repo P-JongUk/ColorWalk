@@ -205,7 +205,7 @@ M0 문서·자동화 기반
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
 - [x] 로컬 고화질 마스터·무료 작은 preview 계층 분리 (Cloud 고화질 백업은 별도 승인 범위)
 - [x] IndexedDB metadata + Capacitor Filesystem 기반 offline-first 저장과 동기화 큐
-- [ ] M2-3 release QA: 정상 동기화된 날짜의 local master 수동 정리 구현·단위 검증·localhost PWA Service Worker controller/cache 교체는 2026-07-26에 완료했다. 자동 삭제는 금지하고 preview만 남으면 복구 불가 경고와 사용자 확인을 포함한다. 남은 것은 Android `adb install -r`와 PWA의 로그인된 populated fixture에서 login/draft/master/history/Story 보존 및 force-stop recovery를 확인하는 release gate다.
+- [ ] M2-3 release QA: 정상 동기화된 날짜의 local master 수동 정리 구현·단위 검증·localhost PWA Service Worker controller/cache 교체는 2026-07-26에 완료했다. 자동 삭제는 금지하고 preview만 남으면 복구 불가 경고와 사용자 확인을 포함한다. 같은 `127.0.0.1:5180` origin의 password-user fixture로 baseline v3→candidate v4를 실제 교체해 로그인, 1/8 draft/master Blob, 8/8 기록·저널·Story, v4 controller/cache와 offline IndexedDB/cache 보존을 확인했다. 남은 release gate는 Android의 같은 서명 계보 baseline→candidate `adb install -r`에서 해당 보존과 정리 확인 직후 force-stop `cleanup-pending` 복구를 실제 기기에서 확인하는 것이다. 현재 AVD 실패는 SDK Build-Tools provisioning/System UI ADB disconnect와 기존 Pixel7 서명 불일치이며 앱 결함으로 처리하지 않는다.
 - [ ] 암호화된 `.hueday` 수동 archive 내보내기·가져오기
 - [ ] 계정 삭제·데이터 export·복구 정책과 앱/웹 진입점
 - [x] 이미지 품질 샘플 비교와 목적별 압축 preset (4 bitmap 표본 비교, beta master WebP 0.90)

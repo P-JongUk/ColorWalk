@@ -588,6 +588,24 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 
 출시 후 첫 Canvas 후보 버전에서 Android/PWA 이전 버전 데이터 fixture의 보존 수와 migration 성공/실패 결과를 수치로 기록한다.
 
+## CW-015 — 업데이트 보존 QA에서 앱 결함과 Android 환경 결함을 분리
+
+### 문제와 증거
+
+2026-07-26 KST M2-3에서 실제 데이터가 있는 baseline Android APK를 candidate APK로 `adb install -r` 업데이트해 보존을 검증해야 했다. D-drive `ColorWalkM1QA`는 Android 16까지 안정적으로 부팅하고 baseline APK 설치를 수락했지만, D SDK Gradle은 Build-Tools 35 자동 provisioning 단계에서 진행하지 않았다. legacy SDK로 빌드한 baseline을 설치한 뒤 앨범 import 중에는 System UI/ADB가 끊겼다. 기존 `ColorWalkPixel7`은 앱 데이터를 지우지 않은 상태에서 정확히 `adb install -r`를 실행했고, `INSTALL_FAILED_UPDATE_INCOMPATIBLE`로 실패했다. 이미 설치된 `com.colorwalk.app`의 서명이 debug APK와 달랐기 때문이다.
+
+### 비교와 결정
+
+1. 문제를 앱 보존 결함으로 처리하거나, AVD를 wipe/uninstall해 새 설치만 확인한다.
+2. package ID·version·certificate fingerprint를 독립 확인하고, 데이터 파괴 없이 실패 지점을 기록한 뒤 실제 기기의 동일 signing-lineage 업데이트를 남은 출시 gate로 둔다.
+
+2를 선택했다. baseline/candidate 모두 `com.colorwalk.app`, versionCode 1/versionName 1.0, SHA-256 `4d270595c837ca18f577412ca664c7327ffe263bfc132f909899d90f0ba7e7a8`임을 확인했고, AVD의 기존 서명 충돌·SDK provisioning·System UI disconnect는 M2-3 cleanup 로직보다 앞선 환경 조건이었다. 사용자의 기존 앱 데이터는 uninstall·clear-data·wipe로 바꾸지 않았다.
+
+### 검증과 결과
+
+- 같은 `127.0.0.1:5180` origin에서 password-user PWA baseline v3→candidate v4 업데이트는 별도로 통과했다. v4 controller/cache와 1/8 master Blob, 8/8 기록·저널·Story가 남았다.
+- Android 인플레이스 보존과 cleanup 확인 직후 force-stop 복구는 아직 실제 기기에서 측정하지 않음이다. 다음 측정은 같은 signing lineage의 baseline/candidate로 1/8, synced 8/8, cleanup confirmation 직후 force-stop/reopen을 한 번 수행하는 것이다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.
