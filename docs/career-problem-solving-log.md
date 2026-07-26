@@ -18,7 +18,7 @@
 
 - 네 개 bitmap 표본에서 0.86/0.90/0.92를 비교해 0.90을 beta preset으로 선택했다. byte/encode-ms 원시값은 보존되지 않아 아직 측정하지 않음; 다음 실제 Android/브라우저 카메라 네 표본에서 파일 크기(bytes), encode 시간(ms), 전체/100% crop/1080×1920 Story를 기록한다.
 - `npm run cap:sync` 통과, 새 Android debug APK 17,955,823 bytes 생성, 430×932 PWA Home/Camera smoke 통과. 기존 lint/Vitest 10 files/25 tests/build/live Supabase verification은 이번 마감에서 재실행하지 않았다.
-- `ColorWalkPixel7`은 한 번의 60초 부팅에서 ADB-ready가 되지 않았다. 앱 ANR로 단정하지 않았으며, 안정 AVD 또는 실기기에서 force-stop 및 offline→online retry를 재검증한다.
+- `ColorWalkPixel7`은 처음 60초 안에 ADB-ready가 되지 않았고, 이후에는 다른 서명의 기존 패키지 때문에 fresh APK 설치가 거부되었으며 System UI ANR이 나타났다. 앱 ANR로 단정하지 않았으며, clean stable AVD 또는 실기기에서 force-stop 및 offline→online retry를 재검증한다.
 
 ### 남은 부채
 

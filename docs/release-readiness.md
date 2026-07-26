@@ -11,7 +11,7 @@
 - `npm run cap:sync` rebuilt the web bundle and synchronized Android assets/plugins. A fresh debug APK was generated (17,955,823 bytes).
 - The supplied checkpoint results remain passing and were not rerun: lint, Vitest (10 files/25 tests), production build, and live Supabase verification including RLS, Storage, product-events, and the expected `grid_images` client-meta fallback.
 - A 430×932 local PWA smoke pass reached Home and Camera; the camera collection controls rendered without a blocking layout failure.
-- `ColorWalkPixel7` failed to become ADB-ready during one 60-second boot attempt. Current Android install/camera/offline/retry QA is therefore still required on a stable AVD or physical device; do not treat this as a passing Android checkpoint.
+- `ColorWalkPixel7` first missed the 60-second ADB-ready window; after boot it rejected the fresh APK with `INSTALL_FAILED_UPDATE_INCOMPATIBLE` (existing package has another signature) and System UI ANR became the active window. Current Android install/camera/offline/retry QA is therefore still required on a clean stable AVD or physical device; do not treat this as a passing Android checkpoint.
 
 ## What Must Pass Before Sharing
 

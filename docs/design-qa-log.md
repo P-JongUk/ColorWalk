@@ -56,7 +56,7 @@ Latest 430x932 captures:
 
 - PWA: local Vite app at `127.0.0.1:4173` was checked at a 430×932 viewport. Home rendered the device-storage state and current mission; Camera navigation rendered the 8-slot collection, album selection, capture, camera switch, and disabled journal state without a layout or console-blocking failure.
 - Capacitor: `npm run cap:sync` completed after the prior terminal result could not be recovered. It rebuilt the web bundle, copied it into Android assets, and updated the three configured plugins.
-- Android: `:app:assembleDebug` produced a new debug APK (17,955,823 bytes, 2026-07-26 14:31 KST). `ColorWalkPixel7` did not become ADB-ready during one 60-second boot attempt, so install/camera/offline/retry QA was not repeated or claimed as passed. This was an environment readiness failure, not an app ANR result.
+- Android: `:app:assembleDebug` produced a new debug APK (17,955,823 bytes, 2026-07-26 14:31 KST). `ColorWalkPixel7` initially missed the 60-second ADB-ready window; once it booted, `adb install -r` was rejected with `INSTALL_FAILED_UPDATE_INCOMPATIBLE` because the existing `com.colorwalk.app` used a different signature. The installed older app launched, but System UI ANR was the current focus. Install/camera/offline/retry QA was not repeated or claimed as passed. This is emulator/signing evidence, not an app QA result.
 - Existing automated gates were supplied as already passed for this checkpoint and were intentionally not rerun: lint, 25-test Vitest run, production build, and Supabase verification. `git diff --check` passed with only existing Android generated-file CRLF warnings.
 
 - Keep D — Chromatic Archive as the working direction for the external app UI.

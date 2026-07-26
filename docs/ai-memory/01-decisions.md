@@ -60,7 +60,7 @@
 
 - 네 개 bitmap 표본의 0.86/0.90/0.92 비교에서 시각 기준을 충족한 0.90을 beta WebP master preset으로 유지한다. 정확한 byte/encode-ms 원시값은 보존되지 않았으므로 새 수치를 주장하지 않고, 다음 실제 카메라 표본 측정에서 기록한다.
 - 검증된 local master만 staging 원본을 대체한다. raw/staging/master는 Supabase나 product-events에 보내지 않고 preview와 기존 Post metadata만 sync한다.
-- Android AVD의 이번 부팅 실패는 제품 ANR이나 QA 통과로 해석하지 않는다. 안정적인 AVD 또는 실제 기기에서 capture → force-stop → offline/online retry를 다시 확인하는 것이 출시 전 gate다.
+- Android AVD의 이번 부팅 실패와 System UI ANR, 기존 다른 서명 앱의 install 충돌은 제품 ANR이나 QA 통과로 해석하지 않는다. clean stable AVD 또는 실제 기기에서 capture → force-stop → offline/online retry를 다시 확인하는 것이 출시 전 gate다.
 
 ## 2026-07-22 — 빠르고 완성도 있는 출시
 

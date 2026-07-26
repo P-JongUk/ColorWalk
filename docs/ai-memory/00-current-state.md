@@ -30,7 +30,7 @@
 ## 2026-07-26 M2-2 local master·offline sync
 
 - `feature/local-master-offline-sync`에서 2560px WebP local master, preview-only Supabase sync, pending/error 복구와 owner+localDate 중복 실행 방지를 구현·push했다.
-- CP4에서 Capacitor sync, 새 debug APK(17,955,823 bytes), 430×932 PWA Home/Camera smoke QA를 확인했다. Android AVD는 한 번의 60초 부팅 시도에서 ADB-ready가 되지 않아 실경로 QA는 미통과로 남긴다.
+- CP4에서 Capacitor sync, 새 debug APK(17,955,823 bytes), 430×932 PWA Home/Camera smoke QA를 확인했다. Android AVD는 처음 60초 내 ADB-ready가 되지 않았고, 이후 기존 다른 서명 앱 때문에 fresh APK 설치가 거부된 뒤 System UI ANR이 나타나 실경로 QA는 미통과로 남긴다.
 - 다음 M2 필수 작업은 정상 동기화된 날짜의 로컬 고화질 원본 수동 정리 계약이다. 자동 삭제·Cloud backup·archive/export/delete·`grid_images` migration repair는 이번 범위에 포함하지 않았다.
 
 ## 저장소
