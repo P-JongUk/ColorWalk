@@ -12,6 +12,7 @@
 > - **실패한 검증과 이유:** `npx supabase migration list --linked`는 local project link가 없어 사용할 수 없었고, Supabase CLI `projects list`는 `SUPABASE_ACCESS_TOKEN`이 없어 관리자 연결을 만들 수 없었다. publishable-key live verify로 새 테이블 부재를 확인했다. CP4에서 Vite E2E server가 4174에 응답하지 않았고, 최종 `npm run lint`는 124초 실행 제한으로 결과 없이 timeout됐다.
 > - **다음 한 가지 작업:** `npx eslint src/lib/supabase.ts`로 좁은 lint를 확인하고, `git diff --check` 후 실패를 명시한 WIP checkpoint를 remote feature branch에 push한다. 재개 시 Vite server process/port를 진단한 뒤 `scripts/e2e-core-funnel.ps1`을 실제 완주한다.
 > - **사용자 승인·외부 권한 필요:** additive `product_events` 테이블·인덱스·새 테이블 owner-scoped RLS는 migration diff, 프로젝트 `nhsvmypztjyhqunixxeg`, 현재 스키마, rollback/비활성화 경로, 비밀정보 부재를 확인하고 검증하면 자동 적용할 수 있다. `grid_images` migration/cutover처럼 기존 행을 변경하는 작업은 이 브랜치에서 실행하지 않는다.
+> - **QA 범위:** M2-1은 가입→미션→촬영→저장→Story의 도달 가능한 핵심 흐름과 새로고침/저장 실패의 대표 복구만 우선한다. 개인정보·RLS·중복·기록 손실은 유지하되, 미지원 환경과 상태·네트워크 전수 조합은 실제 근거가 생길 때까지 보류한다.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
 

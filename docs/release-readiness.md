@@ -95,6 +95,7 @@ Use `main` as the integration branch. Start large features from the latest `main
 
 ## Remaining Manual QA
 
+- Manual QA follows the repository risk tiers: verify the reachable core journey and one likely recovery path for the changed feature. Keep security, cross-user denial, secret exposure, signing, account deletion, and data-loss checks even when rare. Defer impossible UI inputs, unsupported environments, arbitrary catalog-external values, and exhaustive state/device/network combinations until evidence makes them relevant.
 - Android emulator QA on `ColorWalkPixel7` passed for location permission, camera permission, camera capture, journal save, same-day replacement confirm, history, native story share sheet, notification permission, and immediate test notification display.
 - Latest Android outputs:
   - `android/app/build/outputs/apk/debug/app-debug.apk`

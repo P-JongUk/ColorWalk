@@ -44,7 +44,9 @@ Do not remove validation, error handling, security, accessibility, or data-loss 
 - Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Hue Palette/Canvas → Hueprint/story/Relay sharing loop.
 - Update reward documentation and mapping helpers together when capture, mission packs, Hue Canvas, story, profile, or monetization behavior changes.
 - Treat product statements as approved, candidate, deferred, historical, or implementation fact. Never change an approved core loop, Hue Canvas contract, visual direction, reward economy, free/paid boundary, storage model, package identity, or release scope without presenting the conflict and obtaining explicit user approval.
-- Run the narrowest relevant checks first, then the broader check required by the change. Use D-drive npm/temporary paths from `AGENTS.md`.
+- Scope QA by reachability, likelihood, and user impact. Always keep security/trust-boundary and data-loss checks, but defer impossible UI inputs, unsupported environments, arbitrary values outside the product catalog, exhaustive timing races, and Cartesian state combinations until a real report or requirement exists.
+- For a normal feature checkpoint, start with one changed happy path and one likely failure/recovery path. Run the narrowest relevant checks first, then broader existing suites only when the shared root, merge gate, or release gate requires them. Do not add a test harness, dependency, abstraction, or large fixture matrix only for a hypothetical edge case.
+- Use D-drive npm/temporary paths from `AGENTS.md`.
 - After code changes, keep Graphify current with `graphify update .` or the workflow finish script. Code-only updates are local and do not need an API key.
 
 ## 4. Record the result in Obsidian

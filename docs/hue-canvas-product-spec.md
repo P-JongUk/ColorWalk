@@ -226,7 +226,7 @@ Hueday Cloud 구독 후보:
 - [ ] 3x3 완료 → 색 수량 증가
 - [ ] 보상·Color Rhythm 연결
 - [ ] History/Hueprint/Story 연결
-- [ ] 접근성·극단 HEX·작은 화면 QA
+- [ ] 접근성·실제 큐레이션의 밝은/어두운 대표 색·지원 작은 화면 QA
 - [ ] 무료/유료 경계 검증
 
 HC-2 승인 전에는 전체 에셋 세트, 대형 DB migration, 복잡한 렌더러를 만들지 않는다.

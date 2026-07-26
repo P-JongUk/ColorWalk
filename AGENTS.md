@@ -149,6 +149,15 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 5. For the approved found-color replacement, compare archive/selection/result/remix states at 430x932 and verify that every used color can return to its source 3x3. Hue Room concepts under `.design-references/05-hue-room/` are historical post-launch evidence only.
 6. For Hue Canvas, follow `docs/design-reference-index.md`: preserve source/reference/status notes on D, compare empty/palette/free-canvas/template-resize/complete/export states, and reproduce the chosen look with a real Canvas 2D/SVG prototype before approval.
 
+## Risk-Based QA Scope
+
+- Test reachable user behavior, not every theoretically constructible state. Before fixing an unusual input or combination, confirm that the released UI, supported import format, migration, or public API can actually produce it.
+- P0 always verify: the changed core user journey, authentication/authorization boundaries, cross-user denial, secret exposure, payment when introduced, destructive migration, and any path that can lose or corrupt a user's only record.
+- P1 verify when the touched feature can realistically encounter it: permission denial, ordinary offline/retry, app restart during save, expired auth, supported-device layout, and one likely error recovery.
+- P2 defer until a real report, telemetry signal, supported requirement, or high-impact threat model justifies it: impossible UI input, arbitrary fuzz values outside the curated catalog, unsupported devices/browsers, exhaustive timing races, and full Cartesian combinations of state/platform/network.
+- For a normal feature checkpoint, prefer one happy-path test and one likely failure-path test for the changed behavior. Run broader existing suites at merge/release gates or when the shared root is changed; do not create a new harness, dependency, abstraction, or large fixture matrix for a hypothetical edge case.
+- If a deferred case is noticed, record the trigger that would reopen it instead of implementing it immediately. Token and QA time are product resources; stop when the approved success conditions and applicable P0/P1 checks pass.
+
 ## Release Rules
 
 - PWA must be served over HTTPS for camera/location/install behavior.
