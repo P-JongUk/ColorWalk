@@ -1,5 +1,7 @@
 # Hue Canvas 제품 명세
 
+> **상태 정정(2026-07-26): deferred / historical G1.** 이 문서는 사용자가 승인했던 Canvas 계약과 `feature/hue-canvas-prototype`의 G1 근거를 보존한다. 첫 출시 대표 콘텐츠나 현재 구현 지시는 아니다. 첫 출시는 `docs/living-hue-deck-product-spec.md`를 따르며, Canvas G2·탭·도안·resize·export·유료 기능은 사용자의 명시적 재개 결정과 출시 후 사용 근거 전까지 진행하지 않는다.
+
 마지막 갱신: 2026-07-26 KST
 상태: **사용자 승인된 발견 색 대표 콘텐츠**
 상위 기준: `docs/hueday-product-blueprint.md`

@@ -86,7 +86,10 @@ function Get-RoutedReferences {
     if ($query -match 'hue.?room|색방|가구|room') {
         $references += @('docs/hue-room-product-spec.md', 'docs/hue-room-development-roadmap.md', 'docs/colorwalk-reward-system.md', 'docs/design-qa-log.md')
     }
-    if ($query -match 'hue.?canvas|canvas|팔레트|palette|유리|glass|도안|타일|발견.?색|리믹스|remix') {
+    if ($query -match 'deck|living.?hue|color.?volume|컬러 볼륨|색 카드|발견.?색|리믹스|remix') {
+        $references += @('docs/living-hue-deck-product-spec.md', 'docs/launch-scope-and-update-safety-contract.md', 'docs/discovered-color-content-strategy.md', 'docs/data-storage-sync-and-cost-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/design-reference-index.md', 'docs/design-qa-log.md')
+    }
+    if ($query -match 'hue.?canvas|canvas|팔레트|palette|유리|glass|도안|타일') {
         $references += @('docs/hue-canvas-product-spec.md', 'docs/discovered-color-content-strategy.md', 'docs/data-storage-sync-and-cost-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/design-reference-index.md', 'docs/design-qa-log.md')
     }
     if ($query -match '미션|카메라|촬영|3x3|격자|1컷|8컷|color.?hunt|capture|camera') {
@@ -95,8 +98,8 @@ function Get-RoutedReferences {
     if ($query -match '보상|배지|리듬|연속|레벨|해금|reward|badge|streak') {
         $references += @('docs/colorwalk-reward-system.md', 'docs/hue-canvas-product-spec.md', 'docs/product-growth-strategy.md')
     }
-    if ($query -match '팩|성장|리텐션|relay|hueprint|capsule|친구|공유|growth|mission.?pack|recap') {
-        $references += @('docs/hueday-breakout-strategy.md', 'docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md')
+    if ($query -match '팩|성장|리텐션|relay|hue.?drop|hueprint|capsule|친구|공유|growth|mission.?pack|recap') {
+        $references += @('docs/hueday-breakout-strategy.md', 'docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/hue-drop-post-launch-spec.md')
     }
     if ($query -match '스토리|스티커|템플릿|share|story|sticker|template') {
         $references += @('docs/product-growth-strategy.md', 'docs/colorwalk-reward-system.md', 'docs/release-readiness.md', 'docs/design-qa-log.md')
@@ -135,6 +138,9 @@ function Test-DocumentationContract {
         'docs/hueday-product-blueprint.md',
         'docs/hueday-development-roadmap.md',
         'docs/development-reference-guide.md',
+        'docs/launch-scope-and-update-safety-contract.md',
+        'docs/living-hue-deck-product-spec.md',
+        'docs/hue-drop-post-launch-spec.md',
         'docs/hue-canvas-product-spec.md',
         'docs/data-storage-sync-and-cost-strategy.md',
         'docs/design-reference-index.md',

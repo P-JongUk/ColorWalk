@@ -1,5 +1,7 @@
 # Hueday 전체 제품 청사진
 
+> **2026-07-26 최신 제품 계약 — 이 블록이 아래의 이전 Canvas/Relay 출시 서술보다 우선한다.** 첫 출시 대표 콘텐츠는 `Living Hue Deck`이다. 매일의 3×3 기록이 1/3/5/8 카드로 자동 성장하고 Color Volume·초기 컬렉션·주간 Hueprint로 이어진다. Hue Canvas G1은 보존하되 출시 범위에서 보류한다. 친구 기능·Hue Drop·공개/익명 Relay는 첫 출시에서 제외하며 Hue Drop만 출시 후 우선순위 1이다. 상세: `docs/living-hue-deck-product-spec.md`, `docs/hue-drop-post-launch-spec.md`, `docs/launch-scope-and-update-safety-contract.md`.
+
 마지막 합의 정리: 2026-07-23 KST
 문서 역할: 지금까지 사용자와 Codex가 합의한 Hueday 전체 방향을 한곳에서 확인하는 최상위 제품 source of truth
 상세 실행 순서: `docs/hueday-development-roadmap.md`

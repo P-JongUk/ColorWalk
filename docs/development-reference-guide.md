@@ -1,5 +1,19 @@
 # Hueday 개발 참고 문서 가이드
 
+> **2026-07-26 라우팅 정정:** Color Hunt/Deck/보상/출시 범위 작업은 먼저 `docs/launch-scope-and-update-safety-contract.md`와 `docs/living-hue-deck-product-spec.md`를 읽는다. Hue Drop은 출시 후에만 `docs/hue-drop-post-launch-spec.md`를 읽고, Hue Canvas는 명시적 재개 요청일 때만 역사적 명세를 읽는다.
+
+## 최신 우선 라우팅 (2026-07-26)
+
+| 작업 | 먼저 읽을 문서 | 함께 확인할 문서 |
+| --- | --- | --- |
+| Living Hue Deck·Color Volume·컬렉션·Hueprint | `docs/living-hue-deck-product-spec.md` | 청사진, 보상, 디자인 인덱스, 저장 전략 |
+| 저장 모델·앱 업데이트·migration | `docs/launch-scope-and-update-safety-contract.md` | 저장 전략, 보안 감사, release readiness |
+| 첫 출시 수익화 | `docs/launch-scope-and-update-safety-contract.md` | 성장 전략, 보상 시스템 |
+| Hue Drop 검토/구현 | `docs/hue-drop-post-launch-spec.md` | 보안 감사, 저장 전략, 출시 준비도 |
+| Hue Canvas 재검토 | `docs/hue-canvas-product-spec.md` | 발견 색 전략; 사용자의 명시 승인 없이는 구현하지 않음 |
+
+이 표는 아래의 이전 Canvas/Relay 라우팅보다 우선한다.
+
 마지막 갱신: 2026-07-22 KST
 목적: Codex가 매 작업에서 필요한 문서만 먼저 읽고, 변경 뒤 맞는 문서만 갱신하도록 하는 라우팅 기준
 

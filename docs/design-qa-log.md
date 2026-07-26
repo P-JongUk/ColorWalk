@@ -1,5 +1,11 @@
 # Design QA Log
 
+## 2026-07-26 product-direction gate
+
+- Hue Canvas G1 captures remain preserved evidence, but are not a first-release visual approval.
+- Next design gate is Living Hue Deck: D exterior UI, 1/3/5/8 card growth, Color Volume, initial collection, weekly Hueprint, and Story export at 430×932.
+- No Hue Drop, public community, or Canvas G2 design QA is scheduled before launch evidence and explicit approval.
+
 Local reference screenshots are stored under `.design-references/` and ignored by git.
 
 Overall visual contract: `docs/hueday-product-blueprint.md`

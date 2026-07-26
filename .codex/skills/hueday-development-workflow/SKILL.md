@@ -16,7 +16,7 @@ Use this workflow for every meaningful coding task in this repository. Keep the 
 ## 1. Start with a map and a bounded plan
 
 1. Read the repository `AGENTS.md`, `docs/hueday-product-blueprint.md`, the current phase/next action in `docs/hueday-development-roadmap.md`, and the relevant Obsidian notes in `docs/ai-memory/`.
-2. Use `docs/development-reference-guide.md` to select the feature-specific source documents. Hue Canvas work must include `docs/hue-canvas-product-spec.md`, storage work must include `docs/data-storage-sync-and-cost-strategy.md`, and design work must include `docs/design-reference-index.md`. For explicitly reopened Hue Room work, include its historical spec and roadmap and first verify new user approval.
+2. Use `docs/development-reference-guide.md` to select the feature-specific source documents. Living Hue Deck work must include `docs/living-hue-deck-product-spec.md` and `docs/launch-scope-and-update-safety-contract.md`; Hue Drop work is post-launch only and must include `docs/hue-drop-post-launch-spec.md`. Hue Canvas is deferred and its historical spec is read only after explicit user re-approval. Storage work must include `docs/data-storage-sync-and-cost-strategy.md`, and design work must include `docs/design-reference-index.md`. For explicitly reopened Hue Room work, include its historical spec and roadmap and first verify new user approval.
 3. If `graphify-out/graph.json` exists, query Graphify before opening broad source files. Use `query` for a subsystem question, `path` for a relationship, and `explain` for one concept. Prefer the D-drive executable at `D:/JongUk/Documents/ColorWalk/.graphify-venv/Scripts/graphify.exe` when the `graphify` command is not on PATH.
 4. State four things before editing: scope, likely files, success conditions, and the smallest safe implementation.
 5. Apply the four principles: think before coding, choose the simplest viable approach, change only what is needed, and define/verify success conditions.
@@ -41,9 +41,9 @@ Do not remove validation, error handling, security, accessibility, or data-loss 
 
 ## 3. Implement and verify
 
-- Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Hue Palette/Canvas → Hueprint/story/Relay sharing loop.
-- Update reward documentation and mapping helpers together when capture, mission packs, Hue Canvas, story, profile, or monetization behavior changes.
-- Treat product statements as approved, candidate, deferred, historical, or implementation fact. Never change an approved core loop, Hue Canvas contract, visual direction, reward economy, free/paid boundary, storage model, package identity, or release scope without presenting the conflict and obtaining explicit user approval.
+- Keep the diff focused and preserve Hueday's everyday mission color → real-world similar-color finding → center-color 3x3 → Living Hue Deck/Color Volume → Hueprint/story sharing loop. Hue Drop is a later invite-only extension, not a first-release dependency.
+- Update reward documentation and mapping helpers together when capture, mission packs, Living Hue Deck, story, profile, or monetization behavior changes.
+- Treat product statements as approved, candidate, deferred, historical, or implementation fact. Never change an approved core loop, Living Hue Deck contract, visual direction, reward economy, free/paid boundary, storage model, package identity, Hue Drop release timing, or release scope without presenting the conflict and obtaining explicit user approval.
 - Scope QA by reachability, likelihood, and user impact. Always keep security/trust-boundary and data-loss checks, but defer impossible UI inputs, unsupported environments, arbitrary values outside the product catalog, exhaustive timing races, and Cartesian state combinations until a real report or requirement exists.
 - For a normal feature checkpoint, start with one changed happy path and one likely failure/recovery path. Run the narrowest relevant checks first, then broader existing suites only when the shared root, merge gate, or release gate requires them. Do not add a test harness, dependency, abstraction, or large fixture matrix only for a hypothetical edge case.
 - Use D-drive npm/temporary paths from `AGENTS.md`.
@@ -62,7 +62,8 @@ Then perform a documentation impact check against the actual diff:
 
 - product reality or priority: `docs/hueday-breakout-strategy.md`, `docs/product-growth-strategy.md`, `plan.md`
 - overall direction or execution order: `docs/hueday-product-blueprint.md`, `docs/hueday-development-roadmap.md`
-- Hue Canvas product/design/implementation: `docs/hue-canvas-product-spec.md`, `docs/discovered-color-content-strategy.md`, `docs/design-reference-index.md`, `docs/design-qa-log.md`
+- Living Hue Deck product/design/implementation: `docs/living-hue-deck-product-spec.md`, `docs/launch-scope-and-update-safety-contract.md`, `docs/discovered-color-content-strategy.md`, `docs/design-reference-index.md`, `docs/design-qa-log.md`
+- deferred Hue Canvas or post-launch Hue Drop: `docs/hue-canvas-product-spec.md` or `docs/hue-drop-post-launch-spec.md`, plus the source documents above; do not promote either without approval
 - local storage, sync, image quality, device transfer, or cost: `docs/data-storage-sync-and-cost-strategy.md`, release/security docs
 - explicitly reopened Hue Room: `docs/hue-room-product-spec.md`, `docs/hue-room-development-roadmap.md`
 - capture/story/profile/reward/monetization: `docs/colorwalk-reward-system.md` and the reward helper

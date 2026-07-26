@@ -1,5 +1,7 @@
 # Hueday 디자인 레퍼런스 인덱스
 
+> **2026-07-26 디자인 우선순위:** D — Chromatic Archive 외부 UI는 유지한다. 첫 출시 디자인 작업은 Living Hue Deck의 1/3/5/8·Color Volume·컬렉션·Hueprint·Story 상태를 D 드라이브의 새 `08-living-hue-deck/` 폴더에 축적하는 것이다. `07-found-color-content/hue-canvas-gate-2026-07-26/`은 보류된 G1 역사 자료로 보존하며 Canvas G2 화면을 만들지 않는다. Hue Drop은 출시 후 `09-hue-drop/`에서만 새 레퍼런스를 수집한다.
+
 마지막 갱신: 2026-07-23 KST
 물리 위치: `D:\JongUk\Documents\ColorWalk\.design-references\`, `D:\JongUk\Documents\ColorWalk\.lazyweb\`
 저장 정책: 대형 이미지·외부 캡처·렌더는 Git에 올리지 않고 D 드라이브에 보존한다. 이 추적 문서는 상태와 경로만 관리한다.

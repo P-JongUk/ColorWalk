@@ -1,5 +1,7 @@
 # 발견 색 활용 콘텐츠 전략
 
+> **최신 결정(2026-07-26):** 첫 출시 대표 콘텐츠는 Hue Canvas가 아니라 `Living Hue Deck`이다. Canvas G1은 역사적/실험적 프로토타입으로 보존하고 G2 이후 구현·출시 탭·수익화를 진행하지 않는다. 색을 찾은 뒤의 핵심 보상은 자동 성장 카드, Color Volume, 제한된 컬렉션, 주간 Hueprint다. 상세 기준은 `docs/living-hue-deck-product-spec.md`; Canvas 재개 조건은 `docs/hue-canvas-product-spec.md`; 출시 후 친구 기능은 `docs/hue-drop-post-launch-spec.md`를 따른다.
+
 마지막 갱신: 2026-07-26 KST
 상태: **Hue Canvas 대표 콘텐츠 승인, M2-2 뒤 최우선 시각·조작·Canvas 2D 프로토타입 대기**
 상세 제품 명세: `docs/hue-canvas-product-spec.md`

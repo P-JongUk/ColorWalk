@@ -1,5 +1,7 @@
 # Hueday MVP Development Plan
 
+> **2026-07-26 scope correction:** First release is personal Color Hunt + local-first recovery + Living Hue Deck/Color Volume + small mission packs + Hueprint/Story. Hue Canvas is deferred after preserved G1; Hue Drop is post-launch priority 1; public/anonymous community is excluded. See `docs/launch-scope-and-update-safety-contract.md`.
+
 Last code/document alignment: 2026-07-24 KST. M1 Color Hunt is integrated into `main` at `c22d7a3`. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
 
 ## Status

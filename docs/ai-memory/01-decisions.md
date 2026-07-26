@@ -1,5 +1,13 @@
 # 지속 결정
 
+## 2026-07-26 — Living Hue Deck 출시 전환과 Hue Drop 보류 (approved)
+
+- 첫 출시의 발견 색 대표 콘텐츠는 Hue Canvas가 아니라 Living Hue Deck이다. Color Hunt 일일 기록은 1/3/5/8의 자동 카드 성장, Color Volume, 최대 3개 초기 컬렉션, 주간 Hueprint로 보상한다. 그림 실력·별도 창작 노동·streak·랜덤 가챠는 핵심 루프가 아니다.
+- Hue Canvas G1 프로토타입과 상세 계약은 보존하되 출시에서 제외한다. G2·탭·도안/resize/export·Studio 수익화는 출시 후 사용 근거와 명시 재개 승인 전까지 시작하지 않는다.
+- Hue Drop은 출시 후 우선순위 1이다. 중앙 미션 색과 주변 8개 `+` 슬롯을 초대받은 인증 사용자가 원하는 수만큼 채우는 친구 전용 구조다. 공개 검색·익명 참여·피드·댓글/좋아요는 유해 이미지와 운영 위험 때문에 만들지 않는다.
+- 업데이트 안전은 출시 기능의 일부다. local copy-forward/검증/이전 형식 제거, 서버 expand/contract, Android 인플레이스 업데이트, PWA Service Worker 업데이트의 기록 보존을 저장 변경마다 확인한다. 미래 Hue Drop/Canvas용 DB·Realtime 뼈대는 미리 만들지 않는다.
+- 무료 핵심은 Color Hunt·Deck·기본 Hueprint/Story·로컬 고화질 기록이다. 가격은 선택형 팩 1,500–3,900원, Studio 14,900/19,900원 후보, Cloud 월 1,500원/연 9,900원 5GB 후보로만 유지하며 실제 반응 전 확정·구현하지 않는다.
+
 ## 2026-07-24 — additive Supabase 변경의 자동 적용 경계 (approved)
 
 - 새 테이블·새 nullable/default-safe 컬럼·새 인덱스·새 테이블의 owner-scoped RLS처럼 기존 데이터를 삭제·덮어쓰기·재해석하지 않는 되돌리기 쉬운 변경은 migration diff, 대상 project, 현재 schema, 비파괴적 비활성화/rollback, 비밀정보 부재를 확인하고 검증하면 별도 승인 없이 적용한다.

@@ -1,8 +1,39 @@
 # Hueday 전체 개발 마스터 로드맵
 
+> **2026-07-26 실행 순서 정정 — 이 블록이 아래의 이전 M4 Canvas·M7 Relay 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 출시 → `M8 Hue Drop(출시 후 우선순위 1)` → 사용 데이터 기반 후보 재검토. Hue Canvas G1은 보류이고 G2는 시작하지 않는다. 상세 계약: `docs/launch-scope-and-update-safety-contract.md`, `docs/living-hue-deck-product-spec.md`, `docs/hue-drop-post-launch-spec.md`.
+
 마지막 갱신: 2026-07-26 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
+
+## 2026-07-26 출시 경로 (현재 실행 source of truth)
+
+| 단계 | 목표 | 출시 판단 |
+| --- | --- | --- |
+| M2-3 | 동기화된 날짜의 local master 수동 정리 계약과 Android/PWA 업데이트 보존 QA | 자동 삭제 없이 복구 불가 경고·사용자 확인, 기존 데이터 위 인플레이스 업데이트가 안전해야 한다. |
+| M3 | Living Hue Deck | 기존 일일 기록을 1/3/5/8 카드·Color Volume·최대 3개 초기 컬렉션으로 파생한다. 별도 카드 이미지/테이블·Canvas·AI를 만들지 않는다. |
+| M4 | 최소 일상 미션 팩 | 학교/통학·비 오는 날·실내/카페 등 검증 가능한 소수의 static 설정을 넣고, 위치를 저장하거나 거대한 팩 플랫폼을 만들지 않는다. |
+| M5 | Hueprint·Color DNA·Color Capsule | 주간 회고와 Story 공유를 Deck 원본 기록 위에서 연결한다. 완성 강제·연속 출석·랜덤 보상을 넣지 않는다. |
+| M6 | 통합 디자인·접근성·성능 | 430×932의 일반 사용자 경로와 기본 Android/PWA 성능을 다듬는다. 고위험/비현실 조합은 P2 보류다. |
+| M7 | 출시 검증 | 인증/RLS/저장·복구/인플레이스 업데이트/공유/실기기 QA와 문서를 마감한다. |
+| M8 (출시 후) | Hue Drop | 개인 출시의 실제 신호를 확인한 뒤 초대 전용 친구 3×3을 작은 베타로 도입한다. 공개/익명 UGC는 열지 않는다. |
+| M9 (출시 후) | 데이터 기반 후보 재검토 | Hue Canvas, Charm/Loom/Bouquet, Circle/Drift는 측정·인터뷰 근거가 있을 때만 선택한다. |
+
+### M3 Living Hue Deck 완료 조건
+
+- [ ] 1/3/5/8장 카드 상태가 실제 일일 기록과 3×3 사진 수에서 일관되게 파생된다.
+- [ ] 같은 색의 완성 카드가 Color Volume에 누적되고, 각 카드에서 원본 기록·저널로 돌아간다.
+- [ ] 최대 3개 초기 컬렉션과 주간 Hueprint 진입이 개인 기록을 과도하게 복제하지 않고 동작한다.
+- [ ] 430×932에서 시작·부분 기록·완성·Volume·Hueprint·Story export의 happy path와 재시작 복구 path를 확인한다.
+- [ ] 새 저장 구조, 서버 테이블, 생성형 AI, 친구/공개 피드를 추가하지 않았음을 diff로 확인한다.
+
+### M7 출시 안전 완료 조건
+
+- [ ] 변경한 기능별 happy path 1개와 발생 가능성 높은 복구 path 1개를 검증한다.
+- [ ] Android 기존 설치본 위 업데이트와 PWA Service Worker 업데이트에서 로그인, draft/master, 기록함, Deck 원본, Story가 보존된다.
+- [ ] 새 DB 변경은 additive이고 지원할 이전 앱 버전의 보통 읽기/쓰기를 깨지 않는다.
+- [ ] Android 실기기 또는 안정적인 AVD에서 capture → force-stop → offline/online retry가 통과한다.
+- [ ] 공개 UGC/익명 업로드/미구현 친구 기능이 출시 경로·권한·분석에 섞이지 않는다.
 
 ## 현재 진행 위치
 

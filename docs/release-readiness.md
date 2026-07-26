@@ -1,5 +1,11 @@
 # Hueday Release Readiness Notes
 
+## Launch-scope and update-safety gate (2026-07-26)
+
+- First release is a personal product: Color Hunt, local-first recovery, Living Hue Deck, Color Volume, initial collections, Hueprint, and Story export. Hue Canvas, Hue Drop, Relay, public feeds, and anonymous UGC are out of scope.
+- Before a version that changes persistence ships, verify one Android in-place update and one PWA Service Worker update with existing login, daily draft/master, history, Deck source record, and Story retained. Additive DB changes must preserve ordinary reads/writes from a supported prior app version.
+- The release journey to verify is login → mission → capture/recover → Deck state → source 3×3/history → Hueprint/Story export; do not substitute a future social flow for this gate.
+
 ## M2 observability gate (2026-07-26)
 
 - Core funnel events and local outbox are implemented on `feature/core-funnel-observability`; `20260724030000_add_product_events.sql` is live on `nhsvmypztjyhqunixxeg`. `npm run verify:supabase` confirmed `productEvents.ready`, owner read, duplicate safety, anonymous-write denial, and cross-user read denial. No additional analytics deployment is required for beta aggregate queries.

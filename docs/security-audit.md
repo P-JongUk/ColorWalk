@@ -1,5 +1,17 @@
 # Security Audit Notes
 
+## Product boundary update (2026-07-26)
+
+- First release has no public/anonymous user-generated image surface, feed, Relay, or Hue Drop. This is an intentional safety boundary, not a missing implementation.
+- If Hue Drop is approved after launch, invite viewing must be isolated from public discovery and authenticated membership must be required before upload. Add member-scoped RLS, atomic server-side slot reservation, file/type/size checks, EXIF location stripping, invite revocation, remove/report/block controls, and member-only preview reads before rollout. These controls are planned, not implemented or live.
+- Deck screens must derive from existing owner records and analytics must not contain photos, journal text, exact location, tokens, or device fingerprints.
+
+## Maintenance and verification scope (2026-07-26)
+
+- Initial architecture protects likely harm: owner isolation, unauthenticated write denial, duplicate-safe writes, offline recovery, and update compatibility. It does not pretend to operate a 100-million-user social network before there are users.
+- QA prioritizes the changed normal journey and one likely recovery journey. Fuzzing impossible UI inputs, exhaustive device-state matrices, and speculative scale/load work are P2 until a security boundary, telemetry, beta report, or release incident justifies them.
+- A future public image community requires a separate moderation, abuse-response, retention, and operating-cost approval; it is not unlocked merely by adding report buttons.
+
 ## M2 product events (2026-07-26)
 
 - `product_events` migration은 새 table/index와 authenticated owner-only select/insert RLS만 추가한다. event name은 `screen_viewed`, `session_summary`, `primary_cta_clicked`로 제한하고 payload JSON은 `screen`, `foreground_seconds`, `cta`, `delivery` 키만 허용한다. 따라서 사진·일기·정확 위치·비밀번호·토큰·device fingerprint는 앱과 DB 계약 모두에서 거절된다. 앱은 전송 실패 시 IndexedDB outbox를 보존한다.
