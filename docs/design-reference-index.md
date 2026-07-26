@@ -21,6 +21,8 @@
 | Hue Canvas | 제품 승인, 시각 미승인 | `.design-references/07-found-color-content/` | 기존 Hue Studio/Charm 시안은 아이디어 자료일 뿐 최종 Canvas 디자인이 아님 |
 | 원본 모바일 목업 | 기준선 | `.design-references/00-target-mockup/` | 감정적 톤과 모바일 밀도 비교에 사용. 현재 제품 계약과 충돌하면 계약 우선 |
 
+2026-07-26 G1 candidate captures are under `.design-references/07-found-color-content/hue-canvas-gate-2026-07-26/`. They use D — Chromatic Archive as the external UI reference and are pending user visual/interaction approval; they are not production design assets.
+
 ## 3. 폴더별 역할
 
 | 경로 | 상태 | 내용 |

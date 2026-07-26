@@ -19,6 +19,13 @@ Latest 430x932 captures:
 
 ## Latest Findings
 
+## 2026-07-26 — Hue Canvas G1 430×932 candidate
+
+- Captures: `.design-references/07-found-color-content/hue-canvas-gate-2026-07-26/01-empty-and-palette/01-entry-empty-430x932.png`, `02-palette-430x932.png`, `04-entry-with-saved-draft-430x932.png`, and `02-free-canvas/03-free-canvas-painted-430x932.png`.
+- Browser fixture used three completed `#8BC6E8` Color Hunt pages and one completed `#F47B68` page. Palette displayed `세이지 그린 · 3번 완성`, `0/24칸 사용`, and source 3×3 trace. The fixture is QA-only; real product input remains read-only completed records.
+- Canvas 2D used no cell DOM: a six-cell drag rendered stained-glass tiles; erase changed it to 5/24 and undo restored 6/24. Pan, button zoom, reload draft continuation, and dedicated `hue-canvas-prototype` IndexedDB `recipes` persistence were checked.
+- This is a candidate, not a visual approval. G2a template/resize/export and G2b Android device performance remain unstarted until the G1 review.
+
 - Home, history, profile, and story editor render from the seeded Supabase account.
 - Bottom navigation and system icons now use the sage accent instead of leftover coral active states.
 - Camera QA in browser uses the browser camera surface. Real-device camera permission/capture still needs a connected phone or emulator.

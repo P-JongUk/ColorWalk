@@ -5,6 +5,7 @@ import { Capacitor } from '@capacitor/core'
 
 import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
+import { HueCanvasPrototype } from '@/components/HueCanvasPrototype'
 import { TodayView } from '@/components/TodayView'
 import { getLocalDateKey } from '@/lib/date'
 import { draftToDailyPost, mergeDailyRecords } from '@/lib/dailyRecord'
@@ -23,6 +24,7 @@ import { useColorWalkStore } from '@/store/useColorWalkStore'
 import type { CaptureDraft, Post, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
+const isHueCanvasPrototypeEnabled = import.meta.env.VITE_HUE_CANVAS_PROTOTYPE === 'true'
 
 const CalendarView = lazy(() => import('@/components/CalendarView').then((module) => ({ default: module.CalendarView })))
 const CameraView = lazy(() => import('@/components/CameraView').then((module) => ({ default: module.CameraView })))
@@ -487,6 +489,7 @@ function App() {
 
   if (isSupabaseConfigured && isAuthLoading) return <div className="phone-shell flex justify-center"><div className="app-frame"><main className="screen-flow"><section className="passport-panel flex min-h-[70svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main></div></div>
   if (isSupabaseConfigured && !session) return <div className="phone-shell flex justify-center"><div className="app-frame"><AuthGate locale={locale} onAuthenticated={handleAuthenticated} /></div></div>
+  if (isHueCanvasPrototypeEnabled) return <div className="phone-shell flex justify-center"><div className="app-frame"><HueCanvasPrototype ownerId={ownerId} posts={displayPosts} locale={locale} /></div><Toaster richColors position="top-center" /></div>
   return <div className="phone-shell flex justify-center"><div className="app-frame flex flex-col"><div className="flex-1"><Suspense fallback={<main className="screen-flow"><section className="passport-panel flex min-h-[60svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main>}>{content}</Suspense></div>{activeTab !== 'camera' ? <BottomNav locale={locale} activeTab={activeTab} onChange={setActiveTab} /> : null}</div><Toaster richColors position="top-center" /></div>
 }
 

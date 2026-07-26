@@ -49,3 +49,8 @@
 - [ ] `20260529200000_add_grid_images.sql`을 라이브 Supabase에 적용할 인증된 admin 경로를 마련하고 fallback 종료 조건 정하기
 - [ ] 최초 Play 업로드 전에 `com.colorwalk.app` 영구 사용을 확정하고 업로드 키/Play App Signing, versionCode, 계정 삭제, 개인정보처리방침, Data Safety를 완성하기
 - [ ] 실제 iPhone/App Store가 필요해질 때 Apple Developer 가입과 Mac mini/단기 Mac/cloud CI 중 초기 빌드 경로 확정하기
+## 2026-07-26 — Hue Canvas G1 승인 대기
+
+- 사용자에게 `.design-references/07-found-color-content/hue-canvas-gate-2026-07-26/01-empty-and-palette/`와 `02-free-canvas/`의 430×932 캡처를 보여 주고, D — Chromatic Archive 외부 UI·유리 질감 강도·자유 Canvas 조작·Palette 수량 카피·하단 도구 배치를 승인받는다.
+- G1 승인 전에는 도안 3종, 도안 크기 재계산, resize 복사본, 완성·리믹스·export, Android 실기기 성능, production AppTab/BottomNav 통합을 구현하지 않는다.
+- 승인 뒤 G2a에서만 기하학 창·잎·수평선/도시 실루엣의 Path2D/mask 3종과 색칠 전 크기 계산, 저장·완성·리믹스·direct recipe export·PWA/emulator 검증을 진행한다. G2b 실제 Android 기기 QA는 production 승격 전 별도 gate다.

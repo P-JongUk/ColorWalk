@@ -1,5 +1,12 @@
 # 현재 상태
 
+## 2026-07-26 — Hue Canvas G1 prototype (사용자 시각 승인 대기)
+
+- `feature/hue-canvas-prototype`에서 CP1 문서 8칸 계약, CP2 Palette·희소 recipe·별도 IndexedDB, CP3 env-gated 430×932 진입/Palette/자유 Canvas를 구현했다. production `AppTab`·`BottomNav`·Supabase schema는 변경하지 않았다.
+- G1 recipe는 `hue-canvas-prototype` IndexedDB의 `recipes` store만 사용한다. 기존 `colorwalk-cache`의 `daily-record`/`media-asset`, `ownerSyncState` pending/error 동기화 조회와 분리했으며, Color Hunt 완료 기록은 Palette·원본 3×3 표시에 읽기 전용으로 사용한다.
+- 430×932 browser QA에서는 3회 완성한 동일 색을 24칸으로 집계하고, 드래그로 6칸 칠하기, 지우기 5칸/19칸 남음, undo 복구, pan·zoom, reload 뒤 6칸 draft 복구를 확인했다. G1 캡처는 `.design-references/07-found-color-content/hue-canvas-gate-2026-07-26/`에 있다.
+- G1은 구현·캡처 완료지만 D — Chromatic Archive 외부 UI, 유리 강도, 자유 조작, Palette 문구, 하단 도구 배치의 **사용자 승인은 아직 받지 않았다**. G2a 도안·resize·완성/export와 production tab 연결은 시작하지 않는다.
+
 ## 제품
 
 - 공개 브랜드: Hueday
