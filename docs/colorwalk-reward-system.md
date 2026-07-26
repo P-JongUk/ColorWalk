@@ -19,7 +19,7 @@ This keeps Hueday aligned with the core product direction: private, emotional, c
 - 첫 사진 사용을 확정하면 그날의 미션 색을 잠근다. 첫 사진은 안전하게 보존되는 `오늘의 색 발견`이자 유효한 일일 기록이지만 3x3 페이지 완료로 계산하지 않는다.
 - 2~7장도 그날 모은 색 장면으로 보존하며 실패나 미완성으로 부르지 않는다.
 - 8장을 모두 채운 완성 3x3을 오늘의 미션과 한 페이지 완료로 계산한다.
-- 주요 보상 축은 완성 3x3이다. 비소모성 색 재료, Hueprint 반영, 창작 재질·구도, 완성형 공유 프레임·결과물을 여기에 연결한다.
+- 주요 보상 축은 완성 3x3이다. 페이지 하나는 해당 중앙 미션 색의 Hue Canvas 사용 가능 칸 8개를 열며, 비소모성 색 재료, Hueprint 반영, 창작 재질·구도, 완성형 공유 프레임·결과물을 여기에 연결한다.
 - 현지 자정이 지나면 1~7장 기록도 당시 사진 수로 닫고 다음 날은 새 색을 선택한다. 닫힌 기록을 오늘 미션으로 이어 채우지 않는다.
 - 1~7장 때문에 보상을 회수하거나 연속 일수를 초기화하지 않으며 실패·죄책감 카피를 사용하지 않는다.
 - 첫 사진 기록에는 칸 채움, 저장 확인, 부드러운 촉각·시각 피드백을 줄 수 있지만 주요 아이템 해금처럼 3×3 완료로 오해할 보상은 주지 않는다.
@@ -56,7 +56,7 @@ Avoid rewards that make users think:
 | 진행 축 | 예시 | 보상 방향 |
 | --- | --- | --- |
 | 오늘의 색 기록 | 현지 날짜에 사진 1장 이상 | 달력·기록함 보존, 저장 확인, 진행 피드백 |
-| 완성한 3x3 | 1·3·5·10페이지 등 | 해당 미션 색의 Hue Canvas 배치량·기본 도안/도구 |
+| 완성한 3x3 | 1·3·5·10페이지 등 | 페이지당 해당 중앙 미션 색 Hue Canvas 사용 가능 칸 8개·기본 도안/도구 |
 | 미션 팩 | 집·학교·통학·카페 pack 진행 | 문맥별 대표 아이템 |
 | 주간 색 리듬 | 선택한 2/3/5일 목표 | 재질·장식·작은 공간 효과 |
 | 월간 참여 | 한 달 안의 유연한 참여 | Hueprint 포스터·벽지·리캡 프레임 |
@@ -97,7 +97,7 @@ When a feature changes, update rewards by preserving these relationships:
 Examples:
 
 - A first-photo seed may receive a saved-state mark or gentle progress feedback, but not the main reward reserved for a completed page.
-- Completed 3x3 pages should increase the matching Hue Canvas color budget and may unlock grid frames, recap layouts, or other meaningful creative assets.
+- Completed 3x3 pages should add eight usable Hue Canvas cells for the matching central mission color and may unlock grid frames, recap layouts, or other meaningful creative assets.
 - The primary reward should be immediately usable in the approved found-color content, with story/profile art as a secondary use. Hue Room is a deferred post-launch hypothesis, not a launch reward target.
 - If the monthly shelf is removed, badge detail sheets should still show the relevant period palette/photos and offer a story-making path.
 - If story template names or assets change, keep the milestone meaning stable and remap each milestone to the nearest new creative asset.

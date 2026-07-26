@@ -76,6 +76,12 @@
 - 프로토타입 승인 뒤 local master 수동 정리와 최소 미션 팩을 진행한다. local master 정리는 출시 전 필수이며 자동 삭제를 금지하고, preview만 남아 복구할 수 없는 경우 경고와 사용자 확인을 사용한다.
 - 이후 출시용 Hue Canvas·Palette·Color Rhythm 보상을 완성한다. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지하며, 현재 M2-2 구현 사실과 미통과 Android 실경로 QA를 바꾸지 않는다.
 
+## 2026-07-26 — Hue Canvas 8칸 색 수량 계약 (approved)
+
+- 주변 사진 8장을 채운 완성 3x3 한 페이지는 중앙 `mission_hex`의 Hue Canvas 사용 가능 칸 8개를 연다. `usableCells = 같은 HEX 완료 페이지 수 × 8`이다.
+- 1~7장 기록은 보존하지만 색 칸을 지급하지 않는다. 사용량은 작품별 한도라 지우기·재채색하면 즉시 돌아오며, 다른 작품에서도 전량을 다시 쓸 수 있다.
+- 과거 작품은 이후 보유량이 변해도 자동 삭제·변형하지 않는다. Palette는 완료 횟수, 총 사용 가능 칸, 현재 작품 사용량, 남은 칸과 원본 3x3을 함께 보여 준다.
+
 ## 2026-07-22 — 빠르고 완성도 있는 출시
 
 - 현재 계획의 시간축은 3개월 로드맵이 아니라 완성도 있는 제품 출시까지의 압축된 critical path입니다.
