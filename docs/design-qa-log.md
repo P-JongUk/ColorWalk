@@ -52,6 +52,13 @@ Latest 430x932 captures:
 
 ## Next Visual Pass
 
+## 2026-07-26 — M2-2 CP4 local master smoke QA
+
+- PWA: local Vite app at `127.0.0.1:4173` was checked at a 430×932 viewport. Home rendered the device-storage state and current mission; Camera navigation rendered the 8-slot collection, album selection, capture, camera switch, and disabled journal state without a layout or console-blocking failure.
+- Capacitor: `npm run cap:sync` completed after the prior terminal result could not be recovered. It rebuilt the web bundle, copied it into Android assets, and updated the three configured plugins.
+- Android: `:app:assembleDebug` produced a new debug APK (17,955,823 bytes, 2026-07-26 14:31 KST). `ColorWalkPixel7` did not become ADB-ready during one 60-second boot attempt, so install/camera/offline/retry QA was not repeated or claimed as passed. This was an environment readiness failure, not an app ANR result.
+- Existing automated gates were supplied as already passed for this checkpoint and were intentionally not rerun: lint, 25-test Vitest run, production build, and Supabase verification. `git diff --check` passed with only existing Android generated-file CRLF warnings.
+
 - Keep D — Chromatic Archive as the working direction for the external app UI.
 - Hue Room H1/H2/H3 boards are not approved launch screens. Preserve them locally and stop room/furniture/2.5D/3D production until the post-launch hypothesis is explicitly reopened.
 - Before visual production, compare the product blueprint, growth strategy, reward system, and found-color replacement strategy; surface any conflict instead of silently changing the product contract.
