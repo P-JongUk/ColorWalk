@@ -176,6 +176,16 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - Before merging into `main`, review the complete diff and preserve existing product functionality, security rules, and required documentation. Merge only the intended feature branch changes.
 - Never commit secrets, `.env` files, private beta-account documents, generated caches, or local design-reference assets.
 
+## Work Continuation and Stop Criteria
+
+- An intermediate commit and push are recovery checkpoints, not completion conditions. Continue until the requested success conditions are met.
+- After context compaction, reread the relevant AI memory and Git state, then resume toward the current completion conditions. Do not claim that work can continue after an actual system-enforced termination; apply this rule while execution remains available.
+- Unverified WIP is not a reason to stop. Verify the narrow reachable flow, commit and push the next safe checkpoint, then continue.
+- A failed check is not an automatic stop. Narrow the cause within the real user-flow scope and fix it; if it is environmental, record the evidence and continue with the next feasible work.
+- Never send an in-progress lint, build, Gradle, Capacitor, or similar process state as the final answer. If an execution cell is still running, wait for its result and continue.
+- Do not stop merely because work is long unless the user explicitly raises usage concerns. If a real system usage or time limit ends execution, leave a Git checkpoint and AI memory handoff.
+- Stop only when a product-direction choice needs the user, destructive DB/data/access expansion needs approval, login or physical-device control requires the user, a real system limit ends execution, or the same environmental block recurs after safe alternatives are exhausted.
+
 ## AI Context Workflow
 
 - Every meaningful development task must use the project-scoped `.codex/skills/hueday-development-workflow` skill. The `SessionStart` hook prints its checklist automatically; do not wait for the user to repeat these rules.

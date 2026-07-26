@@ -85,6 +85,16 @@ Use `-Mode check` before commit to verify required source documents and roadmap 
 - Make focused Korean commits at meaningful verified checkpoints, then push the feature branch.
 - Before merging, review the complete diff and ensure the Obsidian note, tests, security constraints, and product loop are included where relevant.
 
+## 6. Continue until the requested outcome
+
+- An intermediate commit and push are recovery checkpoints, not completion conditions. Continue until the stated success conditions are met.
+- If context compaction occurs, reread the relevant AI memory and Git state, then continue toward the current completion conditions. This is a rule while execution remains available, not a claim that work automatically resumes after a system-enforced termination.
+- Do not stop because WIP is unverified: run the narrow reachable verification, commit and push the next safe checkpoint, then continue.
+- A failed check is not an automatic stop. Narrow and fix the cause in the real user-flow scope; when it is environmental, record evidence and continue with the next feasible work.
+- Do not send an in-progress lint, build, Gradle, Capacitor, or similar process state as a final answer. Wait for the execution result first.
+- Do not stop merely because the work is long unless the user explicitly raises usage concerns. If an actual system usage or time limit ends execution, leave a Git checkpoint and AI memory handoff.
+- Stop only for a required product-direction choice, destructive DB/data/access-expansion approval, user-only login or physical-device control, an actual system limit, or a repeated environmental block after safe alternatives are exhausted.
+
 ## Failure handling
 
 - If Graphify is stale, update it before relying on structural answers.
