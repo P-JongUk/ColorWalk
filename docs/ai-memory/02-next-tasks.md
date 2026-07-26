@@ -2,17 +2,13 @@
 
 > ## 진행 중 작업 인계
 >
-> - **작업명·목표:** 완료 상태 — M2-1 `feature/core-funnel-observability`의 개인정보 최소 이벤트 계약, IndexedDB 중복 방지 outbox, live `product_events`, 최소 회귀 E2E.
-> - **현재 브랜치 / 기준 main:** `main` / `f76710a` (M2-1이 fast-forward로 통합됨)
-> - **현재 HEAD / 마지막 원격 push:** `4ffdb09` / `4ffdb09` (M2-1 live migration 문서 checkpoint)
-> - **현재 체크포인트:** CP6 live `product_events` 적용 사실·문서·main/origin 병합 완료. `grid_images` 전환·backfill·fallback 종료와 다른 M2 브랜치는 범위 밖이다.
-> - **완료한 내용:** 깨끗한 작업 트리와 `main == origin/main == f76710a` 확인, feature 원격 브랜치 생성, Graphify 관측 경로 조회, draft DB v2의 `product-events` object store 및 안전 payload 이벤트 계약 구현·검증·push 완료. `20260724030000_add_product_events.sql`은 live project `nhsvmypztjyhqunixxeg`에 적용됐고, `npm run verify:supabase`가 ready·owner read·dedupe·anonymous/cross-user denial을 확인했다. 인증 완료·미션 표시·촬영 시작·첫 사진 확정·부분 기록 저장·8장 완성·저널 저장·Story export/share 이벤트를 기존 저장 성공 지점 뒤에 비차단으로 연결했다. Vite CLI wrapper 대신 Node 직접 preview와 점유 포트 fail-fast를 사용하고, 권한 거절 뒤 앨범 사진도 기존 `onComplete`로 저널에 보존하도록 수정했다. 430×932 E2E는 첫 사진 새로고침 복구·8장·앨범 복구·Story download·저널 저장을 완주했고 Graphify AST update도 완료했다.
-> - **수정 중이거나 dirty인 파일:** 이 완료 상태 갱신 전에는 없음.
-> - **마지막 통과 검증:** 좁은 ESLint, `npm test -- --run src/lib/productEvents.test.ts`(2 tests), `node --check scripts/e2e-core-funnel.mjs`, 430×932 `scripts/e2e-core-funnel.ps1 -Port 4206`(1회 통과), `npm run lint`, `npm test -- --run`(9 files/21 tests), `npm run build`, `npm run verify:supabase`(2026-07-26 live `productEvents.ready`), `git diff --check`, `graphify update .`.
-> - **실패한 검증과 이유:** 초기 E2E는 점유된 4175 Python 서버와 `vite.cmd` child-process 문제로 잘못된 서버에 붙었고, 권한 거절 카드가 앨범 사진의 저널 이동을 숨긴 실제 복구 결함을 드러냈다. Node 직접 preview, 점유 포트 fail-fast, 기존 `onComplete` 재사용으로 해결했다. `grid_images` migration과 과거 remote migration history 불일치는 별도 DB 전환 gate이며 이번에는 repair하지 않는다.
-> - **다음 한 가지 작업:** local master·offline sync의 별도 M2 범위를 승인받은 후 새 feature 브랜치에서 시작한다.
-> - **사용자 승인·외부 권한 필요:** additive `product_events` 테이블·인덱스·새 테이블 owner-scoped RLS는 migration diff, 프로젝트 `nhsvmypztjyhqunixxeg`, 현재 스키마, rollback/비활성화 경로, 비밀정보 부재를 확인하고 검증하면 자동 적용할 수 있다. `grid_images` migration/cutover처럼 기존 행을 변경하는 작업은 이 브랜치에서 실행하지 않는다.
-> - **QA 범위:** M2-1은 가입→미션→촬영→저장→Story의 도달 가능한 핵심 흐름과 새로고침/저장 실패의 대표 복구만 우선한다. 개인정보·RLS·중복·기록 손실은 유지하되, 미지원 환경과 상태·네트워크 전수 조합은 실제 근거가 생길 때까지 보류한다.
+> - **작업명·목표:** 진행 중 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
+> - **현재 브랜치 / 기준 main:** `feature/local-master-offline-sync` / `main == origin/main == 495cc19`.
+> - **현재 체크포인트:** CP1 구현·검증 전. 새 object store/패키지/SQLite 없이 DB v3 index와 기존 `drafts` store kind를 추가했다.
+> - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
+> - **마지막 통과 검증:** `npm test -- --run`(9 files/21 tests), `npm run build`, `npm run lint`, 430×932 `scripts/e2e-core-funnel.ps1 -Port 4210` 1회 통과.
+> - **다음 명령:** `npm run lint; npm test -- --run; npm run build` 뒤 CP1 diff를 검토하고 커밋·push한다. 그 다음 CP2에서 pending/error sync 저장 사실과 브라우저/Android 실패 QA를 보강한다.
+> - **범위 밖:** `grid_images` migration/backfill/repair, archive, account export/delete, Cloud backup, SQLite, 자동 master 삭제.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
 

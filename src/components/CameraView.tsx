@@ -42,7 +42,10 @@ function buildDraft(
     localDate,
     lockedAt: previous?.lockedAt ?? new Date().toISOString(),
     closedAt: previous?.closedAt,
-    syncState: 'pending',
+    recordLifecycle: previous?.recordLifecycle ?? (previous?.closedAt ? 'closed' : 'active'),
+    localRevision: (previous?.localRevision ?? 0) + 1,
+    serverRevision: previous?.serverRevision ?? 0,
+    lastSyncError: undefined,
     journal: previous?.journal,
     compression,
   }
@@ -203,7 +206,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }
 
   function discardPendingImage() {
-    if (pendingImage) URL.revokeObjectURL(pendingImage.image.previewUrl)
+    if (pendingImage?.image.previewUrl) URL.revokeObjectURL(pendingImage.image.previewUrl)
     setPendingImage(null)
   }
 

@@ -254,15 +254,15 @@ export async function fetchPosts(userId: string): Promise<Post[]> {
   })
 }
 
-export async function uploadPostImage(userId: string, localDate: string, blob: Blob) {
+export async function uploadPostImage(userId: string, localDate: string, blob: Blob, assetId: string) {
   if (!supabase) throw new Error('Supabase is not configured')
   if (blob.type !== 'image/webp') throw new Error('Only WebP uploads are allowed')
   if (blob.size > MAX_UPLOAD_BYTES) throw new Error('Image is too large to upload')
 
-  const path = `${userId}/${localDate}-${crypto.randomUUID()}.webp`
+  const path = `${userId}/${localDate}/${assetId}-preview-v1.webp`
   const { error } = await supabase.storage.from('post-images').upload(path, blob, {
     contentType: 'image/webp',
-    upsert: false,
+    upsert: true,
   })
 
   if (error) throw error

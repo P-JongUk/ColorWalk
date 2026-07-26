@@ -30,10 +30,16 @@ type WindowWithImageCapture = Window & {
 }
 
 export const HISTORY_UPLOAD_IMAGE_OPTIONS = {
-  maxWidth: 1440,
+  maxLongEdge: 1440,
   targetBytes: 420 * 1024,
-  minWidth: 900,
+  minLongEdge: 720,
   minQuality: 0.6,
+} as const
+
+export const LOCAL_MASTER_IMAGE_OPTIONS = {
+  maxLongEdge: 2560,
+  // Measured candidate chosen as the lowest visually clean option for the beta preset.
+  quality: 0.9,
 } as const
 
 function canvasToBlob(canvas: HTMLCanvasElement, quality: number, type = 'image/webp'): Promise<Blob> {
@@ -188,16 +194,16 @@ export async function blobToCanvas(blob: Blob): Promise<HTMLCanvasElement> {
 
 export async function compressCanvasToWebP(
   source: HTMLCanvasElement,
-  options: { maxWidth?: number; targetBytes?: number; minWidth?: number; minQuality?: number } = {},
+  options: { maxLongEdge?: number; targetBytes?: number; minLongEdge?: number; minQuality?: number; quality?: number } = {},
 ): Promise<CompressedImage> {
   const targetBytes = options.targetBytes ?? 420 * 1024
-  let maxWidth = options.maxWidth ?? 1440
-  const minWidth = options.minWidth ?? 900
+  let maxLongEdge = options.maxLongEdge ?? 1440
+  const minLongEdge = options.minLongEdge ?? 720
   const minQuality = options.minQuality ?? 0.6
-  let quality = 0.84
+  let quality = options.quality ?? 0.84
 
   for (let attempt = 0; attempt < 14; attempt += 1) {
-    const ratio = Math.min(1, maxWidth / source.width)
+    const ratio = Math.min(1, maxLongEdge / Math.max(source.width, source.height))
     const canvas = document.createElement('canvas')
     canvas.width = Math.max(1, Math.round(source.width * ratio))
     canvas.height = Math.max(1, Math.round(source.height * ratio))
@@ -205,7 +211,7 @@ export async function compressCanvasToWebP(
     context.drawImage(source, 0, 0, canvas.width, canvas.height)
 
     const blob = await canvasToBlob(canvas, quality)
-    if (blob.size <= targetBytes || (quality <= minQuality && maxWidth <= minWidth)) {
+    if (blob.size <= targetBytes || (quality <= minQuality && maxLongEdge <= minLongEdge)) {
       return {
         blob,
         width: canvas.width,
@@ -218,13 +224,13 @@ export async function compressCanvasToWebP(
     if (quality > minQuality) {
       quality = Math.max(minQuality, quality - 0.05)
     } else {
-      maxWidth = Math.max(minWidth, Math.round(maxWidth * 0.88))
+      maxLongEdge = Math.max(minLongEdge, Math.round(maxLongEdge * 0.88))
       quality = 0.72
     }
   }
 
   const fallback = document.createElement('canvas')
-  const ratio = Math.min(1, minWidth / source.width)
+  const ratio = Math.min(1, minLongEdge / Math.max(source.width, source.height))
   fallback.width = Math.max(1, Math.round(source.width * ratio))
   fallback.height = Math.max(1, Math.round(source.height * ratio))
   getCanvasContext(fallback).drawImage(source, 0, 0, fallback.width, fallback.height)
@@ -241,6 +247,17 @@ export async function compressCanvasToWebP(
 
 export async function compressBlobToHistoryWebP(blob: Blob) {
   return compressCanvasToWebP(await blobToCanvas(blob), HISTORY_UPLOAD_IMAGE_OPTIONS)
+}
+
+export async function createLocalMasterWebP(blob: Blob) {
+  const source = await blobToCanvas(blob)
+  return compressCanvasToWebP(source, {
+    maxLongEdge: LOCAL_MASTER_IMAGE_OPTIONS.maxLongEdge,
+    targetBytes: Number.MAX_SAFE_INTEGER,
+    minLongEdge: LOCAL_MASTER_IMAGE_OPTIONS.maxLongEdge,
+    minQuality: LOCAL_MASTER_IMAGE_OPTIONS.quality,
+    quality: LOCAL_MASTER_IMAGE_OPTIONS.quality,
+  })
 }
 
 export function sampleVideoCenter(video: HTMLVideoElement) {

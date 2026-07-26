@@ -29,7 +29,11 @@ export type CaptureDraft = {
   localDate: string
   lockedAt?: string
   closedAt?: string
-  syncState?: 'pending' | 'syncing' | 'synced'
+  /** Durable record facts. Sync state is derived from these fields and preview paths. */
+  recordLifecycle?: 'active' | 'closed'
+  localRevision?: number
+  serverRevision?: number
+  lastSyncError?: 'local' | 'upload' | 'post'
   journal?: {
     colorName: string
     journalAnswer: string
@@ -49,9 +53,12 @@ export type GridImageSource = 'camera' | 'album' | 'seed' | 'legacy'
 
 export type GridDraftImage = {
   id: string
+  /** Stable media-asset record id. Defaults to id for legacy drafts. */
+  assetId?: string
   slot: number
-  previewUrl: string
-  imageBlob: Blob
+  previewUrl?: string
+  /** Runtime image for capture, preview generation, or selected-record display. */
+  imageBlob?: Blob
   width: number
   height: number
   bytes: number
@@ -63,6 +70,16 @@ export type GridDraftImage = {
   source: Extract<GridImageSource, 'camera' | 'album'>
   createdAt: string
   uploadPath?: string
+  masterState?: 'staging' | 'ready'
+  masterPath?: string
+  masterWidth?: number
+  masterHeight?: number
+  masterBytes?: number
+  masterMimeType?: string
+  previewWidth?: number
+  previewHeight?: number
+  previewBytes?: number
+  previewQuality?: number
 }
 
 export type GridImage = {

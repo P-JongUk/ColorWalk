@@ -5,7 +5,7 @@ export function draftToDailyPost(draft: CaptureDraft, userId: string, locale: Lo
   const gridImages: GridImage[] = draft.gridImages.map((image) => ({
     id: image.id,
     slot: image.slot,
-    path: image.uploadPath ?? image.previewUrl,
+    path: image.uploadPath ?? image.previewUrl ?? '',
     signedUrl: image.uploadPath ? undefined : image.previewUrl,
     previewUrl: image.previewUrl,
     width: image.width,
@@ -44,7 +44,7 @@ export function draftToDailyPost(draft: CaptureDraft, userId: string, locale: Lo
         lockedAt: draft.lockedAt,
         closedAt: draft.closedAt,
       },
-      localSyncState: draft.syncState ?? 'pending',
+      localSyncState: draft.lastSyncError ?? (draft.localRevision === draft.serverRevision ? 'synced' : 'pending'),
     },
   }
 }

@@ -8,10 +8,11 @@ import { BottomNav } from '@/components/BottomNav'
 import { TodayView } from '@/components/TodayView'
 import { getLocalDateKey } from '@/lib/date'
 import { draftToDailyPost, mergeDailyRecords } from '@/lib/dailyRecord'
-import { clearCachedDraft, loadCachedDraft, loadCachedDrafts, saveCachedDraft } from '@/lib/draftStorage'
+import { loadCachedDraft, loadCachedDrafts, loadPendingCachedDrafts, promoteDraftMasters, saveCachedDraft } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { compressBlobToHistoryWebP } from '@/lib/image'
+import { isStorageFullError } from '@/lib/localMaster'
 import { getRandomMission } from '@/lib/mission'
 import { loadDailyMissionState, saveDailyMissionState } from '@/lib/missionState'
 import { startWebReminderScheduler } from '@/lib/notifications'
@@ -161,6 +162,30 @@ function App() {
 
   useEffect(() => {
     if (!session || session.user.is_anonymous) return
+    let active = true
+    const flushPending = async () => {
+      const pending = await loadPendingCachedDrafts(session.user.id)
+      for (const record of pending) {
+        if (!active) return
+        await syncDraft(record).catch((error) => console.warn('Daily record sync will retry later', error))
+      }
+    }
+    const onOnline = () => { void flushPending() }
+    void flushPending()
+    window.addEventListener('online', onOnline)
+    const onForeground = () => { if (document.visibilityState !== 'hidden') void flushPending() }
+    document.addEventListener('visibilitychange', onForeground)
+    return () => {
+      active = false
+      document.removeEventListener('visibilitychange', onForeground)
+      window.removeEventListener('online', onOnline)
+    }
+  // syncDraft is a function declaration; retries are intentionally owner-scoped.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session])
+
+  useEffect(() => {
+    if (!session || session.user.is_anonymous) return
     const localDate = getLocalDateKey()
     recordProductEvent('screen_viewed', `${localDate}:screen_viewed:${activeTab}`, { screen: activeTab }, localDate)
   }, [activeTab, recordProductEvent, session])
@@ -193,8 +218,9 @@ function App() {
     }
   }, [recordProductEvent, session])
 
-  async function syncDraft(nextDraft: CaptureDraft, clearWhenComplete = false) {
-    const localPost = draftToDailyPost(nextDraft, ownerId, locale)
+  async function syncDraft(nextDraft: CaptureDraft) {
+    let uploadDraft = await promoteDraftMasters(nextDraft, ownerId)
+    const localPost = draftToDailyPost(uploadDraft, ownerId, locale)
     if (!supabase || !session) {
       const nextPosts = [localPost, ...posts.filter((post) => post.local_date !== nextDraft.localDate)]
       setPosts(nextPosts)
@@ -202,15 +228,15 @@ function App() {
       return
     }
 
-    let uploadDraft = nextDraft
-    for (const image of nextDraft.gridImages) {
+    for (const image of uploadDraft.gridImages) {
       if (image.uploadPath) continue
+      if (!image.imageBlob) throw new Error('Local master is unavailable')
       const compressed = await compressBlobToHistoryWebP(image.imageBlob)
-      const uploadPath = await uploadPostImage(session.user.id, nextDraft.localDate, compressed.blob)
+      const uploadPath = await uploadPostImage(session.user.id, nextDraft.localDate, compressed.blob, image.assetId ?? image.id)
       uploadDraft = {
         ...uploadDraft,
         gridImages: uploadDraft.gridImages.map((candidate) => candidate.id === image.id
-          ? { ...candidate, uploadPath, width: compressed.width, height: compressed.height, bytes: compressed.bytes, quality: compressed.quality }
+          ? { ...candidate, uploadPath, previewWidth: compressed.width, previewHeight: compressed.height, previewBytes: compressed.bytes, previewQuality: compressed.quality }
           : candidate),
       }
       await saveCachedDraft(uploadDraft, ownerId)
@@ -259,13 +285,7 @@ function App() {
     const uploadPaths = new Set(gridImages.map((image) => image.path))
     await Promise.all(getPostImagePaths(existing).filter((path) => !uploadPaths.has(path)).map((path) => deletePostImage(path).catch(() => undefined)))
     setPosts(await fetchPosts(session.user.id))
-    const synced = { ...uploadDraft, syncState: 'synced' as const }
-    if (clearWhenComplete && synced.gridImages.length >= 8) {
-      await clearCachedDraft(ownerId, synced.localDate)
-      setDailyDrafts((current) => current.filter((candidate) => candidate.localDate !== synced.localDate))
-      setDraft(null)
-      return
-    }
+    const synced = { ...uploadDraft, serverRevision: uploadDraft.localRevision, lastSyncError: undefined }
     await saveCachedDraft(synced, ownerId)
     if (synced.localDate === getLocalDateKey()) setDraft(synced)
     setDailyDrafts((current) => [synced, ...current.filter((candidate) => candidate.localDate !== synced.localDate)])
@@ -275,7 +295,7 @@ function App() {
     if (nextDraft.localDate !== getLocalDateKey()) {
       toast.message(locale === 'ko' ? '날짜가 바뀌었어요. 오늘의 색으로 새 사진을 찍어 주세요.' : 'The date changed. Take a new photo for today’s color.')
       if (draft?.gridImages.length) {
-        const closed = { ...draft, closedAt: new Date().toISOString(), syncState: 'pending' as const }
+        const closed = { ...draft, closedAt: new Date().toISOString(), recordLifecycle: 'closed' as const, localRevision: (draft.localRevision ?? 0) + 1, lastSyncError: undefined }
         await saveCachedDraft(closed, ownerId)
         setDailyDrafts((current) => [closed, ...current.filter((candidate) => candidate.localDate !== closed.localDate)])
         setDraft(null)
@@ -304,10 +324,16 @@ function App() {
       }
       const selected = loadDailyMissionState(ownerId, nextDraft.localDate)
       if (selected && !selected.lockedAt) saveDailyMissionState(ownerId, { ...selected, lockedAt: nextDraft.lockedAt ?? new Date().toISOString() })
-      void syncDraft(nextDraft).catch((error) => console.warn('Daily record sync will retry later', error))
+      void syncDraft(nextDraft).catch(async (error) => {
+        console.warn('Daily record sync will retry later', error)
+        await saveCachedDraft({ ...nextDraft, lastSyncError: 'upload' }, ownerId).catch(() => undefined)
+      })
       return true
     } catch (error) {
       console.error(error)
+      toast.error(isStorageFullError(error)
+        ? (locale === 'ko' ? '저장 공간이 부족해요. 공간을 확보한 뒤 다시 저장해 주세요.' : 'Storage is full. Free space and try again.')
+        : (locale === 'ko' ? '기기에 사진을 저장하지 못했어요. 다시 시도해 주세요.' : 'Could not save the photo on this device. Try again.'))
       return false
     }
   }
@@ -316,7 +342,7 @@ function App() {
     if (!draft?.gridImages.length) return
     setIsSaving(true)
     try {
-      const journalDraft: CaptureDraft = { ...draft, journal: { colorName, journalAnswer, storyDesign }, syncState: 'pending' }
+      const journalDraft: CaptureDraft = { ...draft, journal: { colorName, journalAnswer, storyDesign }, recordLifecycle: draft.gridImages.length >= 8 ? 'closed' : draft.recordLifecycle, localRevision: (draft.localRevision ?? 0) + 1, lastSyncError: undefined }
       await saveCachedDraft(journalDraft, ownerId)
       setDraft(journalDraft)
       setDailyDrafts((current) => [journalDraft, ...current.filter((candidate) => candidate.localDate !== journalDraft.localDate)])
@@ -328,7 +354,7 @@ function App() {
           cta: 'partial_record_saved',
         }, journalDraft.localDate)
       }
-      await syncDraft(journalDraft, journalDraft.gridImages.length >= 8)
+      await syncDraft(journalDraft)
       setActiveTab('calendar')
       toast.success(t(locale, 'saved'))
     } catch (error) {
@@ -370,7 +396,7 @@ function App() {
   useEffect(() => {
     async function closePastDraft() {
       if (!draft || draft.localDate === getLocalDateKey()) return
-      const closed = { ...draft, closedAt: new Date().toISOString(), syncState: 'pending' as const }
+      const closed = { ...draft, closedAt: new Date().toISOString(), recordLifecycle: 'closed' as const, localRevision: (draft.localRevision ?? 0) + 1, lastSyncError: undefined }
       await saveCachedDraft(closed, ownerId)
       setDailyDrafts((current) => [closed, ...current.filter((candidate) => candidate.localDate !== closed.localDate)])
       setDraft(null)
