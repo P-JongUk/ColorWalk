@@ -187,6 +187,12 @@ Color Hunt의 최소 기록 계약은 `local_date`, 당시 기기 시간대, 잠
 - 일일 기록의 lifecycle/completion/sync 상태를 분리하고, boot/online/수동 재시도는 현재 owner의 `pending`/`error` 기록만 대상으로 한다. owner+localDate in-memory lock과 기존 preview 경로 재사용으로 중복 실행을 막는다.
 - 네 개 bitmap 표본에서 WebP 0.86/0.90/0.92를 비교해 0.90을 beta master preset으로 선택했다. 당시 정량 원시 산출물은 보존되지 않아 byte/encode-ms 수치를 재주장하지 않으며, 다음 실제 카메라 표본 측정에서 이를 다시 기록한다.
 
+### Hue Canvas G1 프로토타입 저장 경계 (2026-07-26 KST)
+
+- 기존 `colorwalk-cache`의 `drafts` store는 keyPath `key`, `daily-record`/`media-asset` kind와 `ownerSyncState` pending/error 인덱스로 일일 기록 동기화 재시도를 직접 구동한다.
+- G1 recipe는 migration 없이 별도 IndexedDB `hue-canvas-prototype`의 `recipes` store(keyPath `id`, ownerId index)에만 저장한다. 일일 기록 key·kind·pending/error 상태를 쓰지 않고, Supabase·동기화 큐·production recipe migration에 연결하지 않는다.
+- Color Hunt 완료 기록은 Palette와 원본 추적을 위해 읽기만 한다. prototype 제거 시 이 전용 DB와 G1 UI는 버릴 수 있고, recipe·Palette 집계·좌표 변환·Canvas renderer만 후속 production 검토 대상으로 남긴다.
+
 - 고화질 로컬 마스터 보존 계약
 - 작은 무료 preview와 고화질 Cloud 계층 분리
 - 수동 `.hueday` archive
