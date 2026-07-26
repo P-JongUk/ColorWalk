@@ -135,6 +135,22 @@ function toStoredAsset(image: GridDraftImage, ownerId: string, localDate: string
   return { ...base, masterPath: undefined, masterBlob: undefined, stagingBlob: image.imageBlob }
 }
 
+function storedAssetsForDraft(draft: CaptureDraft, ownerId: string) {
+  return draft.gridImages
+    .map((image) => toStoredAsset(image, ownerId, draft.localDate))
+    .filter(Boolean) as StoredMediaAsset[]
+}
+
+export function buildDraftRecords(draft: CaptureDraft, ownerId: string) {
+  return { daily: toStoredDailyRecord(draft, ownerId), assets: storedAssetsForDraft(draft, ownerId) }
+}
+
+function putDraftRecords(store: IDBObjectStore, draft: CaptureDraft, ownerId: string) {
+  const { daily, assets } = buildDraftRecords(draft, ownerId)
+  assets.forEach((asset) => store.put(asset))
+  store.put(daily)
+}
+
 async function readDailyRecord(ownerId: string, localDate: string) {
   return runDraftTransaction<StoredDailyRecord>('readonly', (store) => store.get(dailyRecordKey(ownerId, localDate)))
 }
@@ -181,24 +197,44 @@ async function migrateLegacyDraft(ownerId: string) {
   await runDraftTransaction('readwrite', (store) => store.delete(LEGACY_TODAY_DRAFT_KEY))
 }
 
+async function migrateLegacyDailyRecords(ownerId: string) {
+  const legacyRecords = await runDraftTransaction<LegacyStoredDraft[]>('readonly', (store) => store.getAll()) ?? []
+  const candidates = legacyRecords.filter((record) =>
+    record.key?.startsWith(`daily-grid-draft:${ownerId}:`) && Array.isArray(record.gridImages),
+  )
+  for (const legacy of candidates) {
+    const draft: CaptureDraft = {
+      ...legacy,
+      localDate: legacy.localDate,
+      localRevision: legacy.localRevision ?? 1,
+      serverRevision: legacy.serverRevision ?? 0,
+      recordLifecycle: legacy.closedAt ? 'closed' : 'active',
+      gridImages: legacy.gridImages.map((image) => ({ ...image, assetId: image.assetId ?? image.id, masterState: 'staging' })),
+    }
+    await runDraftTransaction('readwrite', (store) => {
+      // The old record remains until both the daily record and every asset are queued.
+      putDraftRecords(store, draft, ownerId)
+      return store.delete(legacy.key)
+    })
+  }
+}
+
 export async function saveCachedDraft(draft: CaptureDraft, ownerId: string) {
-  const daily = toStoredDailyRecord(draft, ownerId)
-  const assets = draft.gridImages.map((image) => toStoredAsset(image, ownerId, draft.localDate)).filter(Boolean) as StoredMediaAsset[]
-  const existingAssets = await Promise.all(assets.map((asset) => readAsset(ownerId, asset.assetId)))
   await runDraftTransaction('readwrite', (store) => {
-    existingAssets.forEach((existing, index) => store.put({ ...existing, ...assets[index] }))
-    store.put(daily)
+    putDraftRecords(store, draft, ownerId)
   })
 }
 
 export async function loadCachedDraft(ownerId: string, localDate = getLocalDateKey()) {
   await migrateLegacyDraft(ownerId)
+  await migrateLegacyDailyRecords(ownerId)
   const stored = await readDailyRecord(ownerId, localDate)
   return stored ? fromStoredDailyRecord(stored) : null
 }
 
 export async function loadCachedDrafts(ownerId: string) {
   await migrateLegacyDraft(ownerId)
+  await migrateLegacyDailyRecords(ownerId)
   const stored = await runDraftTransaction<StoredDailyRecord[]>('readonly', (store) => store.index('ownerKind').getAll(IDBKeyRange.only([ownerId, 'daily-record']))) ?? []
   return Promise.all(stored.sort((a, b) => b.localDate.localeCompare(a.localDate)).map(fromStoredDailyRecord))
 }
