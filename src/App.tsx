@@ -46,6 +46,9 @@ function App() {
   const [isLocalOnly, setIsLocalOnly] = useState(!isSupabaseConfigured)
   const [dailyDrafts, setDailyDrafts] = useState<CaptureDraft[]>([])
   const analyticsSessionRef = useRef<{ id: string; activeSince: number; activeSeconds: number; ended: boolean } | null>(null)
+  const syncLocksRef = useRef(new Map<string, Promise<void>>())
+  const authenticatedOwnerRef = useRef<string | null>(null)
+  authenticatedOwnerRef.current = session?.user.is_anonymous ? null : session?.user.id ?? null
   const ownerId = session?.user.id ?? 'local'
   const displayPosts = useMemo(() => mergeDailyRecords(posts, dailyDrafts, ownerId, locale), [dailyDrafts, locale, ownerId, posts])
 
@@ -219,9 +222,24 @@ function App() {
   }, [recordProductEvent, session])
 
   async function syncDraft(nextDraft: CaptureDraft) {
+    const syncOwnerId = session?.user.id
+    if (supabase && (!syncOwnerId || session.user.is_anonymous)) return
+    const lockKey = `${ownerId}:${nextDraft.localDate}`
+    const existing = syncLocksRef.current.get(lockKey)
+    if (existing) return existing
+    const task = syncDraftUnlocked(nextDraft, syncOwnerId)
+    syncLocksRef.current.set(lockKey, task)
+    try {
+      await task
+    } finally {
+      if (syncLocksRef.current.get(lockKey) === task) syncLocksRef.current.delete(lockKey)
+    }
+  }
+
+  async function syncDraftUnlocked(nextDraft: CaptureDraft, syncOwnerId?: string) {
     let uploadDraft = await promoteDraftMasters(nextDraft, ownerId)
     const localPost = draftToDailyPost(uploadDraft, ownerId, locale)
-    if (!supabase || !session) {
+    if (!supabase || !syncOwnerId) {
       const nextPosts = [localPost, ...posts.filter((post) => post.local_date !== nextDraft.localDate)]
       setPosts(nextPosts)
       writeLocalPosts(nextPosts)
@@ -229,10 +247,11 @@ function App() {
     }
 
     for (const image of uploadDraft.gridImages) {
+      if (authenticatedOwnerRef.current !== syncOwnerId) return
       if (image.uploadPath) continue
       if (!image.imageBlob) throw new Error('Local master is unavailable')
       const compressed = await compressBlobToHistoryWebP(image.imageBlob)
-      const uploadPath = await uploadPostImage(session.user.id, nextDraft.localDate, compressed.blob, image.assetId ?? image.id)
+      const uploadPath = await uploadPostImage(syncOwnerId, nextDraft.localDate, compressed.blob, image.assetId ?? image.id)
       uploadDraft = {
         ...uploadDraft,
         gridImages: uploadDraft.gridImages.map((candidate) => candidate.id === image.id
@@ -241,10 +260,11 @@ function App() {
       }
       await saveCachedDraft(uploadDraft, ownerId)
     }
+    if (authenticatedOwnerRef.current !== syncOwnerId) return
     const gridImages = toStoredGridImages(uploadDraft.gridImages, uploadDraft.gridImages.map((image) => image.uploadPath ?? ''))
     const existing = posts.find((post) => post.local_date === uploadDraft.localDate)
     const { error } = await upsertPostWithGridFallback({
-      user_id: session.user.id,
+      user_id: syncOwnerId,
       local_date: uploadDraft.localDate,
       mission_hex: uploadDraft.mission.hex,
       captured_hex: uploadDraft.mission.hex,
@@ -282,9 +302,10 @@ function App() {
       },
     })
     if (error) throw error
+    if (authenticatedOwnerRef.current !== syncOwnerId) return
     const uploadPaths = new Set(gridImages.map((image) => image.path))
     await Promise.all(getPostImagePaths(existing).filter((path) => !uploadPaths.has(path)).map((path) => deletePostImage(path).catch(() => undefined)))
-    setPosts(await fetchPosts(session.user.id))
+    setPosts(await fetchPosts(syncOwnerId))
     const synced = { ...uploadDraft, serverRevision: uploadDraft.localRevision, lastSyncError: undefined }
     await saveCachedDraft(synced, ownerId)
     if (synced.localDate === getLocalDateKey()) setDraft(synced)

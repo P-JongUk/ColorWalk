@@ -4,10 +4,10 @@
 >
 > - **작업명·목표:** 진행 중 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
 > - **현재 브랜치 / 기준 main:** `feature/local-master-offline-sync` / `main == origin/main == 495cc19`.
-> - **현재 체크포인트:** CP1 `d4a99bc` 원격 push 완료. 기존 v2 `daily-grid-draft:<owner>:<date>`를 같은 `drafts` store의 `daily-record`/`media-asset` kind로 승격하는 호환 보완을 검증 중이다.
+> - **현재 체크포인트:** CP3 동기화 WIP 검증 완료. owner+localDate lock, 로그아웃·계정 변경 시 중단, 이미 기록된 preview 경로 재사용을 추가해 commit/push한다.
 > - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
 > - **마지막 통과 검증:** `npm test -- --run`(9 files/21 tests), `npm run build`, `npm run lint`, 430×932 `scripts/e2e-core-funnel.ps1 -Port 4210` 1회 통과.
-> - **다음 명령:** `npm run lint; npm test -- --run; npm run build`로 legacy 1·7·8장 승격과 build를 검증해 CP2 첫 checkpoint를 push한다. 그 다음 pending/error 재시도와 offline→online 복구를 확인한다.
+> - **다음 명령:** CP3 push 뒤 Storage/Post 실패 복구와 저장 공간·일반 I/O 안내를 좁게 확인하고, CP4에서 전체 lint/test/E2E와 Android QA를 수행한다.
 > - **범위 밖:** `grid_images` migration/backfill/repair, archive, account export/delete, Cloud backup, SQLite, 자동 master 삭제.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
