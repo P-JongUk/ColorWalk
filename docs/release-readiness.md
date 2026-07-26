@@ -6,6 +6,13 @@
 - `20260529200000_add_grid_images.sql` and the older remote migration-history discrepancy remain a separate follow-up. Keep the current `client_meta_fallback`; do not apply, repair, backfill, or retire it as part of M2-1.
 - The local 430×932 Playwright core-funnel runner uses `VITE_E2E_LOCAL_ONLY=true` and no private account. It verifies capture→first-photo reload recovery→8 photos→permission-denied album recovery→journal save→Story download. Real Android device/AVD QA remains a separate release gate.
 
+## M2-2 local master / offline sync gate (2026-07-26)
+
+- `npm run cap:sync` rebuilt the web bundle and synchronized Android assets/plugins. A fresh debug APK was generated (17,955,823 bytes).
+- The supplied checkpoint results remain passing and were not rerun: lint, Vitest (10 files/25 tests), production build, and live Supabase verification including RLS, Storage, product-events, and the expected `grid_images` client-meta fallback.
+- A 430×932 local PWA smoke pass reached Home and Camera; the camera collection controls rendered without a blocking layout failure.
+- `ColorWalkPixel7` failed to become ADB-ready during one 60-second boot attempt. Current Android install/camera/offline/retry QA is therefore still required on a stable AVD or physical device; do not treat this as a passing Android checkpoint.
+
 ## What Must Pass Before Sharing
 
 - `npm run lint`

@@ -2,12 +2,12 @@
 
 > ## 진행 중 작업 인계
 >
-> - **작업명·목표:** 진행 중 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
+> - **작업명·목표:** 완료 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
 > - **현재 브랜치 / 기준 main:** `feature/local-master-offline-sync` / `main == origin/main == 495cc19`.
-> - **현재 체크포인트:** CP3 동기화 WIP 검증 완료. owner+localDate lock, 로그아웃·계정 변경 시 중단, 이미 기록된 preview 경로 재사용을 추가해 commit/push한다.
+> - **현재 체크포인트:** CP5 문서 정합화까지 완료. CP4 PWA/Capacitor QA와 새 debug APK는 확인했지만, AVD가 ADB-ready가 되지 않아 Android 실경로 QA는 남아 있다.
 > - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
-> - **마지막 통과 검증:** `npm test -- --run`(9 files/21 tests), `npm run build`, `npm run lint`, 430×932 `scripts/e2e-core-funnel.ps1 -Port 4210` 1회 통과.
-> - **다음 명령:** CP3 push 뒤 Storage/Post 실패 복구와 저장 공간·일반 I/O 안내를 좁게 확인하고, CP4에서 전체 lint/test/E2E와 Android QA를 수행한다.
+> - **마지막 통과 검증:** 기존 lint/Vitest(10 files/25 tests)/production build/live Supabase verification 결과, 이번 `npm run cap:sync`, 430×932 PWA Home/Camera smoke, debug APK 17,955,823 bytes.
+> - **다음 작업:** 정상 동기화된 날짜의 local master 수동 정리 계약을 설계한다. 자동 삭제·Cloud backup·archive/export/delete·`grid_images` migration repair는 별도 승인 범위다.
 > - **범위 밖:** `grid_images` migration/backfill/repair, archive, account export/delete, Cloud backup, SQLite, 자동 master 삭제.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.

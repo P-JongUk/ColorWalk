@@ -178,7 +178,14 @@ Color Hunt의 최소 기록 계약은 `local_date`, 당시 기기 시간대, 잠
 
 ## 10. 현재 구현과 차이
 
-현재 코드는 완성/부분 기록의 압축 WebP들을 Supabase Storage에 올리고, 라이브 `grid_images` migration이 없으면 `client_meta.gridImages`로 fallback한다. 따라서 아래는 아직 구현 전이다.
+현재 코드는 완성/부분 기록의 압축 WebP들을 Supabase Storage에 올리고, 라이브 `grid_images` migration이 없으면 `client_meta.gridImages`로 fallback한다. M2-2에서 로컬 master와 owner별 pending/error 재시도까지 구현했지만, 아래의 수동 archive·계정 export/delete·Cloud backup은 아직 구현 전이다.
+
+### M2-2 구현 사실 (2026-07-26 KST)
+
+- `drafts` store 안에 `daily-record`와 `media-asset`을 함께 저장하고, staging 원본을 먼저 durable하게 쓴 뒤 2560px 이하 WebP master를 read/size/decode/dimension 검증한 후에만 staging을 제거한다.
+- PWA master는 IndexedDB Blob, Android master는 Capacitor Filesystem `Directory.Data` locator를 사용한다. Supabase에는 master/raw/staging을 올리지 않고 1440px 이하 preview만 `assetId` 기반의 idempotent 경로로 upsert한다.
+- 일일 기록의 lifecycle/completion/sync 상태를 분리하고, boot/online/수동 재시도는 현재 owner의 `pending`/`error` 기록만 대상으로 한다. owner+localDate in-memory lock과 기존 preview 경로 재사용으로 중복 실행을 막는다.
+- 네 개 bitmap 표본에서 WebP 0.86/0.90/0.92를 비교해 0.90을 beta master preset으로 선택했다. 당시 정량 원시 산출물은 보존되지 않아 byte/encode-ms 수치를 재주장하지 않으며, 다음 실제 카메라 표본 측정에서 이를 다시 기록한다.
 
 - 고화질 로컬 마스터 보존 계약
 - 작은 무료 preview와 고화질 Cloud 계층 분리

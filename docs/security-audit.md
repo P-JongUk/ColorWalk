@@ -45,7 +45,7 @@ Last checked: 2026-07-26 KST.
 
 The live project still lacks the `posts.grid_images` migration and the app used `client_meta_fallback`. Apply `20260529200000_add_grid_images.sql` through an authenticated admin path, verify it live, then retire the fallback in a later compatible change.
 
-The local-first/high-quality storage design in `docs/data-storage-sync-and-cost-strategy.md` is not implemented yet. Its migration must preserve existing cloud records, add owner RLS for new snapshots, avoid logging photo/journal/canvas content, and include export/account-deletion tests.
+M2-2 local-first/high-quality storage is implemented without a new cloud table, RLS-policy change, or raw/master upload: owner-scoped local records keep PWA Blob/Android `Directory.Data` masters and Supabase receives preview-only WebP plus existing Post metadata. The remaining manual archive and account export/delete work must still preserve cloud records, avoid logging photo/journal/canvas content, and include deletion tests.
 
 ## Remaining Manual Dashboard Item
 

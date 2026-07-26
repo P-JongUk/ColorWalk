@@ -7,8 +7,8 @@
 ## 현재 진행 위치
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
-- 현재 작업: M2-1 최소 분석 계약·outbox·430×932 E2E와 live `product_events` migration 검증을 main에 통합했다. M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
-- 다음 한 작업: **M2의 local master·offline sync 범위를 별도 feature 브랜치에서 시작하기 전에 저장 손실 방지 계약과 검증 경계를 승인받기**
+- 현재 작업: M2-1 관측성과 M2-2 local master·offline sync를 각각 feature 브랜치에서 완료했다. M2-2 Android 실경로 QA와 M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
+- 다음 한 작업: **정상 동기화된 날짜의 로컬 고화질 원본을 사용자가 수동 정리하는 계약을 승인·구현한다. 자동 삭제는 금지하고, preview만 남을 때 복구 불가 경고와 사용자 확인을 포함한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -161,11 +161,11 @@ M0 문서·자동화 기반
 - [x] additive `product_events` table/index/owner-scoped RLS를 live에 적용하고 owner read·dedupe·anonymous/cross-user denial 검증
 - [ ] `grid_images` 라이브 migration 적용 권한과 fallback 종료 조건
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
-- [ ] 로컬 고화질 마스터·무료 작은 preview·cloud 고화질 백업 계층 분리
-- [ ] IndexedDB metadata + Capacitor Filesystem 기반 offline-first 저장과 동기화 큐
+- [x] 로컬 고화질 마스터·무료 작은 preview 계층 분리 (Cloud 고화질 백업은 별도 승인 범위)
+- [x] IndexedDB metadata + Capacitor Filesystem 기반 offline-first 저장과 동기화 큐
 - [ ] 암호화된 `.hueday` 수동 archive 내보내기·가져오기
 - [ ] 계정 삭제·데이터 export·복구 정책과 앱/웹 진입점
-- [ ] 이미지 품질 샘플 비교와 목적별 압축 preset
+- [x] 이미지 품질 샘플 비교와 목적별 압축 preset (4 bitmap 표본 비교, beta master WebP 0.90)
 - [x] 기존 Supabase 집계 SQL을 베타 분석 도구로 선택하고 외부 분석 SDK·관리자 웹 화면은 보류
 - [x] 모든 탭을 수집하지 않고 `screen_viewed`, `session_summary`, `primary_cta_clicked`처럼 화면 조회·foreground 체류·핵심 CTA만 allowlist로 정의
 - [ ] 첫 사진 전환, 1/8·8/8 저장, D1/D7/D30 재방문, 화면 조회, 핵심 CTA 전환, 저장 오류를 Supabase 집계 쿼리로 재현

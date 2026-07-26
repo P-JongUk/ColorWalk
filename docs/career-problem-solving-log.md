@@ -2,6 +2,29 @@
 
 마지막 검토: 2026-07-26 KST
 
+## CW-011 — local master 보존과 preview 동기화의 데이터 손실 경계
+
+### 문제와 영향
+
+촬영 원본만 즉시 1440px preview로 압축하면 사용자에게 남는 유일한 기억 품질이 낮아질 수 있고, 업로드 실패·강제 종료에서 staging을 너무 이르게 지우면 기록 자체를 잃을 수 있었다. raw/master를 서버에 모두 올리면 beta Storage 비용과 민감한 이미지 노출 범위도 불필요하게 커진다.
+
+### 선택과 구현
+
+- 기존 IndexedDB `drafts` store를 additive하게 재사용해 `daily-record`/`media-asset`을 분리했고, PWA Blob 또는 Android `Directory.Data`의 2560px 이하 WebP master를 검증한 뒤에만 staging 원본을 정리했다.
+- Supabase에는 assetId 기반 preview와 기존 Post metadata만 upsert했다. pending/error 기록만 재시도하고 owner+localDate lock 및 preview 경로 재사용으로 중복 sync를 줄였다.
+- SQLite, 새 backend, raw/master cloud upload, 자동 master 삭제는 추가하지 않았다. 정상 sync 뒤 수동 정리와 Cloud backup은 별도 승인 작업이다.
+
+### 검증과 결과
+
+- 네 개 bitmap 표본에서 0.86/0.90/0.92를 비교해 0.90을 beta preset으로 선택했다. byte/encode-ms 원시값은 보존되지 않아 아직 측정하지 않음; 다음 실제 Android/브라우저 카메라 네 표본에서 파일 크기(bytes), encode 시간(ms), 전체/100% crop/1080×1920 Story를 기록한다.
+- `npm run cap:sync` 통과, 새 Android debug APK 17,955,823 bytes 생성, 430×932 PWA Home/Camera smoke 통과. 기존 lint/Vitest 10 files/25 tests/build/live Supabase verification은 이번 마감에서 재실행하지 않았다.
+- `ColorWalkPixel7`은 한 번의 60초 부팅에서 ADB-ready가 되지 않았다. 앱 ANR로 단정하지 않았으며, 안정 AVD 또는 실기기에서 force-stop 및 offline→online retry를 재검증한다.
+
+### 남은 부채
+
+- Android 실제 capture→force-stop→reopen, offline capture→online sync, owner 교체, Filesystem 공간 부족 안내를 재현 가능한 환경에서 검증한다.
+- 수동 local-master 정리 UX에는 preview만 남을 때 복구 불가 경고와 사용자 확인을 포함한다.
+
 이 문서는 Hueday 개발 중 마주친 실제 문제와 판단을 나중에 이력서, 자기소개서, 포트폴리오, 면접에서 근거 있게 설명하기 위한 기록이다. 단순 작업 목록이 아니라 `왜 어려웠고, 무엇을 비교했고, 어떻게 검증했는지`를 남긴다.
 
 ## 기록 원칙
