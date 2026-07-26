@@ -237,7 +237,13 @@ function App() {
   }
 
   async function syncDraftUnlocked(nextDraft: CaptureDraft, syncOwnerId?: string) {
-    let uploadDraft = await promoteDraftMasters(nextDraft, ownerId)
+    let uploadDraft: CaptureDraft
+    try {
+      uploadDraft = await promoteDraftMasters(nextDraft, ownerId)
+    } catch (error) {
+      await saveCachedDraft({ ...nextDraft, lastSyncError: 'local' }, ownerId).catch(() => undefined)
+      throw error
+    }
     const localPost = draftToDailyPost(uploadDraft, ownerId, locale)
     if (!supabase || !syncOwnerId) {
       const nextPosts = [localPost, ...posts.filter((post) => post.local_date !== nextDraft.localDate)]
@@ -250,8 +256,15 @@ function App() {
       if (authenticatedOwnerRef.current !== syncOwnerId) return
       if (image.uploadPath) continue
       if (!image.imageBlob) throw new Error('Local master is unavailable')
-      const compressed = await compressBlobToHistoryWebP(image.imageBlob)
-      const uploadPath = await uploadPostImage(syncOwnerId, nextDraft.localDate, compressed.blob, image.assetId ?? image.id)
+      let compressed: Awaited<ReturnType<typeof compressBlobToHistoryWebP>>
+      let uploadPath: string
+      try {
+        compressed = await compressBlobToHistoryWebP(image.imageBlob)
+        uploadPath = await uploadPostImage(syncOwnerId, nextDraft.localDate, compressed.blob, image.assetId ?? image.id)
+      } catch (error) {
+        await saveCachedDraft({ ...uploadDraft, lastSyncError: 'upload' }, ownerId).catch(() => undefined)
+        throw error
+      }
       uploadDraft = {
         ...uploadDraft,
         gridImages: uploadDraft.gridImages.map((candidate) => candidate.id === image.id
@@ -301,7 +314,10 @@ function App() {
         },
       },
     })
-    if (error) throw error
+    if (error) {
+      await saveCachedDraft({ ...uploadDraft, lastSyncError: 'post' }, ownerId).catch(() => undefined)
+      throw error
+    }
     if (authenticatedOwnerRef.current !== syncOwnerId) return
     const uploadPaths = new Set(gridImages.map((image) => image.path))
     await Promise.all(getPostImagePaths(existing).filter((path) => !uploadPaths.has(path)).map((path) => deletePostImage(path).catch(() => undefined)))
