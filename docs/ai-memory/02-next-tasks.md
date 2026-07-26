@@ -3,7 +3,7 @@
 > ## 진행 중 작업 인계
 >
 > - **작업명·목표:** 완료 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
-> - **현재 브랜치 / 기준 main:** `feature/local-master-offline-sync` / `main == origin/main == 495cc19`.
+> - **현재 브랜치 / 기준 main:** M2-2는 `e495501`까지 `main == origin/main`에 fast-forward 통합 완료. feature 브랜치는 동일 커밋을 가리키며 별도 후속 작업은 새 feature 브랜치에서 시작한다.
 > - **현재 체크포인트:** CP5 문서 정합화까지 완료. CP4 PWA/Capacitor QA와 새 debug APK는 확인했지만, AVD가 ADB-ready가 되지 않아 Android 실경로 QA는 남아 있다.
 > - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
 > - **마지막 통과 검증:** 기존 lint/Vitest(10 files/25 tests)/production build/live Supabase verification 결과, 이번 `npm run cap:sync`, 430×932 PWA Home/Camera smoke, debug APK 17,955,823 bytes.

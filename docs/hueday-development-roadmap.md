@@ -7,7 +7,7 @@
 ## 현재 진행 위치
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
-- 현재 작업: M2-1 관측성과 M2-2 local master·offline sync를 각각 feature 브랜치에서 완료했다. M2-2 Android 실경로 QA와 M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
+- 현재 작업: M2-1 관측성과 M2-2 local master·offline sync를 각각 feature 브랜치에서 완료하고, M2-2는 `e495501`까지 2026-07-26 KST에 `main`으로 fast-forward 통합했다. M2-2 Android 실경로 QA와 M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
 - 다음 한 작업: **정상 동기화된 날짜의 로컬 고화질 원본을 사용자가 수동 정리하는 계약을 승인·구현한다. 자동 삭제는 금지하고, preview만 남을 때 복구 불가 경고와 사용자 확인을 포함한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
