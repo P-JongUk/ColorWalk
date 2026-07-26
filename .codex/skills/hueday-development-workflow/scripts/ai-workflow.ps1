@@ -8,6 +8,7 @@
     [string]$GraphifyFinding = '',
     [string]$Changes = '',
     [string]$Verification = '',
+    [string]$QuantitativeEvidence = '',
     [string]$Decision = '',
     [string]$Failure = '',
     [string]$Next = '',
@@ -230,6 +231,7 @@ $changedFileSummary = if ($changedFiles.Count -gt 0) { $changedFiles -join "`n" 
 $scopeText = if ($Scope) { $Scope } else { '(실제 범위와 성공 조건을 작성하세요.)' }
 $graphifyText = if ($GraphifyFinding) { $GraphifyFinding } else { '(질의한 노드와 확인한 의존 관계를 작성하세요.)' }
 $changesText = if ($Changes) { $Changes } else { '(실제 변경 내용을 작성하세요.)' }
+$quantitativeText = if ($QuantitativeEvidence) { $QuantitativeEvidence } else { '(미기입) 전후 수치·단위·환경·날짜·표본·근거를 쓰거나, 아직 측정하지 않음과 다음 측정을 작성하세요.' }
 $documentationImpact = if ($Documentation) { $Documentation } else { '(미기입) 실제 diff를 기준으로 기준 문서 영향을 확인하세요.' }
 $careerImpact = if ($Career) { $Career } else { '(미기입) 문제해결 기록 갱신 여부와 이유를 확인하세요.' }
 $content = @"
@@ -265,6 +267,10 @@ $changedFileSummary
 
 $Verification
 
+## Quantitative evidence
+
+$quantitativeText
+
 ## Failed or deferred approaches
 
 $Failure
@@ -283,8 +289,8 @@ $Next
 "@
 Set-Content -LiteralPath $notePath -Value $content -Encoding UTF8
 
-if (-not $Documentation -or -not $Career) {
-    Write-Warning 'Documentation or career impact was omitted. Complete both sections before committing.'
+if (-not $Documentation -or -not $Career -or -not $QuantitativeEvidence) {
+    Write-Warning 'Documentation, career impact, or quantitative evidence was omitted. Complete all sections before committing.'
 }
 
 if (-not (Test-DocumentationContract)) {
@@ -300,5 +306,5 @@ if (Test-Path $graphify) {
 
 Write-WorkflowHeader
 Write-Host "Session note created: $notePath" -ForegroundColor Green
-Write-Host 'Before commit: complete every note section, resolve documentation/career-log impact, run relevant checks, and review git diff.' -ForegroundColor Yellow
+Write-Host 'Before commit: complete every note section, connect quantitative claims to evidence, resolve documentation/career-log impact, run relevant checks, and review git diff.' -ForegroundColor Yellow
 git status --short

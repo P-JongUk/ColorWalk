@@ -69,10 +69,10 @@ Then perform a documentation impact check against the actual diff:
 
 Update only affected documents. If a document has no impact, state that explicitly in the session note. Never replace a historical verification date with a newer date unless the corresponding check actually ran.
 
-Record the goal, scope, Graphify findings, changed files, verification commands/results, failed or deferred approaches, and next tasks. Never record secrets, credentials, or private beta-account data. Start from `03-session-template.md` or use:
+Record the goal, scope, Graphify findings, changed files, verification commands/results, failed or deferred approaches, quantitative evidence, and next tasks. Quantitative evidence must include before/after values, units, environment, date, command/evidence path, and sample size when available; otherwise write `아직 측정하지 않음` and the next measurement. Never record secrets, credentials, or private beta-account data. Start from `03-session-template.md` or use:
 
 ```powershell
-.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Scope "<범위와 성공 조건>" -GraphifyFinding "<관련 구조>" -Changes "<실제 변경>" -Verification "<검증 명령과 결과>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>" -Documentation "<갱신 문서 또는 영향 없음과 이유>" -Career "<취업 사례 갱신 또는 영향 없음과 이유>"
+.codex/skills/hueday-development-workflow/scripts/ai-workflow.ps1 -Mode finish -Title "<작업명>" -Scope "<범위와 성공 조건>" -GraphifyFinding "<관련 구조>" -Changes "<실제 변경>" -Verification "<검증 명령과 결과>" -QuantitativeEvidence "<전후 수치·환경·표본·근거 또는 미측정과 다음 측정>" -Decision "<결정>" -Failure "<실패/보류 접근>" -Next "<다음 할 일>" -Documentation "<갱신 문서 또는 영향 없음과 이유>" -Career "<취업 사례 갱신 또는 영향 없음과 이유>"
 ```
 
 Use `-Mode check` before commit to verify required source documents and roadmap markers and to surface likely documentation omissions from the current diff.

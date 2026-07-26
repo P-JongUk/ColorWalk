@@ -33,6 +33,7 @@
 | Android, PWA, 카메라 권한, 알림 | `docs/android-local-environment.md`, `docs/release-readiness.md`, 관련 QA 기록 | 실기기/에뮬레이터 결과와 검증 날짜 |
 | 배포, 출시, 스토어, iOS | `docs/release-readiness.md`, `docs/hueday-breakout-strategy.md`, `plan.md` | 실제 배포 상태, 사용자 수동 작업, 보안/스토어 요구사항 |
 | 수익화, 결제, 유료 팩 | `docs/product-growth-strategy.md`의 Monetization Model, 보상 문서 | 무료 약속, store billing, 보상 가치, 출시 gate |
+| 분석, 조회수, 체류시간, 재방문, 클릭, 운영 대시보드, 초기 트래픽 | `docs/product-growth-strategy.md`의 Metrics, `docs/security-audit.md`, `docs/hueday-development-roadmap.md` M2·M9·M10 | 이벤트·지표 정의, 개인정보 경계, 집계 접근권한, 용량 검증, 후속 관리자 화면 |
 | AI 워크플로, Graphify, Obsidian, 도구 저장 | Hueday workflow skill, AI memory README, `AGENTS.md` | 자동화 검증, D 드라이브, 취업 기록 |
 
 ## 3. 문서의 역할과 우선순위
@@ -98,6 +99,7 @@
   -GraphifyFinding "<확인한 노드와 의존 관계>" `
   -Changes "<실제 변경 내용>" `
   -Verification "<검증 명령과 결과>" `
+  -QuantitativeEvidence "<전후 수치·환경·표본·근거 또는 미측정과 다음 측정>" `
   -Decision "<결정>" `
   -Failure "<실패 또는 보류>" `
   -Next "<다음 한 작업>" `

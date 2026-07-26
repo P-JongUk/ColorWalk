@@ -4,6 +4,7 @@
 
 - `product_events` migration은 새 table/index와 authenticated owner-only select/insert RLS만 추가한다. payload 계약은 사진·일기·정확 위치·비밀번호·토큰을 허용하지 않으며, 앱은 전송 실패 시 IndexedDB outbox를 보존한다.
 - 현재 live project에는 migration이 아직 적용되지 않았다. publishable-key verification은 기존 RLS를 통과하고 `productEvents.migration_pending`을 보고했다. 적용에는 관리자 access token이 필요하며, 비파괴적 중지는 앱 flush 제거 또는 새 table insert 권한 revoke로 한다; table drop은 destructive 승인 대상이다.
+- 베타 분석은 allowlist 이벤트와 집계 SQL만 사용한다. 출시 후 관리자 웹 화면을 만들 경우 browser에 service role을 두지 않고 aggregate-only Edge Function, 관리자 UID allowlist, 원시 사진·일기·정확 위치 비노출을 보안 gate로 둔다.
 
 Last checked: 2026-07-23 KST.
 
