@@ -6,6 +6,222 @@
   font-display: swap;
 }
 
+/* Living Hue Deck — uses the existing Chromatic Archive paper and sage tokens. */
+.history-view-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(112, 130, 56, .18);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, .8);
+}
+
+.history-view-switch button {
+  min-height: 34px;
+  border-radius: 10px;
+  color: #786b5e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.history-view-switch button.is-active {
+  background: #708238;
+  color: #fffdf8;
+  box-shadow: 0 5px 12px rgba(85, 103, 44, .18);
+}
+
+.deck-screen,
+.deck-volume-detail {
+  display: grid;
+  gap: 16px;
+}
+
+.deck-header {
+  display: grid;
+  gap: 3px;
+}
+
+.deck-header p,
+.deck-header > span {
+  color: #786b5e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.deck-header h1 {
+  color: #211d1b;
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: -.04em;
+}
+
+.deck-card-list {
+  display: grid;
+  gap: 14px;
+}
+
+.deck-card {
+  overflow: hidden;
+  border: 1px solid rgba(112, 130, 56, .17);
+  border-radius: 20px;
+  background: url('/design/earth-soft-border.webp') center / 100% 100% no-repeat, #fffdf8;
+  box-shadow: 0 12px 28px rgba(62, 39, 35, .08);
+}
+
+.deck-card-main {
+  display: grid;
+  width: 100%;
+  gap: 11px;
+  padding: 10px;
+  text-align: left;
+}
+
+.deck-photo-mosaic {
+  display: grid;
+  min-height: 176px;
+  overflow: hidden;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--deck-color) 25%, #f7f2e8);
+}
+
+.deck-photo-mosaic span {
+  min-height: 82px;
+  border-radius: 10px;
+  background: center / cover no-repeat;
+}
+
+.deck-card-stage-1 .deck-photo-mosaic { grid-template-columns: 1fr; }
+.deck-card-stage-1 .deck-photo-mosaic span { min-height: 176px; }
+.deck-card-stage-3 .deck-photo-mosaic span:first-child { grid-row: span 2; }
+.deck-card-stage-5 .deck-photo-mosaic { grid-template-columns: 1.35fr 1fr 1fr; }
+.deck-card-stage-5 .deck-photo-mosaic span:first-child { grid-row: span 2; }
+
+.deck-card-sealed {
+  border-color: color-mix(in srgb, #708238 36%, #fffdf8);
+  background: linear-gradient(135deg, rgba(255,255,255,.95), color-mix(in srgb, var(--deck-seal-color, #708238) 12%, #fffdf8));
+}
+
+.deck-card-sealed-grid {
+  padding: 5px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(112,130,56,.16));
+  box-shadow: inset 0 0 0 1px rgba(112,130,56,.12), 0 10px 20px rgba(83, 103, 44, .12);
+}
+
+.deck-card-sealed-grid .color-grid-mini { margin: 0; }
+
+.deck-card-copy,
+.deck-card-footer,
+.deck-volume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.deck-card-copy p,
+.deck-card-footer > span,
+.deck-volume-row small {
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.deck-card-copy h2 {
+  margin-top: 2px;
+  color: #2f211b;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.deck-stage-mark {
+  min-width: 38px;
+  border-radius: 99px;
+  background: #eef1de;
+  padding: 5px 8px;
+  color: #526331;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.deck-card-footer {
+  min-height: 42px;
+  border-top: 1px solid rgba(112, 130, 56, .12);
+  padding: 0 10px 0 14px;
+}
+
+.deck-story-button { color: #526331; }
+
+.deck-volume-section {
+  display: grid;
+  gap: 10px;
+  border-top: 1px dashed rgba(112, 130, 56, .25);
+  padding-top: 18px;
+}
+
+.deck-volume-list { display: grid; gap: 8px; }
+
+.deck-volume-row {
+  width: 100%;
+  border: 1px solid rgba(112, 130, 56, .16);
+  border-radius: 15px;
+  background: rgba(255, 253, 248, .9);
+  padding: 10px;
+  text-align: left;
+}
+
+.deck-volume-row > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+}
+
+.deck-volume-row strong { color: #2f211b; font-size: 13px; }
+.deck-volume-row svg { color: #708238; }
+
+.deck-volume-swatch,
+.deck-empty-swatch {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 3px solid #fffdf8;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(62, 39, 35, .12);
+}
+
+.deck-empty-state {
+  display: grid;
+  min-height: 340px;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  border: 1px dashed rgba(112, 130, 56, .35);
+  border-radius: 22px;
+  padding: 32px;
+  background: url('/design/earth-soft-border.webp') center / 100% 100% no-repeat, rgba(255,253,248,.75);
+  text-align: center;
+}
+
+.deck-empty-swatch { width: 54px; height: 54px; background: linear-gradient(135deg, #d9e1b8, #f6cfaf); }
+.deck-empty-state p { color: #708238; font-size: 12px; font-weight: 800; }
+.deck-empty-state h1 { color: #2f211b; font-size: 22px; font-weight: 900; line-height: 1.35; }
+
+.deck-back-button {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 2px;
+  color: #526331;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 @layer components {
   .hueday-wordmark {
     display: inline-flex;

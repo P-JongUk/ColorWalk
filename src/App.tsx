@@ -495,16 +495,41 @@ function App() {
     recordProductEvent('primary_cta_clicked', `${localDate}:primary_cta_clicked:capture_started`, { cta: 'capture_started' }, localDate)
     setActiveTab('camera')
   }
-  function recordStoryExport(kind: 'story' | 'grid', delivery: 'download' | 'share') {
-    if (!draft) return
-    recordProductEvent('primary_cta_clicked', `${draft.localDate}:primary_cta_clicked:${kind}_exported`, {
+  function recordStoryExportForDate(localDate: string, kind: 'story' | 'grid', delivery: 'download' | 'share') {
+    recordProductEvent('primary_cta_clicked', `${localDate}:primary_cta_clicked:${kind}_exported`, {
       cta: `${kind}_exported`,
       delivery,
-    }, draft.localDate)
+    }, localDate)
+  }
+  function recordStoryExport(kind: 'story' | 'grid', delivery: 'download' | 'share') {
+    if (!draft) return
+    recordStoryExportForDate(draft.localDate, kind, delivery)
+  }
+  function recordStoryExportForPost(post: Post, kind: 'story' | 'grid', delivery: 'download' | 'share') {
+    recordStoryExportForDate(post.local_date, kind, delivery)
+  }
+  function recordStoryShareOpenedForPost(post: Post, kind: 'story' | 'grid') {
+    recordProductEvent('primary_cta_clicked', `${post.local_date}:primary_cta_clicked:${kind}_share_opened`, { cta: `${kind}_share_opened` }, post.local_date)
   }
   function recordStoryShareOpened(kind: 'story' | 'grid') {
     if (!draft) return
     recordProductEvent('primary_cta_clicked', `${draft.localDate}:primary_cta_clicked:${kind}_share_opened`, { cta: `${kind}_share_opened` }, draft.localDate)
+  }
+  function recordDeckEvent(event: 'entered' | 'volume_opened' | 'source_opened' | 'story_opened', sessionId: string) {
+    const localDate = getLocalDateKey()
+    const dedupeKey = `deck:${sessionId}:${event}`
+    if (event === 'entered') {
+      recordProductEvent('screen_viewed', dedupeKey, { screen: 'deck' }, localDate)
+      return
+    }
+    if (event === 'volume_opened') {
+      recordProductEvent('screen_viewed', dedupeKey, { screen: 'color_volume' }, localDate)
+      return
+    }
+    recordProductEvent('primary_cta_clicked', dedupeKey, { cta: event === 'source_opened' ? 'deck_source_opened' : 'deck_story_opened' }, localDate)
+  }
+  function recordDeckStageVisible(stage: 1 | 3 | 5 | 8, sessionId: string) {
+    recordProductEvent('screen_viewed', `deck:${sessionId}:stage:${stage}`, { screen: `deck_stage_${stage}` }, getLocalDateKey())
   }
   async function signOut() {
     await supabase?.auth.signOut()
@@ -514,7 +539,7 @@ function App() {
   const content = (() => {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
-    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} />
+    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
     return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()
