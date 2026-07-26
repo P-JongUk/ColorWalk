@@ -1,10 +1,10 @@
 # 다음 할 일
 
-> ## 최신 재개 지점 (2026-07-26)
+> ## 최신 재개 지점 (2026-07-27)
 >
-> - **기준:** `main == origin/main == 87da427`; 문서 정렬은 `feature/living-deck-launch-contract`에서 진행 중이다.
+> - **기준:** `feature/living-hue-deck`의 M3 구현·430×932 local browser QA가 완료됐다. main에는 병합하지 않는다.
 > - **첫 구현 작업:** M2-3 local master 수동 정리 코드·단위 검증과 localhost PWA Service Worker 교체 확인은 완료했다. Android/PWA의 로그인된 populated fixture 인플레이스 보존 QA를 다음 release gate에서 닫는다. 자동 master 삭제는 금지하고, preview만 남는 복구 불가 상황은 명확한 경고와 사용자 확인을 거친다.
-> - **그 다음:** `feature/living-hue-deck`에서 기존 일일 기록을 파생하는 1/3/5/8 카드·Color Volume·초기 컬렉션으로 구현한다. 새 카드 테이블/이미지 업로드/AI/Canvas/친구 기능을 추가하지 않는다.
+> - **그 다음:** M4에서 저장된 명시적 미션 팩 ID 기반의 최대 3개 컬렉션만 구현한다. 날씨·시간·위치 추론으로 기존 일일 카드를 재분류하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
 > - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.

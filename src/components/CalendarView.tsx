@@ -1,16 +1,20 @@
 import { CalendarDays, Camera, ChevronLeft, ChevronRight, Share2 } from 'lucide-react'
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
+import { ColorVolumeView, LivingHueDeckView } from '@/components/LivingHueDeckView'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
 import { getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
+import { getColorVolumes, getLivingHueDeckCards, type DeckStage, type LivingHueDeckCard } from '@/lib/livingHueDeck'
 import { DEFAULT_STORY_DESIGN, normalizeTemplateId, parseStoryStickers } from '@/lib/story'
 import { cn } from '@/lib/utils'
 import type { CaptureDraft, Locale, Post } from '@/types'
+
+type DeckEvent = 'entered' | 'volume_opened' | 'source_opened' | 'story_opened'
 
 type CalendarViewProps = {
   locale: Locale
@@ -18,6 +22,11 @@ type CalendarViewProps = {
   currentDraft?: CaptureDraft | null
   masterCleanupByDate?: Record<string, { eligible: boolean; masterCount: number; masterBytes?: number }>
   onCleanupMaster?: (localDate: string) => Promise<void>
+  onStartCamera?: () => void
+  onDeckEvent?: (event: DeckEvent, sessionId: string) => void
+  onDeckStageVisible?: (stage: DeckStage, sessionId: string) => void
+  onStoryExported?: (post: Post, kind: 'story' | 'grid', delivery: 'download' | 'share') => void
+  onStoryShareOpened?: (post: Post, kind: 'story' | 'grid') => void
 }
 
 function formatBytes(bytes: number) {
@@ -25,10 +34,19 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster }: CalendarViewProps) {
+function createDeckSessionId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
+  return `deck-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
+  const [contentView, setContentView] = useState<'record' | 'deck' | 'volume'>('record')
+  const [storyReturnView, setStoryReturnView] = useState<'record' | 'deck' | 'volume'>('record')
+  const [selectedVolumeHex, setSelectedVolumeHex] = useState<string | null>(null)
+  const [deckVisit, setDeckVisit] = useState(0)
   const [showMasterCleanupConfirm, setShowMasterCleanupConfirm] = useState(false)
   const [isCleaningMaster, setIsCleaningMaster] = useState(false)
   const [masterCleanupError, setMasterCleanupError] = useState<string | null>(null)
@@ -38,6 +56,11 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
   const days = getMonthMatrix(visibleMonth)
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
+  const deckCards = useMemo(() => getLivingHueDeckCards(posts), [posts])
+  const colorVolumes = useMemo(() => getColorVolumes(deckCards), [deckCards])
+  const selectedVolume = colorVolumes.find((volume) => volume.missionHex === selectedVolumeHex)
+  const deckSessionRef = useRef<string | null>(null)
+  const seenDeckStagesRef = useRef(new Set<DeckStage>())
   const todayKey = getLocalDateKey()
   const todayOriginalDraftImages =
     selectedDate === todayKey && currentDraft?.gridImages.length
@@ -67,6 +90,47 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + delta, 1))
   }
 
+  const openDeck = useCallback(() => {
+    deckSessionRef.current = createDeckSessionId()
+    seenDeckStagesRef.current.clear()
+    setDeckVisit((visit) => visit + 1)
+    setContentView('deck')
+    setShowStoryStudio(false)
+  }, [])
+
+  const handleDeckEntered = useCallback(() => {
+    const sessionId = deckSessionRef.current ?? createDeckSessionId()
+    deckSessionRef.current = sessionId
+    onDeckEvent?.('entered', sessionId)
+  }, [onDeckEvent])
+
+  const handleDeckStageVisible = useCallback((stage: DeckStage) => {
+    const sessionId = deckSessionRef.current
+    if (!sessionId || seenDeckStagesRef.current.has(stage)) return
+    seenDeckStagesRef.current.add(stage)
+    onDeckStageVisible?.(stage, sessionId)
+  }, [onDeckStageVisible])
+
+  function openDeckRecord(card: LivingHueDeckCard) {
+    if (deckSessionRef.current) onDeckEvent?.('source_opened', deckSessionRef.current)
+    setSelectedDate(card.post.local_date)
+    setContentView('record')
+    setShowStoryStudio(false)
+  }
+
+  function openDeckStory(card: LivingHueDeckCard) {
+    if (deckSessionRef.current) onDeckEvent?.('story_opened', deckSessionRef.current)
+    setSelectedDate(card.post.local_date)
+    setStoryReturnView(contentView)
+    setShowStoryStudio(true)
+  }
+
+  function openVolume(missionHex: string) {
+    if (deckSessionRef.current) onDeckEvent?.('volume_opened', deckSessionRef.current)
+    setSelectedVolumeHex(missionHex)
+    setContentView('volume')
+  }
+
   useEffect(() => {
     document.body.classList.toggle('story-mode-active', showStoryStudio)
     return () => document.body.classList.remove('story-mode-active')
@@ -76,7 +140,7 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     return (
       <main className="screen-flow story-screen-page">
         <header className="story-page-header">
-          <Button type="button" variant="ghost" size="icon" onClick={() => setShowStoryStudio(false)} aria-label="Back">
+          <Button type="button" variant="ghost" size="icon" onClick={() => { setShowStoryStudio(false); setContentView(storyReturnView) }} aria-label="Back">
             <ChevronLeft aria-hidden="true" />
           </Button>
           <h1>{locale === 'ko' ? '스토리 만들기' : 'Make story'}</h1>
@@ -91,7 +155,47 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
         <div className="story-ratio-tabs" aria-label="Story ratio">
           <span className="is-active">9:16</span>
         </div>
-        <StoryStudio locale={locale} data={selectedStoryData} initialDesign={selectedStoryDesign} />
+        <StoryStudio
+          locale={locale}
+          data={selectedStoryData}
+          initialDesign={selectedStoryDesign}
+          onExported={(kind, delivery) => onStoryExported?.(selectedPost!, kind, delivery)}
+          onShareOpened={(kind) => onStoryShareOpened?.(selectedPost!, kind)}
+        />
+      </main>
+    )
+  }
+
+  if (contentView === 'volume' && selectedVolume) {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <ColorVolumeView locale={locale} volume={selectedVolume} onBack={() => setContentView('deck')} onOpenRecord={openDeckRecord} onOpenStory={openDeckStory} />
+      </main>
+    )
+  }
+
+  if (contentView === 'deck') {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <header className="app-header">
+          <div><h1>{t(locale, 'calendar')}</h1></div>
+        </header>
+        <div className="history-view-switch" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
+          <button type="button" role="tab" aria-selected={false} onClick={() => setContentView('record')}>{locale === 'ko' ? '기록' : 'Records'}</button>
+          <button type="button" role="tab" aria-selected className="is-active">Deck</button>
+        </div>
+        <LivingHueDeckView
+          key={deckVisit}
+          locale={locale}
+          cards={deckCards}
+          volumes={colorVolumes}
+          onStartCamera={() => onStartCamera?.()}
+          onOpenRecord={openDeckRecord}
+          onOpenStory={openDeckStory}
+          onOpenVolume={(volume) => openVolume(volume.missionHex)}
+          onDeckEntered={handleDeckEntered}
+          onCardStageVisible={handleDeckStageVisible}
+        />
       </main>
     )
   }
@@ -103,6 +207,11 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
           <h1>{t(locale, 'calendar')}</h1>
         </div>
       </header>
+
+      <div className="history-view-switch" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
+        <button type="button" role="tab" aria-selected className="is-active">{locale === 'ko' ? '기록' : 'Records'}</button>
+        <button type="button" role="tab" aria-selected={false} onClick={openDeck}>Deck</button>
+      </div>
 
       <section className="calendar-panel">
         <div className="calendar-header">
@@ -143,6 +252,7 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
                 style={isCurrentMonth && post && !isFuture ? ({ '--calendar-color': post.mission_hex } as CSSProperties) : undefined}
                 onClick={() => {
                   setSelectedDate(key)
+                  setContentView('record')
                   setShowStoryStudio(false)
                   setShowMasterCleanupConfirm(false)
                   setMasterCleanupError(null)
@@ -165,7 +275,7 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
             <h2>{formatDisplayDate(selectedDate, localeCode)}</h2>
           </div>
           {selectedPost ? (
-            <Button type="button" variant="outline" size="sm" className="history-detail-story-button" onClick={() => setShowStoryStudio(true)}>
+            <Button type="button" variant="outline" size="sm" className="history-detail-story-button" onClick={() => { setStoryReturnView('record'); setShowStoryStudio(true) }}>
               <Share2 aria-hidden="true" />
               {locale === 'ko' ? '스토리' : 'Story'}
             </Button>

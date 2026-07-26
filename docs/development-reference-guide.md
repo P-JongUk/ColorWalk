@@ -6,7 +6,7 @@
 
 | 작업 | 먼저 읽을 문서 | 함께 확인할 문서 |
 | --- | --- | --- |
-| Living Hue Deck·Color Volume·컬렉션·Hueprint | `docs/living-hue-deck-product-spec.md` | 청사진, 보상, 디자인 인덱스, 저장 전략 |
+| M3 Living Hue Deck·Color Volume / M4 컬렉션 / M5 Hueprint | `docs/living-hue-deck-product-spec.md` | 청사진, 보상, 디자인 인덱스, 저장 전략 |
 | 저장 모델·앱 업데이트·migration | `docs/launch-scope-and-update-safety-contract.md` | 저장 전략, 보안 감사, release readiness |
 | 첫 출시 수익화 | `docs/launch-scope-and-update-safety-contract.md` | 성장 전략, 보상 시스템 |
 | Hue Drop 검토/구현 | `docs/hue-drop-post-launch-spec.md` | 보안 감사, 저장 전략, 출시 준비도 |

@@ -3,7 +3,7 @@
 ## 2026-07-26 product-direction gate
 
 - Hue Canvas G1 captures remain preserved evidence for the mandatory early post-launch update, but are not a version-1 visual approval or production integration approval.
-- Next design gate is Living Hue Deck: D exterior UI, 1/3/5/8 card growth, Color Volume, initial collection, weekly Hueprint, and Story export at 430×932.
+- Next design gate is Living Hue Deck: D exterior UI, 1/3/5/8 card growth, Color Volume, original 3×3, and existing Story export at 430×932. Collections move to M4 only after an explicit mission-pack ID; Hueprint moves to M5.
 - No Hue Drop, public community, or Canvas G2 design QA is scheduled before version-1 launch and update-safety readiness. After launch, Canvas G2 resumes before production integration.
 
 Local reference screenshots are stored under `.design-references/` and ignored by git.
@@ -22,6 +22,12 @@ Latest 430x932 captures:
 - `.design-references/01-current-screens/story-from-history-430x932.png`
 - `.design-references/01-current-screens/history-seeded-430x932.png`
 - `.design-references/01-current-screens/profile-seeded-430x932.png`
+
+## 2026-07-27 — M3 Living Hue Deck 430×932 QA
+
+- Captures: `.design-references/01-current-screens/m3-living-hue-deck-2026-07-27/` (ignored local artifact): `00-history-switch-430x932.png`, `01-deck-1-3-5-8-volume-430x932.png`, `02-color-volume-430x932.png`, `03-source-record-430x932.png`, `04-existing-story-studio-430x932.png`, `05-empty-deck-430x932.png`.
+- Local-only fixture verified empty Deck, the short `기록 / Deck` switch, 1/3/5/8 cards, one canonical `#ff0000`/`#FF0000` Color Volume, an 8/8 `기기 저장` card, Volume → original 3×3/history, and the existing Story Studio. Opening Studio alone did not take an export action; clicking existing `스토리 저장` produced a PNG download and `공유하기` completed without console warnings.
+- D — Chromatic Archive was retained. This session did not have a callable Lazyweb tool, so no new external evidence was claimed; only confirmed repository CSS/tokens and `earth-soft-border.webp` were reused.
 
 ## Latest Findings
 

@@ -1,5 +1,11 @@
 # 지속 결정
 
+## 2026-07-27 — M3 Living Hue Deck execution contract (approved and implemented)
+
+- Color Volume is exact canonical six-digit mission HEX only: shared `hexToRgb`/`rgbToHex` normalizes normal casing such as `#ff0000` and `#FF0000`; no similarity grouping or speculative invalid-string recovery is added.
+- A Deck visit receives a fresh random session ID. Entry, visible 1/3/5/8 stages, source/Story CTA, and Volume use the existing product-event schema and only allowlisted `screen`/`cta` payloads. Owner ID is not duplicated in the dedupe key; visible stages remain once per Deck session even when returning from Volume.
+- M3 reuses only confirmed D-direction repository assets/CSS. Lazyweb was unavailable, so no unverified exterior reference or asset is invented.
+
 ## 2026-07-26 — Hue Canvas 출시 후 초기 필수 업데이트와 데이터 보존 (approved)
 
 - Hue Canvas는 버전 1에는 포함하지 않지만 출시 후 가능한 한 빠르게 반드시 기능 업데이트한다. Hue Drop의 “우선순위 1”은 첫 소셜 업데이트라는 의미로 좁혀 두 기능의 충돌을 없앤다.

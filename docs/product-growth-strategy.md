@@ -1,6 +1,6 @@
 # Hueday Product Growth Strategy
 
-> **최신 성장·수익화 기준(2026-07-26):** 첫 출시 성장 루프는 개인 Color Hunt → Living Hue Deck 1/3/5/8 성장 → Color Volume/제한 컬렉션 → 주간 Hueprint·Story 공유다. 출시 후에는 Hue Canvas를 초기 필수 기능 업데이트로 제공해 발견 색의 능동적 사용을 확장하고, Hue Drop은 첫 소셜 업데이트로 검증한다. 무료 핵심은 기록·Deck·기본 Hueprint/Story·기본 Hue Canvas·로컬 고화질 보존이며, 가격은 선택형 팩 1,500–3,900원·Studio 14,900/19,900원 후보·Cloud 월 1,500원/연 9,900원 5GB 후보로만 유지한다. 상세은 `docs/launch-scope-and-update-safety-contract.md`.
+> **최신 성장·수익화 기준(2026-07-27):** 첫 출시 성장 루프는 개인 Color Hunt → M3 Living Hue Deck 1/3/5/8 성장 → canonical Color Volume → M4 명시적 pack-ID 제한 컬렉션 → M5 Hueprint·기존 Story 공유다. 출시 후에는 Hue Canvas를 초기 필수 기능 업데이트로 제공해 발견 색의 능동적 사용을 확장하고, Hue Drop은 첫 소셜 업데이트로 검증한다. 무료 핵심은 기록·Deck·기본 Hueprint/Story·기본 Hue Canvas·로컬 고화질 보존이며, 가격은 선택형 팩 1,500–3,900원·Studio 14,900/19,900원 후보·Cloud 월 1,500원/연 9,900원 5GB 후보로만 유지한다. 상세은 `docs/launch-scope-and-update-safety-contract.md`.
 
 ## 2026-07-26 출시 전 성장 가설 정렬
 

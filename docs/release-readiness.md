@@ -2,9 +2,15 @@
 
 ## Launch-scope and update-safety gate (2026-07-26)
 
-- First release is a personal product: Color Hunt, local-first recovery, Living Hue Deck, Color Volume, initial collections, Hueprint, and Story export. Hue Canvas, Hue Drop, Relay, public feeds, and anonymous UGC are out of scope.
+- First release is a personal product: Color Hunt, local-first recovery, Living Hue Deck, Color Volume, M4 explicit-pack collections, M5 Hueprint, and existing Story export. Hue Canvas, Hue Drop, Relay, public feeds, and anonymous UGC are out of scope.
 - Before a version that changes persistence ships, verify one Android in-place update and one PWA Service Worker update with existing login, daily draft/master, history, Deck source record, and Story retained. Additive DB changes must preserve ordinary reads/writes from a supported prior app version.
-- The release journey to verify is login → mission → capture/recover → Deck state → source 3×3/history → Hueprint/Story export; do not substitute a future social flow for this gate.
+- The release journey to verify is login → mission → capture/recover → Deck state → source 3×3/history → existing Story export; add M5 Hueprint only after it exists. Do not substitute a future social flow for this gate.
+
+## M3 Living Hue Deck checkpoint (2026-07-27)
+
+- No DB schema or migration changed. Deck derives cards from the merged daily records and uses the existing `grid_images → client_meta.gridImages → image_path` recovery chain.
+- A 430×932 local-only browser fixture covered `기록 / Deck`, 1/3/5/8, canonical Color Volume, device-only 8/8 labeling, Volume → source history, and existing Story Studio. The captured artifact paths are in `docs/design-qa-log.md`.
+- Final branch gates passed: lint; Vitest 12 files/40 tests; production build; live `verify:supabase` (including product-event dedupe, anonymous and cross-user denial); Capacitor sync; and `:app:assembleDebug` (BUILD SUCCESSFUL). Physical Android in-place update QA remains the pre-release gate described above.
 
 ## Hue Canvas post-launch update gate (2026-07-26)
 

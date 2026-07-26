@@ -174,6 +174,7 @@ Android emulator QA on `ColorWalkPixel7` has verified location permission, camer
 - Keep each commit focused on one meaningful checkpoint. Use Korean commit messages with a conventional prefix when appropriate, such as `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
 - Push each meaningful, verified checkpoint so work can be resumed safely: use `git push -u origin <branch>` for the first push and `git push` afterward.
 - Run the relevant lint, test, build, Supabase, browser, or Android checks before pushing a checkpoint. Do not hide failing verification behind a commit message.
+- Reuse freshly reported verification when the user hands off immediately after a completed task: first confirm the reported verified commit is still `HEAD`, the worktree has no code changes after it, and the branch/remote state matches. If so, do not repeat the same full lint/test/build/Supabase/Capacitor/Android suite merely for a merge or status task; run only `git diff --check`, Git/remote checks, and any new narrow check required by the current change. Rerun a check when code, dependencies, generated native inputs, schema/policy, environment-sensitive configuration, or the requested release gate changed after that result.
 - Before merging into `main`, review the complete diff and preserve existing product functionality, security rules, and required documentation. Merge only the intended feature branch changes.
 - Never commit secrets, `.env` files, private beta-account documents, generated caches, or local design-reference assets.
 

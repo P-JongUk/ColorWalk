@@ -606,6 +606,31 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 - 같은 `127.0.0.1:5180` origin에서 password-user PWA baseline v3→candidate v4 업데이트는 별도로 통과했다. v4 controller/cache와 1/8 master Blob, 8/8 기록·저널·Story가 남았다.
 - Android 인플레이스 보존과 cleanup 확인 직후 force-stop 복구는 아직 실제 기기에서 측정하지 않음이다. 다음 측정은 같은 signing lineage의 baseline/candidate로 1/8, synced 8/8, cleanup confirmation 직후 force-stop/reopen을 한 번 수행하는 것이다.
 
+## CW-016 — 파생 아카이브를 새 저장 구조 없이 기존 기록으로 연결
+
+### 문제와 증거
+
+2026-07-27 KST, Living Hue Deck은 완료 카드와 Color Volume을 보여야 했지만 새 카드 이미지·DB·migration을 더하면 기존 local/remote 기록의 복구 계약과 비용이 불필요하게 커진다. legacy Post는 `image_path`만 갖거나 `client_meta.gridImages` fallback을 가질 수 있어, 원시 문자열 색 비교나 고정 1장 가정도 실제 기록 수를 왜곡할 수 있었다.
+
+### 비교와 결정
+
+1. Deck 전용 테이블·합성 카드 이미지·별도 색 그룹을 만든다.
+2. 병합된 일일 Post와 기존 `getPostGridImages()`를 읽어 1/3/5/8과 Color Volume을 순수 파생한다.
+
+2를 선택했다. 사진 수는 `grid_images → client_meta.gridImages → image_path` 실제 복원 결과로 계산하고, 같은 색은 기존 `hexToRgb`/`rgbToHex`로 검증된 정상 6자리 HEX만 canonicalize한다. 이로써 `#ff0000`과 `#FF0000`은 한 Volume이고 색 유사도·임의 문자열 복구는 만들지 않는다.
+
+### 검증과 결과
+
+- 단위 테스트는 1/2/3/4/5/7/8 장 경계, legacy `image_path`, fallback 다중 grid, HEX casing, local pending 8/8 Volume 포함을 확인한다.
+- 430×932 local-only fixture에서 빈 Deck, `기록 / Deck`, 1/3/5/8, `기기 저장`, Color Volume, 원본 History, 기존 Story Studio와 실제 PNG export/download, share action을 확인했다. 캡처 6장은 `.design-references/01-current-screens/m3-living-hue-deck-2026-07-27/`에 있다.
+- 최종 lint, Vitest 12 files/40 tests, production build, live Supabase verification, Capacitor sync, Android debug build가 통과했다.
+- 수치 성능은 아직 측정하지 않음이다. 다음 측정은 beta aggregate query에서 Deck 세션별 실제 visible stage, source reopen, Story export callback을 집계하는 것이다.
+
+### 남은 일
+
+- M4에서 저장된 명시적 mission-pack ID가 생길 때만 최대 3개 컬렉션을 추가한다. M3에서 날씨·시간·위치로 과거 카드를 재분류하지 않는다.
+- Android 업데이트 보존 QA는 별도 release gate로 남는다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.
