@@ -85,6 +85,13 @@
 - 검증된 local master만 staging 원본을 대체한다. raw/staging/master는 Supabase나 product-events에 보내지 않고 preview와 기존 Post metadata만 sync한다.
 - Android AVD의 이번 부팅 실패와 System UI ANR, 기존 다른 서명 앱의 install 충돌은 제품 ANR이나 QA 통과로 해석하지 않는다. clean stable AVD 또는 실제 기기에서 capture → force-stop → offline/online retry를 다시 확인하는 것이 출시 전 gate다.
 
+## 2026-07-26 — M2-3 manual master cleanup lifecycle (approved implementation)
+
+- local master 정리는 sync 상태가 아니라 독립 `masterCleanupLifecycle`(`ready`/`cleanup-pending`/`cleaned`)로 추적한다. 기존 Blob/path 레코드는 ready로 읽되, cleaned는 staging·승격·재압축·재업로드 후보로 되돌리지 않는다.
+- 사용자 확인 직후 같은 owner/date의 Post, 동기화 revision, 사진 수와 asset/path 집합, 모든 uploadPath, signed preview 실제 읽기를 검증해야 한다. 검증 실패면 local/서버 어느 쪽도 삭제하지 않는다.
+- PWA는 atomic IndexedDB 정리, Android는 durable pending marker와 파일 존재 기반 재시작 복구를 쓴다. 복구는 새 delete를 호출하지 않으며 부분 실패 뒤 남은 ready만 재시도한다.
+- CalendarView는 UI만 담당한다. 용량은 기존 masterBytes만 합산하고, 값 누락 시 원본 read/decode 없이 불가를 표시한다. preview 기반 온라인 사용과 오프라인 고화질 한계를 확인 문구로 고지한다.
+
 ## 2026-07-26 — Hue Canvas 프로토타입 우선순위 (approved)
 
 - 공개 출시에는 최소하지만 완성된 Hue Canvas를 포함한다. 빈 Hue Canvas 탭이나 Coming Soon 전용 탭은 만들지 않는다.

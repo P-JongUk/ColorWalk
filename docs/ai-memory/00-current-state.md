@@ -1,6 +1,6 @@
 # 현재 상태
 
-> **2026-07-26 최신 상태 — 이 블록이 아래의 이전 Canvas/Relay 출시 우선순위보다 우선한다.** `main == origin/main == c602eaa`에서 업데이트 안전 계약 정렬을 진행한다. 첫 출시 대표 콘텐츠는 Living Hue Deck이며, 개인 Color Hunt 기록이 1/3/5/8 카드·Color Volume·최대 3개 초기 컬렉션·주간 Hueprint로 이어진다. Hue Canvas G1은 `feature/hue-canvas-prototype`에 보존됐고, 버전 1 출시 후 가능한 한 빠르게 반드시 제공할 초기 기능 업데이트다. Hue Drop은 첫 소셜 업데이트다. 다음 구현 순서는 M2-3 업데이트 안전 → M3 Living Hue Deck → 버전 1 출시 → M8A Hue Canvas → M8B Hue Drop이다.
+> **2026-07-26 최신 상태 — 이 블록이 아래의 이전 Canvas/Relay 출시 우선순위보다 우선한다.** `feature/local-master-cleanup-update-safety`에서 M2-3 local master 수동 정리 구현과 자동 검증을 완료했고, Android/PWA의 로그인된 populated fixture 인플레이스 QA만 release gate로 남았다. 첫 출시 대표 콘텐츠는 Living Hue Deck이며, Hue Canvas G1은 `feature/hue-canvas-prototype`에 보존된 deferred 실험이고 Hue Drop은 첫 출시 후 첫 소셜 업데이트다. 다음 구현 순서는 M2-3 release QA → M3 Living Hue Deck → 버전 1 출시 → M8A Hue Canvas → M8B Hue Drop이다.
 
 ## 제품
 
@@ -34,6 +34,13 @@
 - `feature/local-master-offline-sync`에서 2560px WebP local master, preview-only Supabase sync, pending/error 복구와 owner+localDate 중복 실행 방지를 구현했고, `e495501`까지 2026-07-26 KST에 `main`으로 fast-forward 통합했다.
 - CP4에서 Capacitor sync, 새 debug APK(17,955,823 bytes), 430×932 PWA Home/Camera smoke QA를 확인했다. Android AVD는 처음 60초 내 ADB-ready가 되지 않았고, 이후 기존 다른 서명 앱 때문에 fresh APK 설치가 거부된 뒤 System UI ANR이 나타나 실경로 QA는 미통과로 남긴다.
 - 다음 M2 필수 작업은 정상 동기화된 날짜의 로컬 고화질 원본 수동 정리 계약이다. 자동 삭제·Cloud backup·archive/export/delete·`grid_images` migration repair는 이번 범위에 포함하지 않았다.
+
+## 2026-07-26 M2-3 local master 수동 정리·업데이트 안전
+
+- `masterCleanupLifecycle`을 sync와 분리해 `ready`/`cleanup-pending`/`cleaned`로 저장·복원한다. cleaned는 master가 의도적으로 없는 상태이며 staging 또는 sync 재시도 후보로 되돌아가지 않는다.
+- CalendarView는 App이 계산한 날짜별 상태와 콜백만 받는다. 최종 서버 Post/preview 검증을 통과한 경우에만 PWA Blob 또는 Android 파일을 정리하고, record·uploadPath·journal·Story metadata·revision·server preview/Post는 보존한다.
+- 2026-07-26 전체 lint, 11 Vitest files/31 tests, production build, live Supabase verification, Capacitor sync, Android debug build가 통과했다. PWA `127.0.0.1:5180` baseline→candidate에서 Service Worker cache `v3`→`v4`와 controller 교체를 확인했다.
+- Android baseline/candidate debug APK의 package ID와 SHA-256 signing fingerprint는 동일했으나 ADB device가 없어 `adb install -r`와 populated fixture의 login/draft/master/history/Story 보존, force-stop recovery는 미통과 release gate로 남긴다. 실제 beta HTTPS 배포와 Play signing/versioning도 이 작업 범위 밖이다.
 
 ## 저장소
 

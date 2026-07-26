@@ -25,6 +25,12 @@
 - Android 실제 capture→force-stop→reopen, offline capture→online sync, owner 교체, Filesystem 공간 부족 안내를 재현 가능한 환경에서 검증한다.
 - 수동 local-master 정리 UX에는 preview만 남을 때 복구 불가 경고와 사용자 확인을 포함한다.
 
+### 2026-07-26 M2-3 후속 — 사용자가 지우는 고화질 원본의 복구 경계
+
+- 문제: sync 상태만 보고 master를 정리하면 stale/local-only preview나 앱 종료 중인 Android 파일 삭제에서 사용자의 유일한 원본과 기록 상태를 함께 잃을 수 있다.
+- 선택: 별도 `ready`/`cleanup-pending`/`cleaned` lifecycle, 최종 signed-preview read preflight, PWA atomic metadata+Blob 갱신, Android durable marker+파일 존재 복구를 사용했다. 서버 Post/preview, 자동·일괄 삭제, DB migration은 추가하지 않았다.
+- 정량 근거: 2026-07-26 Windows local에서 좁은 관련 Vitest 3 files/11 tests와 병합 전 전체 11 files/31 tests를 통과했다. localhost baseline→candidate PWA에서 cache 이름 1개가 `v3`에서 `v4`로 교체되고 controller가 유지됐다. Android debug baseline/candidate certificate SHA-256은 동일했다. 실제 로그인 fixture/ADB in-place/force-stop 결과는 아직 측정하지 않음 — 다음 측정: stable AVD 또는 physical device 1대에서 1/8·8/8 fixture 각 1회와 cleanup/force-stop recovery 각 1회.
+
 이 문서는 Hueday 개발 중 마주친 실제 문제와 판단을 나중에 이력서, 자기소개서, 포트폴리오, 면접에서 근거 있게 설명하기 위한 기록이다. 단순 작업 목록이 아니라 `왜 어려웠고, 무엇을 비교했고, 어떻게 검증했는지`를 남긴다.
 
 ## 기록 원칙

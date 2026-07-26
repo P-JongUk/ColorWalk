@@ -205,6 +205,14 @@ Color Hunt의 최소 기록 계약은 `local_date`, 당시 기기 시간대, 잠
 - 일일 기록의 lifecycle/completion/sync 상태를 분리하고, boot/online/수동 재시도는 현재 owner의 `pending`/`error` 기록만 대상으로 한다. owner+localDate in-memory lock과 기존 preview 경로 재사용으로 중복 실행을 막는다.
 - 네 개 bitmap 표본에서 WebP 0.86/0.90/0.92를 비교해 0.90을 beta master preset으로 선택했다. 당시 정량 원시 산출물은 보존되지 않아 byte/encode-ms 수치를 재주장하지 않으며, 다음 실제 카메라 표본 측정에서 이를 다시 기록한다.
 
+### M2-3 구현 사실 — 동기화된 master 수동 정리 (2026-07-26 KST)
+
+- `masterCleanupLifecycle`은 기존 `ownerSyncState`/sync 상태와 독립적으로 `ready` → `cleanup-pending` → `cleaned`만 표현한다. 기존 레코드는 Blob 또는 Android master path가 있으면 `ready`로 호환 해석한다. `cleaned`는 의도적으로 master가 없는 상태이므로 재시작 뒤 staging, master 재생성·재압축·재업로드 대상으로 바꾸지 않는다.
+- App/domain 경계가 ownerId+localDate로 정리 가능 여부와 명령을 제공한다. CalendarView는 날짜별 상태와 콜백만 받아 확인 UI를 표시하며 IndexedDB, Android Filesystem, Supabase를 직접 읽거나 삭제하지 않는다.
+- 최종 확인 직후 서버 Post의 날짜·로컬 revision 동등성·사진 수·assetId/path 집합·모든 uploadPath·owner-scoped signed preview 실제 읽기를 다시 검증한다. 하나라도 실패하면 local master/lifecycle을 전혀 바꾸지 않으며 Post와 preview는 절대 삭제하지 않는다.
+- PWA는 한 IndexedDB transaction에서 master Blob만 지우고 `cleaned`를 확정한다. Android는 asset별 `cleanup-pending`을 저장한 뒤 파일을 삭제하고, 재시작 복구는 파일 존재만 검사하며 삭제를 다시 호출하지 않는다. 부분 실패는 성공 asset의 `cleaned`와 남은 `ready`를 분리해 재확인 뒤 남은 master만 재시도한다.
+- 확인 창은 저장된 `masterBytes` 합계만 사용한다. 값이 하나라도 없으면 원본을 읽거나 decode하지 않고 `예상 용량 확인 불가`로 표시한다. 온라인 기록·저널·Story는 동기화된 preview로 계속 쓸 수 있지만 오프라인 원본 품질 복구와 고화질 Story 재생성은 보장하지 않는다.
+
 - 고화질 로컬 마스터 보존 계약
 - 작은 무료 preview와 고화질 Cloud 계층 분리
 - 수동 `.hueday` archive

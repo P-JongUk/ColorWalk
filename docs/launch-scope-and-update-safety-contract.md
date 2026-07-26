@@ -44,6 +44,12 @@
 
 이 계약은 출시 직전 한 번만 확인하는 것이 아니라, 저장 모델·DB·앱 버전을 바꾸는 기능마다 적용한다. 다만 UI로 만들 수 없는 입력, 존재하지 않는 사용자 조합, 대규모 부하 추정은 telemetry·보안 경계·실제 장애 신호가 생길 때까지 P2 보류로 둔다.
 
+### M2-3 local master 수동 정리 적용 (2026-07-26)
+
+- 정리는 자동·일괄 작업이 아니다. 닫히고 정상 동기화된 날짜의 `ready` master만 사용자가 확인 창에서 명시적으로 요청할 수 있다. 서버 Post와 preview는 정리 범위에 포함하지 않는다.
+- Android QA는 versionCode/versionName을 바꾸지 않는다. baseline/candidate debug APK의 `com.colorwalk.app` package ID와 signing certificate SHA-256 fingerprint가 같은지 확인한 뒤, uninstall·data clear 없이 `adb install -r`로 검증한다. Play release version, upload key, Play App Signing은 별도 출시 gate다.
+- PWA QA는 운영 beta 배포 대신 동일 localhost origin/고정 port에서 baseline build → candidate build를 순서대로 제공한다. Service Worker cache version, `registration.update()`와 controller 교체, IndexedDB/auth/draft/master/history/Story 보존을 확인한다. 실제 HTTPS beta 배포는 별도 gate다.
+
 ### Hue Canvas 업데이트 특별 계약
 
 - Play Store 업데이트는 영구 package ID와 동일한 Play App Signing 계보를 유지한다. 재설치·앱 데이터 삭제·새 package로의 교체를 업데이트 절차로 사용하지 않는다.

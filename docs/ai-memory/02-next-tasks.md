@@ -3,7 +3,7 @@
 > ## 최신 재개 지점 (2026-07-26)
 >
 > - **기준:** `main == origin/main == 87da427`; 문서 정렬은 `feature/living-deck-launch-contract`에서 진행 중이다.
-> - **첫 구현 작업:** M2-3의 local master 수동 정리 계약과 Android/PWA 인플레이스 업데이트 보존 QA를 먼저 완료한다. 자동 master 삭제는 금지하고, preview만 남는 복구 불가 상황은 명확한 경고와 사용자 확인을 거친다.
+> - **첫 구현 작업:** M2-3 local master 수동 정리 코드·단위 검증과 localhost PWA Service Worker 교체 확인은 완료했다. Android/PWA의 로그인된 populated fixture 인플레이스 보존 QA를 다음 release gate에서 닫는다. 자동 master 삭제는 금지하고, preview만 남는 복구 불가 상황은 명확한 경고와 사용자 확인을 거친다.
 > - **그 다음:** `feature/living-hue-deck`에서 기존 일일 기록을 파생하는 1/3/5/8 카드·Color Volume·초기 컬렉션으로 구현한다. 새 카드 테이블/이미지 업로드/AI/Canvas/친구 기능을 추가하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
@@ -39,7 +39,7 @@
 - [ ] 출시 전 브랜드 게이트: Hueday와 국내 컬러워크·Daily Hue의 상표/스토어 검색/ASO 혼동 검토. 별도 승인 전 브랜드 변경 금지
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트와 화면 조회·foreground 체류·핵심 CTA·D1/D7/D30 집계 계약, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M4 우선: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기. 빈 탭/Coming Soon 화면 금지
-- [ ] M2-3: 승인 뒤 정상 동기화된 날짜의 local master 수동 정리 구현하기. 자동 삭제 금지, preview만 남으면 복구 불가 경고와 사용자 확인. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지
+- [ ] M2-3 release QA: password-user populated baseline에서 Android `adb install -r`로 로그인·1/8 draft/master·synced 8/8 history/journal/Story 보존, 정리 happy path와 확인 직후 force-stop 복구를 확인한다. PWA는 같은 localhost origin에서 로그인된 draft/master/history/Story와 offline metadata/cache를 확인한다. 구현·단위 검증·SW controller/cache 교체는 완료했으며 Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지
 - [ ] M3 최소: M2-3 뒤 집·학교·캠퍼스·통학·카페·비 오는 날·날씨·시간·컬러 산책의 최소 일상 미션 팩 구현하기
 - [ ] M5: Hue Palette 발견 횟수, sparse recipe 저장·복구, 원본 기록, Color Rhythm·실제 창작 보상 완성하기
 - [ ] M6: 월간 Hueprint와 최소 Color Capsule 구현하기

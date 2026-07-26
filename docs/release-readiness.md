@@ -28,6 +28,13 @@
 - A 430×932 local PWA smoke pass reached Home and Camera; the camera collection controls rendered without a blocking layout failure.
 - `ColorWalkPixel7` first missed the 60-second ADB-ready window; after boot it rejected the fresh APK with `INSTALL_FAILED_UPDATE_INCOMPATIBLE` (existing package has another signature) and System UI ANR became the active window. Current Android install/camera/offline/retry QA is therefore still required on a clean stable AVD or physical device; do not treat this as a passing Android checkpoint.
 
+## M2-3 local master cleanup / update safety gate (2026-07-26)
+
+- Code and narrow tests cover the normal confirmed cleanup path plus preview-preflight refusal, restart-safe `cleaned`/`cleanup-pending` lifecycle handling, partial Android deletion result separation, remaining-ready retry, and daily record/uploadPath/journal/Story metadata/revision preservation. Full merge verification passed: lint, 11 Vitest files/31 tests, production build, live Supabase verification, Capacitor sync, and Android debug APK build.
+- PWA local update check used the same `http://127.0.0.1:5180` origin: baseline build controller/cache `hueday-shell-v3-safe-icons` changed to candidate controller/cache `hueday-shell-v4-master-cleanup` after reload and `registration.update()`. IndexedDB `colorwalk-cache` and local storage remained present. This automated browser session had no password-user populated record, so authenticated login, 1/8 draft/master, synced history, and Story preservation remain a required manual fixture check; offline metadata/cache can be checked, but high-quality Story regeneration must not be expected after cleanup.
+- Android baseline/candidate debug APKs both use `com.colorwalk.app`, versionCode 1/versionName 1.0 unchanged, and the same debug certificate SHA-256 `4d270595c837ca18f577412ca664c7327ffe263bfc132f909899d90f0ba7e7a8`. No ADB device was attached during this checkpoint, so `adb install -r`, logged-in fixture preservation, cleanup happy path, and force-stop-after-confirm recovery remain release gates. No uninstall or app-data deletion was performed.
+- Actual Play release signing/versioning and HTTPS beta deployment are intentionally outside this checkpoint. No DB migration, server deletion, automatic cleanup, bulk cleanup, Cloud backup, or future feature infrastructure was added.
+
 ## What Must Pass Before Sharing
 
 - `npm run lint`
