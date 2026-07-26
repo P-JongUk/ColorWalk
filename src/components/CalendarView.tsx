@@ -16,14 +16,25 @@ type CalendarViewProps = {
   locale: Locale
   posts: Post[]
   currentDraft?: CaptureDraft | null
+  masterCleanupByDate?: Record<string, { eligible: boolean; masterCount: number; masterBytes?: number }>
+  onCleanupMaster?: (localDate: string) => Promise<void>
 }
 
-export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps) {
+function formatBytes(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
+  const [showMasterCleanupConfirm, setShowMasterCleanupConfirm] = useState(false)
+  const [isCleaningMaster, setIsCleaningMaster] = useState(false)
+  const [masterCleanupError, setMasterCleanupError] = useState<string | null>(null)
   const postsByDate = useMemo(() => new Map(posts.map((post) => [post.local_date, post])), [posts])
   const selectedPost = postsByDate.get(selectedDate)
+  const masterCleanup = masterCleanupByDate[selectedDate]
   const days = getMonthMatrix(visibleMonth)
   const localeCode = locale === 'ko' ? 'ko-KR' : 'en-US'
   const monthly = getMonthlyCollection(posts, visibleMonth)
@@ -133,6 +144,8 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
                 onClick={() => {
                   setSelectedDate(key)
                   setShowStoryStudio(false)
+                  setShowMasterCleanupConfirm(false)
+                  setMasterCleanupError(null)
                 }}
                 aria-label={key}
               >
@@ -179,6 +192,48 @@ export function CalendarView({ locale, posts, currentDraft }: CalendarViewProps)
         ) : (
           <p className="rounded-[16px] bg-white/70 p-4 text-sm font-semibold text-muted-foreground">{t(locale, 'noEntry')}</p>
         )}
+
+        {selectedPost && masterCleanup?.eligible && onCleanupMaster ? (
+          <div className="mt-4 rounded-[16px] border border-amber-200 bg-amber-50/80 p-4">
+            <p className="text-sm font-black text-amber-950">기기 원본 정리</p>
+            <p className="mt-1 text-xs leading-5 text-amber-900">동기화된 미리보기는 남기고 이 날짜의 고화질 원본만 기기에서 정리해요.</p>
+            {!showMasterCleanupConfirm ? (
+              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => setShowMasterCleanupConfirm(true)}>
+                원본 정리하기
+              </Button>
+            ) : (
+              <div className="mt-3 rounded-xl bg-white/85 p-3" role="alertdialog" aria-label="원본 정리 확인">
+                <p className="text-sm font-bold text-slate-900">
+                  고화질 원본 {masterCleanup.masterCount}장을 이 기기에서 삭제할까요?
+                </p>
+                <p className="mt-2 text-xs leading-5 text-slate-700">
+                  {masterCleanup.masterBytes === undefined ? '예상 용량 확인 불가' : `약 ${formatBytes(masterCleanup.masterBytes)} 확보`}. 기록, 저널, Story와 온라인 미리보기는 남지만 원본 품질로 복구할 수 없어요. 오프라인에서는 고화질 Story 재생성을 보장하지 않아요.
+                </p>
+                {masterCleanupError ? <p className="mt-2 text-xs font-bold text-rose-700">{masterCleanupError}</p> : null}
+                <div className="mt-3 flex gap-2">
+                  <Button type="button" variant="outline" size="sm" disabled={isCleaningMaster} onClick={() => { setShowMasterCleanupConfirm(false); setMasterCleanupError(null) }}>
+                    취소
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isCleaningMaster}
+                    onClick={() => {
+                      setIsCleaningMaster(true)
+                      setMasterCleanupError(null)
+                      void onCleanupMaster(selectedDate)
+                        .then(() => setShowMasterCleanupConfirm(false))
+                        .catch((error) => setMasterCleanupError(error instanceof Error ? error.message : '원본 정리를 완료하지 못했어요.'))
+                        .finally(() => setIsCleaningMaster(false))
+                    }}
+                  >
+                    {isCleaningMaster ? '정리 중…' : '원본 삭제'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : null}
       </section>
 
       <section className="history-stats-card" aria-label={locale === 'ko' ? '히스토리 통계' : 'History stats'}>

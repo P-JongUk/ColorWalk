@@ -52,7 +52,17 @@ export function draftToDailyPost(draft: CaptureDraft, userId: string, locale: Lo
 export function mergeDailyRecords(posts: Post[], drafts: CaptureDraft[], userId: string, locale: Locale) {
   const byDate = new Map(posts.map((post) => [post.local_date, post]))
   drafts.filter((draft) => draft.gridImages.length > 0).forEach((draft) => {
-    byDate.set(draft.localDate, draftToDailyPost(draft, userId, locale))
+    const local = draftToDailyPost(draft, userId, locale)
+    const serverPreviews = new Map(getPostGridImages(byDate.get(draft.localDate)).map((image) => [image.path, image.signedUrl]))
+    const gridImages = (local.grid_images ?? []).map((image) => ({
+      ...image,
+      signedUrl: image.signedUrl ?? serverPreviews.get(image.path),
+    }))
+    byDate.set(draft.localDate, {
+      ...local,
+      grid_images: gridImages,
+      signedImageUrl: gridImages[0]?.signedUrl,
+    })
   })
   return [...byDate.values()].sort((a, b) => b.local_date.localeCompare(a.local_date))
 }

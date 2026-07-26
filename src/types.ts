@@ -51,6 +51,9 @@ export type CaptureDraft = {
 
 export type GridImageSource = 'camera' | 'album' | 'seed' | 'legacy'
 
+/** Deliberate local-master cleanup state. This is separate from sync state. */
+export type MasterCleanupLifecycle = 'ready' | 'cleanup-pending' | 'cleaned'
+
 export type GridDraftImage = {
   id: string
   /** Stable media-asset record id. Defaults to id for legacy drafts. */
@@ -71,6 +74,7 @@ export type GridDraftImage = {
   createdAt: string
   uploadPath?: string
   masterState?: 'staging' | 'ready'
+  masterCleanupLifecycle?: MasterCleanupLifecycle
   masterPath?: string
   masterWidth?: number
   masterHeight?: number

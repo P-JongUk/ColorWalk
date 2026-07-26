@@ -33,4 +33,25 @@ describe('daily record merge', () => {
     expect(merged).toHaveLength(1)
     expect(getUnlockedBadges(merged).find((badge) => badge.days === 3)?.completedGrids).toBe(1)
   })
+
+  it('keeps a cleaned local master on the synced preview path instead of recreating staging', () => {
+    const local = draft(1)
+    local.localRevision = 2
+    local.serverRevision = 2
+    local.recordLifecycle = 'closed'
+    local.gridImages[0] = {
+      ...local.gridImages[0],
+      imageBlob: undefined,
+      previewUrl: undefined,
+      uploadPath: 'owner/2026-07-23/local-0-preview-v1.webp',
+      masterState: 'ready',
+      masterCleanupLifecycle: 'cleaned',
+    }
+    const server = { id: 'server', user_id: 'user', created_at: '2026-07-23T10:00:00Z', local_date: '2026-07-23', mission_hex: '#8BC6E8', captured_hex: '#8BC6E8', match_rate: 0, image_path: 'owner/2026-07-23/local-0-preview-v1.webp', custom_color_name: null, journal_answer: null, locale: 'ko', weather_code: 0, weather_group: 'clear', time_bucket: 'day', mission_label: null, mission_prompt: null, abuse_warning: false, grid_images: [{ id: 'local-0', slot: 0, path: 'owner/2026-07-23/local-0-preview-v1.webp', signedUrl: 'https://preview.example/local-0' }], client_meta: {} } satisfies Post
+
+    const merged = mergeDailyRecords([server], [local], 'user', 'ko')
+    expect(merged[0].grid_images?.[0]?.path).toBe('owner/2026-07-23/local-0-preview-v1.webp')
+    expect(merged[0].grid_images?.[0]?.signedUrl).toBe('https://preview.example/local-0')
+    expect(merged[0].client_meta?.localSyncState).toBe('synced')
+  })
 })

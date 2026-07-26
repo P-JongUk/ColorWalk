@@ -65,6 +65,19 @@ export async function readLocalMaster(path: string, mimeType = 'image/webp') {
   return typeof result.data === 'string' ? base64ToBlob(result.data, mimeType) : result.data
 }
 
+export async function localMasterExists(path: string) {
+  try {
+    await Filesystem.stat({ path, directory: Directory.Data })
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function deleteLocalMaster(path: string) {
+  await Filesystem.deleteFile({ path, directory: Directory.Data })
+}
+
 export function isStorageFullError(error: unknown) {
   const failure = error as { name?: string; code?: string; message?: string }
   const message = String(failure?.message ?? error).toLowerCase()

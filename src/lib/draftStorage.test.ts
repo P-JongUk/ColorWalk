@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildDraftRecords } from '@/lib/draftStorage'
+import { buildDraftRecords, getMasterCleanupAvailability, getMasterCleanupLifecycle, recoverMasterCleanupLifecycle, resolvePendingMasterCleanup, withMasterCleanupLifecycle } from '@/lib/draftStorage'
 import type { CaptureDraft } from '@/types'
 
 function legacyDraft(imageCount: number): CaptureDraft {
@@ -47,5 +47,81 @@ describe('legacy daily record promotion shape', () => {
   it('is idempotent for the same legacy record', () => {
     const draft = legacyDraft(8)
     expect(buildDraftRecords(draft, 'owner-1')).toEqual(buildDraftRecords(draft, 'owner-1'))
+  })
+
+  it('keeps a cleaned asset as an intentional no-master state', () => {
+    const draft = legacyDraft(1)
+    draft.recordLifecycle = 'closed'
+    draft.localRevision = 2
+    draft.serverRevision = 2
+    draft.gridImages[0] = {
+      ...draft.gridImages[0],
+      uploadPath: 'owner-1/2026-07-26/legacy-1-preview-v1.webp',
+      masterState: 'ready',
+      masterCleanupLifecycle: 'cleaned',
+      masterBytes: 1234,
+      imageBlob: undefined,
+    }
+
+    const { daily, assets } = buildDraftRecords(draft, 'owner-1')
+    expect(daily).toMatchObject({
+      localRevision: 2,
+      serverRevision: 2,
+      journal: { journalAnswer: draft.journal?.journalAnswer },
+      gridImages: [{ uploadPath: 'owner-1/2026-07-26/legacy-1-preview-v1.webp', masterCleanupLifecycle: 'cleaned' }],
+    })
+    expect(assets[0]).toMatchObject({ masterCleanupLifecycle: 'cleaned' })
+    expect(assets[0].masterBlob).toBeUndefined()
+    expect(assets[0].masterPath).toBeUndefined()
+    expect(getMasterCleanupAvailability(draft)).toMatchObject({ eligible: false, reason: 'cleaned' })
+  })
+
+  it('keeps cleanup separate from sync and retries only remaining ready masters', () => {
+    const draft = legacyDraft(2)
+    draft.recordLifecycle = 'closed'
+    draft.localRevision = 2
+    draft.serverRevision = 2
+    draft.gridImages = draft.gridImages.map((image, index) => ({
+      ...image,
+      uploadPath: `owner-1/2026-07-26/${image.id}-preview-v1.webp`,
+      masterState: 'ready' as const,
+      masterCleanupLifecycle: index === 0 ? 'cleaned' as const : 'ready' as const,
+      masterBytes: index === 0 ? 100 : 200,
+    }))
+
+    expect(getMasterCleanupLifecycle({ ...draft.gridImages[1], masterCleanupLifecycle: undefined })).toBe('ready')
+    expect(getMasterCleanupAvailability(draft)).toMatchObject({ eligible: true, masterCount: 1, masterBytes: 200 })
+    expect(recoverMasterCleanupLifecycle('cleanup-pending', true)).toBe('ready')
+    expect(recoverMasterCleanupLifecycle('cleanup-pending', false)).toBe('cleaned')
+  })
+
+  it('separates a partial Android deletion failure and retains daily metadata', () => {
+    const draft = legacyDraft(2)
+    draft.recordLifecycle = 'closed'
+    draft.localRevision = 3
+    draft.serverRevision = 3
+    draft.gridImages = draft.gridImages.map((image) => ({
+      ...image,
+      uploadPath: `owner-1/2026-07-26/${image.id}-preview-v1.webp`,
+      masterState: 'ready' as const,
+      masterCleanupLifecycle: 'ready' as const,
+      masterBytes: 200,
+    }))
+
+    const firstCleaned = withMasterCleanupLifecycle(draft, 'legacy-1', 'cleaned')
+    const secondPending = withMasterCleanupLifecycle(firstCleaned, 'legacy-2', 'cleanup-pending')
+    const recovered = resolvePendingMasterCleanup(secondPending, 'legacy-2', true)
+
+    expect(recovered.gridImages.map((image) => image.masterCleanupLifecycle)).toEqual(['cleaned', 'ready'])
+    expect(getMasterCleanupAvailability(recovered)).toMatchObject({ eligible: true, masterCount: 1, masterBytes: 200 })
+    expect(recovered).toMatchObject({
+      localRevision: 3,
+      serverRevision: 3,
+      journal: { journalAnswer: draft.journal?.journalAnswer, storyDesign: draft.journal?.storyDesign },
+      gridImages: [
+        { uploadPath: draft.gridImages[0].uploadPath, masterCleanupLifecycle: 'cleaned' },
+        { uploadPath: draft.gridImages[1].uploadPath, masterCleanupLifecycle: 'ready' },
+      ],
+    })
   })
 })

@@ -8,11 +8,12 @@ import { BottomNav } from '@/components/BottomNav'
 import { TodayView } from '@/components/TodayView'
 import { getLocalDateKey } from '@/lib/date'
 import { draftToDailyPost, mergeDailyRecords } from '@/lib/dailyRecord'
-import { loadCachedDraft, loadCachedDrafts, loadPendingCachedDrafts, promoteDraftMasters, saveCachedDraft } from '@/lib/draftStorage'
+import { cleanupLocalMasters, getMasterCleanupAvailability, loadCachedDraft, loadCachedDrafts, loadPendingCachedDrafts, promoteDraftMasters, saveCachedDraft } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { compressBlobToHistoryWebP } from '@/lib/image'
 import { isStorageFullError } from '@/lib/localMaster'
+import { runMasterCleanupAfterPreviewVerification } from '@/lib/masterCleanup'
 import { getRandomMission } from '@/lib/mission'
 import { loadDailyMissionState, saveDailyMissionState } from '@/lib/missionState'
 import { startWebReminderScheduler } from '@/lib/notifications'
@@ -51,6 +52,9 @@ function App() {
   authenticatedOwnerRef.current = session?.user.is_anonymous ? null : session?.user.id ?? null
   const ownerId = session?.user.id ?? 'local'
   const displayPosts = useMemo(() => mergeDailyRecords(posts, dailyDrafts, ownerId, locale), [dailyDrafts, locale, ownerId, posts])
+  const masterCleanupByDate = useMemo(() => Object.fromEntries(
+    dailyDrafts.map((dailyDraft) => [dailyDraft.localDate, getMasterCleanupAvailability(dailyDraft)]),
+  ), [dailyDrafts])
 
   const recordProductEvent = useCallback((
     eventName: ProductEventName,
@@ -402,6 +406,36 @@ function App() {
     }
   }
 
+  async function handleMasterCleanup(localDate: string) {
+    if (!session || session.user.is_anonymous || !supabase) throw new Error('로그인한 뒤 다시 시도해 주세요.')
+    const displayed = dailyDrafts.find((candidate) => candidate.localDate === localDate)
+    if (!displayed || !getMasterCleanupAvailability(displayed).eligible) throw new Error('이 기록은 아직 원본 정리를 할 수 없어요.')
+
+    const expectedRevision = displayed.localRevision ?? 0
+    const [remotePosts, current] = await Promise.all([
+      fetchPosts(session.user.id),
+      loadCachedDraft(session.user.id, localDate),
+    ])
+    if (!current || current.localRevision !== expectedRevision || current.serverRevision !== expectedRevision) {
+      throw new Error('기록이 바뀌었어요. 다시 확인해 주세요.')
+    }
+    if (!getMasterCleanupAvailability(current).eligible) throw new Error('이 기록은 아직 원본 정리를 할 수 없어요.')
+
+    const cleaned = await runMasterCleanupAfterPreviewVerification({
+      draft: current,
+      posts: remotePosts,
+      readPreview: async (url) => {
+        const response = await fetch(url, { cache: 'no-store' })
+        if (!response.ok) return false
+        await response.blob()
+        return true
+      },
+      cleanup: () => cleanupLocalMasters(session.user.id, localDate, expectedRevision),
+    })
+    setDailyDrafts((existing) => [cleaned, ...existing.filter((candidate) => candidate.localDate !== localDate)])
+    if (draft?.localDate === localDate) setDraft(cleaned)
+  }
+
   function persistJournal({ colorName, journalAnswer, storyDesign }: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) {
     if (!draft?.gridImages.length) return
     const nextDraft: CaptureDraft = { ...draft, journal: { colorName, journalAnswer, storyDesign } }
@@ -480,7 +514,7 @@ function App() {
   const content = (() => {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
-    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} />
+    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
     return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()

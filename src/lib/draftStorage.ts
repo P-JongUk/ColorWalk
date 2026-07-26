@@ -1,7 +1,7 @@
 import { getLocalDateKey } from '@/lib/date'
-import { prepareLocalMaster, readLocalMaster } from '@/lib/localMaster'
+import { deleteLocalMaster, isNativeMasterStorage, localMasterExists, prepareLocalMaster, readLocalMaster } from '@/lib/localMaster'
 import type { ProductEvent } from '@/lib/productEvents'
-import type { CaptureDraft, GridDraftImage } from '@/types'
+import type { CaptureDraft, GridDraftImage, MasterCleanupLifecycle } from '@/types'
 
 const DB_NAME = 'colorwalk-cache'
 const DB_VERSION = 3
@@ -33,6 +33,7 @@ type StoredMediaAsset = {
   masterHeight?: number
   masterBytes?: number
   masterMimeType?: string
+  masterCleanupLifecycle?: MasterCleanupLifecycle
 }
 
 type LegacyStoredDraft = Omit<CaptureDraft, 'gridImages'> & {
@@ -90,6 +91,43 @@ function assetId(image: GridDraftImage) {
   return image.assetId ?? image.id
 }
 
+export type MasterCleanupAvailability = {
+  eligible: boolean
+  masterCount: number
+  masterBytes?: number
+  reason?: 'active' | 'unsynced' | 'pending-cleanup' | 'cleaned' | 'master-unavailable'
+}
+
+export function getMasterCleanupLifecycle(image: GridDraftImage): MasterCleanupLifecycle | undefined {
+  if (image.masterCleanupLifecycle) return image.masterCleanupLifecycle
+  if (image.masterState === 'ready' && (image.imageBlob || image.masterPath)) return 'ready'
+  return undefined
+}
+
+export function recoverMasterCleanupLifecycle(lifecycle: MasterCleanupLifecycle | undefined, masterExists: boolean) {
+  if (lifecycle !== 'cleanup-pending') return lifecycle
+  return masterExists ? 'ready' as const : 'cleaned' as const
+}
+
+export function getMasterCleanupAvailability(draft: CaptureDraft): MasterCleanupAvailability {
+  if ((draft.recordLifecycle ?? (draft.closedAt ? 'closed' : 'active')) !== 'closed') return { eligible: false, masterCount: 0, reason: 'active' }
+  if (getDraftSyncState(draft) !== 'synced') return { eligible: false, masterCount: 0, reason: 'unsynced' }
+
+  const pending = draft.gridImages.some((image) => getMasterCleanupLifecycle(image) === 'cleanup-pending')
+  if (pending) return { eligible: false, masterCount: 0, reason: 'pending-cleanup' }
+
+  const ready = draft.gridImages.filter((image) => getMasterCleanupLifecycle(image) === 'ready')
+  if (!ready.length) return { eligible: false, masterCount: 0, reason: 'cleaned' }
+  if (ready.some((image) => !image.imageBlob && !image.masterPath)) {
+    return { eligible: false, masterCount: ready.length, reason: 'master-unavailable' }
+  }
+
+  const bytes = ready.every((image) => typeof image.masterBytes === 'number')
+    ? ready.reduce((total, image) => total + (image.masterBytes ?? 0), 0)
+    : undefined
+  return { eligible: true, masterCount: ready.length, masterBytes: bytes }
+}
+
 export function getDraftSyncState(draft: CaptureDraft) {
   if (draft.lastSyncError) return 'error' as const
   if (draft.gridImages.some((image) => !image.uploadPath)) return 'pending' as const
@@ -116,7 +154,8 @@ function toStoredDailyRecord(draft: CaptureDraft, ownerId: string): StoredDailyR
 
 function toStoredAsset(image: GridDraftImage, ownerId: string, localDate: string): StoredMediaAsset | null {
   const id = assetId(image)
-  if (!image.imageBlob && !image.masterPath) return null
+  const masterCleanupLifecycle = getMasterCleanupLifecycle(image)
+  if (!image.imageBlob && !image.masterPath && masterCleanupLifecycle !== 'cleaned') return null
   const base: StoredMediaAsset = {
     key: assetKey(ownerId, id),
     kind: 'media-asset',
@@ -128,6 +167,10 @@ function toStoredAsset(image: GridDraftImage, ownerId: string, localDate: string
     masterHeight: image.masterHeight,
     masterBytes: image.masterBytes,
     masterMimeType: image.masterMimeType,
+    masterCleanupLifecycle,
+  }
+  if (masterCleanupLifecycle === 'cleaned') {
+    return { ...base, stagingBlob: undefined, masterBlob: undefined, masterPath: undefined }
   }
   if (image.masterState === 'ready') {
     return { ...base, stagingBlob: undefined, masterBlob: image.masterPath ? undefined : image.imageBlob }
@@ -159,18 +202,44 @@ async function readAsset(ownerId: string, id: string) {
   return runDraftTransaction<StoredMediaAsset>('readonly', (store) => store.get(assetKey(ownerId, id)))
 }
 
+async function saveStoredAsset(asset: StoredMediaAsset) {
+  await runDraftTransaction('readwrite', (store) => store.put(asset))
+}
+
+async function recoverPendingMasterCleanup(asset: StoredMediaAsset) {
+  if (asset.masterCleanupLifecycle !== 'cleanup-pending') return asset
+
+  // Recovery only reconciles the marker with the file that already exists. It never deletes a file.
+  const exists = asset.masterPath ? await localMasterExists(asset.masterPath) : Boolean(asset.masterBlob)
+  const lifecycle = recoverMasterCleanupLifecycle(asset.masterCleanupLifecycle, exists)
+  const recovered: StoredMediaAsset = lifecycle === 'cleaned'
+    ? { ...asset, masterCleanupLifecycle: lifecycle, masterBlob: undefined, masterPath: undefined }
+    : { ...asset, masterCleanupLifecycle: lifecycle }
+  await saveStoredAsset(recovered)
+  return recovered
+}
+
 async function fromStoredDailyRecord(stored: StoredDailyRecord): Promise<CaptureDraft> {
   const gridImages = await Promise.all(stored.gridImages.map(async (image) => {
     const id = image.assetId ?? image.id
-    const asset = await readAsset(stored.ownerId, id)
-    let imageBlob = asset?.masterBlob ?? asset?.stagingBlob
-    if (!imageBlob && asset?.masterPath) imageBlob = await readLocalMaster(asset.masterPath, asset.masterMimeType).catch(() => undefined)
+    const storedAsset = await readAsset(stored.ownerId, id)
+    const asset = storedAsset ? await recoverPendingMasterCleanup(storedAsset) : undefined
+    const masterCleanupLifecycle = image.masterCleanupLifecycle
+      ?? asset?.masterCleanupLifecycle
+      ?? ((asset?.masterBlob || asset?.masterPath || image.masterPath) ? 'ready' as const : undefined)
+    const intentionallyCleaned = masterCleanupLifecycle === 'cleaned'
+    let imageBlob = intentionallyCleaned ? undefined : asset?.masterBlob ?? asset?.stagingBlob
+    if (!imageBlob && asset?.masterPath && !intentionallyCleaned) {
+      imageBlob = await readLocalMaster(asset.masterPath, asset.masterMimeType).catch(() => undefined)
+    }
+    const hasMaster = !intentionallyCleaned && Boolean(asset?.masterBlob || asset?.masterPath || image.masterPath)
     return {
       ...image,
       assetId: id,
       imageBlob,
-      masterState: asset?.masterBlob || asset?.masterPath ? 'ready' as const : 'staging' as const,
-      masterPath: asset?.masterPath ?? image.masterPath,
+      masterState: intentionallyCleaned || hasMaster ? 'ready' as const : 'staging' as const,
+      masterCleanupLifecycle,
+      masterPath: intentionallyCleaned ? undefined : (asset?.masterPath ?? image.masterPath),
       masterWidth: asset?.masterWidth ?? image.masterWidth,
       masterHeight: asset?.masterHeight ?? image.masterHeight,
       masterBytes: asset?.masterBytes ?? image.masterBytes,
@@ -247,7 +316,8 @@ export async function loadPendingCachedDrafts(ownerId: string) {
 export async function promoteDraftMasters(draft: CaptureDraft, ownerId: string) {
   let changed = false
   const gridImages = await Promise.all(draft.gridImages.map(async (image) => {
-    if (image.masterState === 'ready') return image
+    const cleanupLifecycle = getMasterCleanupLifecycle(image)
+    if (cleanupLifecycle === 'cleaned' || cleanupLifecycle === 'cleanup-pending' || image.masterState === 'ready') return image
     const stagingBlob = image.imageBlob ?? (await readAsset(ownerId, assetId(image)))?.stagingBlob
     if (!stagingBlob) throw new Error('Local staging image is missing')
     const master = await prepareLocalMaster(ownerId, draft.localDate, assetId(image), stagingBlob)
@@ -257,6 +327,7 @@ export async function promoteDraftMasters(draft: CaptureDraft, ownerId: string) 
       assetId: assetId(image),
       imageBlob: master.blob ?? stagingBlob,
       masterState: 'ready' as const,
+      masterCleanupLifecycle: 'ready' as const,
       masterPath: master.path,
       masterWidth: master.width,
       masterHeight: master.height,
@@ -268,6 +339,70 @@ export async function promoteDraftMasters(draft: CaptureDraft, ownerId: string) 
   const promoted = changed ? { ...draft, gridImages } : draft
   if (changed) await saveCachedDraft(promoted, ownerId)
   return promoted
+}
+
+export function withMasterCleanupLifecycle(draft: CaptureDraft, targetAssetId: string, lifecycle: MasterCleanupLifecycle): CaptureDraft {
+  return {
+    ...draft,
+    gridImages: draft.gridImages.map((image) => {
+      if (assetId(image) !== targetAssetId) return image
+      if (lifecycle === 'cleaned') {
+        return {
+          ...image,
+          imageBlob: undefined,
+          previewUrl: undefined,
+          masterPath: undefined,
+          masterCleanupLifecycle: lifecycle,
+          // "ready" keeps cleanup distinct from a missing staging source.
+          masterState: 'ready' as const,
+        }
+      }
+      return { ...image, masterCleanupLifecycle: lifecycle }
+    }),
+  }
+}
+
+export function resolvePendingMasterCleanup(draft: CaptureDraft, targetAssetId: string, masterExists: boolean) {
+  return withMasterCleanupLifecycle(draft, targetAssetId, masterExists ? 'ready' : 'cleaned')
+}
+
+export async function cleanupLocalMasters(ownerId: string, localDate: string, expectedRevision: number) {
+  const draft = await loadCachedDraft(ownerId, localDate)
+  if (!draft || draft.localRevision !== expectedRevision || draft.serverRevision !== expectedRevision) {
+    throw new Error('The synced record changed before cleanup')
+  }
+
+  const availability = getMasterCleanupAvailability(draft)
+  if (!availability.eligible) throw new Error('This record is not ready for master cleanup')
+
+  if (!isNativeMasterStorage()) {
+    const cleaned = draft.gridImages
+      .filter((image) => getMasterCleanupLifecycle(image) === 'ready')
+      .reduce((current, image) => withMasterCleanupLifecycle(current, assetId(image), 'cleaned'), draft)
+    await saveCachedDraft(cleaned, ownerId)
+    return cleaned
+  }
+
+  let current = draft
+  for (const image of draft.gridImages) {
+    if (getMasterCleanupLifecycle(current.gridImages.find((candidate) => assetId(candidate) === assetId(image)) ?? image) !== 'ready') continue
+
+    current = withMasterCleanupLifecycle(current, assetId(image), 'cleanup-pending')
+    await saveCachedDraft(current, ownerId)
+
+    const pendingImage = current.gridImages.find((candidate) => assetId(candidate) === assetId(image))
+    try {
+      if (!pendingImage?.masterPath) throw new Error('Local master path is unavailable')
+      await deleteLocalMaster(pendingImage.masterPath)
+      current = withMasterCleanupLifecycle(current, assetId(image), 'cleaned')
+      await saveCachedDraft(current, ownerId)
+    } catch {
+      const exists = pendingImage?.masterPath ? await localMasterExists(pendingImage.masterPath) : true
+      current = resolvePendingMasterCleanup(current, assetId(image), exists)
+      await saveCachedDraft(current, ownerId)
+    }
+  }
+  return current
 }
 
 export async function clearCachedDraft(ownerId: string, localDate = getLocalDateKey()) {
