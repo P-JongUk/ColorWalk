@@ -3,10 +3,11 @@
 ## M2 product events (2026-07-26)
 
 - `product_events` migration은 새 table/index와 authenticated owner-only select/insert RLS만 추가한다. event name은 `screen_viewed`, `session_summary`, `primary_cta_clicked`로 제한하고 payload JSON은 `screen`, `foreground_seconds`, `cta`, `delivery` 키만 허용한다. 따라서 사진·일기·정확 위치·비밀번호·토큰·device fingerprint는 앱과 DB 계약 모두에서 거절된다. 앱은 전송 실패 시 IndexedDB outbox를 보존한다.
-- 현재 live project에는 migration이 아직 적용되지 않았다. 2026-07-26에 target project `nhsvmypztjyhqunixxeg`와 additive diff·비파괴 disable 경로(앱 flush 제거 또는 새 table insert 권한 revoke)·비밀정보 부재를 확인했지만 `SUPABASE_ACCESS_TOKEN`과 service-role 관리자 경로가 없어 `migration_pending`으로 기록했다. table drop은 destructive 승인 대상이다.
+- `20260724030000_add_product_events.sql`은 2026-07-26에 live project `nhsvmypztjyhqunixxeg`에 적용됐다. `npm run verify:supabase`가 `productEvents.ready`, owner read, duplicate safety, anonymous-write denial, cross-user read denial을 확인했다. 비파괴적 비활성화 경로는 앱 flush 제거 또는 새 table insert 권한 revoke이며, table drop은 destructive 승인 대상이다.
+- `grid_images` migration과 과거 remote migration history 불일치는 별도 후속 작업이다. 이 관측성 변경은 기존 Post, Storage, RLS를 repair하거나 변경하지 않는다.
 - 베타 분석은 allowlist 이벤트와 집계 SQL만 사용한다. 출시 후 관리자 웹 화면을 만들 경우 browser에 service role을 두지 않고 aggregate-only Edge Function, 관리자 UID allowlist, 원시 사진·일기·정확 위치 비노출을 보안 gate로 둔다.
 
-Last checked: 2026-07-23 KST.
+Last checked: 2026-07-26 KST.
 
 ## Completed
 

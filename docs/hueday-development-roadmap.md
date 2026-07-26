@@ -7,8 +7,8 @@
 ## 현재 진행 위치
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
-- 현재 작업: M1 Color Hunt 계약을 `c22d7a3`으로 `main`에 통합했고, 앱 설치 전부터 재현된 전용 AVD 시스템 ANR 때문에 남은 Android 실기기 QA를 출시 전 필수 항목으로 추적한다.
-- 다음 한 작업: **최신 `main`에서 `feature/core-funnel-observability`를 만들기 전에 M2의 이벤트·E2E·저장 안정성 범위를 의존 순서와 체크포인트로 계획하고 승인받기**
+- 현재 작업: M2-1 `feature/core-funnel-observability`에서 최소 분석 계약·outbox·430×932 E2E와 live `product_events` migration 검증을 완료했다. M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
+- 다음 한 작업: **M2의 local master·offline sync 범위를 별도 feature 브랜치에서 시작하기 전에 저장 손실 방지 계약과 검증 경계를 승인받기**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -158,6 +158,7 @@ M0 문서·자동화 기반
 - [x] 사진·일기·정확 위치·비밀번호·토큰·device fingerprint를 배제한 최소 payload 키 정의
 - [x] IndexedDB outbox와 owner+dedupe key로 중복·재시도를 처리
 - [x] 430×932에서 촬영 → 첫 사진 새로고침 복구 → 8장 → 저널 저장 → Story 저장의 자동 E2E 최소 경로
+- [x] additive `product_events` table/index/owner-scoped RLS를 live에 적용하고 owner read·dedupe·anonymous/cross-user denial 검증
 - [ ] `grid_images` 라이브 migration 적용 권한과 fallback 종료 조건
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
 - [ ] 로컬 고화질 마스터·무료 작은 preview·cloud 고화질 백업 계층 분리
@@ -168,6 +169,8 @@ M0 문서·자동화 기반
 - [x] 기존 Supabase 집계 SQL을 베타 분석 도구로 선택하고 외부 분석 SDK·관리자 웹 화면은 보류
 - [x] 모든 탭을 수집하지 않고 `screen_viewed`, `session_summary`, `primary_cta_clicked`처럼 화면 조회·foreground 체류·핵심 CTA만 allowlist로 정의
 - [ ] 첫 사진 전환, 1/8·8/8 저장, D1/D7/D30 재방문, 화면 조회, 핵심 CTA 전환, 저장 오류를 Supabase 집계 쿼리로 재현
+
+`grid_images` migration과 과거 remote migration history 불일치는 M2-1 범위 밖의 별도 DB 전환 gate다. 기존 Post를 변경·backfill·repair하지 않고 현재 `client_meta_fallback`을 유지한다.
 
 ### 성공 조건
 

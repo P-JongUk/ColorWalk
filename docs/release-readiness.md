@@ -2,7 +2,8 @@
 
 ## M2 observability gate (2026-07-26)
 
-- Core funnel events and local outbox are implemented on `feature/core-funnel-observability`; live `product_events` collection remains `migration_pending` because no authenticated Supabase admin path is available. Before enabling it, rerun migration diff/project/schema/rollback checks and `npm run verify:supabase`.
+- Core funnel events and local outbox are implemented on `feature/core-funnel-observability`; `20260724030000_add_product_events.sql` is live on `nhsvmypztjyhqunixxeg`. `npm run verify:supabase` confirmed `productEvents.ready`, owner read, duplicate safety, anonymous-write denial, and cross-user read denial. No additional analytics deployment is required for beta aggregate queries.
+- `20260529200000_add_grid_images.sql` and the older remote migration-history discrepancy remain a separate follow-up. Keep the current `client_meta_fallback`; do not apply, repair, backfill, or retire it as part of M2-1.
 - The local 430×932 Playwright core-funnel runner uses `VITE_E2E_LOCAL_ONLY=true` and no private account. It verifies capture→first-photo reload recovery→8 photos→permission-denied album recovery→journal save→Story download. Real Android device/AVD QA remains a separate release gate.
 
 ## What Must Pass Before Sharing
