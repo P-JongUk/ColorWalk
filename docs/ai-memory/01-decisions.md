@@ -142,6 +142,7 @@
 ## 2026-07-26 — 최소 제품 분석과 초기 운영 구조
 
 - 조회수·체류시간·D1/D7/D30 재방문·핵심 CTA·저장 오류를 측정하되 모든 클릭을 수집하지 않고 allowlist 이벤트와 집계 지표만 사용합니다.
+- 구현 계약은 `screen_viewed`, `session_summary`, `primary_cta_clicked` 세 이벤트뿐이다. D1/D7/D30은 별도 이벤트가 아니라 저장된 이벤트의 cohort 집계로 계산한다. payload 키는 `screen`, `foreground_seconds`, `cta`, `delivery`만 허용한다.
 - 베타와 출시 직후에는 Supabase 집계 SQL로 운영하고, 반복 수동 작업이 확인된 뒤 aggregate-only Edge Function과 비공개 관리자 웹 화면을 만듭니다.
 - 관리자 화면은 원시 사진·일기·정확 위치나 service role을 브라우저에 노출하지 않습니다.
 - Vercel 정적 CDN + Supabase Auth/Postgres/RLS/Storage 구조를 유지합니다. 실제 병목 없이 Railway, 외부 analytics SDK, 메시지 큐, 마이크로서비스, 데이터 웨어하우스를 추가하지 않습니다.

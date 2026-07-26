@@ -1,13 +1,10 @@
+import { enqueueProductEvent, loadPendingProductEvents, removePendingProductEvents } from '@/lib/draftStorage'
+import { supabase } from '@/lib/supabase'
+
 export type ProductEventName =
-  | 'signup_completed'
-  | 'mission_viewed'
-  | 'capture_started'
-  | 'first_photo_confirmed'
-  | 'partial_record_saved'
-  | 'grid_completed'
-  | 'journal_saved'
-  | 'story_exported'
-  | 'story_share_opened'
+  | 'screen_viewed'
+  | 'session_summary'
+  | 'primary_cta_clicked'
 
 export type ProductEventPayload = Record<string, string | number | boolean>
 
@@ -28,9 +25,7 @@ export type CreateProductEventInput = Omit<ProductEvent, 'id' | 'key' | 'occurre
   occurredAt?: string
 }
 
-const SENSITIVE_PAYLOAD_KEYS = new Set([
-  'photo', 'photos', 'image', 'images', 'diary', 'journal', 'location', 'latitude', 'longitude', 'accuracy', 'password', 'token', 'authorization',
-])
+const ALLOWED_PAYLOAD_KEYS = new Set(['screen', 'foreground_seconds', 'cta', 'delivery'])
 
 function createId() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
@@ -39,7 +34,7 @@ function createId() {
 
 function assertSafePayload(payload: ProductEventPayload) {
   for (const [key, value] of Object.entries(payload)) {
-    if (SENSITIVE_PAYLOAD_KEYS.has(key.toLowerCase())) throw new Error(`Sensitive product event payload key: ${key}`)
+    if (!ALLOWED_PAYLOAD_KEYS.has(key)) throw new Error(`Product event payload key is not allowed: ${key}`)
     if (!['string', 'number', 'boolean'].includes(typeof value)) throw new Error(`Invalid product event payload value: ${key}`)
     if (typeof value === 'string' && value.length > 64) throw new Error(`Product event payload value is too long: ${key}`)
   }
@@ -91,5 +86,3 @@ export async function trackProductEvent(input: CreateProductEventInput) {
     return false
   }
 }
-import { enqueueProductEvent, loadPendingProductEvents, removePendingProductEvents } from '@/lib/draftStorage'
-import { supabase } from '@/lib/supabase'

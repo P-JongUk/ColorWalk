@@ -1,9 +1,9 @@
 # Security Audit Notes
 
-## M2 product events (2026-07-24)
+## M2 product events (2026-07-26)
 
-- `product_events` migration은 새 table/index와 authenticated owner-only select/insert RLS만 추가한다. payload 계약은 사진·일기·정확 위치·비밀번호·토큰을 허용하지 않으며, 앱은 전송 실패 시 IndexedDB outbox를 보존한다.
-- 현재 live project에는 migration이 아직 적용되지 않았다. publishable-key verification은 기존 RLS를 통과하고 `productEvents.migration_pending`을 보고했다. 적용에는 관리자 access token이 필요하며, 비파괴적 중지는 앱 flush 제거 또는 새 table insert 권한 revoke로 한다; table drop은 destructive 승인 대상이다.
+- `product_events` migration은 새 table/index와 authenticated owner-only select/insert RLS만 추가한다. event name은 `screen_viewed`, `session_summary`, `primary_cta_clicked`로 제한하고 payload JSON은 `screen`, `foreground_seconds`, `cta`, `delivery` 키만 허용한다. 따라서 사진·일기·정확 위치·비밀번호·토큰·device fingerprint는 앱과 DB 계약 모두에서 거절된다. 앱은 전송 실패 시 IndexedDB outbox를 보존한다.
+- 현재 live project에는 migration이 아직 적용되지 않았다. 2026-07-26에 target project `nhsvmypztjyhqunixxeg`와 additive diff·비파괴 disable 경로(앱 flush 제거 또는 새 table insert 권한 revoke)·비밀정보 부재를 확인했지만 `SUPABASE_ACCESS_TOKEN`과 service-role 관리자 경로가 없어 `migration_pending`으로 기록했다. table drop은 destructive 승인 대상이다.
 - 베타 분석은 allowlist 이벤트와 집계 SQL만 사용한다. 출시 후 관리자 웹 화면을 만들 경우 browser에 service role을 두지 않고 aggregate-only Edge Function, 관리자 UID allowlist, 원시 사진·일기·정확 위치 비노출을 보안 gate로 둔다.
 
 Last checked: 2026-07-23 KST.

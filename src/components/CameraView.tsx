@@ -354,6 +354,12 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
             <Button type="button" onClick={openAlbumPicker} disabled={isCapturing}>
               {t(locale, 'albumSelect')}
             </Button>
+            {canComplete ? (
+              <Button type="button" onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current))}>
+                <Check data-icon="inline-start" aria-hidden="true" />
+                {locale === 'ko' ? '????곌린' : 'Write journal'}
+              </Button>
+            ) : null}
             <Button type="button" variant="ghost" onClick={onBack}>
               {t(locale, 'today')}
             </Button>

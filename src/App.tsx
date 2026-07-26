@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Toaster, toast } from 'sonner'
 import type { Session } from '@supabase/supabase-js'
 import { Capacitor } from '@capacitor/core'
@@ -44,6 +44,7 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [isLocalOnly, setIsLocalOnly] = useState(!isSupabaseConfigured)
   const [dailyDrafts, setDailyDrafts] = useState<CaptureDraft[]>([])
+  const analyticsSessionRef = useRef<{ id: string; activeSince: number; activeSeconds: number; ended: boolean } | null>(null)
   const ownerId = session?.user.id ?? 'local'
   const displayPosts = useMemo(() => mergeDailyRecords(posts, dailyDrafts, ownerId, locale), [dailyDrafts, locale, ownerId, posts])
 
@@ -85,22 +86,28 @@ function App() {
     let active = true
     async function bootMission() {
       try {
-        const [weather, cachedDraft, cachedDrafts] = await Promise.all([loadTodayMission(locale), loadCachedDraft(ownerId), loadCachedDrafts(ownerId)])
+        const weatherPromise = loadTodayMission(locale)
+        const draftsPromise = Promise.all([loadCachedDraft(ownerId), loadCachedDrafts(ownerId)])
+        const weather = import.meta.env.VITE_E2E_LOCAL_ONLY === 'true' ? await weatherPromise : null
+        if (weather && active) setMission(weather.mission, weather.usedFallbackLocation)
+
+        const [cachedDraft, cachedDrafts] = await draftsPromise
+        const resolvedWeather = weather ?? await weatherPromise
         if (!active) return
         setDailyDrafts(cachedDrafts)
         if (cachedDraft) {
           setDraft(cachedDraft)
-          setMission(cachedDraft.mission, weather.usedFallbackLocation)
+          setMission(cachedDraft.mission, resolvedWeather.usedFallbackLocation)
           return
         }
         const localDate = getLocalDateKey()
         const stored = loadDailyMissionState(ownerId, localDate)
         if (stored) {
-          setMission(stored.mission, weather.usedFallbackLocation)
+          setMission(stored.mission, resolvedWeather.usedFallbackLocation)
           return
         }
-        saveDailyMissionState(ownerId, { localDate, mission: weather.mission, rerollCount: 0, selectedAt: new Date().toISOString() })
-        setMission(weather.mission, weather.usedFallbackLocation)
+        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, selectedAt: new Date().toISOString() })
+        setMission(resolvedWeather.mission, resolvedWeather.usedFallbackLocation)
       } catch {
         toast.error(t(locale, 'loadingMission'))
       }
@@ -153,10 +160,38 @@ function App() {
   }, [session])
 
   useEffect(() => {
-    if (!session || !mission || activeTab !== 'today') return
+    if (!session || session.user.is_anonymous) return
     const localDate = getLocalDateKey()
-    recordProductEvent('mission_viewed', `${localDate}:mission_viewed`, { mission_source: mission.source }, localDate)
-  }, [activeTab, mission, recordProductEvent, session])
+    recordProductEvent('screen_viewed', `${localDate}:screen_viewed:${activeTab}`, { screen: activeTab }, localDate)
+  }, [activeTab, recordProductEvent, session])
+
+  useEffect(() => {
+    if (!session || session.user.is_anonymous) return
+    const start = () => {
+      analyticsSessionRef.current = { id: String(Date.now()), activeSince: Date.now(), activeSeconds: 0, ended: false }
+    }
+    const finish = () => {
+      const current = analyticsSessionRef.current
+      if (!current || current.ended) return
+      current.activeSeconds += (Date.now() - current.activeSince) / 1000
+      current.ended = true
+      recordProductEvent('session_summary', `session_summary:${current.id}`, {
+        foreground_seconds: Math.max(1, Math.round(current.activeSeconds)),
+      })
+    }
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') finish()
+      else if (analyticsSessionRef.current?.ended) start()
+    }
+    start()
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    window.addEventListener('pagehide', finish)
+    return () => {
+      finish()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      window.removeEventListener('pagehide', finish)
+    }
+  }, [recordProductEvent, session])
 
   async function syncDraft(nextDraft: CaptureDraft, clearWhenComplete = false) {
     const localPost = draftToDailyPost(nextDraft, ownerId, locale)
@@ -260,12 +295,12 @@ function App() {
       setDraft(nextDraft)
       setDailyDrafts((current) => [nextDraft, ...current.filter((candidate) => candidate.localDate !== nextDraft.localDate)])
       if (nextDraft.gridImages.length === 1) {
-        recordProductEvent('first_photo_confirmed', `${nextDraft.localDate}:first_photo_confirmed`, {
-          source: nextDraft.gridImages[0].source,
+        recordProductEvent('primary_cta_clicked', `${nextDraft.localDate}:primary_cta_clicked:photo_confirmed`, {
+          cta: 'photo_confirmed',
         }, nextDraft.localDate)
       }
       if (nextDraft.gridImages.length === 8) {
-        recordProductEvent('grid_completed', `${nextDraft.localDate}:grid_completed`, { photo_count: 8 }, nextDraft.localDate)
+        recordProductEvent('primary_cta_clicked', `${nextDraft.localDate}:primary_cta_clicked:grid_completed`, { cta: 'grid_completed' }, nextDraft.localDate)
       }
       const selected = loadDailyMissionState(ownerId, nextDraft.localDate)
       if (selected && !selected.lockedAt) saveDailyMissionState(ownerId, { ...selected, lockedAt: nextDraft.lockedAt ?? new Date().toISOString() })
@@ -285,14 +320,12 @@ function App() {
       await saveCachedDraft(journalDraft, ownerId)
       setDraft(journalDraft)
       setDailyDrafts((current) => [journalDraft, ...current.filter((candidate) => candidate.localDate !== journalDraft.localDate)])
-      recordProductEvent('journal_saved', `${journalDraft.localDate}:journal_saved`, {
-        photo_count: journalDraft.gridImages.length,
-        has_color_label: Boolean(colorName.trim()),
-        has_answer: Boolean(journalAnswer.trim()),
+      recordProductEvent('primary_cta_clicked', `${journalDraft.localDate}:primary_cta_clicked:journal_saved`, {
+        cta: 'journal_saved',
       }, journalDraft.localDate)
       if (journalDraft.gridImages.length < 8) {
-        recordProductEvent('partial_record_saved', `${journalDraft.localDate}:partial_record_saved`, {
-          photo_count: journalDraft.gridImages.length,
+        recordProductEvent('primary_cta_clicked', `${journalDraft.localDate}:primary_cta_clicked:partial_record_saved`, {
+          cta: 'partial_record_saved',
         }, journalDraft.localDate)
       }
       await syncDraft(journalDraft, journalDraft.gridImages.length >= 8)
@@ -356,27 +389,25 @@ function App() {
     setIsAuthLoading(true)
     try {
       await hydrateAuthenticatedSession(nextSession)
-      if (mode === 'signup') recordProductEvent('signup_completed', 'signup_completed', { auth_method: 'password' }, getLocalDateKey(), nextSession)
+      if (mode === 'signup') recordProductEvent('primary_cta_clicked', 'primary_cta_clicked:signup_completed', { cta: 'signup_completed' }, getLocalDateKey(), nextSession)
       setActiveTab('today')
     } finally { setIsAuthLoading(false) }
   }
   function startCamera() {
     const localDate = getLocalDateKey()
-    recordProductEvent('capture_started', `${localDate}:capture_started`, { existing_photo_count: draft?.gridImages.length ?? 0 }, localDate)
+    recordProductEvent('primary_cta_clicked', `${localDate}:primary_cta_clicked:capture_started`, { cta: 'capture_started' }, localDate)
     setActiveTab('camera')
   }
-  function recordStoryExport(kind: 'story' | 'grid', delivery: 'download' | 'share', platform: 'web' | 'android') {
+  function recordStoryExport(kind: 'story' | 'grid', delivery: 'download' | 'share') {
     if (!draft) return
-    recordProductEvent('story_exported', `${draft.localDate}:story_exported:${kind}`, {
-      kind,
+    recordProductEvent('primary_cta_clicked', `${draft.localDate}:primary_cta_clicked:${kind}_exported`, {
+      cta: `${kind}_exported`,
       delivery,
-      platform,
-      photo_count: draft.gridImages.length,
     }, draft.localDate)
   }
-  function recordStoryShareOpened(kind: 'story' | 'grid', platform: 'web' | 'android') {
+  function recordStoryShareOpened(kind: 'story' | 'grid') {
     if (!draft) return
-    recordProductEvent('story_share_opened', `${draft.localDate}:story_share_opened:${kind}`, { kind, platform }, draft.localDate)
+    recordProductEvent('primary_cta_clicked', `${draft.localDate}:primary_cta_clicked:${kind}_share_opened`, { cta: `${kind}_share_opened` }, draft.localDate)
   }
   async function signOut() {
     await supabase?.auth.signOut()

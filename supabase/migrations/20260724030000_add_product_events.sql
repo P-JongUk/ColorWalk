@@ -3,15 +3,9 @@ create table public.product_events (
   id uuid primary key,
   owner_id uuid not null references auth.users(id) on delete cascade,
   event_name text not null check (event_name in (
-    'signup_completed',
-    'mission_viewed',
-    'capture_started',
-    'first_photo_confirmed',
-    'partial_record_saved',
-    'grid_completed',
-    'journal_saved',
-    'story_exported',
-    'story_share_opened'
+    'screen_viewed',
+    'session_summary',
+    'primary_cta_clicked'
   )),
   dedupe_key text not null,
   local_date date not null,
@@ -20,6 +14,7 @@ create table public.product_events (
   app_version integer not null check (app_version = 1),
   payload jsonb not null default '{}'::jsonb check (
     jsonb_typeof(payload) = 'object'
+    and (payload - 'screen' - 'foreground_seconds' - 'cta' - 'delivery') = '{}'::jsonb
     and octet_length(payload::text) <= 1024
   ),
   created_at timestamptz not null default timezone('utc'::text, now()),

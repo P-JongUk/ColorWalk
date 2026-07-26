@@ -109,13 +109,13 @@ async function verifyProductEvents(anonymousUserId) {
   const event = {
     id: crypto.randomUUID(),
     owner_id: userId,
-    event_name: 'mission_viewed',
-    dedupe_key: 'verify:mission_viewed',
+    event_name: 'screen_viewed',
+    dedupe_key: 'verify:screen_viewed',
     local_date: verifyDate,
     occurred_at: new Date().toISOString(),
     platform: 'web',
     app_version: 1,
-    payload: { verification: true },
+    payload: { screen: 'today' },
   }
   const upsert = await mainClient
     .from('product_events')

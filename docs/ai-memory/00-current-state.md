@@ -8,12 +8,12 @@
 - 핵심 루프: 개인 일일 색 기록 → 편집 없이도 공유하고 싶은 3×3/9:16 카드 → 받은 친구의 나도 이 색 찾기 → 두 결과의 공동 팔레트·엽서·Hueprint → 다음 기록으로 재진입. 개인 기록은 단독으로 완결되고 공유·친구 참여는 무료 성장 행동이다.
 - 현재 구현: 아이디/비밀번호 인증, 사용자·현지 날짜별 mission/재추천 상태, 촬영 미리보기 후 `이 사진 사용` 확정, 1~7장 날짜별 IndexedDB 초안·서버 Post 병합, 8장 완성 페이지 배지, Supabase 저장, 짧은 일기, 9:16 스토리/3x3 공유, 달력, 로컬 알림, PWA/Android
 - 백엔드 공급자 결정: 출시와 초기 성장에는 검증된 Supabase Auth·Postgres·RLS·Storage를 유지한다. R2는 유료 고화질 백업 비용이 측정된 뒤, Railway는 장시간 서버 작업이 실제로 필요할 때만 보조 도입한다.
-- 현재 미구현: 일상 미션 팩 선택, Hue Palette/Canvas·리믹스, 로컬 우선 저장·Cloud 계층, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 행동 분석, 결제, 네이티브 iOS
+- 현재 구현 중: M2-1 최소 분석 이벤트·IndexedDB outbox·핵심 E2E. 라이브 `product_events` 수집은 관리자 인증 경로 부재로 `migration_pending`이다. 그 밖에 일상 미션 팩 선택, Hue Palette/Canvas·리믹스, 로컬 우선 저장·Cloud 계층, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 결제, 네이티브 iOS는 미구현이다.
 - 확정된 Color Hunt 의미: 기기 현지 날짜마다 날씨·시간·선택적 대략 위치 기반 색을 새로 추천하고 최대 3회까지 같은 문맥으로 바꾼 뒤 전체 큐레이션 색 균등 무작위를 제공한다. 첫 사진을 확정하면 그날 색이 잠긴다. 1–7장도 유효한 일일 기록이며 8장만 3×3 한 페이지와 주요 보상을 완성한다. 현지 자정에는 현재 장수로 닫고 다음 날 새 색을 선택한다.
 - M1 구현 상태: `feature/color-hunt-contract`의 날짜별 Color Hunt 계약·복구·QA 결과를 `c22d7a3`으로 `main`에 통합했다. 2026-07-24 KST lint·19개 unit test·build·라이브 Supabase 검증·Capacitor sync·Android debug/release build와 430×932 브라우저 QA를 통과했고, 병합된 `main`에서도 lint·19개 test·production build·`git diff --check`를 다시 통과했다. 별도 `ColorWalkM1QA` AVD에서는 실제 카메라 촬영·다시 찍기·확정, 1/8 저장·background/foreground 복구와 2/8·5/8 순차 촬영까지 확인했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 Android 날짜 QA의 유효한 방법이 아니었고, clean `wipe-data` cold boot에서는 앱 설치 전 System UI·전화·Google Play services ANR이 반복됐다. 따라서 Android 7/8·8/8 완료/배지·foreground 날짜 전환·저널/Story 네이티브 공유는 실제 기기 또는 안정적인 AVD에서 남아 있다. 기존 `ColorWalkPixel7` 데이터는 건드리지 않았다.
-- 현재 마스터 단계: M2 안정성·데이터·측정 기반의 범위 계획과 구현 준비.
+- 현재 마스터 단계: M2 안정성·데이터·측정 기반의 M2-1 관측성 브랜치 검증·병합 준비.
 - 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.
-- 현재 다음 작업: 최신 `main`에서 M2 이벤트·E2E·저장 안정성의 의존 순서와 체크포인트를 먼저 승인받고 `feature/core-funnel-observability`에서 구현한다. M1 Android 잔여 항목은 실제 기기 또는 안정적인 AVD가 확보되는 즉시 병행 검증하되, 출시 전에는 반드시 닫는다.
+- 현재 다음 작업: `feature/core-funnel-observability`의 전체 검증·문서·Graphify 갱신을 끝내고, `product_events` additive migration은 인증된 관리자 경로가 생길 때만 적용·검증한다. `grid_images` 전환과 나머지 M2 브랜치는 시작하지 않는다. M1 Android 잔여 항목은 실제 기기 또는 안정적인 AVD가 확보되는 즉시 병행 검증하되, 출시 전에는 반드시 닫는다.
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`

@@ -154,10 +154,10 @@ M0 문서·자동화 기반
 
 ### 작업
 
-- [ ] `mission_viewed`, `capture_started`, `first_photo_taken`, `grid_completed`, `journal_saved`, `story_exported`, `share_opened` 이벤트 계약
-- [ ] 개인정보 없는 최소 payload 정의
-- [ ] 중복 이벤트와 재시도 처리
-- [ ] 가입 → 촬영 → 초안 → 저장 → 히스토리 → 공유의 자동 E2E 최소 경로
+- [x] `screen_viewed`, `session_summary`, `primary_cta_clicked` allowlist 이벤트 계약 (D1/D7/D30은 집계)
+- [x] 사진·일기·정확 위치·비밀번호·토큰·device fingerprint를 배제한 최소 payload 키 정의
+- [x] IndexedDB outbox와 owner+dedupe key로 중복·재시도를 처리
+- [x] 430×932에서 촬영 → 첫 사진 새로고침 복구 → 8장 → 저널 저장 → Story 저장의 자동 E2E 최소 경로
 - [ ] `grid_images` 라이브 migration 적용 권한과 fallback 종료 조건
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
 - [ ] 로컬 고화질 마스터·무료 작은 preview·cloud 고화질 백업 계층 분리
@@ -165,8 +165,8 @@ M0 문서·자동화 기반
 - [ ] 암호화된 `.hueday` 수동 archive 내보내기·가져오기
 - [ ] 계정 삭제·데이터 export·복구 정책과 앱/웹 진입점
 - [ ] 이미지 품질 샘플 비교와 목적별 압축 preset
-- [ ] 이벤트 도구를 선택하기 전 비용·개인정보·웹/Android 호환 비교
-- [ ] 모든 탭을 수집하지 않고 `screen_viewed`, `session_summary`, `primary_cta_clicked`처럼 화면 조회·foreground 체류·핵심 CTA만 allowlist로 정의
+- [x] 기존 Supabase 집계 SQL을 베타 분석 도구로 선택하고 외부 분석 SDK·관리자 웹 화면은 보류
+- [x] 모든 탭을 수집하지 않고 `screen_viewed`, `session_summary`, `primary_cta_clicked`처럼 화면 조회·foreground 체류·핵심 CTA만 allowlist로 정의
 - [ ] 첫 사진 전환, 1/8·8/8 저장, D1/D7/D30 재방문, 화면 조회, 핵심 CTA 전환, 저장 오류를 Supabase 집계 쿼리로 재현
 
 ### 성공 조건

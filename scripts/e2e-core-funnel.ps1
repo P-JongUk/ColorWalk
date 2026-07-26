@@ -5,8 +5,11 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $outputDir = Join-Path $root 'output\playwright\core-funnel'
-$fixture = Join-Path $root 'public\brand\hueday-mark-transparent.png'
+$screenshotPath = Join-Path $outputDir 'core-funnel-430x932.png'
 $session = 'hueday-core-funnel'
+$vite = Join-Path $root 'node_modules\vite\bin\vite.js'
+$node = (Get-Command node).Source
+$runner = Join-Path $root 'scripts\e2e-core-funnel.mjs'
 
 New-Item -ItemType Directory -Force $outputDir | Out-Null
 $env:VITE_E2E_LOCAL_ONLY = 'true'
@@ -15,8 +18,16 @@ $env:TEMP = Join-Path $root '.tmp'
 $env:TMP = Join-Path $root '.tmp'
 New-Item -ItemType Directory -Force $env:TEMP | Out-Null
 
-$server = Start-Process -FilePath 'npm.cmd' -ArgumentList @('run', 'dev', '--', '--host', '127.0.0.1', '--port', $Port) -WorkingDirectory $root -WindowStyle Hidden -PassThru
+if (Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction SilentlyContinue) {
+  throw "E2E 포트 $Port 가 이미 사용 중입니다. 비어 있는 포트로 -Port 를 지정하세요."
+}
+
+& npm.cmd run build
+if ($LASTEXITCODE -ne 0) { throw 'Production build failed before E2E.' }
+
+$server = Start-Process -FilePath $node -ArgumentList @($vite, 'preview', '--host', '127.0.0.1', '--port', $Port, '--strictPort') -WorkingDirectory $root -WindowStyle Hidden -PassThru
 try {
+  $startedAt = Get-Date
   $url = "http://127.0.0.1:$Port"
   $deadline = (Get-Date).AddSeconds(45)
   do {
@@ -24,22 +35,13 @@ try {
   } while ((Get-Date) -lt $deadline)
   if ((Get-Date) -ge $deadline) { throw "Vite E2E server did not respond at $url" }
 
-  $code = @"
-async page => {
-  await page.setViewportSize({ width: 430, height: 932 });
-  await page.goto('$url');
-  await page.getByRole('button', { name: /start camera|촬영/i }).click();
-  for (let index = 0; index < 8; index += 1) {
-    await page.locator('input[type=file]').first().setInputFiles('$($fixture.Replace('\', '\\'))');
-    await page.getByRole('button', { name: /use photo|이 사진 사용/i }).click();
-  }
-  await page.getByRole('button', { name: /write journal|저널 쓰기/i }).click();
-  await page.getByRole('button', { name: /^save$|저장/i }).first().click();
-  await page.screenshot({ path: '$((Join-Path $outputDir 'core-funnel-430x932.png').Replace('\', '\\'))' });
-}
-"@
   npx --offline --package @playwright/cli playwright-cli --session $session open $url
-  npx --offline --package @playwright/cli playwright-cli --session $session run-code $code
+  if ($LASTEXITCODE -ne 0) { throw "Playwright 브라우저 열기에 실패했습니다. exit=$LASTEXITCODE" }
+  npx --offline --package @playwright/cli playwright-cli --session $session run-code --filename $runner
+  if ($LASTEXITCODE -ne 0) { throw "핵심 퍼널 E2E 실행에 실패했습니다. exit=$LASTEXITCODE" }
+  if (!(Test-Path -LiteralPath $screenshotPath) -or (Get-Item -LiteralPath $screenshotPath).LastWriteTime -lt $startedAt) {
+    throw '핵심 퍼널 E2E가 현재 실행의 430x932 스크린샷을 만들지 못했습니다.'
+  }
 } finally {
   npx --offline --package @playwright/cli playwright-cli --session $session close 2>$null
   Stop-Process -Id $server.Id -Force -ErrorAction SilentlyContinue

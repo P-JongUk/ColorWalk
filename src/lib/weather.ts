@@ -53,6 +53,9 @@ export async function loadTodayMission(locale: Locale): Promise<{
   mission: Mission
   usedFallbackLocation: boolean
 }> {
+  if (import.meta.env.VITE_E2E_LOCAL_ONLY === 'true') {
+    return { mission: getFallbackMission(locale), usedFallbackLocation: true }
+  }
   const timeBucket = getTimeBucket()
 
   try {
