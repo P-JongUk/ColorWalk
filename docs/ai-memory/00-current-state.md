@@ -13,7 +13,7 @@
 - M1 구현 상태: `feature/color-hunt-contract`의 날짜별 Color Hunt 계약·복구·QA 결과를 `c22d7a3`으로 `main`에 통합했다. 2026-07-24 KST lint·19개 unit test·build·라이브 Supabase 검증·Capacitor sync·Android debug/release build와 430×932 브라우저 QA를 통과했고, 병합된 `main`에서도 lint·19개 test·production build·`git diff --check`를 다시 통과했다. 별도 `ColorWalkM1QA` AVD에서는 실제 카메라 촬영·다시 찍기·확정, 1/8 저장·background/foreground 복구와 2/8·5/8 순차 촬영까지 확인했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 Android 날짜 QA의 유효한 방법이 아니었고, clean `wipe-data` cold boot에서는 앱 설치 전 System UI·전화·Google Play services ANR이 반복됐다. 따라서 Android 7/8·8/8 완료/배지·foreground 날짜 전환·저널/Story 네이티브 공유는 실제 기기 또는 안정적인 AVD에서 남아 있다. 기존 `ColorWalkPixel7` 데이터는 건드리지 않았다.
 - 현재 마스터 단계: M2 안정성·데이터·측정 기반. M2-1 관측성·E2E·live event 수집을 완료했고 다음 저장 안정성 하위 작업을 준비한다.
 - 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.
-- 현재 다음 작업: M2-1을 main에 병합한 뒤 local master·offline sync의 별도 범위를 승인받는다. `grid_images` migration과 과거 remote migration history 불일치는 별도 DB 전환 gate로 기록만 유지하고, 이번에는 적용·repair하지 않는다. M1 Android 잔여 항목은 실제 기기 또는 안정적인 AVD가 확보되는 즉시 병행 검증하되, 출시 전에는 반드시 닫는다.
+- 현재 다음 작업: main에 병합된 M2-1 다음으로 local master·offline sync의 별도 범위를 승인받는다. `grid_images` migration과 과거 remote migration history 불일치는 별도 DB 전환 gate로 기록만 유지하고, 이번에는 적용·repair하지 않는다. M1 Android 잔여 항목은 실제 기기 또는 안정적인 AVD가 확보되는 즉시 병행 검증하되, 출시 전에는 반드시 닫는다.
 - 제품·시장·수익화·iOS 기준 문서: `docs/hueday-breakout-strategy.md`
 - 상세 성장 backlog: `docs/product-growth-strategy.md`
 - 취업용 문제해결 기록: `docs/career-problem-solving-log.md`

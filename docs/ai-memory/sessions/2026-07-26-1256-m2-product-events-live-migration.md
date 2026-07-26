@@ -52,4 +52,4 @@ release-readiness, security-audit, roadmap, 00-current-state, 02-next-tasks를 �
 
 ## Next tasks
 
-문서 checkpoint를 feature 브랜치에 push하고 전체 diff를 검토한 뒤 main에 병합한다. 다음 M2 구현은 local master·offline sync 승인 후 별도 브랜치에서 시작한다.
+문서 checkpoint를 feature 브랜치에 push하고 전체 diff를 검토한 뒤 main에 병합했다. 다음 M2 구현은 local master·offline sync 승인 후 별도 브랜치에서 시작한다.

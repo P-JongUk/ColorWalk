@@ -7,7 +7,7 @@
 ## 현재 진행 위치
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
-- 현재 작업: M2-1 `feature/core-funnel-observability`에서 최소 분석 계약·outbox·430×932 E2E와 live `product_events` migration 검증을 완료했다. M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
+- 현재 작업: M2-1 최소 분석 계약·outbox·430×932 E2E와 live `product_events` migration 검증을 main에 통합했다. M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
 - 다음 한 작업: **M2의 local master·offline sync 범위를 별도 feature 브랜치에서 시작하기 전에 저장 손실 방지 계약과 검증 경계를 승인받기**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
