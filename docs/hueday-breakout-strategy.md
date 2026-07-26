@@ -1,6 +1,6 @@
 # Hueday Breakout Strategy
 
-마지막 코드 대조: 2026-07-22 KST · 제품 방향 갱신: 2026-07-23 KST
+마지막 코드 대조: 2026-07-22 KST · 제품 방향 갱신: 2026-07-26 KST
 문서 성격: 현재 구현, 시장 근거, 제품 가설을 분리해서 관리하는 living document
 전체 제품 합의: `docs/hueday-product-blueprint.md`
 전체 실행 순서: `docs/hueday-development-roadmap.md`
@@ -149,6 +149,8 @@ Hueprint는 다른 SNS가 쉽게 복제하기 어려운 Hueday의 장기 데이�
 - Hue Room처럼 공간·가구·배치·아이템 아트 파이프라인을 다시 만들거나, 다른 이름의 방으로 축소하지 않는다.
 
 후보·제외 기준은 `docs/discovered-color-content-strategy.md`를 따른다. Hue Canvas 제품과 첫 재질은 승인됐고, 430x932 시각·조작과 실제 Canvas 2D 재현은 아직 승인 전이다.
+
+M2-2 저장 안정성 뒤에는 전체 미션 팩보다 이 실제 Hue Canvas 프로토타입을 먼저 검증한다. 빈 Canvas/Coming Soon 탭은 첫 출시의 대체물이 아니다. 프로토타입 승인 뒤 local master 수동 정리와 최소 미션 팩을 진행하고, 이후 출시용 Canvas·Palette·보상을 완성한다.
 
 ## 4. 가장 단순한 실행 순서
 

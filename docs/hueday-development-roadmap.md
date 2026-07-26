@@ -1,6 +1,6 @@
 # Hueday 전체 개발 마스터 로드맵
 
-마지막 갱신: 2026-07-24 KST
+마지막 갱신: 2026-07-26 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
 
@@ -8,7 +8,7 @@
 
 - 마스터 단계: **M2 — 안정성·데이터·측정 기반**
 - 현재 작업: M2-1 관측성과 M2-2 local master·offline sync를 각각 feature 브랜치에서 완료하고, M2-2는 `e495501`까지 2026-07-26 KST에 `main`으로 fast-forward 통합했다. M2-2 Android 실경로 QA와 M1 Android 잔여 QA는 출시 전 필수 항목으로 계속 추적한다.
-- 다음 한 작업: **정상 동기화된 날짜의 로컬 고화질 원본을 사용자가 수동 정리하는 계약을 승인·구현한다. 자동 삭제는 금지하고, preview만 남을 때 복구 불가 경고와 사용자 확인을 포함한다.**
+- 다음 한 작업: **빈 탭이나 Coming Soon 화면 없이 Hue Canvas의 430x932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 검증하고 사용자 승인을 받는다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -40,8 +40,9 @@
 M0 문서·자동화 기반
 → M1 컬러 헌트 제품 진실 정렬
 → M2 안정성·데이터·측정 기반
-→ M3 일상 미션 팩
 → M4 발견 색 대표 콘텐츠 승인·프로토타입
+→ M2-3 local master 수동 정리
+→ M3 최소 일상 미션 팩
 → M5 발견 색 창작·Color Rhythm 보상 완성
 → M6 Hueprint·Color Capsule
 → M7 Color Relay·안전한 공유 성장
@@ -163,6 +164,7 @@ M0 문서·자동화 기반
 - [ ] 저장·업로드 실패와 초안 복구 UX 재검증
 - [x] 로컬 고화질 마스터·무료 작은 preview 계층 분리 (Cloud 고화질 백업은 별도 승인 범위)
 - [x] IndexedDB metadata + Capacitor Filesystem 기반 offline-first 저장과 동기화 큐
+- [ ] M2-3: 정상 동기화된 날짜의 local master 수동 정리. 자동 삭제는 금지하고 preview만 남으면 복구 불가 경고와 사용자 확인을 포함한다. Hue Canvas 프로토타입 승인 뒤에 진행한다.
 - [ ] 암호화된 `.hueday` 수동 archive 내보내기·가져오기
 - [ ] 계정 삭제·데이터 export·복구 정책과 앱/웹 진입점
 - [x] 이미지 품질 샘플 비교와 목적별 압축 preset (4 bitmap 표본 비교, beta master WebP 0.90)
@@ -194,7 +196,7 @@ M0 문서·자동화 기반
 
 ## M3 — 일상 미션 팩
 
-목표: 걷지 않는 날에도 오늘의 상황에서 색을 찾고, 이후 발견 색 창작 보상과 연결할 문맥을 만든다.
+목표: 걷지 않는 날에도 오늘의 상황에서 색을 찾고, 이후 발견 색 창작 보상과 연결할 문맥을 만든다. Hue Canvas 프로토타입 승인과 M2-3 local master 수동 정리 뒤에는 전체 팩보다 최소 팩부터 구현한다.
 
 권장 브랜치: `feature/everyday-mission-packs`
 
@@ -225,6 +227,8 @@ M0 문서·자동화 기반
 ## M4 — 발견 색 대표 콘텐츠 승인·프로토타입
 
 목표: 승인된 Hue Canvas가 사용자가 찾은 색으로 실제로 만들고 다시 찾고 공유하게 하는 대표 콘텐츠인지 실제 렌더와 조작으로 증명한다.
+
+M2-2 저장 안정성 완료 뒤의 다음 우선순위다. Hue Canvas 전용 빈 탭이나 Coming Soon 탭은 만들지 않으며, 실제 Canvas 2D 프로토타입과 필요한 상태를 함께 검증한다. 승인 뒤에 M2-3 local master 수동 정리와 M3 최소 미션 팩을 진행한다.
 
 핵심 문서: `docs/hue-canvas-product-spec.md`, `docs/discovered-color-content-strategy.md`
 

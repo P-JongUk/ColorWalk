@@ -1,7 +1,7 @@
 # 발견 색 활용 콘텐츠 전략
 
-마지막 갱신: 2026-07-23 KST
-상태: **Hue Canvas 대표 콘텐츠 승인, 시각·조작 프로토타입 대기**
+마지막 갱신: 2026-07-26 KST
+상태: **Hue Canvas 대표 콘텐츠 승인, M2-2 뒤 최우선 시각·조작·Canvas 2D 프로토타입 대기**
 상세 제품 명세: `docs/hue-canvas-product-spec.md`
 
 ## 1. 결정
@@ -132,13 +132,14 @@ Hue Palette는 Hue Canvas 안의 재료함이다.
 ## 8. 개발 순서
 
 1. M1에서 1장 진행·8장 완성 계약을 코드에 반영한다.
-2. M2에서 로컬 우선 저장, migration, 복구, 최소 분석 기반을 만든다.
-3. M3에서 일상 미션 팩으로 색 획득 문맥을 확장한다.
-4. M4에서 Hue Canvas 430x932 시안과 실제 Canvas 2D 스파이크를 승인받는다.
-5. M5에서 Palette, recipe, 색 수량, 보상, export를 구현한다.
-6. M6에서 Hueprint·Color Capsule에 작품을 연결한다.
-7. M7에서 Relay 공유를 연결한다.
-8. M8~M9에서 디자인·접근성·성능·보안·실기기 출시 검증을 끝낸다.
+2. M2-2에서 로컬 우선 저장·복구·최소 분석 기반을 완료한다.
+3. M4에서 Hue Canvas 430x932 시안, 실제 Canvas 2D 시각·조작·성능 스파이크를 먼저 검증하고 승인받는다. 빈 Hue Canvas 또는 Coming Soon 전용 탭은 만들지 않는다.
+4. 승인 뒤 M2-3에서 정상 동기화된 날짜의 local master를 사용자가 수동 정리하는 기능을 구현한다. 자동 삭제는 금지하며 복구 불가 경고와 사용자 확인을 둔다.
+5. 이어서 M3에서 전체 팩보다 최소 일상 미션 팩을 구현한다.
+6. M5에서 출시용 Hue Canvas·Palette·recipe·색 수량·Color Rhythm 보상·export를 완성한다.
+7. M6에서 Hueprint·Color Capsule에 작품을 연결한다.
+8. M7에서 Relay 공유를 연결한다.
+9. M8~M9에서 디자인·접근성·성능·보안·실기기 출시 검증을 끝낸다. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지한다.
 
 M4 시각 승인 전에 전체 에셋, 복잡한 DB schema, 대형 렌더러를 먼저 만들지 않는다.
 

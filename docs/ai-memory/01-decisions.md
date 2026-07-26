@@ -69,6 +69,13 @@
 - 검증된 local master만 staging 원본을 대체한다. raw/staging/master는 Supabase나 product-events에 보내지 않고 preview와 기존 Post metadata만 sync한다.
 - Android AVD의 이번 부팅 실패와 System UI ANR, 기존 다른 서명 앱의 install 충돌은 제품 ANR이나 QA 통과로 해석하지 않는다. clean stable AVD 또는 실제 기기에서 capture → force-stop → offline/online retry를 다시 확인하는 것이 출시 전 gate다.
 
+## 2026-07-26 — Hue Canvas 프로토타입 우선순위 (approved)
+
+- 공개 출시에는 최소하지만 완성된 Hue Canvas를 포함한다. 빈 Hue Canvas 탭이나 Coming Soon 전용 탭은 만들지 않는다.
+- M2-2 저장 안정성 완료 뒤에는 전체 미션 팩보다 Hue Canvas의 시각·조작·실제 Canvas 2D 성능 프로토타입을 먼저 검증한다.
+- 프로토타입 승인 뒤 local master 수동 정리와 최소 미션 팩을 진행한다. local master 정리는 출시 전 필수이며 자동 삭제를 금지하고, preview만 남아 복구할 수 없는 경우 경고와 사용자 확인을 사용한다.
+- 이후 출시용 Hue Canvas·Palette·Color Rhythm 보상을 완성한다. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지하며, 현재 M2-2 구현 사실과 미통과 Android 실경로 QA를 바꾸지 않는다.
+
 ## 2026-07-22 — 빠르고 완성도 있는 출시
 
 - 현재 계획의 시간축은 3개월 로드맵이 아니라 완성도 있는 제품 출시까지의 압축된 critical path입니다.

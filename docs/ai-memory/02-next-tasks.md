@@ -7,7 +7,7 @@
 > - **현재 체크포인트:** CP5 문서 정합화까지 완료. CP4 PWA/Capacitor QA와 새 debug APK는 확인했지만, AVD가 ADB-ready가 되지 않아 Android 실경로 QA는 남아 있다.
 > - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
 > - **마지막 통과 검증:** 기존 lint/Vitest(10 files/25 tests)/production build/live Supabase verification 결과, 이번 `npm run cap:sync`, 430×932 PWA Home/Camera smoke, debug APK 17,955,823 bytes.
-> - **다음 작업:** 정상 동기화된 날짜의 local master 수동 정리 계약을 설계한다. 자동 삭제·Cloud backup·archive/export/delete·`grid_images` migration repair는 별도 승인 범위다.
+> - **다음 작업:** Hue Canvas의 430×932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 검증하고 사용자 승인을 받는다. 빈 탭/Coming Soon 화면은 만들지 않는다. 승인 뒤 local master 수동 정리(자동 삭제 금지·복구 불가 경고·사용자 확인)와 최소 미션 팩을 진행한다.
 > - **범위 밖:** `grid_images` migration/backfill/repair, archive, account export/delete, Cloud backup, SQLite, 자동 master 삭제.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
@@ -27,8 +27,9 @@
 - [ ] M1 Android 잔여 QA: 안정적인 별도 AVD 또는 실제 기기에서 7/8·8/8 이어서 촬영·완료 배지, foreground 날짜 전환, 저널 저장, Story 네이티브 공유 시트를 확인하기. 2026-07-24 KST에 430×932 브라우저 전체 흐름, 테스트 재시드, Android 실제 카메라 권한·촬영·다시 찍기·확정·1/8 저장·background/foreground 복구·2/8·5/8 순차 촬영, lint·19개 test·build·라이브 Supabase·Capacitor sync·Android debug/release build는 통과했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 사용하지 않으며, clean `ColorWalkM1QA` AVD cold boot는 앱 설치 전 System UI·전화·Google Play services ANR을 재현했다. 남은 항목은 통과로 기록하지 않고 실제 Android 기기 출시 전 필수 QA로 유지한다.
 - [ ] 출시 전 브랜드 게이트: Hueday와 국내 컬러워크·Daily Hue의 상표/스토어 검색/ASO 혼동 검토. 별도 승인 전 브랜드 변경 금지
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트와 화면 조회·foreground 체류·핵심 CTA·D1/D7/D30 집계 계약, 로컬 고화질 마스터·preview·archive 기반 완성하기
-- [ ] M3: 집·학교·캠퍼스·통학·카페·비 오는 날·날씨·시간·컬러 산책 일상 미션 팩 구현하기
-- [ ] M4: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기
+- [ ] M4 우선: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기. 빈 탭/Coming Soon 화면 금지
+- [ ] M2-3: 승인 뒤 정상 동기화된 날짜의 local master 수동 정리 구현하기. 자동 삭제 금지, preview만 남으면 복구 불가 경고와 사용자 확인. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지
+- [ ] M3 최소: M2-3 뒤 집·학교·캠퍼스·통학·카페·비 오는 날·날씨·시간·컬러 산책의 최소 일상 미션 팩 구현하기
 - [ ] M5: Hue Palette 발견 횟수, sparse recipe 저장·복구, 원본 기록, Color Rhythm·실제 창작 보상 완성하기
 - [ ] M6: 월간 Hueprint와 최소 Color Capsule 구현하기
 - [ ] M7: 만료·폐기 가능한 안전한 Color Relay 구현하기

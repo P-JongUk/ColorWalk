@@ -1,6 +1,6 @@
 # Hue Canvas 제품 명세
 
-마지막 갱신: 2026-07-23 KST
+마지막 갱신: 2026-07-26 KST
 상태: **사용자 승인된 발견 색 대표 콘텐츠**
 상위 기준: `docs/hueday-product-blueprint.md`
 실행 순서: `docs/hueday-development-roadmap.md`
@@ -193,6 +193,13 @@ Hueday Cloud 구독 후보:
 유료 여부와 관계없이 사용자가 직접 찾은 색, 기본 recipe, 로컬 export를 인질로 삼지 않는다.
 
 ## 8. 승인·개발 게이트
+
+### 실행 우선순위 (approved)
+
+- 공개 출시에는 최소하지만 완성된 Hue Canvas를 포함한다. 빈 Hue Canvas 탭이나 Coming Soon 전용 탭은 만들지 않는다.
+- M2-2 저장 안정성 완료 뒤에는 전체 미션 팩보다 430x932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 먼저 검증한다.
+- 이 프로토타입이 승인된 뒤 M2-3 local master 수동 정리(자동 삭제 금지, 복구 불가 경고와 사용자 확인)와 최소 미션 팩을 진행한다.
+- 그 다음 출시용 Hue Canvas·Palette·Color Rhythm 보상을 완성한다. Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지한다.
 
 ### Gate HC-1 — 제품 계약
 
