@@ -91,4 +91,20 @@ describe('Living Hue Deck', () => {
     expect(cards.find((card) => card.post.local_date === '2026-07-25')?.missionPackId).toBeNull()
     expect(cards.find((card) => card.post.local_date === '2026-07-24')?.missionPackId).toBeNull()
   })
+
+  it('never throws on an invalid legacy mission_hex, keeps the card visible, and excludes it from Color Volume only', () => {
+    const invalid = post('2026-07-18', 'not-a-color', images(8))
+    const valid = post('2026-07-19', '#8bc6e8', images(8))
+
+    expect(() => getLivingHueDeckCards([invalid, valid])).not.toThrow()
+    const cards = getLivingHueDeckCards([invalid, valid])
+    const invalidCard = cards.find((card) => card.post.local_date === '2026-07-18')
+    expect(invalidCard?.canonicalMissionHex).toBeNull()
+    expect(invalidCard?.photoCount).toBe(8)
+    expect(invalidCard?.stage).toBe(8)
+
+    const volumes = getColorVolumes(cards)
+    expect(volumes).toHaveLength(1)
+    expect(volumes[0].missionHex).toBe('#8BC6E8')
+  })
 })

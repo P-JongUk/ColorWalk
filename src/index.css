@@ -87,6 +87,10 @@
   background: color-mix(in srgb, var(--deck-color) 25%, #f7f2e8);
 }
 
+.deck-photo-mosaic-neutral {
+  background: repeating-linear-gradient(135deg, #f2ede1 0 10px, #ece5d6 10px 20px);
+}
+
 .deck-photo-mosaic span {
   min-height: 82px;
   border-radius: 10px;

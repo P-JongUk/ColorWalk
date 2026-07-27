@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getMissionPackCollections, getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
+import { getHueprintDetailTier, getMissionPackCollections, getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
 import { buildColorHuntMeta, createFreeModeSelection, createMissionPackSelection, finalizeMissionPackSelection } from '@/lib/missionPacks'
 import type { Post } from '@/types'
 
@@ -56,6 +56,27 @@ describe('collection helpers', () => {
     expect(new Set(en).size).toBe(4)
     expect(ko.every((name) => name.length > 2)).toBe(true)
     expect(en.every((name) => name.length > 2)).toBe(true)
+  })
+})
+
+function completedPosts(count: number): Post[] {
+  return Array.from({ length: count }, (_, index) => ({
+    ...post(`2026-${String(1 + (index % 12)).padStart(2, '0')}-${String(1 + (index % 28)).padStart(2, '0')}`),
+    id: `completed-${index}`,
+    grid_images: Array.from({ length: 8 }, (_, slot) => ({ id: `${index}-${slot}`, slot: slot < 4 ? slot : slot + 1, path: `image-${index}-${slot}.webp` })),
+  }))
+}
+
+describe('getHueprintDetailTier', () => {
+  it.each([
+    [0, 0], [2, 0], [3, 1], [6, 1], [7, 2], [13, 2], [14, 3], [29, 3], [30, 4], [31, 4],
+  ] as const)('maps %s completed grids to tier %s', (completedCount, tier) => {
+    expect(getHueprintDetailTier(completedPosts(completedCount))).toBe(tier)
+  })
+
+  it('never changes getUnlockedBadges results', () => {
+    const posts = completedPosts(7)
+    expect(getUnlockedBadges(posts).map((badge) => badge.unlocked)).toEqual([true, true, false, false])
   })
 })
 

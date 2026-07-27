@@ -34,6 +34,23 @@ export function getUnlockedBadges(posts: Post[] = [], locale: Locale = 'ko') {
   }))
 }
 
+export type HueprintDetailTier = 0 | 1 | 2 | 3 | 4
+
+/**
+ * M5 Hueprint detail tier - a single decorative-preset tier derived from the existing
+ * completed-grid count. Mirrors the 3/7/14/30 badge thresholds without changing the badge
+ * contract itself. Callers apply exactly one `.hueprint-tier-N` CSS class; tiers never
+ * stack decoration.
+ */
+export function getHueprintDetailTier(posts: Post[]): HueprintDetailTier {
+  const completedGrids = getCompletedGridCount(posts)
+  if (completedGrids >= 30) return 4
+  if (completedGrids >= 14) return 3
+  if (completedGrids >= 7) return 2
+  if (completedGrids >= 3) return 1
+  return 0
+}
+
 export type MissionPackCollection = {
   id: MissionPackId
   closedCount: number

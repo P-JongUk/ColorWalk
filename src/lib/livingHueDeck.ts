@@ -11,7 +11,8 @@ export type LivingHueDeckCard = {
   images: GridImage[]
   photoCount: number
   stage: DeckStage
-  canonicalMissionHex: string
+  /** Canonical uppercase mission_hex, or null when the record's mission_hex is not a valid 6-digit hex. */
+  canonicalMissionHex: string | null
   syncState: DeckSyncState
   /** Finalized pack ID for this record, or null for free mode/legacy/still-open records. */
   missionPackId: MissionPackId | null
@@ -29,7 +30,13 @@ export function getDeckStage(photoCount: number): DeckStage {
   return 1
 }
 
-export function canonicalizeMissionHex(hex: string) {
+/**
+ * Returns the canonical uppercase mission_hex, or null when hex is not a valid 6-digit hex.
+ * Never throws - invalid legacy mission_hex records must not break Deck/Hueprint/Capsule
+ * screens. Callers must not substitute captured_hex, image pixels, weather, or a color name.
+ */
+export function canonicalizeMissionHex(hex: string): string | null {
+  if (!/^#?[0-9a-fA-F]{6}$/.test(hex)) return null
   return rgbToHex(hexToRgb(hex))
 }
 
@@ -62,10 +69,12 @@ export function getLivingHueDeckCards(posts: Post[]): LivingHueDeckCard[] {
 export function getColorVolumes(cards: LivingHueDeckCard[]): ColorVolume[] {
   const volumes = new Map<string, LivingHueDeckCard[]>()
 
-  cards.filter((card) => card.stage === 8).forEach((card) => {
-    const grouped = volumes.get(card.canonicalMissionHex) ?? []
+  // Invalid-color cards (canonicalMissionHex === null) stay visible as regular Deck cards
+  // but are excluded from Color Volume grouping - no fake substitute color is invented.
+  cards.filter((card) => card.stage === 8 && card.canonicalMissionHex).forEach((card) => {
+    const grouped = volumes.get(card.canonicalMissionHex!) ?? []
     grouped.push(card)
-    volumes.set(card.canonicalMissionHex, grouped)
+    volumes.set(card.canonicalMissionHex!, grouped)
   })
 
   return [...volumes.entries()]

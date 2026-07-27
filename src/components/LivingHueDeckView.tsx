@@ -67,10 +67,13 @@ function DeckCard({ locale, card, onOpenRecord, onOpenStory, onVisible }: {
       <button type="button" className="deck-card-main" onClick={onOpenRecord} aria-label={locale === 'ko' ? `${date} 기록 열기` : `Open ${date}`}>
         {card.stage === 8 ? (
           <div className="deck-card-sealed-grid">
-            <GridCollage locale={locale} missionHex={card.canonicalMissionHex} colorName={cardTitle(locale, card)} images={card.images} variant="mini" />
+            <GridCollage locale={locale} missionHex={card.post.mission_hex} colorName={cardTitle(locale, card)} images={card.images} variant="mini" />
           </div>
         ) : (
-          <div className="deck-photo-mosaic" style={{ '--deck-color': card.canonicalMissionHex } as CSSProperties}>
+          <div
+            className={cn('deck-photo-mosaic', !card.canonicalMissionHex && 'deck-photo-mosaic-neutral')}
+            style={card.canonicalMissionHex ? ({ '--deck-color': card.canonicalMissionHex } as CSSProperties) : undefined}
+          >
             {visibleImages.map((image) => {
               const imageUrl = getGridImageUrl(image)
               return imageUrl ? <span key={image.id} style={{ backgroundImage: `url("${imageUrl}")` }} /> : null
