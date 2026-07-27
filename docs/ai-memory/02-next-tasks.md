@@ -2,9 +2,9 @@
 
 > ## 최신 재개 지점 (2026-07-28)
 >
-> - **기준:** M4 선택형 일상 미션 팩은 `feature/everyday-mission-packs`(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)에서 구현·전체 검증·430×932 QA·문서 정렬(checkpoint 3)까지 완료했다. 아직 `main`에 병합하지 않았다.
+> - **기준:** M4 선택형 일상 미션 팩은 `feature/everyday-mission-packs`(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)에서 구현·전체 검증·430×932 QA·문서 정렬(checkpoint 3)까지 완료했고, `a49caf6`으로 `main`에 fast-forward 통합됐다.
 > - **첫 구현 작업:** M5 주간 `Hueprint`/`Color DNA`와 월간 `Color Capsule`을 기존 원본 Post/Deck 데이터 위에서 설계한다. 완성 강제·연속 출석·랜덤 보상은 넣지 않는다. M3 카드에서는 기존 Story Studio를 그대로 열고 별도 Deck 이미지 포맷/업로드를 만들지 않는다.
-> - **그 다음:** `feature/everyday-mission-packs`를 `main`에 병합할 시점과 순서(M5 이전/이후)를 사용자와 확인한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
+> - **그 다음:** M5 주간 Hueprint/Color DNA와 월간 Color Capsule 설계를 시작한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
 > - **M5 모델·세션:** 큰 방향 대화는 Sol medium, 고위험 계획 확정은 Sol high+계획 모드, 승인된 구현은 Kiro Sonnet 5 high 단일-agent, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 Codex Terra medium을 기본으로 유지한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
@@ -15,10 +15,10 @@
 > ## M4 진행 인계 (완료, 2026-07-28)
 >
 > - **작업명·목표:** 완료 — M4 `feature/everyday-mission-packs`: `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack + 자유 모드, `colorHunt` v2 metadata 계약, metadata-only pack 변경, lazy finalization, pack 컬렉션.
-> - **현재 브랜치 / 기준:** `feature/everyday-mission-packs`, `origin/feature/everyday-mission-packs`와 동기화. base는 `origin/main` `b17b5e9`. `main`에는 아직 병합하지 않았다.
+> - **통합 기준:** `feature/everyday-mission-packs`는 `origin/main` `b17b5e9`를 기반으로 했고, `a49caf6`까지 fast-forward로 `main` 및 `origin/main`에 통합됐다.
 > - **체크포인트:** checkpoint 1 `5eeaf91`(타입/config/v2 reader/metadata-only update/deep-merge test), checkpoint 2 `b3128c1`(8장·lazy finalization/UI/Deck 컬렉션/analytics/QA), checkpoint 3(문서·AI memory 정렬, 이 커밋).
 > - **마지막 통과 검증(2026-07-28 KST):** lint 0 errors, Vitest 13 files/64 tests, build, `verify:supabase` 전체 ok, `cap:sync`, `git diff --check`, Android debug build(`app-debug.apk` 17,960,631 bytes), 430×932 Playwright QA(자유 기본/추천 배지/0장 무확인/1–7장 확인 다이얼로그/8장 읽기전용/collection tile 3개/8·8 카드+Story).
-> - **범위 밖으로 남긴 것:** Android 실기기 인플레이스 QA(M7 gate), `main` 병합, DB migration, production 배포.
+> - **범위 밖으로 남긴 것:** Android 실기기 인플레이스 QA(M7 gate), DB migration, production 배포.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
 
@@ -39,7 +39,7 @@
 - [x] M4 구현: `feature/everyday-mission-packs`에서 `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack + 자유 모드, `colorHunt` v2 metadata 계약, metadata-only 0–7장 pack 선택/변경/해제, 8장 즉시 finalization과 boot/foreground/다음 촬영 lazy finalization, 명시적 pack ID 기반 최대 3개 컬렉션을 구현하기 (checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)
 - [x] M4 검증: 전체 lint/test/build/Supabase verification/Capacitor sync/Android debug build/git diff --check와 430×932 Playwright QA(자유 기본, 추천 배지, 0장 무확인, 1–7장 확인 다이얼로그, 8장 읽기전용, collection tile, 8/8 카드+Story)를 통과하기 (2026-07-28 KST)
 - [x] M4 문서·AI memory 정렬: blueprint/roadmap/living-hue-deck-spec/growth-strategy/reward-system/storage-strategy/design-reference-index/design-qa-log/plan.md와 이 vault를 실제 diff·검증 결과에 맞춰 갱신하기 (checkpoint 3)
-- [ ] M4 후속: `feature/everyday-mission-packs`를 `main`에 병합할 시점 확정. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지
+- [x] M4 후속: `feature/everyday-mission-packs`를 `a49caf6`까지 fast-forward로 `main`에 통합. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지
 - [ ] M5 Hueprint/Color DNA/Color Capsule: 기존 원본 Post/Deck 데이터 위에서 주간 회고와 공유를 연결하고, 완성 강제·연속 출석·랜덤 보상은 넣지 않기
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트와 화면 조회·foreground 체류·핵심 CTA·D1/D7/D30 집계 계약, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M4 우선: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기. 빈 탭/Coming Soon 화면 금지
