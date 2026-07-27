@@ -630,6 +630,21 @@ function App() {
     const localDate = getLocalDateKey()
     recordProductEvent('primary_cta_clicked', `${localDate}:primary_cta_clicked:${cta}`, { cta }, localDate)
   }
+  function recordHueprintExported(weekKey: string, delivery: 'download' | 'share') {
+    // Dedupe: owner + weekKey + artifact + delivery. owner is the outbox upsert's
+    // owner_id column; weekKey/artifact/delivery live in this dedupeKey.
+    recordProductEvent('primary_cta_clicked', `hueprint:${weekKey}:hueprint_exported:${delivery}`, { cta: 'hueprint_exported', delivery }, getLocalDateKey())
+  }
+  function recordHueprintShareOpened(weekKey: string) {
+    recordProductEvent('primary_cta_clicked', `hueprint:${weekKey}:hueprint_share_opened`, { cta: 'hueprint_share_opened' }, getLocalDateKey())
+  }
+  function recordColorCapsuleExported(monthKey: string, delivery: 'download' | 'share') {
+    // Dedupe: owner + monthKey + artifact + delivery.
+    recordProductEvent('primary_cta_clicked', `color_capsule:${monthKey}:color_capsule_exported:${delivery}`, { cta: 'color_capsule_exported', delivery }, getLocalDateKey())
+  }
+  function recordColorCapsuleShareOpened(monthKey: string) {
+    recordProductEvent('primary_cta_clicked', `color_capsule:${monthKey}:color_capsule_share_opened`, { cta: 'color_capsule_share_opened' }, getLocalDateKey())
+  }
   async function signOut() {
     await supabase?.auth.signOut()
     setSession(null); setProfile(null); setPosts([]); setDraft(null); setDailyDrafts([]); setActiveTab('today')
@@ -638,7 +653,7 @@ function App() {
   const content = (() => {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} activeMissionPack={activeMissionPack} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
-    if (activeTab === 'calendar') return <CalendarView locale={locale} ownerId={ownerId} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} onMissionPackCollectionOpened={recordMissionPackCollectionOpened} onHueprintScreenViewed={recordHueprintScreenViewed} onHueprintCtaClicked={recordHueprintCtaClicked} />
+    if (activeTab === 'calendar') return <CalendarView locale={locale} ownerId={ownerId} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} onMissionPackCollectionOpened={recordMissionPackCollectionOpened} onHueprintScreenViewed={recordHueprintScreenViewed} onHueprintCtaClicked={recordHueprintCtaClicked} onHueprintExported={recordHueprintExported} onHueprintShareOpened={recordHueprintShareOpened} onColorCapsuleExported={recordColorCapsuleExported} onColorCapsuleShareOpened={recordColorCapsuleShareOpened} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
     return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()

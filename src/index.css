@@ -10508,3 +10508,102 @@
   font-size: 11px;
   font-weight: 700;
 }
+
+.hueprint-export-source {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 336px;
+  height: 597px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hueprint-export-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 336px;
+  height: 597px;
+  overflow: hidden;
+  border-radius: 34px;
+  padding: 24px 22px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 249, 241, .97)), #fff8ef;
+  color: #241f1a;
+}
+
+.hueprint-export-cover {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #f2ede1;
+}
+
+.hueprint-export-cover-image {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+
+.hueprint-export-body {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding-top: 18px;
+}
+
+.hueprint-export-subtitle {
+  color: #786b5e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.hueprint-export-title {
+  color: #211d1b;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+}
+
+.hueprint-export-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.hueprint-export-stats strong {
+  margin-right: 4px;
+  color: #2f211b;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.hueprint-export-stats span {
+  color: #786b5e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hueprint-export-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.hueprint-export-palette span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #fffdf8;
+}
+
+.hueprint-export-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 800;
+}

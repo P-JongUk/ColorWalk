@@ -53,10 +53,30 @@ export function createProductEvent(input: CreateProductEventInput): ProductEvent
 
 export async function flushProductEvents(ownerId: string) {
   if (!supabase || ownerId === 'local') return false
+  // Reentrancy guard: trackProductEvent calls enqueue+flush independently for every
+  // event, and rapid navigation (e.g. Hueprint/Capsule screen views) can call it several
+  // times before the first flush's removePendingProductEvents completes. Without this
+  // lock, two concurrent flushes can both read and resend the same still-pending row,
+  // hitting the `product_events_pkey` (id) unique constraint even though the upsert's
+  // own onConflict/ignoreDuplicates only covers (owner_id, dedupe_key).
+  const existing = flushLocksRef.get(ownerId)
+  if (existing) return existing
+  const task = flushProductEventsUnlocked(ownerId)
+  flushLocksRef.set(ownerId, task)
+  try {
+    return await task
+  } finally {
+    if (flushLocksRef.get(ownerId) === task) flushLocksRef.delete(ownerId)
+  }
+}
+
+const flushLocksRef = new Map<string, Promise<boolean>>()
+
+async function flushProductEventsUnlocked(ownerId: string) {
   const events = await loadPendingProductEvents(ownerId)
   if (!events.length) return true
 
-  const { error } = await supabase.from('product_events').upsert(
+  const { error } = await supabase!.from('product_events').upsert(
     events.map((event) => ({
       id: event.id,
       owner_id: event.ownerId,

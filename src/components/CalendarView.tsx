@@ -35,6 +35,10 @@ type CalendarViewProps = {
   onMissionPackCollectionOpened?: (id: MissionPackId) => void
   onHueprintScreenViewed?: (screen: 'hueprint_week' | 'color_capsule_archive' | 'color_capsule_month') => void
   onHueprintCtaClicked?: (cta: 'hueprint_cover_changed' | 'hueprint_source_opened' | 'color_capsule_source_opened' | 'color_memory_source_opened') => void
+  onHueprintExported?: (weekKey: string, delivery: 'download' | 'share') => void
+  onHueprintShareOpened?: (weekKey: string) => void
+  onColorCapsuleExported?: (monthKey: string, delivery: 'download' | 'share') => void
+  onColorCapsuleShareOpened?: (monthKey: string) => void
 }
 
 function formatBytes(bytes: number) {
@@ -47,7 +51,7 @@ function createDeckSessionId() {
   return `deck-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-export function CalendarView({ locale, ownerId, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened, onHueprintScreenViewed, onHueprintCtaClicked }: CalendarViewProps) {
+export function CalendarView({ locale, ownerId, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened, onHueprintScreenViewed, onHueprintCtaClicked, onHueprintExported, onHueprintShareOpened, onColorCapsuleExported, onColorCapsuleShareOpened }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
@@ -269,6 +273,8 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
           capsule={selectedCapsule}
           onBack={openCapsuleArchive}
           onOpenDay={openCapsuleDay}
+          onExported={(delivery) => onColorCapsuleExported?.(selectedCapsule.monthKey, delivery)}
+          onShareOpened={() => onColorCapsuleShareOpened?.(selectedCapsule.monthKey)}
         />
       </main>
     )
@@ -310,6 +316,8 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
           onChangeCover={changeHueprintCover}
           onOpenHistory={() => setContentView('record')}
           onOpenCapsule={openCapsuleArchive}
+          onExported={(delivery) => onHueprintExported?.(hueprintWeekKey, delivery)}
+          onShareOpened={() => onHueprintShareOpened?.(hueprintWeekKey)}
         />
       </main>
     )

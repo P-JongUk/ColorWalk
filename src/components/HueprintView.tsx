@@ -1,6 +1,8 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { type CSSProperties, type ReactNode } from 'react'
+import { ChevronLeft, ChevronRight, Download, Share2 } from 'lucide-react'
+import { type CSSProperties, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
+import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { Button } from '@/components/ui/button'
 import { getHueprintDetailTier } from '@/lib/collection'
 import { formatDisplayDate } from '@/lib/date'
@@ -12,10 +14,157 @@ import {
   isInvalidOnlyWeek,
   resolveHueprintCover,
   type ColorCapsule,
+  type HueprintCover,
   type HueprintDay,
   type WeeklyHueprint,
 } from '@/lib/hueprint'
+import { t } from '@/lib/i18n'
+import { deliverExport, exportElementToPngFile, exportTimestampFilename, shareDialogCopy, type ExportDelivery } from '@/lib/shareImage'
 import type { Locale, Post } from '@/types'
+
+function localeCode(locale: Locale) {
+  return locale === 'ko' ? 'ko-KR' : 'en-US'
+}
+
+function dayThumbUrl(day: HueprintDay) {
+  const restorable = day.images.find((image) => image.signedUrl ?? image.previewUrl)
+  return restorable ? (restorable.signedUrl ?? restorable.previewUrl) : undefined
+}
+
+function DayList({ locale, days, onOpenDay }: { locale: Locale; days: HueprintDay[]; onOpenDay: (day: HueprintDay) => void }) {
+  return (
+    <div className="hueprint-day-list">
+      {days.map((day) => {
+        const thumbUrl = dayThumbUrl(day)
+        return (
+          <button key={day.localDate} type="button" className="hueprint-day-row" onClick={() => onOpenDay(day)}>
+            {thumbUrl ? <span className="hueprint-day-thumb" style={{ backgroundImage: `url("${thumbUrl}")` }} /> : <span className="hueprint-day-thumb" style={{ backgroundColor: day.missionHex }} />}
+            <span className="min-w-0 flex-1">
+              <strong className="block truncate">{formatDisplayDate(day.localDate, localeCode(locale))}</strong>
+              <span>{day.photoCount}/8 · {day.missionHex}</span>
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * Offscreen 9:16 export source shared by Hueprint week and Color Capsule month exports.
+ * Rendered off-screen (not inside the visible scroll flow) purely as an html2canvas
+ * source - never inside the daily Story Studio's template/sticker model.
+ */
+function ExportCard9x16({
+  exportRef,
+  title,
+  subtitle,
+  coverUrl,
+  accentHex,
+  palette,
+  stat1,
+  stat2,
+}: {
+  exportRef: React.Ref<HTMLDivElement>
+  title: string
+  subtitle: string
+  coverUrl?: string
+  accentHex?: string | null
+  palette: string[]
+  stat1: { label: string; value: number }
+  stat2: { label: string; value: number }
+}) {
+  return (
+    <div ref={exportRef} className="hueprint-export-card" style={accentHex ? ({ '--hueprint-accent': accentHex } as CSSProperties) : undefined}>
+      <div className="hueprint-export-cover">
+        {coverUrl ? <div className="hueprint-export-cover-image" style={{ backgroundImage: `url("${coverUrl}")` }} /> : null}
+      </div>
+      <div className="hueprint-export-body">
+        <p className="hueprint-export-subtitle">{subtitle}</p>
+        <h2 className="hueprint-export-title">{title}</h2>
+        <div className="hueprint-export-stats">
+          <span><strong>{stat1.value}</strong>{stat1.label}</span>
+          <span><strong>{stat2.value}</strong>{stat2.label}</span>
+        </div>
+        <div className="hueprint-export-palette">
+          {palette.slice(0, 14).map((hex, index) => (
+            <span key={`${hex}-${index}`} style={{ backgroundColor: hex }} />
+          ))}
+        </div>
+      </div>
+      <footer className="hueprint-export-footer">
+        <ColorWalkMark compact />
+        <span>Hueday</span>
+      </footer>
+    </div>
+  )
+}
+
+type ExportArtifact = 'hueprint' | 'color_capsule'
+
+type ExportPanelProps = {
+  locale: Locale
+  artifact: ExportArtifact
+  filenamePrefix: string
+  label: string
+  card: {
+    title: string
+    subtitle: string
+    coverUrl?: string
+    accentHex?: string | null
+    palette: string[]
+    stat1: { label: string; value: number }
+    stat2: { label: string; value: number }
+  }
+  onExported?: (delivery: ExportDelivery) => void
+  onShareOpened?: () => void
+}
+
+/**
+ * Renders the offscreen export card plus save/share buttons. Success analytics
+ * (`onExported`) fires only after deliverExport actually resolves; a failed render,
+ * failed file write, or cancelled/rejected share never calls it.
+ */
+function ExportPanel({ locale, artifact, filenamePrefix, label, card, onExported, onShareOpened }: ExportPanelProps) {
+  const exportRef = useRef<HTMLDivElement | null>(null)
+  const [isExporting, setIsExporting] = useState(false)
+
+  async function runExport(mode: ExportDelivery) {
+    const target = exportRef.current
+    if (!target || isExporting) return
+    setIsExporting(true)
+    try {
+      const file = await exportElementToPngFile(target, exportTimestampFilename(filenamePrefix), { width: 1080, height: 1920 })
+      if (mode === 'share') onShareOpened?.()
+      await deliverExport(file, mode, artifact === 'hueprint' ? 'hueprint' : 'color-capsule', shareDialogCopy(locale, label, mode))
+      onExported?.(mode)
+      toast.success(t(locale, 'storySaved'))
+    } catch (error) {
+      console.error(error)
+      toast.error(t(locale, 'saveFailed'))
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  return (
+    <>
+      <div className="hueprint-export-source" aria-hidden="true">
+        <ExportCard9x16 exportRef={exportRef} {...card} />
+      </div>
+      <div className="hueprint-actions">
+        <Button type="button" variant="outline" disabled={isExporting} onClick={() => void runExport('download')}>
+          <Download data-icon="inline-start" aria-hidden="true" />
+          {t(locale, 'download')}
+        </Button>
+        <Button type="button" disabled={isExporting} onClick={() => void runExport('share')}>
+          <Share2 data-icon="inline-start" aria-hidden="true" />
+          {t(locale, 'share')}
+        </Button>
+      </div>
+    </>
+  )
+}
 
 type HueprintWeekViewProps = {
   locale: Locale
@@ -27,11 +176,8 @@ type HueprintWeekViewProps = {
   onChangeCover: (week: WeeklyHueprint) => void
   onOpenHistory: () => void
   onOpenCapsule: () => void
-  exportSlot?: ReactNode
-}
-
-function localeCode(locale: Locale) {
-  return locale === 'ko' ? 'ko-KR' : 'en-US'
+  onExported?: (delivery: ExportDelivery) => void
+  onShareOpened?: () => void
 }
 
 function weekRangeLabel(locale: Locale, week: WeeklyHueprint) {
@@ -40,7 +186,7 @@ function weekRangeLabel(locale: Locale, week: WeeklyHueprint) {
   return `${start} – ${end}`
 }
 
-export function HueprintWeekView({ locale, ownerId, posts, weekKey, onChangeWeek, onOpenDay, onChangeCover, onOpenHistory, onOpenCapsule, exportSlot }: HueprintWeekViewProps) {
+export function HueprintWeekView({ locale, ownerId, posts, weekKey, onChangeWeek, onOpenDay, onChangeCover, onOpenHistory, onOpenCapsule, onExported, onShareOpened }: HueprintWeekViewProps) {
   const week = getWeeklyHueprint(posts, weekKey)
   const navigation = getWeekNavigation(posts, weekKey)
   const cover = resolveHueprintCover(ownerId, week)
@@ -105,23 +251,25 @@ export function HueprintWeekView({ locale, ownerId, posts, weekKey, onChangeWeek
               ))}
             </div>
 
-            <div className="hueprint-day-list">
-              {week.days.map((day) => {
-                const restorable = day.images.find((image) => image.signedUrl ?? image.previewUrl)
-                const thumbUrl = restorable ? (restorable.signedUrl ?? restorable.previewUrl) : undefined
-                return (
-                  <button key={day.localDate} type="button" className="hueprint-day-row" onClick={() => onOpenDay(day)}>
-                    {thumbUrl ? <span className="hueprint-day-thumb" style={{ backgroundImage: `url("${thumbUrl}")` }} /> : <span className="hueprint-day-thumb" style={{ backgroundColor: day.missionHex }} />}
-                    <span className="min-w-0 flex-1">
-                      <strong className="block truncate">{formatDisplayDate(day.localDate, localeCode(locale))}</strong>
-                      <span>{day.photoCount}/8 · {day.missionHex}</span>
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
+            <DayList locale={locale} days={week.days} onOpenDay={onOpenDay} />
 
-            {exportSlot}
+            <ExportPanel
+              locale={locale}
+              artifact="hueprint"
+              filenamePrefix="hueday-hueprint"
+              label="Hueprint"
+              card={{
+                title: locale === 'ko' ? '이번 주 Hueprint' : 'This week\'s Hueprint',
+                subtitle: weekRangeLabel(locale, week),
+                coverUrl: cover?.imageUrl,
+                accentHex: week.accentHex,
+                palette: week.palette,
+                stat1: { value: week.recordedDayCount, label: locale === 'ko' ? '기록한 날' : ' recorded' },
+                stat2: { value: week.completedGridCount, label: locale === 'ko' ? '완성한 페이지' : ' complete' },
+              }}
+              onExported={onExported}
+              onShareOpened={onShareOpened}
+            />
           </div>
 
           <div className="hueprint-actions hueprint-actions-secondary">
@@ -179,7 +327,7 @@ export function ColorCapsuleArchiveView({ locale, posts, onOpenMonth, onOpenDay,
           {capsules.map((capsule) => (
             <button key={capsule.monthKey} type="button" className="capsule-tile" onClick={() => onOpenMonth(capsule.monthKey)}>
               <span className="capsule-tile-photos">
-                {capsule.representativePhotos.slice(0, 3).map((cover) => (
+                {capsule.representativePhotos.slice(0, 3).map((cover: HueprintCover) => (
                   <span key={cover.imageId} style={cover.imageUrl ? { backgroundImage: `url("${cover.imageUrl}")` } : undefined} />
                 ))}
               </span>
@@ -209,10 +357,13 @@ type ColorCapsuleMonthViewProps = {
   capsule: ColorCapsule
   onBack: () => void
   onOpenDay: (day: HueprintDay) => void
-  exportSlot?: ReactNode
+  onExported?: (delivery: ExportDelivery) => void
+  onShareOpened?: () => void
 }
 
-export function ColorCapsuleMonthView({ locale, capsule, onBack, onOpenDay, exportSlot }: ColorCapsuleMonthViewProps) {
+export function ColorCapsuleMonthView({ locale, capsule, onBack, onOpenDay, onExported, onShareOpened }: ColorCapsuleMonthViewProps) {
+  const representativeCover = capsule.representativePhotos[0]
+
   return (
     <section className="capsule-screen">
       <button type="button" className="deck-back-button" onClick={onBack}>
@@ -242,23 +393,25 @@ export function ColorCapsuleMonthView({ locale, capsule, onBack, onOpenDay, expo
           ))}
         </div>
 
-        <div className="hueprint-day-list">
-          {capsule.days.map((day) => {
-            const restorable = day.images.find((image) => image.signedUrl ?? image.previewUrl)
-            const thumbUrl = restorable ? (restorable.signedUrl ?? restorable.previewUrl) : undefined
-            return (
-              <button key={day.localDate} type="button" className="hueprint-day-row" onClick={() => onOpenDay(day)}>
-                {thumbUrl ? <span className="hueprint-day-thumb" style={{ backgroundImage: `url("${thumbUrl}")` }} /> : <span className="hueprint-day-thumb" style={{ backgroundColor: day.missionHex }} />}
-                <span className="min-w-0 flex-1">
-                  <strong className="block truncate">{formatDisplayDate(day.localDate, localeCode(locale))}</strong>
-                  <span>{day.photoCount}/8 · {day.missionHex}</span>
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        <DayList locale={locale} days={capsule.days} onOpenDay={onOpenDay} />
 
-        {exportSlot}
+        <ExportPanel
+          locale={locale}
+          artifact="color_capsule"
+          filenamePrefix="hueday-color-capsule"
+          label="Color Capsule"
+          card={{
+            title: capsule.monthKey,
+            subtitle: locale === 'ko' ? 'Color Capsule' : 'Color Capsule',
+            coverUrl: representativeCover?.imageUrl,
+            accentHex: capsule.palette[capsule.palette.length - 1] ?? null,
+            palette: capsule.palette,
+            stat1: { value: capsule.recordedDayCount, label: locale === 'ko' ? '기록한 날' : ' recorded' },
+            stat2: { value: capsule.completedGridCount, label: locale === 'ko' ? '완성한 페이지' : ' complete' },
+          }}
+          onExported={onExported}
+          onShareOpened={onShareOpened}
+        />
       </div>
     </section>
   )

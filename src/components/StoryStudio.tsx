@@ -1,7 +1,5 @@
 import { useMemo, useRef, useState, type PointerEvent } from 'react'
 import { Capacitor } from '@capacitor/core'
-import { Directory, Filesystem } from '@capacitor/filesystem'
-import { Share } from '@capacitor/share'
 import { Download, Eraser, Minus, Plus, RotateCcw, Search, Share2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -9,6 +7,7 @@ import { GridCollage } from '@/components/GridCollage'
 import { StoryCard, type StoryCardData } from '@/components/StoryCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { deliverExport, exportElementToPngFile, exportTimestampFilename, shareDialogCopy } from '@/lib/shareImage'
 import {
   createStickerItem,
   DEFAULT_STORY_DESIGN,
@@ -35,91 +34,10 @@ type StoryStudioProps = {
   onShareOpened?: (kind: 'story' | 'grid', platform: 'web' | 'android') => void
 }
 
-async function exportElement(element: HTMLElement, filename: string, size = { width: 1080, height: 1920 }) {
-  const { default: html2canvas } = await import('html2canvas')
-  const bounds = element.getBoundingClientRect()
-  const scale = size.width / bounds.width
-  element.classList.add('story-exporting')
-  let sourceCanvas: HTMLCanvasElement
-  try {
-    sourceCanvas = await html2canvas(element, {
-      backgroundColor: null,
-      scale,
-      useCORS: true,
-    })
-  } finally {
-    element.classList.remove('story-exporting')
-  }
-  const canvas = document.createElement('canvas')
-  canvas.width = size.width
-  canvas.height = size.height
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('Failed to render story')
-  context.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height)
-
-  return new Promise<File>((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error('Failed to render story'))
-        return
-      }
-
-      resolve(new File([blob], filename, { type: 'image/png' }))
-    }, 'image/png')
-  })
-}
-
 function exportFilename(kind: 'story' | 'grid') {
-  const stamp = new Date().toISOString().replace(/[:.]/g, '-')
-  return kind === 'grid' ? `hueday-3x3-${stamp}.png` : `hueday-story-${stamp}.png`
+  return exportTimestampFilename(kind === 'grid' ? 'hueday-3x3' : 'hueday-story')
 }
 
-function fileToBase64(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const value = String(reader.result ?? '')
-      resolve(value.includes(',') ? value.split(',')[1] : value)
-    }
-    reader.onerror = () => reject(reader.error ?? new Error('Failed to read story file'))
-    reader.readAsDataURL(file)
-  })
-}
-
-async function shareNativeStory(file: File, locale: Locale, mode: 'download' | 'share', kind: 'story' | 'grid') {
-  const path = `${kind === 'grid' ? 'grids' : 'stories'}/${file.name}`
-
-  await Filesystem.mkdir({
-    path: kind === 'grid' ? 'grids' : 'stories',
-    directory: Directory.Cache,
-    recursive: true,
-  }).catch(() => undefined)
-
-  await Filesystem.writeFile({
-    path,
-    directory: Directory.Cache,
-    data: await fileToBase64(file),
-    recursive: true,
-  })
-
-  const { uri } = await Filesystem.getUri({
-    path,
-    directory: Directory.Cache,
-  })
-
-  await Share.share({
-    title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story',
-    dialogTitle:
-      mode === 'download'
-        ? locale === 'ko'
-          ? kind === 'grid' ? '3x3 이미지 저장 또는 공유' : '스토리 사진 저장 또는 공유'
-          : kind === 'grid' ? 'Save or share 3x3 image' : 'Save or share story image'
-        : locale === 'ko'
-          ? kind === 'grid' ? '3x3 공유하기' : '스토리 공유하기'
-          : kind === 'grid' ? 'Share 3x3' : 'Share story',
-    files: [uri],
-  })
-}
 
 export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExported, onShareOpened }: StoryStudioProps) {
   const exportRef = useRef<HTMLDivElement | null>(null)
@@ -222,15 +140,16 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
     if (!target) return
 
     try {
-      const file = await exportElement(
+      const file = await exportElementToPngFile(
         target,
         exportFilename(kind),
         kind === 'grid' ? { width: 1080, height: 1080 } : { width: 1080, height: 1920 },
       )
+      const label = kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story'
       if (Capacitor.isNativePlatform()) {
         onExported?.(kind, mode, 'android')
         if (mode === 'share') onShareOpened?.(kind, 'android')
-        await shareNativeStory(file, locale, mode, kind)
+        await deliverExport(file, mode, kind === 'grid' ? 'grids' : 'stories', shareDialogCopy(locale, label, mode))
         toast.success(t(locale, 'storySaved'))
         return
       }
@@ -238,16 +157,11 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
       if (mode === 'share' && navigator.canShare?.({ files: [file] })) {
         onExported?.(kind, mode, 'web')
         onShareOpened?.(kind, 'web')
-        await navigator.share({ files: [file], title: kind === 'grid' ? 'Hueday 3x3' : 'Hueday Story' })
+        await deliverExport(file, mode, kind === 'grid' ? 'grids' : 'stories', shareDialogCopy(locale, label, mode))
         return
       }
 
-      const url = URL.createObjectURL(file)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = file.name
-      anchor.click()
-      URL.revokeObjectURL(url)
+      await deliverExport(file, mode, kind === 'grid' ? 'grids' : 'stories', shareDialogCopy(locale, label, mode))
       onExported?.(kind, mode, 'web')
       toast.success(t(locale, 'storySaved'))
     } catch (error) {
