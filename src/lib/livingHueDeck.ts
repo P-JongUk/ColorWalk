@@ -1,6 +1,7 @@
 import { hexToRgb, rgbToHex } from '@/lib/colors'
 import { getPostGridImages } from '@/lib/grid'
-import type { GridImage, Post } from '@/types'
+import { readMissionPackFromClientMeta } from '@/lib/missionPacks'
+import type { GridImage, MissionPackId, Post } from '@/types'
 
 export type DeckStage = 1 | 3 | 5 | 8
 export type DeckSyncState = 'synced' | 'device' | 'pending'
@@ -12,6 +13,8 @@ export type LivingHueDeckCard = {
   stage: DeckStage
   canonicalMissionHex: string
   syncState: DeckSyncState
+  /** Finalized pack ID for this record, or null for free mode/legacy/still-open records. */
+  missionPackId: MissionPackId | null
 }
 
 export type ColorVolume = {
@@ -43,6 +46,7 @@ export function getLivingHueDeckCards(posts: Post[]): LivingHueDeckCard[] {
     const images = getPostGridImages(post)
     if (!images.length) return []
 
+    const missionPack = readMissionPackFromClientMeta(post.client_meta)
     return [{
       post,
       images,
@@ -50,6 +54,7 @@ export function getLivingHueDeckCards(posts: Post[]): LivingHueDeckCard[] {
       stage: getDeckStage(images.length),
       canonicalMissionHex: canonicalizeMissionHex(post.mission_hex),
       syncState: getDeckSyncState(post),
+      missionPackId: missionPack?.finalizedAt ? missionPack.id : null,
     }]
   })
 }

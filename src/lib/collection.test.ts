@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
+import { getMissionPackCollections, getMonthlyCollection, getMoodColorSuggestions, getUnlockedBadges } from '@/lib/collection'
+import { buildColorHuntMeta, createFreeModeSelection, createMissionPackSelection, finalizeMissionPackSelection } from '@/lib/missionPacks'
 import type { Post } from '@/types'
 
 function post(local_date: string, mission_hex = '#8BC6E8'): Post {
@@ -55,5 +56,45 @@ describe('collection helpers', () => {
     expect(new Set(en).size).toBe(4)
     expect(ko.every((name) => name.length > 2)).toBe(true)
     expect(en.every((name) => name.length > 2)).toBe(true)
+  })
+})
+
+function postWithColorHunt(localDate: string, colorHunt: Record<string, unknown> | undefined, photoCount = 8): Post {
+  return {
+    ...post(localDate),
+    grid_images: Array.from({ length: photoCount }, (_, slot) => ({ id: `${localDate}-${slot}`, slot: slot < 4 ? slot : slot + 1, path: `${localDate}-${slot}.webp` })),
+    client_meta: colorHunt ? { colorHunt } : {},
+  }
+}
+
+describe('mission pack collections', () => {
+  it('counts only closed records with a finalized matching pack, per pack', () => {
+    const finalizedIndoor = buildColorHuntMeta({ photoCount: 8, missionPack: finalizeMissionPackSelection(createMissionPackSelection('indoor-hunt'), '2026-07-25T00:00:00.000Z') })
+    const finalizedIndoorPartial = buildColorHuntMeta({ photoCount: 3, missionPack: finalizeMissionPackSelection(createMissionPackSelection('indoor-hunt'), '2026-07-24T00:00:00.000Z') })
+    const openIndoor = buildColorHuntMeta({ photoCount: 2, missionPack: createMissionPackSelection('indoor-hunt') })
+    const finalizedFreeMode = buildColorHuntMeta({ photoCount: 8, missionPack: finalizeMissionPackSelection(createFreeModeSelection(), '2026-07-23T00:00:00.000Z') })
+
+    const posts = [
+      postWithColorHunt('2026-07-25', finalizedIndoor, 8),
+      postWithColorHunt('2026-07-24', finalizedIndoorPartial, 3),
+      postWithColorHunt('2026-07-26', openIndoor, 2),
+      postWithColorHunt('2026-07-23', finalizedFreeMode, 8),
+      postWithColorHunt('2026-07-22', undefined, 8),
+      postWithColorHunt('2026-07-21', { version: 1, status: 'recorded', photoCount: 8 }, 8),
+    ]
+
+    const collections = getMissionPackCollections(posts)
+    const indoor = collections.find((collection) => collection.id === 'indoor-hunt')
+    const commute = collections.find((collection) => collection.id === 'commute-hunt')
+    const rainyWindow = collections.find((collection) => collection.id === 'rainy-window')
+
+    expect(indoor).toMatchObject({ closedCount: 2, completedCount: 1 })
+    expect(commute).toMatchObject({ closedCount: 0, completedCount: 0 })
+    expect(rainyWindow).toMatchObject({ closedCount: 0, completedCount: 0 })
+  })
+
+  it('returns all three packs with zero counts for an empty history', () => {
+    expect(getMissionPackCollections([]).map((collection) => collection.id)).toEqual(['indoor-hunt', 'commute-hunt', 'rainy-window'])
+    expect(getMissionPackCollections([]).every((collection) => collection.closedCount === 0 && collection.completedCount === 0)).toBe(true)
   })
 })

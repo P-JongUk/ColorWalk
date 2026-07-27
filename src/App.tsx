@@ -7,21 +7,29 @@ import { AuthGate } from '@/components/AuthGate'
 import { BottomNav } from '@/components/BottomNav'
 import { TodayView } from '@/components/TodayView'
 import { getLocalDateKey } from '@/lib/date'
-import { draftToDailyPost, mergeDailyRecords } from '@/lib/dailyRecord'
-import { cleanupLocalMasters, getMasterCleanupAvailability, loadCachedDraft, loadCachedDrafts, loadPendingCachedDrafts, promoteDraftMasters, saveCachedDraft } from '@/lib/draftStorage'
+import { draftToDailyPost, findOpenPastRecords, finalizeOpenRecord, mergeDailyRecords } from '@/lib/dailyRecord'
+import { cleanupLocalMasters, getMasterCleanupAvailability, loadCachedDraft, loadCachedDrafts, loadPendingCachedDrafts, promoteDraftMasters, saveCachedDraft, updateMissionPackSelection } from '@/lib/draftStorage'
 import { getPostImagePaths, toStoredGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { compressBlobToHistoryWebP } from '@/lib/image'
 import { isStorageFullError } from '@/lib/localMaster'
 import { runMasterCleanupAfterPreviewVerification } from '@/lib/masterCleanup'
 import { getRandomMission } from '@/lib/mission'
+import {
+  buildColorHuntMeta,
+  createFreeModeSelection,
+  createMissionPackSelection,
+  getMissionPackAnalyticsCta,
+  getMissionPackCollectionScreen,
+  mergeColorHuntIntoClientMeta,
+} from '@/lib/missionPacks'
 import { loadDailyMissionState, saveDailyMissionState } from '@/lib/missionState'
 import { startWebReminderScheduler } from '@/lib/notifications'
 import { flushProductEvents, trackProductEvent, type ProductEventName, type ProductEventPayload } from '@/lib/productEvents'
-import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
+import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, updatePostColorHuntMetadata, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
-import type { CaptureDraft, Post, StoryDesign, UserProfile } from '@/types'
+import type { CaptureDraft, MissionPackId, MissionPackSelection, Post, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
 
@@ -46,12 +54,17 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [isLocalOnly, setIsLocalOnly] = useState(!isSupabaseConfigured)
   const [dailyDrafts, setDailyDrafts] = useState<CaptureDraft[]>([])
+  const [activeMissionPack, setActiveMissionPack] = useState<MissionPackSelection>(createFreeModeSelection())
   const analyticsSessionRef = useRef<{ id: string; activeSince: number; activeSeconds: number; ended: boolean } | null>(null)
   const syncLocksRef = useRef(new Map<string, Promise<void>>())
   const authenticatedOwnerRef = useRef<string | null>(null)
   authenticatedOwnerRef.current = session?.user.is_anonymous ? null : session?.user.id ?? null
   const ownerId = session?.user.id ?? 'local'
   const displayPosts = useMemo(() => mergeDailyRecords(posts, dailyDrafts, ownerId, locale), [dailyDrafts, locale, ownerId, posts])
+  // Source of truth for the pack shown on Today: the open today-draft's own missionPack
+  // once photos exist (metadata-only updates write there directly), otherwise the 0-photo
+  // DailyMissionState selection tracked in activeMissionPack.
+  const effectiveMissionPack = draft?.gridImages.length ? (draft.missionPack ?? createFreeModeSelection()) : activeMissionPack
   const masterCleanupByDate = useMemo(() => Object.fromEntries(
     dailyDrafts.map((dailyDraft) => [dailyDraft.localDate, getMasterCleanupAvailability(dailyDraft)]),
   ), [dailyDrafts])
@@ -102,26 +115,37 @@ function App() {
         const [cachedDraft, cachedDrafts] = await draftsPromise
         const resolvedWeather = weather ?? await weatherPromise
         if (!active) return
-        setDailyDrafts(cachedDrafts)
+        // Boot-time lazy finalization: close any record left open from a previous local date
+        // before it is ever shown as "today's" record. cachedDraft is always keyed to today's
+        // date already, so it is never itself a stale open record.
+        const { records: finalizedDrafts } = await finalizeOpenPastRecords(cachedDrafts)
+        setDailyDrafts(finalizedDrafts)
         if (cachedDraft) {
           setDraft(cachedDraft)
           setMission(cachedDraft.mission, resolvedWeather.usedFallbackLocation)
+          setActiveMissionPack(cachedDraft.missionPack ?? createFreeModeSelection())
           return
         }
         const localDate = getLocalDateKey()
         const stored = loadDailyMissionState(ownerId, localDate)
         if (stored) {
           setMission(stored.mission, resolvedWeather.usedFallbackLocation)
+          setActiveMissionPack(stored.missionPack ?? createFreeModeSelection())
           return
         }
-        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, selectedAt: new Date().toISOString() })
+        // A brand-new DailyMissionState always starts in free mode; yesterday's pack never carries over.
+        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
         setMission(resolvedWeather.mission, resolvedWeather.usedFallbackLocation)
+        setActiveMissionPack(createFreeModeSelection())
       } catch {
         toast.error(t(locale, 'loadingMission'))
       }
     }
     void bootMission()
     return () => { active = false }
+  // finalizeOpenPastRecords is a stable per-render helper closing over ownerId/syncDraft;
+  // this boot effect intentionally runs once per locale/ownerId change, not on every recreation.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale, ownerId, setDraft, setMission])
 
   useEffect(() => {
@@ -303,20 +327,15 @@ function App() {
       story_template_id: uploadDraft.journal?.storyDesign.templateId ?? null,
       story_stickers: uploadDraft.journal?.storyDesign.stickers ?? [],
       grid_images: gridImages,
-      client_meta: {
-        ...(existing?.client_meta ?? {}),
-        app: 'colorwalk',
-        feature: '3x3-grid',
-        gridPhotoCount: gridImages.length,
-        colorHunt: {
-          version: 1,
-          status: gridImages.length >= 8 ? 'completed' : 'recorded',
+      client_meta: mergeColorHuntIntoClientMeta(
+        { ...(existing?.client_meta ?? {}), app: 'colorwalk', feature: '3x3-grid', gridPhotoCount: gridImages.length },
+        buildColorHuntMeta({
           photoCount: gridImages.length,
           lockedAt: uploadDraft.lockedAt,
           closedAt: uploadDraft.closedAt,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
+          missionPack: uploadDraft.missionPack ?? createFreeModeSelection(),
+        }),
+      ),
     })
     if (error) {
       await saveCachedDraft({ ...uploadDraft, lastSyncError: 'post' }, ownerId).catch(() => undefined)
@@ -332,42 +351,61 @@ function App() {
     setDailyDrafts((current) => [synced, ...current.filter((candidate) => candidate.localDate !== synced.localDate)])
   }
 
+  /**
+   * Lazy finalization: never a timer/server job. This closes every open past-date record
+   * in one local transaction per record (closedAt + recordLifecycle:closed + finalized pack
+   * first), then attempts a Post sync per record and leaves failures on the existing
+   * pending/error retry path. Called at boot, on foreground, and before the next capture.
+   */
+  async function finalizeOpenPastRecords(drafts: CaptureDraft[]) {
+    const openPast = findOpenPastRecords(drafts, getLocalDateKey())
+    if (!openPast.length) return { records: drafts, finalizedAny: false }
+    let records = drafts
+    for (const record of openPast) {
+      const finalized = finalizeOpenRecord(record)
+      await saveCachedDraft(finalized, ownerId)
+      records = [finalized, ...records.filter((candidate) => candidate.localDate !== finalized.localDate)]
+      void syncDraft(finalized).catch((error) => console.warn('Lazy finalization sync will retry later', error))
+    }
+    return { records, finalizedAny: true }
+  }
+
   async function handleDraftChange(nextDraft: CaptureDraft) {
     if (nextDraft.localDate !== getLocalDateKey()) {
       toast.message(locale === 'ko' ? '날짜가 바뀌었어요. 오늘의 색으로 새 사진을 찍어 주세요.' : 'The date changed. Take a new photo for today’s color.')
-      if (draft?.gridImages.length) {
-        const closed = { ...draft, closedAt: new Date().toISOString(), recordLifecycle: 'closed' as const, localRevision: (draft.localRevision ?? 0) + 1, lastSyncError: undefined }
-        await saveCachedDraft(closed, ownerId)
-        setDailyDrafts((current) => [closed, ...current.filter((candidate) => candidate.localDate !== closed.localDate)])
-        setDraft(null)
-        void syncDraft(closed).catch((error) => console.warn('Closed daily record sync will retry later', error))
-      }
+      const { records } = await finalizeOpenPastRecords(draft ? [draft, ...dailyDrafts.filter((candidate) => candidate.localDate !== draft.localDate)] : dailyDrafts)
+      setDailyDrafts(records)
+      if (draft && draft.localDate !== getLocalDateKey()) setDraft(null)
       const weather = await loadTodayMission(locale)
       const localDate = getLocalDateKey()
       const selected = loadDailyMissionState(ownerId, localDate)
       const nextMission = selected?.mission ?? weather.mission
-      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, selectedAt: new Date().toISOString() })
+      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
       setMission(nextMission, weather.usedFallbackLocation)
+      setActiveMissionPack(selected?.missionPack ?? createFreeModeSelection())
       setActiveTab('today')
       return false
     }
     try {
-      await saveCachedDraft(nextDraft, ownerId)
-      setDraft(nextDraft)
-      setDailyDrafts((current) => [nextDraft, ...current.filter((candidate) => candidate.localDate !== nextDraft.localDate)])
-      if (nextDraft.gridImages.length === 1) {
-        recordProductEvent('primary_cta_clicked', `${nextDraft.localDate}:primary_cta_clicked:photo_confirmed`, {
+      // The 8th photo immediately finalizes both the pack state and the daily record,
+      // per the plan's "8번째 사진을 확정하면 pack 상태와 일일 기록을 즉시 종료·확정한다".
+      const finalizedDraft = nextDraft.gridImages.length >= 8 ? finalizeOpenRecord(nextDraft) : nextDraft
+      await saveCachedDraft(finalizedDraft, ownerId)
+      setDraft(finalizedDraft)
+      setDailyDrafts((current) => [finalizedDraft, ...current.filter((candidate) => candidate.localDate !== finalizedDraft.localDate)])
+      if (finalizedDraft.gridImages.length === 1) {
+        recordProductEvent('primary_cta_clicked', `${finalizedDraft.localDate}:primary_cta_clicked:photo_confirmed`, {
           cta: 'photo_confirmed',
-        }, nextDraft.localDate)
+        }, finalizedDraft.localDate)
       }
-      if (nextDraft.gridImages.length === 8) {
-        recordProductEvent('primary_cta_clicked', `${nextDraft.localDate}:primary_cta_clicked:grid_completed`, { cta: 'grid_completed' }, nextDraft.localDate)
+      if (finalizedDraft.gridImages.length === 8) {
+        recordProductEvent('primary_cta_clicked', `${finalizedDraft.localDate}:primary_cta_clicked:grid_completed`, { cta: 'grid_completed' }, finalizedDraft.localDate)
       }
-      const selected = loadDailyMissionState(ownerId, nextDraft.localDate)
-      if (selected && !selected.lockedAt) saveDailyMissionState(ownerId, { ...selected, lockedAt: nextDraft.lockedAt ?? new Date().toISOString() })
-      void syncDraft(nextDraft).catch(async (error) => {
+      const selected = loadDailyMissionState(ownerId, finalizedDraft.localDate)
+      if (selected && !selected.lockedAt) saveDailyMissionState(ownerId, { ...selected, lockedAt: finalizedDraft.lockedAt ?? new Date().toISOString() })
+      void syncDraft(finalizedDraft).catch(async (error) => {
         console.warn('Daily record sync will retry later', error)
-        await saveCachedDraft({ ...nextDraft, lastSyncError: 'upload' }, ownerId).catch(() => undefined)
+        await saveCachedDraft({ ...finalizedDraft, lastSyncError: 'upload' }, ownerId).catch(() => undefined)
       })
       return true
     } catch (error) {
@@ -436,6 +474,54 @@ function App() {
     if (draft?.localDate === localDate) setDraft(cleaned)
   }
 
+  async function handleSelectMissionPack(id: MissionPackId | null) {
+    const localDate = getLocalDateKey()
+    const selection = createMissionPackSelection(id)
+    recordProductEvent('primary_cta_clicked', `${localDate}:primary_cta_clicked:${getMissionPackAnalyticsCta(id)}`, { cta: getMissionPackAnalyticsCta(id) }, localDate)
+
+    if (!draft?.gridImages.length) {
+      // 0-photo state: the whole-day intent lives in DailyMissionState only.
+      const stored = loadDailyMissionState(ownerId, localDate)
+      if (stored) saveDailyMissionState(ownerId, { ...stored, missionPack: selection })
+      setActiveMissionPack(selection)
+      return
+    }
+
+    // 1-7 photo state: metadata-only IndexedDB update. Never touches gridImages, Blob,
+    // master/preview paths, or asset records; never calls promoteDraftMasters/uploadPostImage.
+    const result = await updateMissionPackSelection(ownerId, localDate, selection).catch((error) => {
+      console.warn('Mission pack metadata update failed locally', error)
+      return null
+    })
+    if (!result) return
+    const nextDraft: CaptureDraft = { ...draft, missionPack: selection, localRevision: result.localRevision, lastSyncError: undefined }
+    setDraft(nextDraft)
+    setDailyDrafts((current) => [nextDraft, ...current.filter((candidate) => candidate.localDate !== nextDraft.localDate)])
+    setActiveMissionPack(selection)
+
+    const syncOwnerId = session?.user.id
+    if (!supabase || !syncOwnerId || session?.user.is_anonymous) return
+    try {
+      const colorHunt = buildColorHuntMeta({
+        photoCount: nextDraft.gridImages.length,
+        lockedAt: nextDraft.lockedAt,
+        closedAt: nextDraft.closedAt,
+        missionPack: selection,
+      })
+      const updated = await updatePostColorHuntMetadata(syncOwnerId, localDate, colorHunt)
+      if (!updated) return // No remote post yet; the next full sync will include this metadata.
+      const synced: CaptureDraft = { ...nextDraft, serverRevision: nextDraft.localRevision }
+      await saveCachedDraft(synced, ownerId)
+      setDraft(synced)
+      setDailyDrafts((current) => [synced, ...current.filter((candidate) => candidate.localDate !== synced.localDate)])
+      setPosts(posts.map((post) => (post.local_date === localDate ? { ...post, client_meta: updated } : post)))
+    } catch (error) {
+      // Network/remote failure: keep the local selection and leave it pending for the
+      // existing owner+localDate retry path (loadPendingCachedDrafts -> syncDraft).
+      console.warn('Mission pack metadata remote sync will retry later', error)
+    }
+  }
+
   function persistJournal({ colorName, journalAnswer, storyDesign }: { colorName: string; journalAnswer: string; storyDesign: StoryDesign }) {
     if (!draft?.gridImages.length) return
     const nextDraft: CaptureDraft = { ...draft, journal: { colorName, journalAnswer, storyDesign } }
@@ -459,27 +545,27 @@ function App() {
       excludeId: mission.id,
       excludeHex: mission.hex,
     })
-    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, selectedAt: new Date().toISOString() })
+    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, selectedAt: new Date().toISOString(), missionPack: selected?.missionPack ?? createFreeModeSelection() })
     setMission(nextMission, usedFallbackLocation)
     toast.success(locale === 'ko' ? (broaden ? '전체 큐레이션에서 다른 색을 골랐어요.' : '오늘의 날씨와 시간에 맞는 다른 색을 골랐어요.') : "Today's color was shuffled.")
   }
 
   useEffect(() => {
-    async function closePastDraft() {
-      if (!draft || draft.localDate === getLocalDateKey()) return
-      const closed = { ...draft, closedAt: new Date().toISOString(), recordLifecycle: 'closed' as const, localRevision: (draft.localRevision ?? 0) + 1, lastSyncError: undefined }
-      await saveCachedDraft(closed, ownerId)
-      setDailyDrafts((current) => [closed, ...current.filter((candidate) => candidate.localDate !== closed.localDate)])
-      setDraft(null)
-      void syncDraft(closed).catch((error) => console.warn('Closed daily record sync will retry later', error))
+    async function closePastDrafts() {
+      const localDate = getLocalDateKey()
+      const combined = draft ? [draft, ...dailyDrafts.filter((candidate) => candidate.localDate !== draft.localDate)] : dailyDrafts
+      const { records, finalizedAny } = await finalizeOpenPastRecords(combined)
+      if (!finalizedAny) return
+      setDailyDrafts(records)
+      if (draft && draft.localDate !== localDate) setDraft(null)
     }
-    const onForeground = () => { if (document.visibilityState !== 'hidden') void closePastDraft() }
+    const onForeground = () => { if (document.visibilityState !== 'hidden') void closePastDrafts() }
     window.addEventListener('pageshow', onForeground)
     document.addEventListener('visibilitychange', onForeground)
     return () => { window.removeEventListener('pageshow', onForeground); document.removeEventListener('visibilitychange', onForeground) }
-  // Foreground handling is keyed to the active draft and device date, not each sync callback recreation.
+  // Foreground handling is keyed to the active draft/dailyDrafts and device date, not each sync callback recreation.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draft, ownerId])
+  }, [draft, dailyDrafts, ownerId])
 
   function toggleLocale() { setLocale(locale === 'ko' ? 'en' : 'ko') }
   async function handleAuthenticated(nextSession: Session, mode: 'signup' | 'login') {
@@ -531,17 +617,22 @@ function App() {
   function recordDeckStageVisible(stage: 1 | 3 | 5 | 8, sessionId: string) {
     recordProductEvent('screen_viewed', `deck:${sessionId}:stage:${stage}`, { screen: `deck_stage_${stage}` }, getLocalDateKey())
   }
+  function recordMissionPackCollectionOpened(id: MissionPackId) {
+    const localDate = getLocalDateKey()
+    const screen = getMissionPackCollectionScreen(id)
+    recordProductEvent('screen_viewed', `${localDate}:screen_viewed:${screen}`, { screen }, localDate)
+  }
   async function signOut() {
     await supabase?.auth.signOut()
     setSession(null); setProfile(null); setPosts([]); setDraft(null); setDailyDrafts([]); setActiveTab('today')
   }
 
   const content = (() => {
-    if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
+    if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} activeMissionPack={activeMissionPack} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
-    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} />
+    if (activeTab === 'calendar') return <CalendarView locale={locale} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} onMissionPackCollectionOpened={recordMissionPackCollectionOpened} />
     if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
-    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
+    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()
 
   if (isSupabaseConfigured && isAuthLoading) return <div className="phone-shell flex justify-center"><div className="app-frame"><main className="screen-flow"><section className="passport-panel flex min-h-[70svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main></div></div>

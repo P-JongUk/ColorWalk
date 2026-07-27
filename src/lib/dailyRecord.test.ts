@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { mergeDailyRecords } from '@/lib/dailyRecord'
+import { draftToDailyPost, finalizeOpenRecord, findOpenPastRecords, mergeDailyRecords } from '@/lib/dailyRecord'
 import { getUnlockedBadges } from '@/lib/collection'
 import { getMission } from '@/lib/mission'
+import { createMissionPackSelection, readMissionPackFromClientMeta } from '@/lib/missionPacks'
 import type { CaptureDraft, Post } from '@/types'
 
 function draft(count: number): CaptureDraft {
@@ -53,5 +54,51 @@ describe('daily record merge', () => {
     expect(merged[0].grid_images?.[0]?.path).toBe('owner/2026-07-23/local-0-preview-v1.webp')
     expect(merged[0].grid_images?.[0]?.signedUrl).toBe('https://preview.example/local-0')
     expect(merged[0].client_meta?.localSyncState).toBe('synced')
+  })
+})
+
+describe('daily record finalization', () => {
+  it('finalizes an open record with closedAt, closed lifecycle, and a finalized pack selection', () => {
+    const open = { ...draft(3), missionPack: createMissionPackSelection('indoor-hunt') }
+    const finalized = finalizeOpenRecord(open, '2026-07-24T00:00:00.000Z')
+
+    expect(finalized.recordLifecycle).toBe('closed')
+    expect(finalized.closedAt).toBe('2026-07-24T00:00:00.000Z')
+    expect(finalized.missionPack).toEqual({ id: 'indoor-hunt', version: 1, finalizedAt: '2026-07-24T00:00:00.000Z' })
+    expect(finalized.localRevision).toBe((open.localRevision ?? 0) + 1)
+  })
+
+  it('is idempotent: re-finalizing an already-closed record is a no-op', () => {
+    const open = draft(2)
+    const finalized = finalizeOpenRecord(open, '2026-07-24T00:00:00.000Z')
+    const reFinalized = finalizeOpenRecord(finalized, '2026-07-25T00:00:00.000Z')
+
+    expect(reFinalized).toBe(finalized)
+    expect(reFinalized.closedAt).toBe('2026-07-24T00:00:00.000Z')
+  })
+
+  it('finalizes a free-mode (no pack) record as an explicit id:null selection', () => {
+    const finalized = finalizeOpenRecord(draft(1), '2026-07-24T00:00:00.000Z')
+    expect(finalized.missionPack).toEqual({ id: null, version: 1, finalizedAt: '2026-07-24T00:00:00.000Z' })
+  })
+
+  it('finds only open records strictly before today, leaving today and already-closed records alone', () => {
+    const openYesterday = { ...draft(2), localDate: '2026-07-22' }
+    const openTwoDaysAgo = { ...draft(1), localDate: '2026-07-21' }
+    const closedYesterday = { ...draft(3), localDate: '2026-07-22', recordLifecycle: 'closed' as const, closedAt: '2026-07-22T23:00:00.000Z' }
+    const openToday = { ...draft(2), localDate: '2026-07-23' }
+
+    const openPast = findOpenPastRecords([openYesterday, openTwoDaysAgo, closedYesterday, openToday], '2026-07-23')
+    expect(openPast.map((record) => record.localDate).sort()).toEqual(['2026-07-21', '2026-07-22'])
+  })
+
+  it('carries the finalized pack into the v2 colorHunt Post metadata after lazy finalization', () => {
+    const open = { ...draft(5), localDate: '2026-07-22', missionPack: createMissionPackSelection('rainy-window') }
+    const finalized = finalizeOpenRecord(open, '2026-07-23T00:05:00.000Z')
+    const post = draftToDailyPost(finalized, 'user', 'ko')
+    const missionPack = readMissionPackFromClientMeta(post.client_meta)
+
+    expect(missionPack).toEqual({ id: 'rainy-window', version: 1, finalizedAt: '2026-07-23T00:05:00.000Z' })
+    expect((post.client_meta?.colorHunt as { status: string }).status).toBe('recorded')
   })
 })

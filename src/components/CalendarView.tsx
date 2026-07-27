@@ -2,17 +2,18 @@ import { CalendarDays, Camera, ChevronLeft, ChevronRight, Share2 } from 'lucide-
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
-import { ColorVolumeView, LivingHueDeckView } from '@/components/LivingHueDeckView'
+import { ColorVolumeView, LivingHueDeckView, MissionPackCollectionView } from '@/components/LivingHueDeckView'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
-import { getMonthlyCollection } from '@/lib/collection'
+import { getMissionPackCollections, getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
 import { getColorVolumes, getLivingHueDeckCards, type DeckStage, type LivingHueDeckCard } from '@/lib/livingHueDeck'
+import { MISSION_PACKS } from '@/lib/missionPacks'
 import { DEFAULT_STORY_DESIGN, normalizeTemplateId, parseStoryStickers } from '@/lib/story'
 import { cn } from '@/lib/utils'
-import type { CaptureDraft, Locale, Post } from '@/types'
+import type { CaptureDraft, Locale, MissionPackId, Post } from '@/types'
 
 type DeckEvent = 'entered' | 'volume_opened' | 'source_opened' | 'story_opened'
 
@@ -27,6 +28,7 @@ type CalendarViewProps = {
   onDeckStageVisible?: (stage: DeckStage, sessionId: string) => void
   onStoryExported?: (post: Post, kind: 'story' | 'grid', delivery: 'download' | 'share') => void
   onStoryShareOpened?: (post: Post, kind: 'story' | 'grid') => void
+  onMissionPackCollectionOpened?: (id: MissionPackId) => void
 }
 
 function formatBytes(bytes: number) {
@@ -39,13 +41,14 @@ function createDeckSessionId() {
   return `deck-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened }: CalendarViewProps) {
+export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
-  const [contentView, setContentView] = useState<'record' | 'deck' | 'volume'>('record')
-  const [storyReturnView, setStoryReturnView] = useState<'record' | 'deck' | 'volume'>('record')
+  const [contentView, setContentView] = useState<'record' | 'deck' | 'volume' | 'pack'>('record')
+  const [storyReturnView, setStoryReturnView] = useState<'record' | 'deck' | 'volume' | 'pack'>('record')
   const [selectedVolumeHex, setSelectedVolumeHex] = useState<string | null>(null)
+  const [selectedPackId, setSelectedPackId] = useState<MissionPackId | null>(null)
   const [deckVisit, setDeckVisit] = useState(0)
   const [showMasterCleanupConfirm, setShowMasterCleanupConfirm] = useState(false)
   const [isCleaningMaster, setIsCleaningMaster] = useState(false)
@@ -59,6 +62,12 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
   const deckCards = useMemo(() => getLivingHueDeckCards(posts), [posts])
   const colorVolumes = useMemo(() => getColorVolumes(deckCards), [deckCards])
   const selectedVolume = colorVolumes.find((volume) => volume.missionHex === selectedVolumeHex)
+  const missionPackCollections = useMemo(() => getMissionPackCollections(posts), [posts])
+  const selectedPackCards = useMemo(
+    () => (selectedPackId ? deckCards.filter((card) => card.missionPackId === selectedPackId) : []),
+    [deckCards, selectedPackId],
+  )
+  const selectedPackConfig = selectedPackId ? MISSION_PACKS.find((pack) => pack.id === selectedPackId) : null
   const deckSessionRef = useRef<string | null>(null)
   const seenDeckStagesRef = useRef(new Set<DeckStage>())
   const todayKey = getLocalDateKey()
@@ -174,6 +183,22 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     )
   }
 
+  if (contentView === 'pack' && selectedPackConfig) {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <MissionPackCollectionView
+          locale={locale}
+          title={selectedPackConfig.label[locale]}
+          cards={selectedPackCards}
+          onBack={() => setContentView('deck')}
+          onOpenRecord={openDeckRecord}
+          onOpenStory={openDeckStory}
+          onStartCamera={() => onStartCamera?.()}
+        />
+      </main>
+    )
+  }
+
   if (contentView === 'deck') {
     return (
       <main className="screen-flow history-screen deck-history-screen">
@@ -196,6 +221,38 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
           onDeckEntered={handleDeckEntered}
           onCardStageVisible={handleDeckStageVisible}
         />
+        <section className="deck-volume-section" aria-label={locale === 'ko' ? '미션 팩 컬렉션' : 'Mission pack collections'}>
+          <div className="section-heading">
+            <div>
+              <p>{locale === 'ko' ? '테마별 모음' : 'By theme'}</p>
+              <h2>{locale === 'ko' ? '미션 팩 컬렉션' : 'Mission pack collections'}</h2>
+            </div>
+          </div>
+          {missionPackCollections.map((collection) => {
+            const config = MISSION_PACKS.find((pack) => pack.id === collection.id)!
+            return (
+              <button
+                type="button"
+                key={collection.id}
+                className="mission-pack-collection-tile"
+                onClick={() => {
+                  onMissionPackCollectionOpened?.(collection.id)
+                  setSelectedPackId(collection.id)
+                  setContentView('pack')
+                }}
+              >
+                <span>
+                  <strong>{config.label[locale]}</strong>
+                  <span>
+                    {locale === 'ko'
+                      ? `종료된 기록 ${collection.closedCount} · 완성 ${collection.completedCount}`
+                      : `${collection.closedCount} closed · ${collection.completedCount} complete`}
+                  </span>
+                </span>
+              </button>
+            )
+          })}
+        </section>
       </main>
     )
   }

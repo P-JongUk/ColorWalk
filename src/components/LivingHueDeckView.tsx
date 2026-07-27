@@ -202,3 +202,48 @@ export function ColorVolumeView({ locale, volume, onBack, onOpenRecord, onOpenSt
     </section>
   )
 }
+
+type MissionPackCollectionViewProps = {
+  locale: Locale
+  title: string
+  cards: LivingHueDeckCard[]
+  onBack: () => void
+  onOpenRecord: (card: LivingHueDeckCard) => void
+  onOpenStory: (card: LivingHueDeckCard) => void
+  onStartCamera: () => void
+}
+
+/**
+ * A pack collection only ever shows closed records with a finalized selection matching
+ * this pack (already filtered by the caller via missionPackId). It reuses the same
+ * DeckCard 1/3/5/8 stage rendering as the main Deck/Color Volume views.
+ */
+export function MissionPackCollectionView({ locale, title, cards, onBack, onOpenRecord, onOpenStory, onStartCamera }: MissionPackCollectionViewProps) {
+  return (
+    <section className="deck-volume-detail">
+      <button type="button" className="deck-back-button" onClick={onBack}>
+        <ChevronLeft aria-hidden="true" />
+        {locale === 'ko' ? '컬렉션' : 'Collections'}
+      </button>
+      <header className="deck-header">
+        <p>{locale === 'ko' ? '미션 팩 컬렉션' : 'Mission pack collection'}</p>
+        <h1>{title}</h1>
+      </header>
+      {cards.length ? (
+        <div className="deck-card-list">
+          {cards.map((card) => (
+            <DeckCard key={card.post.id} locale={locale} card={card} onOpenRecord={() => onOpenRecord(card)} onOpenStory={() => onOpenStory(card)} onVisible={() => undefined} />
+          ))}
+        </div>
+      ) : (
+        <div className="mission-pack-collection-empty">
+          <p>{locale === 'ko' ? '홈에서 이 팩을 고르고 하루를 닫으면 카드가 모여요.' : 'Pick this pack on Home and close a day to collect a card here.'}</p>
+          <Button type="button" size="sm" onClick={onStartCamera}>
+            <Camera aria-hidden="true" />
+            {locale === 'ko' ? '오늘의 색 찾기' : "Find today's color"}
+          </Button>
+        </div>
+      )}
+    </section>
+  )
+}

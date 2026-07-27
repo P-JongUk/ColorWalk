@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { getColorVolumes, getDeckStage, getLivingHueDeckCards } from '@/lib/livingHueDeck'
+import { buildColorHuntMeta, createFreeModeSelection, createMissionPackSelection, finalizeMissionPackSelection } from '@/lib/missionPacks'
 import type { GridImage, Post } from '@/types'
 
 function post(localDate: string, missionHex: string, images: GridImage[] = []): Post {
@@ -71,5 +72,23 @@ describe('Living Hue Deck', () => {
 
     expect(cards[0].syncState).toBe('pending')
     expect(getColorVolumes(cards)[0].cards).toHaveLength(1)
+  })
+
+  it('exposes missionPackId only for a finalized selection, never for open/free-mode/legacy records', () => {
+    const finalizedPack = buildColorHuntMeta({ photoCount: 3, missionPack: finalizeMissionPackSelection(createMissionPackSelection('rainy-window'), '2026-07-27T00:00:00.000Z') })
+    const openPack = buildColorHuntMeta({ photoCount: 2, missionPack: createMissionPackSelection('rainy-window') })
+    const finalizedFreeMode = buildColorHuntMeta({ photoCount: 8, missionPack: finalizeMissionPackSelection(createFreeModeSelection(), '2026-07-25T00:00:00.000Z') })
+
+    const cards = getLivingHueDeckCards([
+      { ...post('2026-07-27', '#8bc6e8', images(3)), client_meta: { colorHunt: finalizedPack } },
+      { ...post('2026-07-26', '#8bc6e8', images(2)), client_meta: { colorHunt: openPack } },
+      { ...post('2026-07-25', '#8bc6e8', images(8)), client_meta: { colorHunt: finalizedFreeMode } },
+      { ...post('2026-07-24', '#8bc6e8', images(8)), client_meta: {} },
+    ])
+
+    expect(cards.find((card) => card.post.local_date === '2026-07-27')?.missionPackId).toBe('rainy-window')
+    expect(cards.find((card) => card.post.local_date === '2026-07-26')?.missionPackId).toBeNull()
+    expect(cards.find((card) => card.post.local_date === '2026-07-25')?.missionPackId).toBeNull()
+    expect(cards.find((card) => card.post.local_date === '2026-07-24')?.missionPackId).toBeNull()
   })
 })

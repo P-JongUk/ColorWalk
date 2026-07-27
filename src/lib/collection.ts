@@ -1,6 +1,7 @@
-import type { Locale, Post } from '@/types'
+import type { Locale, MissionPackId, Post } from '@/types'
 import { getColorFamily, type ColorFamily } from '@/lib/colors'
 import { getPostGridImageCount } from '@/lib/grid'
+import { MISSION_PACKS, readMissionPackFromClientMeta } from '@/lib/missionPacks'
 
 export const COMPLETED_PAGE_BADGES = [3, 7, 14, 30] as const
 
@@ -31,6 +32,32 @@ export function getUnlockedBadges(posts: Post[] = [], locale: Locale = 'ko') {
     reward: badgeRewards[days][locale],
     completedGrids,
   }))
+}
+
+export type MissionPackCollection = {
+  id: MissionPackId
+  closedCount: number
+  completedCount: number
+}
+
+/**
+ * Pack collections only ever count closed records with a valid, finalized missionPack
+ * selection (client_meta.colorHunt v2, missionPack.id set, missionPack.finalizedAt set).
+ * Free-mode records, version 1/legacy records, and still-open records are excluded here,
+ * though they remain visible in the regular Deck/Volume/history/Story surfaces.
+ */
+export function getMissionPackCollections(posts: Post[]): MissionPackCollection[] {
+  return MISSION_PACKS.map((pack) => {
+    const closedRecords = posts.filter((post) => {
+      const selection = readMissionPackFromClientMeta(post.client_meta)
+      return selection?.id === pack.id && Boolean(selection.finalizedAt)
+    })
+    return {
+      id: pack.id,
+      closedCount: closedRecords.length,
+      completedCount: closedRecords.filter((post) => getPostGridImageCount(post) >= 8).length,
+    }
+  })
 }
 
 export function getMonthlyCollection(posts: Post[], month = new Date()) {

@@ -1,5 +1,5 @@
 import { Bell, Camera, CloudSun, Images, Info, Shuffle } from 'lucide-react'
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { toast } from 'sonner'
 
 import { BadgeShelf } from '@/components/BadgeShelf'
@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button'
 import { getLocalDateKey } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
-import type { Locale, Mission, Post } from '@/types'
+import { MISSION_PACKS, getRecommendedMissionPackId } from '@/lib/missionPacks'
+import type { Locale, Mission, MissionPackId, MissionPackSelection, Post } from '@/types'
 
 type TodayViewProps = {
   locale: Locale
@@ -18,16 +19,104 @@ type TodayViewProps = {
   usedFallbackLocation: boolean
   isLocalOnly: boolean
   posts: Post[]
+  missionPack: MissionPackSelection
+  onSelectMissionPack: (id: MissionPackId | null) => void
   onStartCamera: () => void
   onToggleLocale: () => void
   onShuffleMission: () => void
   canShuffleMission: boolean
 }
 
-export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, posts, onStartCamera, onShuffleMission, canShuffleMission }: TodayViewProps) {
+function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPack, onSelectMissionPack }: {
+  locale: Locale
+  mission: Mission
+  photoCount: number
+  isClosed: boolean
+  missionPack: MissionPackSelection
+  onSelectMissionPack: (id: MissionPackId | null) => void
+}) {
+  const [pendingId, setPendingId] = useState<MissionPackId | null | undefined>(undefined)
+  const recommendedId = getRecommendedMissionPackId(mission.weatherGroup, mission.timeBucket)
+
+  function requestSelect(id: MissionPackId | null) {
+    if (id === missionPack.id) return
+    // With 0 photos, changing the whole-day pack intent needs no confirmation.
+    if (photoCount === 0) { onSelectMissionPack(id); return }
+    setPendingId(id)
+  }
+
+  function confirmSelect() {
+    if (pendingId === undefined) return
+    onSelectMissionPack(pendingId)
+    setPendingId(undefined)
+  }
+
+  const pendingConfig = pendingId ? MISSION_PACKS.find((pack) => pack.id === pendingId) : null
+
+  return (
+    <section className="plain-block mission-pack-panel">
+      <div className="section-heading">
+        <div>
+          <h2>{locale === 'ko' ? '오늘의 미션 팩' : "Today's mission pack"}</h2>
+          <p className="mission-pack-hint">
+            {isClosed
+              ? (locale === 'ko' ? '이 기록은 종료됐어요. 팩은 더 바꿀 수 없어요.' : 'This record is closed. The pack can no longer change.')
+              : (locale === 'ko' ? '색 선택은 그대로예요. 팩은 오늘 하루의 테마일 뿐이에요.' : 'Color choice stays the same. A pack is just a theme for today.')}
+          </p>
+        </div>
+      </div>
+      <div className="mission-pack-chip-row" role="radiogroup" aria-label={locale === 'ko' ? '미션 팩 선택' : 'Mission pack selection'}>
+        <button
+          type="button"
+          className="mission-pack-chip"
+          data-active={missionPack.id === null || undefined}
+          disabled={isClosed}
+          aria-pressed={missionPack.id === null}
+          onClick={() => requestSelect(null)}
+        >
+          {locale === 'ko' ? '테마 없이 자유롭게' : 'No theme, free mode'}
+        </button>
+        {MISSION_PACKS.map((pack) => (
+          <button
+            type="button"
+            key={pack.id}
+            className="mission-pack-chip"
+            data-active={missionPack.id === pack.id || undefined}
+            disabled={isClosed}
+            aria-pressed={missionPack.id === pack.id}
+            onClick={() => requestSelect(pack.id)}
+          >
+            {pack.label[locale]}
+            {recommendedId === pack.id ? <span className="mission-pack-recommended-badge">{locale === 'ko' ? '오늘 추천' : 'Recommended'}</span> : null}
+          </button>
+        ))}
+      </div>
+      {pendingId !== undefined ? (
+        <div className="mission-pack-confirm" role="alertdialog" aria-label={locale === 'ko' ? '미션 팩 변경 확인' : 'Mission pack change confirmation'}>
+          <p>
+            {pendingId
+              ? (locale === 'ko'
+                ? `지금까지 모은 ${photoCount}장이 모두 '${pendingConfig?.label.ko}' 하루 페이지로 묶여요.`
+                : `All ${photoCount} photos so far will be grouped into the '${pendingConfig?.label.en}' day page.`)
+              : (locale === 'ko'
+                ? '팩을 해제하면 이 기록은 종료 후 팩 컬렉션에서 제외돼요.'
+                : 'Clearing the pack means this record will be excluded from pack collections once closed.')}
+          </p>
+          <div className="mission-pack-confirm-actions">
+            <Button type="button" variant="outline" size="sm" onClick={() => setPendingId(undefined)}>{locale === 'ko' ? '취소' : 'Cancel'}</Button>
+            <Button type="button" size="sm" onClick={confirmSelect}>{locale === 'ko' ? '확인' : 'Confirm'}</Button>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, posts, missionPack, onSelectMissionPack, onStartCamera, onShuffleMission, canShuffleMission }: TodayViewProps) {
   const todayPost = posts.find((post) => post.local_date === getLocalDateKey())
   const todayGridImages = getPostGridImages(todayPost)
   const photoCount = todayGridImages.length
+  const isRecordClosed = photoCount >= 8 || Boolean(missionPack.finalizedAt)
   const stateLabel = photoCount === 0
     ? (locale === 'ko' ? '시작 전' : 'Not started')
     : photoCount === 1
@@ -67,6 +156,14 @@ export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, 
       </section>
       <section className="prompt-card"><span>●</span><div><strong>{mission.prompt[locale]}</strong><p>{locale === 'ko' ? '주변에서 같은 결의 색을 발견해 보세요.' : 'Find a color with the same feeling around you.'}</p></div></section>
       {(usedFallbackLocation || isLocalOnly) ? <p className="soft-note">{usedFallbackLocation ? t(locale, 'locationFallback') : t(locale, 'cloudPending')}</p> : null}
+      <MissionPackSelector
+        locale={locale}
+        mission={mission}
+        photoCount={photoCount}
+        isClosed={isRecordClosed}
+        missionPack={missionPack}
+        onSelectMissionPack={onSelectMissionPack}
+      />
       <section className="plain-block"><div className="section-heading"><div><h2>{locale === 'ko' ? '완성 페이지 배지' : 'Completed page badges'}</h2></div></div><BadgeShelf locale={locale} posts={posts} /></section>
       <Button type="button" size="lg" className="camera-cta" onClick={onStartCamera} disabled={photoCount >= 8}><Camera data-icon="inline-start" aria-hidden="true" />{photoCount >= 8 ? (locale === 'ko' ? '오늘의 페이지를 완성했어요' : 'Today’s page is complete') : t(locale, 'findColor')}</Button>
     </main>
