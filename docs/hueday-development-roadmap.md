@@ -1,6 +1,6 @@
 # Hueday 전체 개발 마스터 로드맵
 
-> **2026-07-28 실행 순서 정정 — 이 블록이 아래의 이전 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 무료 버전 1 출시 → 실제 인플레이스 업데이트 보존 확인 → `M8M 결제·entitlement·Hueday Studio` → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 결제 안전 계약: `docs/post-launch-monetization-and-payment-safety.md`.
+> **2026-07-28 실행 순서 정정 — 이 블록이 아래의 이전 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 무료 버전 1 출시 → 실제 인플레이스 업데이트 보존 확인 → `M8M 결제·entitlement·Hueday Studio` → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 결제 안전 계약: `docs/post-launch-monetization-and-payment-safety.md`.
 
 마지막 갱신: 2026-07-28 KST
 제품 기준: `docs/hueday-product-blueprint.md`
@@ -13,7 +13,7 @@
 | M2-3 | 동기화된 날짜의 local master 수동 정리 계약과 Android/PWA 업데이트 보존 QA | 자동 삭제 없이 복구 불가 경고·사용자 확인, 기존 데이터 위 인플레이스 업데이트가 안전해야 한다. |
 | M3 | Living Hue Deck | 기존 일일 기록을 1/3/5/8 카드·canonical HEX Color Volume으로 파생한다. 별도 카드 이미지/테이블·Canvas·AI·상황 컬렉션을 만들지 않는다. |
 | M4 | 최소 일상 미션 팩 | 학교/통학·비 오는 날·실내/카페 등 검증 가능한 소수의 static 설정과 그 ID 기반 최대 3개 컬렉션을 넣고, 위치를 저장하거나 거대한 팩 플랫폼을 만들지 않는다. |
-| M5 | Hueprint·Color DNA·Color Capsule | 주간 회고와 Story 공유를 Deck 원본 기록 위에서 연결한다. 완성 강제·연속 출석·랜덤 보상을 넣지 않는다. |
+| M5 | Hueprint·Color Capsule | 주간 회고와 Story 공유를 Deck 원본 기록 위에서 연결한다. 완성 강제·연속 출석·랜덤 보상을 넣지 않는다. |
 | M6 | 통합 디자인·접근성·성능 | 430×932의 일반 사용자 경로와 기본 Android/PWA 성능을 다듬는다. 고위험/비현실 조합은 P2 보류다. |
 | M7 | 출시 검증 | 인증/RLS/저장·복구/인플레이스 업데이트/공유/실기기 QA와 문서를 마감한다. |
 | M8M (출시 후 우선 수익화) | 결제·entitlement·Hueday Studio | 무료 버전의 실제 인플레이스 업데이트 보존을 확인한 뒤, 기존 기록과 분리된 additive 권한 계층으로 1회 구매·복원·환불/회수·계정 전환을 완성한다. Cloud는 비용·복구 수요 확인 뒤 별도 단계다. |
@@ -46,6 +46,18 @@
 - [x] 430×932에서 시작·부분 기록·완성·Volume·원본 3×3·기존 Story Studio 진입을 local fixture로 확인했다. 실제 export callback은 기존 경로를 유지한다.
 - [x] 새 저장 구조, 서버 테이블, 생성형 AI, 친구/공개 피드를 추가하지 않았음을 diff로 확인한다.
 
+### M5 Hueprint·Color Capsule 완료 조건
+
+- [x] 주간 Hueprint가 canonical `mission_hex`가 유효한 기록만으로 파생되고, 무효 mission_hex 기록은 History/Deck/Story는 유지한 채 Hueprint/Capsule 파생에서만 제외된다.
+- [x] 월간 Color Capsule이 1~7장 부분 기록과 8장 완성 기록을 모두 포함하고, 무효 색만 있는 월은 tile을 만들지 않는다.
+- [x] 로컬 표지 preference가 owner/week로 격리되고 stale 참조는 기본 표지로 안전하게 복구된다.
+- [x] `다시 만난 색`이 동일 월·일 최근 연도, 이전 달 ±3일 순으로 선택되고 후보가 없으면 카드를 숨긴다.
+- [x] 전용 9:16 export가 기존 Story Studio의 html2canvas/download/Web Share/Capacitor Share 패턴을 `shareImage.ts` 공용 helper로 재사용하고, 워터마크 없는 1080×1920 PNG를 만든다.
+- [x] `hueprint_exported`/`color_capsule_exported`/`*_share_opened`가 실제 전달 성공 뒤에만 기록되고, 실패·취소는 완료 이벤트를 남기지 않는다(430×932 Playwright QA로 확인, 실패 재현 포함).
+- [x] tier 0~4가 `getHueprintDetailTier()` 결과 하나만 반영하고 장식 class가 누적되지 않는다.
+- [x] 기존 Story UI/template/sticker/callback과 `getUnlockedBadges()` 결과에 회귀가 없다.
+- [x] 새 DB migration, 서버 렌더링, 결제 UI, Hue Canvas/Hue Drop을 추가하지 않았음을 diff로 확인한다.
+
 ### M7 출시 안전 완료 조건
 
 - [ ] 변경한 기능별 happy path 1개와 발생 가능성 높은 복구 path 1개를 검증한다.
@@ -56,9 +68,9 @@
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M4 — 선택형 일상 미션 팩 완료(구현·검증·문서 정렬·main 통합)**
-- 현재 작업: **M5 준비**. M2-3/M4 Android 인플레이스 update QA는 M7 출시 gate로 유지한다.
-- 다음 한 작업: **M5 주간 Hueprint/Color DNA를 기존 원본 Post/Deck 데이터 위에서 설계한다.**
+- 마스터 단계: **M5 — Hueprint·Color Capsule 구현·검증·문서 정렬 완료(feature 브랜치, main 통합 전)**
+- 현재 작업: **M5 feature gate 통과 후 사용자 검토·main 병합 대기**. M2-3/M4/M5 Android 인플레이스 update QA는 M7 출시 gate로 유지한다.
+- 다음 한 작업: **M6 통합 디자인·접근성·성능을 시작하기 전에 M5 feature 브랜치를 사용자 검토 뒤 main에 병합한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -92,7 +104,7 @@ M0 문서·자동화 기반
 → M2 안정성·데이터·측정 기반·M2-3 update-safety gate
 → M3 Living Hue Deck
 → M4 최소 일상 미션 팩·명시적 pack-ID 컬렉션
-→ M5 Hueprint·Color DNA·Color Capsule
+→ M5 Hueprint·Color Capsule
 → M6 통합 디자인·접근성·성능
 → M7 실기기·보안·출시 검증
 → 무료 버전 1 출시·실제 인플레이스 업데이트 보존 확인
@@ -310,7 +322,7 @@ M2-2 저장 안정성 완료 뒤의 다음 우선순위다. Hue Canvas 전용 �
 
 ## Historical — prior Hue Canvas pre-launch production roadmap (superseded)
 
-> 이 절의 Canvas 구현 목록은 현재 첫 출시 작업에 적용하지 않는다. 현재 M5는 Living Hue Deck 원본 기록 위의 Hueprint·Color DNA·Color Capsule이며, Canvas production은 M8A다.
+> 이 절의 Canvas 구현 목록은 현재 첫 출시 작업에 적용하지 않는다. 현재 M5는 Living Hue Deck 원본 기록 위의 Hueprint·Color Capsule이며, Canvas production은 M8A다.
 
 목표: 승인된 대체 콘텐츠를 실제 retention loop로 구현하고, 완성한 3x3이 사용 가능한 창작 재료와 표현 옵션으로 돌아오게 한다.
 

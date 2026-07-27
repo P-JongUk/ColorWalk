@@ -68,6 +68,31 @@
 | CW-010 | 2026-07-23 | 매일 새 색의 기대감과 8컷 부담을 함께 해결한 일일 기록 계약 | 제품 설계·리텐션·상태 경계 | 결정 완료, 구현·검증 후속 |
 | CW-011 | 2026-07-24 | 기록 복구의 이미지 서명 요청 폭주를 배치화 | 복구 성능·최소 변경·회귀 검증 | 구현·브라우저 QA 완료, Android 잔여 QA |
 | CW-017 | 2026-07-28 | 사진 상태를 건드리지 않는 부분 업데이트와 서버 타이머 없는 마감 | 데이터 아키텍처·동시성 경계·최소 변경 | 구현·전체 검증·430×932 QA 완료, Android 실기기 QA 후속 |
+| CW-018 | 2026-07-28 | 9:16 export의 html2canvas CSS 미지원과 analytics outbox 동시 flush race | 실기 브라우저 QA·CSS 렌더링 제약·동시성 버그 진단 | 구현·수정·브라우저 QA 완료 |
+
+## CW-018 — 9:16 export의 html2canvas CSS 미지원과 analytics outbox 동시 flush race
+
+### 문제와 영향
+
+M5 Hueprint/Color Capsule의 9:16 export 카드에 기존 Deck 스타일과 동일하게 `color-mix(in srgb, ...)` CSS를 재사용했더니, html2canvas가 이 CSS 함수를 파싱하지 못해 "Attempting to parse an unsupported color function" 예외를 던지며 모든 Hueprint/Capsule export가 조용히 실패했다(실제 로그인 계정으로 430×932 Playwright QA를 하기 전까지는 코드 리뷰만으로 드러나지 않았다). 동시에, 새 Hueprint/Capsule 탭 탐색이 늘어난 화면 조회 이벤트 빈도 때문에 기존 `flushProductEvents()`가 owner당 동시성 보호 없이 매 `trackProductEvent()` 호출마다 pending outbox를 독립적으로 읽고 Supabase에 upsert하는 구조적 약점이 실제로 드러났다. 같은 pending row가 두 flush에서 동시에 전송되면 `(owner_id, dedupe_key)` unique 제약의 `ignoreDuplicates`가 막아주지 못하는 `product_events_pkey`(id) 충돌이 발생해 해당 analytics 이벤트가 outbox에 영구히 남아 재시도마다 같은 409를 반복할 위험이 있었다.
+
+### 선택과 구현
+
+- html2canvas가 실제로 렌더하는 export 카드(`.hueprint-export-card`, `.hueprint-export-cover`)의 배경만 `color-mix()`에서 고정 색상(`#f2ede1`)으로 교체했다. 화면에만 보이는 `.deck-*` 스타일(html2canvas 대상이 아님)은 그대로 두어 기존 Deck UI에 영향이 없음을 확인했다.
+- `productEvents.ts`의 `flushProductEvents()`에 owner별 in-flight `Promise` 잠금(`flushLocksRef` Map)을 추가해, 같은 owner의 동시 flush 호출이 첫 번째 작업을 기다리도록 했다. `draftStorage.ts`의 IndexedDB 레벨 dedupe(`enqueueProductEvent`가 `event.key` 존재 시 add를 skip)는 그대로 두어 이중 방어를 유지했다.
+- 두 문제 모두 새 패키지나 새 재시도 아키텍처 없이, 기존 App.tsx의 `syncLocksRef` re-entrancy lock 패턴을 `productEvents.ts` 내부로 그대로 옮겨와 최소 변경으로 해결했다.
+
+### 검증과 결과
+
+- CSS 수정 전: Playwright 콘솔에서 `html2canvas.js` 스택트레이스가 있는 `Error: Attempting to parse an unsupported color function "color"`가 export 클릭마다 재현됐다(2026-07-28 KST, `D:\JongUk\Documents\ColorWalk\.playwright-cli\console-2026-07-27T18-13-06-335Z.log`).
+- CSS 수정 후: 같은 export 클릭에서 콘솔 에러 0건, 실제 다운로드된 PNG가 1080×1920, 584,224 bytes(Hueprint)와 1080×1920, 982,800 bytes(Color Capsule)로 확인됐다(같은 세션, `System.Drawing.Image`로 실측).
+- productEvents 잠금 추가 뒤 신규 이벤트(`hueprint_exported`, `hueprint_share_opened`, `color_capsule_exported`, `hueprint_cover_changed`)는 모두 Supabase에 201로 성공했다. 잠금 추가 전 발생한 stale outbox row 2건은 여전히 409로 재시도되는 것을 확인했는데, 이는 잠금 추가 이전에 이미 로컬에 캐시된 pending row이므로 예상된 잔존 현상이며 신규 이벤트 경로에는 영향이 없음을 네트워크 로그로 확인했다.
+- `npm run lint`(0 errors), `npm test -- --run`(15 files/90 tests) 통과.
+
+### 남은 부채
+
+- `flushProductEvents()` 동시 호출 회귀를 방지하는 자동화 테스트가 없다. IndexedDB를 모킹하는 테스트 하네스가 이 프로젝트에 아직 없어서(기존 `productEvents.test.ts`도 순수 함수만 테스트) 신규 인프라를 추가하지 않고 브라우저 QA로만 검증했다. 다음 트리거: IndexedDB 테스트 인프라가 추가되면 이 회귀 테스트를 추가한다.
+- 이번 수정 이전에 이미 생성된 stale 로컬 outbox row(정확한 개수는 세지 않음, 실기기별로 다름)는 자동 정리되지 않는다. 실사용자 기기에서 실제로 누적되는지, 누적된다면 정리가 필요한지는 아직 측정하지 않음 — 다음 측정: 베타 운영 중 Supabase `product_events` 429/409 오류율을 주 단위로 확인한다.
 
 ## CW-001 — D 드라이브 우선 개발 환경
 

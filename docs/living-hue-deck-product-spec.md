@@ -37,7 +37,7 @@ Color Hunt의 본질은 현실에서 색을 찾는 일이다. Deck은 그 행동
 
 ### 주간 회고와 공유
 
-- 주간 `Hueprint` 또는 `Color DNA`, 월간 `Color Capsule`은 M5에서 같은 원본 데이터 위에 구현한다.
+- 주간 `Hueprint`와 월간 `Color Capsule`은 M5에서 같은 원본 데이터 위에 구현했다. 상세 계약은 `docs/hueday-product-blueprint.md` 5.5절과 `src/lib/hueprint.ts`를 따른다.
 - M3 카드에서는 기존 원본 Post의 Story Studio를 연다. 별도 Deck 이미지 포맷이나 업로드를 만들지 않는다.
 
 ## 3. 시각·상호작용 기준

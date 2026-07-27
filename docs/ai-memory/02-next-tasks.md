@@ -2,15 +2,25 @@
 
 > ## 최신 재개 지점 (2026-07-28)
 >
-> - **기준:** M4 선택형 일상 미션 팩은 `feature/everyday-mission-packs`(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)에서 구현·전체 검증·430×932 QA·문서 정렬(checkpoint 3)까지 완료했고, `a49caf6`으로 `main`에 fast-forward 통합됐다.
-> - **첫 구현 작업:** M5 주간 `Hueprint`/`Color DNA`와 월간 `Color Capsule`을 기존 원본 Post/Deck 데이터 위에서 설계한다. 완성 강제·연속 출석·랜덤 보상은 넣지 않는다. M3 카드에서는 기존 Story Studio를 그대로 열고 별도 Deck 이미지 포맷/업로드를 만들지 않는다.
-> - **그 다음:** M5 주간 Hueprint/Color DNA와 월간 Color Capsule 설계를 시작한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
+> - **기준:** M5 Hueprint·Color Capsule은 `feature/hueprint-color-capsule`(checkpoint 1 `b898c30`, checkpoint 2 `999b672`, checkpoint 3 `4543e65`)에서 구현·전체 검증·430×932 Playwright QA·문서 정렬(checkpoint 4)까지 완료했다. main 병합은 사용자 검토 뒤 별도 단계다.
+> - **다음 구현 작업:** M6 통합 디자인·접근성·성능을 시작하기 전에 M5 feature 브랜치를 사용자 검토 뒤 main에 병합한다.
+> - **그 다음:** M6 통합 디자인·접근성·성능(430×932 일반 사용자 경로, 기본 Android/PWA 성능)을 진행한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
 > - **M5 모델·세션:** 큰 방향 대화는 Sol medium, 고위험 계획 확정은 Sol high+계획 모드, 승인된 구현은 Kiro Sonnet 5 high 단일-agent, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 Codex Terra medium을 기본으로 유지한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
 > - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.
 > - **출시 후 우선 수익화:** 무료 버전의 실제 인플레이스 업데이트 보존 확인 뒤 `M8M`에서 Hueday Studio 1회 구매의 Play Billing/entitlement·구매 복원·보류·환불/회수·계정 전환을 구현한다. 기존 Post/사진/로컬 저장은 변환하지 않는다. 상세 계약은 `docs/post-launch-monetization-and-payment-safety.md`다.
 > - **첫 소셜 업데이트:** Hue Drop은 Canvas와 별도 release로 진행하고 공개/익명 UGC를 열지 않는다.
+
+
+> ## M5 진행 인계 (완료, 2026-07-28)
+>
+> - **작업명·목표:** 완료 — M5 `feature/hueprint-color-capsule`: canonical `mission_hex`-only 주간 Hueprint, 로컬 표지 preference, 무효 색 legacy 보존, 월간 Color Capsule(1–7장 포함, 8장 완성 구분), `다시 만난 색`, `getHueprintDetailTier()` 단일 tier, 전용 9:16 export 공용 helper(`shareImage.ts`), 성공 기반 export analytics.
+> - **통합 기준:** `feature/hueprint-color-capsule`는 `origin/main` `099b07b0c7bf37fe1c0bf4e6ad26dcd728f5362c`를 기반으로 했다. main 병합은 아직 진행하지 않았다.
+> - **체크포인트:** checkpoint 1 `b898c30`(주간 Hueprint 데이터 계약, 로컬 표지 선택, nullable canonical HEX, tier helper), checkpoint 2 `999b672`(월간 Color Capsule, 다시 만난 색, CalendarView 3탭 통합), checkpoint 3 `4543e65`(전용 export, `shareImage.ts` 공용화, 성공 기반 analytics, `product_events` 동시 flush race 수정), checkpoint 4(문서·AI memory 정렬, 이 커밋).
+> - **마지막 통과 검증(2026-07-28 KST):** lint 0 errors, Vitest 15 files/90 tests, build, `verify:supabase` 전체 ok, `cap:sync`, `git diff --check`, Android debug build(`app-debug.apk` 17,982,899 bytes), 430×932 Playwright QA(현재/과거/혼합 주, partial-only 최고령 주, 표지 변경·재로드 지속, Hueprint/Capsule 1080×1920 PNG 다운로드 실측, Web Share 실패 시 완료 이벤트 미기록 확인).
+> - **실행 중 발견·수정한 버그:** (1) `.hueprint-export-card`의 `color-mix()` CSS가 html2canvas에서 파싱 실패 → 고정 배경으로 교체. (2) `flushProductEvents()`가 동시 호출 시 같은 pending row를 중복 upsert해 `product_events_pkey` 충돌 → owner별 in-flight Promise lock 추가.
+> - **범위 밖으로 남긴 것:** Android 실기기 인플레이스 QA(M7 gate), DB migration, production 배포, main 병합, Color Rhythm 2/3/5일 목표 설정(M5 후속), 계절/연간 Capsule·PDF·인쇄·2160×3840 이상 export(Studio 후보).
 
 
 > ## M4 진행 인계 (완료, 2026-07-28)
@@ -41,7 +51,9 @@
 - [x] M4 검증: 전체 lint/test/build/Supabase verification/Capacitor sync/Android debug build/git diff --check와 430×932 Playwright QA(자유 기본, 추천 배지, 0장 무확인, 1–7장 확인 다이얼로그, 8장 읽기전용, collection tile, 8/8 카드+Story)를 통과하기 (2026-07-28 KST)
 - [x] M4 문서·AI memory 정렬: blueprint/roadmap/living-hue-deck-spec/growth-strategy/reward-system/storage-strategy/design-reference-index/design-qa-log/plan.md와 이 vault를 실제 diff·검증 결과에 맞춰 갱신하기 (checkpoint 3)
 - [x] M4 후속: `feature/everyday-mission-packs`를 `a49caf6`까지 fast-forward로 `main`에 통합. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지
-- [ ] M5 Hueprint/Color DNA/Color Capsule: 기존 원본 Post/Deck 데이터 위에서 주간 회고와 공유를 연결하고, 완성 강제·연속 출석·랜덤 보상은 넣지 않기
+- [x] M5 Hueprint/Color Capsule: 기존 원본 Post/Deck 데이터 위에서 주간 회고와 공유를 연결하고, 완성 강제·연속 출석·랜덤 보상은 넣지 않기 (`feature/hueprint-color-capsule`, checkpoint 1 `b898c30`/checkpoint 2 `999b672`/checkpoint 3 `4543e65`)
+- [ ] M5 후속 Color Rhythm 체크포인트: 2/3/5일 목표 설정을 별도 승인 뒤 구현하기 (M5에는 사실값 "이번 주 기록한 날 N일"만 제공, 목표 설정은 보류)
+- [ ] M5 통합: `feature/hueprint-color-capsule`를 사용자 검토 뒤 `main`에 병합하기
 - [ ] 무료 버전 1 출시 뒤 실제 인플레이스 업데이트에서 기존 로그인·draft/master·기록함·Deck·Hueprint/Capsule·Story 보존 확인
 - [ ] M8M 결제 업데이트: 상품·가격·무료/유료 경계 재승인 → Hueday Studio 1회 구매 → 검증된 entitlement → 구매 복원·보류·환불/회수·계정 전환 → 기존 데이터 보존 QA 순서로 진행
 - [ ] Hueday Cloud는 실제 master 바이트·storage/egress·복구 수요·해지 후 보존 계약을 측정·승인한 뒤 별도 계획

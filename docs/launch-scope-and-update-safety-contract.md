@@ -10,7 +10,7 @@
 1. 날씨·시간·대략 위치 문맥의 일일 Color Hunt, 3회 문맥 재추천 뒤 균등 랜덤, 첫 확정 사진 후 색 잠금
 2. 1–7장의 유효한 일일 기록과 8장의 완성 3×3, 로컬 우선 저장·안전한 동기화·복구
 3. Living Hue Deck의 1/3/5/8 카드 성장과 canonical mission HEX 기반 Color Volume
-4. 최소 일상 미션 팩과 그 ID 기반 최대 3개 컬렉션, 이후 주간 Hueprint/Color DNA, 기존 Story 내보내기
+4. 최소 일상 미션 팩과 그 ID 기반 최대 3개 컬렉션, 주간 Hueprint와 월간 Color Capsule, 기존 Story 내보내기
 5. 누적 완료 기반 보상과 기본 프로필·달력·기록함
 6. PWA와 Android의 실제 사용자 흐름, 개인정보·RLS·저장·업데이트 안전 검증
 

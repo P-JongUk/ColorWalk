@@ -1,5 +1,18 @@
 # 지속 결정
 
+## 2026-07-28 — M5 Hueprint·Color Capsule execution contract (approved and implemented)
+
+- 대표 이름은 `Hueprint`로 확정하고 `Color DNA`는 기능명·진단명으로 사용하지 않는다. Hueprint/Capsule 파생은 오직 canonical `mission_hex`만 사용하며, 무효 `mission_hex`를 `captured_hex`, 이미지 픽셀, 날씨, 색 이름으로 절대 보정하지 않는다.
+- `canonicalizeMissionHex()`를 throw하는 함수에서 `string | null`을 반환하는 안전한 함수로 바꿨다. 무효 legacy `mission_hex` 기록은 History/Deck/Story 진입을 그대로 유지하되 Hueprint/Capsule 파생과 Color Volume 그룹화에서만 제외한다. 가짜 대체색을 UI에 주입하지 않고 `LivingHueDeckView`에 neutral archive 배경(`deck-photo-mosaic-neutral`)만 추가했다.
+- 로컬 표지 preference key는 `hueday:hueprint-cover:v1:<ownerId>:<weekKey>`로, `{version, postLocalDate, imageId}`만 저장한다. Supabase/IndexedDB daily-record/media-asset schema는 변경하지 않았다. stale 참조는 best-effort로 무시·삭제하고 결정적 기본 표지로 복구한다.
+- 월간 Color Capsule은 종료 판정(8장 완성, `client_meta.colorHunt.closedAt` 존재, 또는 `local_date < 오늘`)이 있는 Hueprint-valid 기록만 포함한다. 오늘의 열린 1–7장 기록은 주간 Hueprint에는 보이지만 Capsule에는 종료 전까지 넣지 않는다.
+- `다시 만난 색`은 (1) 동일 월·일의 가장 가까운 과거 연도, (2) 없으면 이전 달의 같은 날짜(월말 clamp) ±3일 중 최소 거리·최근 우선 순으로 후보를 고른다. 후보가 없으면 카드를 완전히 숨긴다.
+- `getHueprintDetailTier()`는 기존 완료 페이지 수(`getCompletedGridCount()`)에서 파생한 단일 0~4 tier이며, 기존 3/7/14/30 배지 계약과 `getUnlockedBadges()` 결과를 변경하지 않는다. UI는 정확히 하나의 `.hueprint-tier-N` class만 적용한다.
+- 전용 9:16 export는 `src/lib/shareImage.ts`로 StoryStudio의 기존 html2canvas→PNG, 웹 download/Web Share, Capacitor Filesystem/Share 패턴을 그대로 공용화했다. StoryStudio 자체의 관찰 가능한 콜백 타이밍/이벤트 의미는 변경하지 않았다(기존에도 native/web-share 경로는 `onExported`/`onShareOpened`를 실제 완료 전에 호출하는 낙관적 순서였고, 이 순서를 그대로 보존했다).
+- Export 성공 analytics는 기존 세 이벤트 이름(`screen_viewed`/`session_summary`/`primary_cta_clicked`)만 재사용하고 `screen`/`cta`/`delivery` allowlist 값만 추가했다. `*_exported`는 `deliverExport()`가 실제로 resolve한 뒤에만 호출되며, dedupe key는 Hueprint `hueprint:<weekKey>:hueprint_exported:<delivery>`, Capsule `color_capsule:<monthKey>:color_capsule_exported:<delivery>`로 owner+기간+artifact+delivery를 인코딩한다(owner는 upsert의 `owner_id` 컬럼과 outbox key prefix로 이미 분리됨).
+- 실행 중 두 개의 실제 버그를 발견·수정했다: (1) `.hueprint-export-card`의 `color-mix()` CSS가 html2canvas 파서에서 "unsupported color function" 예외를 던져 모든 Hueprint/Capsule export가 실패했다 — 고정 배경(`#f2ede1`)으로 교체해 해결. (2) `flushProductEvents()`가 owner당 in-flight 잠금 없이 매 `trackProductEvent()` 호출마다 독립적으로 pending outbox를 읽고 upsert해, 빠른 연속 화면 전환(Hueprint/Capsule 탐색으로 빈도가 늘어남) 시 같은 pending row가 두 번 전송되어 Supabase `product_events_pkey`(id) 충돌을 유발했다 — owner별 `Promise` 기반 재진입 잠금을 추가해 해결. 두 버그 모두 430×932 Playwright QA(실제 로그인 계정, 실제 Supabase)에서 콘솔 에러로 발견했다.
+- Living Hue Deck spec의 "M3 카드에서는 기존 원본 Post의 Story Studio를 연다"는 그대로 유지된다. Hueprint/Capsule은 별도 Deck 이미지 포맷이나 업로드를 만들지 않는다.
+
 ## 2026-07-27 — 다중 계정 모델 풀을 비용 효율적으로 사용
 
 - 상태: approved
