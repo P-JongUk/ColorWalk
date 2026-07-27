@@ -34,6 +34,8 @@ export type CaptureDraft = {
   localRevision?: number
   serverRevision?: number
   lastSyncError?: 'local' | 'upload' | 'post'
+  /** Whole-day mission pack intent. Absent means pre-M4/legacy; explicit `{ id: null }` means free mode. */
+  missionPack?: MissionPackSelection
   journal?: {
     colorName: string
     journalAnswer: string
@@ -185,3 +187,14 @@ export type StoryDesign = {
 }
 
 export type AppTab = 'today' | 'camera' | 'journal' | 'calendar' | 'profile'
+
+export type MissionPackId =
+  | 'indoor-hunt'
+  | 'commute-hunt'
+  | 'rainy-window'
+
+export type MissionPackSelection = {
+  id: MissionPackId | null
+  version: 1
+  finalizedAt?: string
+}

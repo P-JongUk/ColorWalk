@@ -2,6 +2,7 @@ import { createClient, type Session, type SupabaseClient } from '@supabase/supab
 
 import { getPerceptualDeltaE, hexToRgb } from '@/lib/colors'
 import { normalizeGridImages } from '@/lib/grid'
+import { mergeColorHuntIntoClientMeta, type ColorHuntMeta } from '@/lib/missionPacks'
 import { parseStoryStickers, normalizeTemplateId, toLegacyDatabaseTemplateId } from '@/lib/story'
 import type { GridImage, Locale, Post, ProfileGender, UserProfile } from '@/types'
 
@@ -309,6 +310,42 @@ export async function upsertPostWithGridFallback(payload: PostUpsertPayload) {
   return supabase
     .from('posts')
     .upsert(toLegacyPostPayload(payload), { onConflict: 'user_id,local_date' })
+}
+
+/**
+ * Metadata-only mission pack sync for a 0-7 photo record: reads the latest client_meta
+ * for this owner/date, deep-merges only the colorHunt field via mergeColorHuntIntoClientMeta,
+ * and writes client_meta alone. Never touches grid_images, image_path, or Storage, and never
+ * calls uploadPostImage/deletePostImage. If no remote post exists yet for this date, this is a
+ * no-op (returns null) and the caller keeps the local selection pending for the next full sync.
+ */
+export async function updatePostColorHuntMetadata(
+  userId: string,
+  localDate: string,
+  colorHunt: ColorHuntMeta,
+) {
+  if (!supabase) throw new Error('Supabase is not configured')
+
+  const { data: existing, error: readError } = await supabase
+    .from('posts')
+    .select('client_meta')
+    .eq('user_id', userId)
+    .eq('local_date', localDate)
+    .maybeSingle()
+
+  if (readError) throw readError
+  if (!existing) return null
+
+  const clientMeta = mergeColorHuntIntoClientMeta(existing.client_meta, colorHunt)
+
+  const { error: writeError } = await supabase
+    .from('posts')
+    .update({ client_meta: clientMeta })
+    .eq('user_id', userId)
+    .eq('local_date', localDate)
+
+  if (writeError) throw writeError
+  return clientMeta
 }
 
 export async function deletePostImage(path: string) {

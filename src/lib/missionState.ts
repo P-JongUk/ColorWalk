@@ -1,4 +1,5 @@
-import type { Mission } from '@/types'
+import { createFreeModeSelection, parseMissionPackSelection } from '@/lib/missionPacks'
+import type { Mission, MissionPackSelection } from '@/types'
 
 const PREFIX = 'colorwalk:daily-mission'
 
@@ -8,6 +9,8 @@ export type DailyMissionState = {
   rerollCount: number
   selectedAt: string
   lockedAt?: string
+  /** Absent on pre-M4 state read back from storage; callers should treat that as free mode. */
+  missionPack?: MissionPackSelection
 }
 
 function key(userId: string, localDate: string) {
@@ -17,7 +20,11 @@ function key(userId: string, localDate: string) {
 export function loadDailyMissionState(userId: string, localDate: string) {
   try {
     const value = localStorage.getItem(key(userId, localDate))
-    return value ? JSON.parse(value) as DailyMissionState : null
+    if (!value) return null
+    const parsed = JSON.parse(value) as DailyMissionState
+    // Legacy state (pre-M4) has no missionPack field. Normalize it to explicit free mode
+    // so callers never need to special-case "field absent" vs "free mode".
+    return { ...parsed, missionPack: parseMissionPackSelection(parsed.missionPack) ?? createFreeModeSelection() }
   } catch {
     return null
   }

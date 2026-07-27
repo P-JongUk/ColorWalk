@@ -17,12 +17,15 @@ import { capturePhotoBlob, fileToDraftImageBlob } from '@/lib/image'
 import { t } from '@/lib/i18n'
 import { getLocalDateKey } from '@/lib/date'
 import { getNextGridSlot, MAX_GRID_IMAGES } from '@/lib/grid'
-import type { CaptureDraft, GridDraftImage, Locale, Mission } from '@/types'
+import type { CaptureDraft, GridDraftImage, Locale, Mission, MissionPackSelection } from '@/types'
 
 type CameraViewProps = {
   locale: Locale
   mission: Mission
   initialDraft: CaptureDraft | null
+  /** Current whole-day pack selection (0-photo state). Only used for a brand-new draft;
+   * an existing draft already carries its own locked-in missionPack. */
+  activeMissionPack?: MissionPackSelection
   onBack: () => void
   onDraftChange: (draft: CaptureDraft) => Promise<boolean>
   onComplete: (draft: CaptureDraft) => void
@@ -34,6 +37,7 @@ function buildDraft(
   compression?: CaptureDraft['compression'],
   previous?: CaptureDraft | null,
   localDate = previous?.localDate ?? getLocalDateKey(),
+  activeMissionPack?: MissionPackSelection,
 ): CaptureDraft {
   return {
     mission,
@@ -48,6 +52,10 @@ function buildDraft(
     lastSyncError: undefined,
     journal: previous?.journal,
     compression,
+    // The first photo carries today's 0-photo pack selection into the record. Once the
+    // draft exists, its own missionPack is the source of truth (metadata-only updates
+    // change it directly), so a new active selection never overwrites an existing draft.
+    missionPack: previous?.missionPack ?? activeMissionPack,
   }
 }
 
@@ -60,7 +68,7 @@ type CameraSettings = MediaTrackSettings & {
   zoom?: number
 }
 
-export function CameraView({ locale, mission, initialDraft, onBack, onDraftChange, onComplete }: CameraViewProps) {
+export function CameraView({ locale, mission, initialDraft, activeMissionPack, onBack, onDraftChange, onComplete }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const backdropVideoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -144,7 +152,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
   }, [facingMode, locale])
 
   async function commitImages(nextImages: GridDraftImage[], compression?: CaptureDraft['compression']) {
-    const nextDraft = buildDraft(mission, nextImages, compression, initialDraft, initialDraft?.localDate ?? openedLocalDate.current)
+    const nextDraft = buildDraft(mission, nextImages, compression, initialDraft, initialDraft?.localDate ?? openedLocalDate.current, activeMissionPack)
     const saved = await onDraftChange(nextDraft)
     if (!saved) return false
     setImages(nextImages)
@@ -358,7 +366,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
               {t(locale, 'albumSelect')}
             </Button>
             {canComplete ? (
-              <Button type="button" onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current))}>
+              <Button type="button" onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current, activeMissionPack))}>
                 <Check data-icon="inline-start" aria-hidden="true" />
                 {locale === 'ko' ? '????곌린' : 'Write journal'}
               </Button>
@@ -441,7 +449,7 @@ export function CameraView({ locale, mission, initialDraft, onBack, onDraftChang
             type="button"
             className="camera-done-button"
             disabled={!canComplete || Boolean(pendingImage)}
-            onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current))}
+            onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current, activeMissionPack))}
           >
             <Check data-icon="inline-start" aria-hidden="true" />
             {locale === 'ko' ? '저널 쓰기' : 'Write journal'}

@@ -1,7 +1,7 @@
 import { getLocalDateKey } from '@/lib/date'
 import { deleteLocalMaster, isNativeMasterStorage, localMasterExists, prepareLocalMaster, readLocalMaster } from '@/lib/localMaster'
 import type { ProductEvent } from '@/lib/productEvents'
-import type { CaptureDraft, GridDraftImage, MasterCleanupLifecycle } from '@/types'
+import type { CaptureDraft, GridDraftImage, MasterCleanupLifecycle, MissionPackSelection } from '@/types'
 
 const DB_NAME = 'colorwalk-cache'
 const DB_VERSION = 3
@@ -291,6 +291,44 @@ async function migrateLegacyDailyRecords(ownerId: string) {
 export async function saveCachedDraft(draft: CaptureDraft, ownerId: string) {
   await runDraftTransaction('readwrite', (store) => {
     putDraftRecords(store, draft, ownerId)
+  })
+}
+
+export type MissionPackUpdateResult = { localRevision: number; serverRevision: number }
+
+/**
+ * Metadata-only mission pack select/change/clear for a 0-7 photo daily record.
+ * Reads and writes only the single daily-record row in one transaction; never touches
+ * the media-asset store, so Blob/master/preview/uploadPath data is untouched. This is
+ * intentionally separate from saveCachedDraft, which also re-derives asset rows from
+ * gridImages and would be a wider write than this metadata-only contract allows.
+ */
+export async function updateMissionPackSelection(
+  ownerId: string,
+  localDate: string,
+  missionPack: MissionPackSelection,
+): Promise<MissionPackUpdateResult | null> {
+  const db = await openDraftDb()
+  return new Promise<MissionPackUpdateResult | null>((resolve, reject) => {
+    const transaction = db.transaction(DRAFT_STORE_NAME, 'readwrite')
+    const store = transaction.objectStore(DRAFT_STORE_NAME)
+    const getRequest = store.get(dailyRecordKey(ownerId, localDate))
+    let result: MissionPackUpdateResult | null = null
+    getRequest.onsuccess = () => {
+      const existing = getRequest.result as StoredDailyRecord | undefined
+      if (!existing) return
+      const localRevision = (existing.localRevision ?? 0) + 1
+      const serverRevision = existing.serverRevision ?? 0
+      const updated: StoredDailyRecord = { ...existing, missionPack, localRevision, lastSyncError: undefined }
+      // getDraftSyncState only reads uploadPath/localRevision/serverRevision/lastSyncError,
+      // all present on the stored (asset-less) shape, so no asset rehydration is needed here.
+      const state = getDraftSyncState(updated as unknown as CaptureDraft)
+      store.put({ ...updated, ownerSyncState: `${ownerId}:${state}` })
+      result = { localRevision, serverRevision }
+    }
+    getRequest.onerror = () => reject(getRequest.error ?? new Error('Draft cache request failed'))
+    transaction.oncomplete = () => { db.close(); resolve(result) }
+    transaction.onerror = () => { db.close(); reject(transaction.error ?? new Error('Draft cache transaction failed')) }
   })
 }
 
