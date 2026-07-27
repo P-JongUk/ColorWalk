@@ -1,6 +1,8 @@
 # Hueday 디자인 레퍼런스 인덱스
 
 > **2026-07-27 디자인 우선순위:** D — Chromatic Archive 외부 UI는 유지한다. M3 디자인 작업은 Living Hue Deck의 1/3/5/8·Color Volume·원본 3×3·기존 Story 상태만 D 드라이브의 `08-living-hue-deck/`에 축적한다. 상황 컬렉션은 M4의 명시적 미션 팩 ID 이후에 추가한다. `07-found-color-content/hue-canvas-gate-2026-07-26/`은 출시 후 필수 Hue Canvas 업데이트의 G1 근거로 보존한다.
+>
+> **2026-07-28 M4 완료:** 명시적 미션 팩 ID(`indoor-hunt`/`commute-hunt`/`rainy-window`) 기반 최대 3개 상황 컬렉션(collection tile → 빈 상태/카드 리스트)을 기존 D 외부 UI 토큰(archive/ticket/Card)만 재사용해 구현했다. 새 시각 언어나 별도 디자인 게이트를 추가하지 않았으므로 새 D 드라이브 폴더는 만들지 않는다. 430x932 QA 캡처는 `.tmp/m4-qa/`에 scratch로만 보존했으며(커밋 대상 아님), 영구 근거가 필요해지면 `01-current-screens/2026-07-28-mission-packs/`로 승격한다.
 
 마지막 갱신: 2026-07-23 KST
 물리 위치: `D:\JongUk\Documents\ColorWalk\.design-references\`, `D:\JongUk\Documents\ColorWalk\.lazyweb\`

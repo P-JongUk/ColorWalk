@@ -576,7 +576,8 @@ Backend 후보:
 - 전체 클릭 스트림은 수집하지 않는다. 제품 결정을 바꿀 수 있는 화면 조회와 주요 CTA만 enum allowlist로 기록한다.
 - `screen_viewed`: 허용된 화면 이름별 진입 횟수와 사용자·현지 날짜 기준 고유 조회를 계산한다. 사진·일기 제목 같은 사용자 콘텐츠는 payload에 넣지 않는다.
 - `session_summary`: 앱이 foreground였던 활성 초를 한 세션당 한 번 요약한다. background 시간은 체류시간에 포함하지 않고, 비정상 종료로 누락될 수 있음을 지표 설명에 남긴다.
-- `primary_cta_clicked`: 촬영 시작, 사진 확정, 부분 저장, 완성 저장, Story export/share처럼 명시된 핵심 CTA만 기록한다. 모든 버튼과 좌표를 수집하지 않는다.
+- `primary_cta_clicked`: 촬영 시작, 사진 확정, 부분 저장, 완성 저장, Story export/share, M4의 `mission_pack_selected_indoor`/`mission_pack_selected_commute`/`mission_pack_selected_rainy_window`/`mission_pack_cleared`처럼 명시된 핵심 CTA만 기록한다. 모든 버튼과 좌표를 수집하지 않는다. M4는 이 필드에 새 `mission_pack_id` 같은 payload key를 추가하지 않고 기존 `cta` enum 값만 확장했다.
+- M4의 `screen_viewed`는 `mission_pack_collection_indoor`/`mission_pack_collection_commute`/`mission_pack_collection_rainy_window`를 추가한다. 추천 배지 노출, lazy finalization, 사진 내용은 별도 이벤트로 수집하지 않는다.
 - 재방문은 첫 유효 기록일을 cohort 기준으로 한 D1/D7/D30 활성 사용자 비율로 계산한다. 같은 날 여러 실행은 한 번으로 중복 제거한다.
 - 조회수는 맥락을 구분한다. 앱 화면 조회와 향후 공개 공유 링크 열람을 하나의 숫자로 합치지 않는다. 공유 링크가 생길 때는 IP·기기 fingerprint 없이 일별 익명 중복 제거 기준을 별도로 승인한다.
 - 모든 비율은 분자·분모·기간·플랫폼·이벤트 schema version을 함께 표시한다. 표본이 작으면 사용자 수를 같이 표시하고 성급한 인과 결론을 내리지 않는다.

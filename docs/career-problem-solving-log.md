@@ -1,6 +1,6 @@
 # Hueday 문제해결·의사결정 기록
 
-마지막 검토: 2026-07-26 KST
+마지막 검토: 2026-07-28 KST
 
 ## CW-011 — local master 보존과 preview 동기화의 데이터 손실 경계
 
@@ -67,6 +67,7 @@
 | CW-009 | 2026-07-23 | 사진 품질·복구·클라우드 비용을 분리한 로컬 우선 구조 | 데이터 아키텍처·비용·복구 | 결정 완료, 구현 후속 |
 | CW-010 | 2026-07-23 | 매일 새 색의 기대감과 8컷 부담을 함께 해결한 일일 기록 계약 | 제품 설계·리텐션·상태 경계 | 결정 완료, 구현·검증 후속 |
 | CW-011 | 2026-07-24 | 기록 복구의 이미지 서명 요청 폭주를 배치화 | 복구 성능·최소 변경·회귀 검증 | 구현·브라우저 QA 완료, Android 잔여 QA |
+| CW-017 | 2026-07-28 | 사진 상태를 건드리지 않는 부분 업데이트와 서버 타이머 없는 마감 | 데이터 아키텍처·동시성 경계·최소 변경 | 구현·전체 검증·430×932 QA 완료, Android 실기기 QA 후속 |
 
 ## CW-001 — D 드라이브 우선 개발 환경
 
@@ -630,6 +631,33 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 
 - M4에서 저장된 명시적 mission-pack ID가 생길 때만 최대 3개 컬렉션을 추가한다. M3에서 날씨·시간·위치로 과거 카드를 재분류하지 않는다.
 - Android 업데이트 보존 QA는 별도 release gate로 남는다.
+
+## CW-017 — 사진 상태를 건드리지 않는 부분 업데이트와 서버 타이머 없는 마감
+
+### 문제와 증거
+
+2026-07-28 KST, M4 선택형 미션 팩은 하루 페이지 전체에 적용되는 사용자 의도(pack)를 1–7장 상태에서 자유롭게 바꾸거나 해제할 수 있어야 했다. 하지만 기존 `saveCachedDraft()`는 daily-record와 media-asset을 함께 재파생하는 넓은 쓰기여서, pack만 바꾸는 매 상호작용에도 매번 사진 Blob·master/preview·업로드 경로를 다시 읽고 다시 쓸 위험이 있었다. 동시에 1–7장 기록은 사용자가 앱을 다시 열 때까지 얼마든지 열려 있을 수 있어, "현지 자정에 닫는다"는 계약을 서버 Cron이나 클라이언트 타이머 없이 지켜야 했다.
+
+### 비교와 결정
+
+1. pack 변경도 기존 `saveCachedDraft()` 경로로 처리한다 — 구현이 빠르지만 사진 상태를 매번 재검증·재파생하게 되어 의도치 않은 재압축·재업로드 위험을 늘린다.
+2. daily-record 단일 행만 읽고 쓰는 별도 metadata-only IndexedDB transaction(`updateMissionPackSelection()`)을 추가하고, media-asset store는 절대 열지 않는다.
+3. 자정 서버 작업이나 클라이언트 타이머로 지난 날짜 기록을 닫는다 — PWA/Android 모두에서 백그라운드 실행이 보장되지 않아 신뢰할 수 없다.
+4. `findOpenPastRecords()`/`finalizeOpenRecord()`를 만들고 boot 직후, `pageshow`/`visibilitychange` foreground 복귀, 다음 촬영 전 날짜 검사 이 세 지점에서만 호출하는 lazy finalization을 쓴다.
+
+2와 4를 선택했다. `updateMissionPackSelection()`은 `store.get()` → `missionPack`만 교체 → `store.put()`을 한 transaction에서 수행하며 `gridImages`, Blob, master/preview path, uploadPath, asset ID를 전혀 다루지 않는다. `finalizeOpenRecord()`는 이미 닫힌 기록을 그대로 반환하는 idempotent 함수라서 세 호출 지점 중 어디서 먼저 실행되어도 안전하다.
+
+### 검증과 결과
+
+- 단위 테스트로 pack 변경 전후 `gridImages` 배열의 참조/내용 동일성, `updateMissionPackSelection()`이 media-asset store를 열지 않음, `finalizeOpenRecord()`의 idempotency, 전날 pack이 새 `DailyMissionState`로 이월되지 않음을 확인했다(`missionPacks.test.ts` 15개, `dailyRecord.test.ts` 7개, `draftStorage.test.ts` 7개, `missionState.test.ts` 2개, 2026-07-28 KST 전체 통과).
+- 430×932 Playwright QA에서 IndexedDB에 3장/8장 daily-record를 직접 seed해 실제 카메라 없이 UI 경로를 확인했다: 1–7장 pack 변경/해제 시 정확한 확인 문구와 확인 후에만 적용되는 동작, 8장 종료 후 모든 pack chip이 disabled로 전환되고 읽기전용 안내가 표시되는 것을 확인했다.
+- 전체 lint 0 errors, Vitest 13 files/64 tests, `tsc -b && vite build` 성공, `npm run verify:supabase` 전체 `ok:true`, `npm run cap:sync` 성공, Android debug build `BUILD SUCCESSFUL in 2m 16s`(129 tasks, `app-debug.apk` 17,960,631 bytes)를 통과했다.
+- `colorHunt` v2 추가가 v1/legacy Post와 알 수 없는 `client_meta` 필드를 훼손하지 않는지는 `mergeColorHuntIntoClientMeta()`의 deep-merge 단위 테스트로 확인했다(기존 top-level 키와 `colorHunt`의 알 수 없는 하위 필드가 보존되는 것을 어설션으로 검증).
+
+### 남은 일
+
+- Android 실기기(에뮬레이터 아닌 물리 기기) 인플레이스 업데이트에서 pack 선택이 새 APK 설치 후에도 보존되는지는 아직 측정하지 않음이다. 다음 측정은 M7 출시 gate에서 실기기에 baseline→candidate APK를 순서대로 설치하고 로그인·1–7장 기록·pack 선택을 확인하는 것이다.
+- `feature/everyday-mission-packs`는 아직 `main`에 병합하지 않았다. 병합 시점은 M5 진행과 별도로 결정한다.
 
 ## 작업 종료 시 갱신 규칙
 

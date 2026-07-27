@@ -1,5 +1,12 @@
 # Design QA Log
 
+## 2026-07-28 — M4 선택형 미션 팩 430×932 QA
+
+- Captures: `.tmp/m4-qa/` (scratch, not committed — ignored `.tmp/`). Key frames: `02-free-default.png`, `03-recommended-badge.png`, `04-0photo-select-commute.png`, `05-back-to-free.png`, `08-deck-view.png`, `09-collection-empty-state.png`, `10-3photo-rainy-window.png`, `11-3photo-change-confirm-dialog.png`, `14-8photo-closed-readonly.png`, `16-indoor-collection-with-card.png`.
+- Verified with the seeded `colorwalk_test_01` account plus direct IndexedDB seeding of a 3-photo and an 8-photo daily record (no new camera capture, since headless QA cannot use a real camera): free mode default, `오늘 추천` badge on the recommended pack for the current weather/time context (no auto-select), 0-photo select/clear with no confirmation dialog, 1–7 photo pack change/clear each showing the required confirmation copy and applying only after confirm, 8-photo closed state disabling every pack chip with `이 기록은 종료됐어요. 팩은 더 바꿀 수 없어요.`, three `mission-pack-collection-tile` entries (empty-state copy `홈에서 이 팩을 고르고 하루를 닫으면 카드가 모여요` plus a camera entry point, and a populated tile showing `종료된 기록 1 · 완성 1` with the 8/8 card and Story button).
+- No new D — Chromatic Archive tokens were added; the pack chips, confirm dialog, and collection tile reuse existing archive/ticket/Card styles (`src/index.css` additions are scoped, not a new visual language).
+- A pre-existing button-in-button nesting console warning was observed in `GridCollage`/`DeckCard`; confirmed out of M4 diff scope (`git diff b17b5e9 b3128c1 --stat -- src/components/GridCollage.tsx` returns no changes) and left unfixed.
+
 ## 2026-07-26 product-direction gate
 
 - Hue Canvas G1 captures remain preserved evidence for the mandatory early post-launch update, but are not a version-1 visual approval or production integration approval.

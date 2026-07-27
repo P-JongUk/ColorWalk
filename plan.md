@@ -4,7 +4,7 @@
 
 Post-launch Canvas updates must preserve the permanent Android package/signing lineage and all prior-version auth, daily records, local masters, Deck, journal, and Story data. Production recipes use versioned isolated storage and copy-forward migrations; prototype data is not auto-promoted, and additive cloud schema must remain compatible with the prior app version.
 
-Last code/document alignment: 2026-07-24 KST. M1 Color Hunt is integrated into `main` at `c22d7a3`. The latest full release verification remains recorded separately in `docs/release-readiness.md`.
+Last code/document alignment: 2026-07-28 KST. M1 Color Hunt is integrated into `main` at `c22d7a3`; M4 selective mission packs are implemented and verified on `feature/everyday-mission-packs` (not yet merged to `main`). The latest full release verification remains recorded separately in `docs/release-readiness.md`.
 
 ## Status
 - [x] Lazyweb setup and reference verification
@@ -22,6 +22,8 @@ Last code/document alignment: 2026-07-24 KST. M1 Color Hunt is integrated into `
 - [x] Android SDK/JDK setup and debug APK build
 - [x] Helper-level unit tests and historical browser QA baseline
 - [x] Supabase cloud verification for password users, anonymous-write denial, owner CRUD/storage, and cross-user denial
+- [x] M3 Living Hue Deck (1/3/5/8 card growth, Color Volume) merged into `main`
+- [x] M4 selective mission packs (`indoor-hunt`/`commute-hunt`/`rainy-window` + free mode, `colorHunt` v2 metadata contract, metadata-only pack change, lazy finalization, mission pack collections) implemented and verified on `feature/everyday-mission-packs`; not yet merged to `main`
 - [ ] Automated integration/E2E coverage for signup -> capture -> save -> story share
 
 ## Product Direction

@@ -47,9 +47,9 @@
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M3 — Living Hue Deck 완료**
-- 현재 작업: **M4 준비**. M2-3 Android 인플레이스 update QA는 출시 gate로 유지한다.
-- 다음 한 작업: **명시적으로 저장된 미션 팩 ID를 설계한 뒤, 그 ID 기반의 최대 3개 컬렉션만 M4에서 파생한다.**
+- 마스터 단계: **M4 — 선택형 일상 미션 팩 완료(구현·검증), 문서/AI memory 정렬 마무리**
+- 현재 작업: **M4 checkpoint 3(문서·검증 결과 정렬) 이후 M5 준비**. M2-3/M4 Android 인플레이스 update QA는 출시 gate로 유지한다.
+- 다음 한 작업: **M5 주간 Hueprint/Color DNA를 기존 원본 Post/Deck 데이터 위에서 설계한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -234,35 +234,37 @@ M0 문서·자동화 기반
 - Android/PWA 핵심 여정
 - 보안 문서 검토
 
-## M4 — 일상 미션 팩
+## M4 — 일상 미션 팩 (완료 — 2026-07-28 KST)
 
 목표: 걷지 않는 날에도 오늘의 상황에서 색을 찾고, 이후 발견 색 창작 보상과 연결할 문맥을 만든다. Hue Canvas 프로토타입 승인과 M2-3 local master 수동 정리 뒤에는 전체 팩보다 최소 팩부터 구현한다.
 
-권장 브랜치: `feature/everyday-mission-packs`
+구현 브랜치: `feature/everyday-mission-packs` (checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`, checkpoint 3 문서 정렬)
+
+최종 승인된 범위는 아래 초안 작업 목록보다 좁다: **static pack은 정확히 3개**(`indoor-hunt` 실내 한 바퀴, `commute-hunt` 오가는 길, `rainy-window` 비 오는 창가) + 자유 모드뿐이며, 학교/캠퍼스·카페/편의점은 실내/이동 팩에 흡수하고 컬러 산책·계절·패션·음식·관심사 pack과 재질/스탬프 mapping은 사용 근거가 없어 M4에서 만들지 않았다. 상세 계약은 `docs/living-hue-deck-product-spec.md`와 `docs/data-storage-sync-and-cost-strategy.md`의 M4 절 참조.
 
 ### 작업
 
-- [ ] 집·학교·캠퍼스·통학·카페·비 오는 날·날씨·시간·관심사·컬러 산책 정적 pack 구조
-- [ ] 날씨·시간 기본 추천과 사용자 직접 선택
-- [ ] 위치 권한 없이 모든 pack 사용
-- [ ] 미션 팩별 카피와 대표 재질·스탬프 mapping 초안
-- [ ] mission ID 변경과 과거 기록 호환 규칙
-- [ ] 한국어·영어 번역
-- [ ] 미션 팩 선택 이벤트
-- [ ] 저장된 명시적 미션 팩 ID만으로 최대 3개 컬렉션을 파생하고, 날씨·시간·장소 추론으로 일일 카드를 중복 분류하지 않기
+- [x] `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack 구조와 자유 모드
+- [x] 날씨·시간 기반 "오늘 추천" 배지와 사용자 직접 선택(자동 선택 없음)
+- [x] 위치 권한 거부 상태에서도 자유 모드와 세 pack 모두 사용 가능
+- [x] 한국어·영어 label/description
+- [x] `mission_pack_selected_*`/`mission_pack_cleared` 선택 이벤트, `mission_pack_collection_*` 화면 이벤트 (기존 allowlist 확장, 새 이벤트/payload key 없음)
+- [x] 저장된 명시적 미션 팩 ID(`missionPack.finalizedAt` 있는 닫힌 기록)만으로 최대 3개 컬렉션을 파생, 날씨·시간·장소 추론으로 일일 카드를 재분류하지 않음
+- [x] `colorHunt` v2 계약과 v1/legacy Post 호환, 알 수 없는 `client_meta`/`colorHunt` 필드 무손실 deep-merge
+- [x] 8장 즉시 finalization + boot/foreground/다음 촬영 lazy finalization (자정 타이머·서버 작업 없음)
 
 ### 성공 조건
 
-- 컬러 산책이 유일한 사용 상황처럼 보이지 않는다.
-- 사용자가 현재 상황과 맞지 않는 추천을 쉽게 바꿀 수 있다.
-- 정확한 위치나 학교 이름을 입력하지 않아도 된다.
-- 과거 미션 기록이 pack 변경으로 깨지지 않는다.
+- 컬러 산책이 유일한 사용 상황처럼 보이지 않는다. → 3개 pack이 모두 대등한 일상 상황(실내/이동/날씨)이며 기본은 자유 모드.
+- 사용자가 현재 상황과 맞지 않는 추천을 쉽게 바꿀 수 있다. → "오늘 추천" 배지는 강제하지 않으며 0장 상태에서 확인 없이 즉시 전환된다.
+- 정확한 위치나 학교 이름을 입력하지 않아도 된다. → pack 이름은 장소를 특정하지 않는 일반 카테고리다.
+- 과거 미션 기록이 pack 변경으로 깨지지 않는다. → v1/legacy Post는 추론·backfill 없이 그대로 읽히고 pack 컬렉션에서만 제외된다.
 
 ### 검증
 
-- 미션 선택/날짜/날씨 fallback 테스트
-- 430x932 홈·선택 화면 QA
-- 위치 거부 상태 QA
+- Focused + 전체 Vitest 64/64, lint, build, `verify:supabase`, `cap:sync`, Android debug build, `git diff --check` 모두 통과
+- 430x932 Playwright QA: 자유 기본, 추천 배지, 0장 선택, 1–7장 변경/해제 확인 다이얼로그, 종료 후 읽기전용, collection tile 3개(빈 상태 포함), 8/8 카드+Story 복귀
+- 위치 거부 상태 QA: 기존 위치 fallback 경로와 독립적으로 pack 선택에 위치 권한이 관여하지 않음을 코드 경로로 확인
 - Android/PWA 검증
 
 ## Historical — prior Hue Canvas pre-launch prototype roadmap (superseded)

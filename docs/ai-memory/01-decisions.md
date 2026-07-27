@@ -107,6 +107,16 @@
 - PWA는 atomic IndexedDB 정리, Android는 durable pending marker와 파일 존재 기반 재시작 복구를 쓴다. 복구는 새 delete를 호출하지 않으며 부분 실패 뒤 남은 ready만 재시도한다.
 - CalendarView는 UI만 담당한다. 용량은 기존 masterBytes만 합산하고, 값 누락 시 원본 read/decode 없이 불가를 표시한다. preview 기반 온라인 사용과 오프라인 고화질 한계를 확인 문구로 고지한다.
 
+## 2026-07-28 — M4 선택형 일상 미션 팩 최종 범위 (approved, 구현 완료)
+
+- Static pack은 정확히 3개(`indoor-hunt` 실내 한 바퀴, `commute-hunt` 오가는 길, `rainy-window` 비 오는 창가)와 자유 모드(`id: null`)만 존재한다. 학교/캠퍼스·카페/편의점은 실내/이동 팩에 흡수하고, 컬러 산책·여행·계절·패션·음식·관심사 pack은 사용 근거가 쌓이기 전까지 만들지 않는다.
+- Pack은 하루 페이지 전체에 적용되는 사용자 의도이며 사진별 분류자가 아니다. 색 후보 제한, 이미지 분석, 적합성 점수, 실패/경고/벌점을 만들지 않는다.
+- "오늘 추천" 배지는 날씨/시간 문맥에 따라 표시만 하며 자동 선택하지 않는다.
+- 1–7장에서 pack 변경/해제는 metadata-only이며 사진 Blob·master/preview/uploadPath·asset 레코드를 절대 건드리지 않는다. 8장 확정 시 즉시, 이전 날짜의 열린 기록은 boot/foreground/다음 촬영에서 lazy finalization하며 자정 타이머·서버 작업은 두지 않는다.
+- Pack 전용 배지·해금 아이템·재화·별도 reward economy·유료 pack 경계는 M4에서 만들지 않는다. 주요 보상은 기존 8장 Deck 카드·Color Volume·완성 페이지 배지 계약을 그대로 사용한다.
+- Analytics는 기존 `primary_cta_clicked.cta`/`screen_viewed.screen` allowlist만 확장하며 새 event name이나 `mission_pack_id` 같은 payload key를 추가하지 않는다.
+- `feature/everyday-mission-packs`에서 구현·전체 검증·430×932 QA를 통과했으나(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`), `main` 병합은 별도 결정으로 남긴다.
+
 ## 2026-07-26 — Hue Canvas 프로토타입 우선순위 (approved)
 
 - 공개 출시에는 최소하지만 완성된 Hue Canvas를 포함한다. 빈 Hue Canvas 탭이나 Coming Soon 전용 탭은 만들지 않는다.

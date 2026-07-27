@@ -213,6 +213,15 @@ Color Hunt의 최소 기록 계약은 `local_date`, 당시 기기 시간대, 잠
 - PWA는 한 IndexedDB transaction에서 master Blob만 지우고 `cleaned`를 확정한다. Android는 asset별 `cleanup-pending`을 저장한 뒤 파일을 삭제하고, 재시작 복구는 파일 존재만 검사하며 삭제를 다시 호출하지 않는다. 부분 실패는 성공 asset의 `cleaned`와 남은 `ready`를 분리해 재확인 뒤 남은 master만 재시도한다.
 - 확인 창은 저장된 `masterBytes` 합계만 사용한다. 값이 하나라도 없으면 원본을 읽거나 decode하지 않고 `예상 용량 확인 불가`로 표시한다. 온라인 기록·저널·Story는 동기화된 preview로 계속 쓸 수 있지만 오프라인 원본 품질 복구와 고화질 Story 재생성은 보장하지 않는다.
 
+### M4 구현 사실 — 선택형 일상 미션 팩 (2026-07-28 KST)
+
+- `posts.client_meta.colorHunt`는 version 2로 `missionPack: { id: MissionPackId | null, version: 1, finalizedAt? }`를 추가한다. version 1과 `colorHunt` 자체가 없는 legacy Post는 계속 읽을 수 있으며 pack을 추론하거나 backfill하지 않는다. 자유 모드로 종료한 기록은 `id: null`을 명시적으로 저장해 M4 이전 기록의 필드 부재와 구분한다.
+- `mergeColorHuntIntoClientMeta()`는 알려진 M4 `colorHunt` 필드만 얕게 덮어쓰고, 기존 `client_meta`의 다른 키와 `colorHunt`의 알 수 없는 하위 필드는 객체 전체 교체 없이 보존한다. `grid_images → client_meta.gridImages → image_path` 호환 경로와 `upsertPostWithGridFallback()`은 변경 없이 유지된다.
+- 사진 0장의 pack 선택은 기존 사용자+현지 날짜 `DailyMissionState`에 저장한다. 1장 이상은 IndexedDB `daily-record`의 `CaptureDraft.missionPack`에 저장하며, `updateMissionPackSelection()`은 해당 daily-record 행만 읽고 쓰는 별도 transaction으로 `media-asset` store, Blob, master/preview path, uploadPath를 전혀 건드리지 않는다.
+- 8번째 사진이 확정되면 `finalizeOpenRecord()`가 같은 트랜잭션 경로에서 `closedAt`/`recordLifecycle: 'closed'`/최종 pack을 함께 기록한다. 자정 타이머나 서버 작업은 없으며, 이전 날짜의 열린 1–7장 기록은 boot(`loadCachedDrafts` 이후), `pageshow`/`visibilitychange` foreground 복귀, 다음 촬영 전 날짜 검사에서 같은 `findOpenPastRecords()`/`finalizeOpenRecord()` helper로 lazy finalization한다. 로컬 확정을 먼저 원자적으로 기록한 뒤 Post 동기화를 시도하며 실패하면 기존 owner+localDate pending/error 재시도 흐름에 남긴다.
+- 새 날짜의 `DailyMissionState`는 항상 자유 모드(`{ id: null }`)로 새로 생성되며 전날 pack을 이월하지 않는다.
+- Pack 컬렉션(`getMissionPackCollections()`)은 `missionPack.finalizedAt`이 있고 `id`가 유효한 닫힌 기록만 포함하고, 종료 기록 수와 8장 완성 수만 파생해 표시한다. Pack 없는 새 기록, version 1/legacy 기록, 열린 기록은 제외하되 기존 Deck·Color Volume·히스토리·Story에는 계속 표시한다. Pack 전용 배지·해금·재화·별도 reward economy는 추가하지 않았다.
+
 - 고화질 로컬 마스터 보존 계약
 - 작은 무료 preview와 고화질 Cloud 계층 분리
 - 수동 `.hueday` archive

@@ -1,8 +1,10 @@
 # 현재 상태
 
+> **2026-07-28 M4 선택형 일상 미션 팩 — checkpoint 2까지 구현 완료, checkpoint 3 문서 정렬:** `feature/everyday-mission-packs`(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)에서 `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack과 자유 모드를 구현했다. `posts.client_meta.colorHunt` v2가 `missionPack`을 추가하며 v1/legacy Post는 추론·backfill 없이 그대로 읽힌다. 0장은 `DailyMissionState`, 1–7장은 `updateMissionPackSelection()`의 metadata-only IndexedDB transaction(media-asset/Blob/master/preview/uploadPath 불변)에 저장한다. 8장 확정은 즉시 finalization, 이전 날짜의 열린 기록은 boot/foreground/다음 촬영에서 `findOpenPastRecords()`/`finalizeOpenRecord()`로 lazy finalization한다(자정 타이머·서버 작업 없음). Pack 컬렉션은 `missionPack.finalizedAt` 있는 닫힌 기록만 포함하고 종료 기록 수·8장 완성 수만 표시하며, pack 전용 배지·해금·재화는 추가하지 않았다. 2026-07-28 KST에 전체 lint(0 errors), Vitest 13 files/64 tests, build, live Supabase verification, Capacitor sync, Android debug build(BUILD SUCCESSFUL, 2m16s, app-debug.apk 17,960,631 bytes), `git diff --check`, 430×932 Playwright QA(자유 기본, 추천 배지, 0장 무확인 선택, 1–7장 변경/해제 확인 다이얼로그, 8장 종료 후 읽기전용, collection tile 3개 빈 상태+populated, 8/8 카드+Story 복귀)를 모두 통과했다. `feature/everyday-mission-packs`는 아직 `main`에 병합하지 않았다.
+
 > **2026-07-27 M3 Living Hue Deck — main 통합 완료:** `5582e46`은 merged daily records에서 Deck을 파생한다. `getPostGridImages()`는 `grid_images → client_meta.gridImages → image_path`로 1/3/5/8을 정하고, 유효한 여섯 자리 mission HEX는 공유 helper로 canonicalize해 정확한 Color Volume을 만든다. 히스토리 전환은 `기록 / Deck`이며, 완료 local/pending 기록은 `기기 저장` 또는 `동기화 대기`로만 표시한다. 새 table, migration, image format/upload, Canvas, social, collection, Hueprint, AI는 추가하지 않았다. M4가 명시적 mission-pack-ID 컬렉션을, M5가 Hueprint/Color DNA/Capsule을 맡는다. lint, Vitest 12 files/40 tests, build, live Supabase verification, Capacitor sync, Android debug build, 430×932 Deck QA를 통과했다. Android 인플레이스 업데이트 실기기 QA는 출시 gate로 남는다.
 
-> **현재 실행 순서:** M2-3 Android/PWA 인플레이스 QA는 출시 gate로 유지한다. M3 Living Hue Deck은 `main`에 통합 완료됐고, 다음 구현은 M4 최소 일상 미션 팩 → M5 Hueprint/Color DNA·Color Capsule → M6 통합 디자인·접근성·성능 → M7 출시 검증 → 버전 1 출시다. Hue Canvas는 출시 후 필수 초기 업데이트, Hue Drop은 별도 첫 소셜 업데이트다.
+> **현재 실행 순서:** M2-3 Android/PWA 인플레이스 QA는 출시 gate로 유지한다. M3 Living Hue Deck은 `main`에 통합 완료됐고, M4 선택형 일상 미션 팩은 구현·검증 완료 후 `feature/everyday-mission-packs`에서 문서 정렬 checkpoint를 진행 중이다(아직 `main` 미병합). 다음 구현은 M5 Hueprint/Color DNA·Color Capsule → M6 통합 디자인·접근성·성능 → M7 출시 검증 → 버전 1 출시다. Hue Canvas는 출시 후 필수 초기 업데이트, Hue Drop은 별도 첫 소셜 업데이트다.
 
 ## 제품
 
@@ -46,11 +48,24 @@
 - 2026-07-26 전체 lint, 11 Vitest files/31 tests, production build, live Supabase verification, Capacitor sync, Android debug build가 통과했다. PWA `127.0.0.1:5180` baseline→candidate에서 Service Worker cache `v3`→`v4`와 controller 교체를 확인했다.
 - Android baseline/candidate debug APK의 package ID와 SHA-256 signing fingerprint는 동일했으나 ADB device가 없어 `adb install -r`와 populated fixture의 login/draft/master/history/Story 보존, force-stop recovery는 미통과 release gate로 남긴다. 실제 beta HTTPS 배포와 Play signing/versioning도 이 작업 범위 밖이다.
 
+## 2026-07-28 M4 선택형 일상 미션 팩
+
+- `feature/everyday-mission-packs`에서 checkpoint 1(`5eeaf91` — 타입/config, v2 호환 reader, metadata-only local/remote update, deep merge 테스트)과 checkpoint 2(`b3128c1` — 8장 finalization, lazy finalization, UI, Deck 컬렉션, analytics, 430×932 QA)를 구현했다.
+- `src/lib/missionPacks.ts`: 3개 static pack config, `getRecommendedMissionPackId()`(자동 선택 없는 "오늘 추천" 배지 매핑: rain/storm→rainy-window, morning/sunset→commute-hunt, day/night→indoor-hunt), `parseMissionPackSelection()`/`readMissionPackFromClientMeta()`(v1/legacy는 null, 알 수 없는 id는 자유 모드로 fallback), `mergeColorHuntIntoClientMeta()`(알려진 필드만 덮어쓰고 나머지는 보존), analytics cta/screen 이름 상수.
+- `src/lib/dailyRecord.ts`: `findOpenPastRecords()`/`finalizeOpenRecord()`가 lazy finalization의 단일 진입점이다. idempotent하며 이미 닫힌 기록은 그대로 반환한다.
+- `src/lib/draftStorage.ts`: `updateMissionPackSelection()`이 daily-record 단일 행만 읽고 쓰는 별도 IndexedDB transaction으로 media-asset store·Blob·master/preview/uploadPath를 전혀 건드리지 않는다. `saveCachedDraft()`(asset도 재파생하는 넓은 쓰기)와 명확히 분리했다.
+- `src/App.tsx`: boot 시 `loadCachedDrafts()` 직후, `pageshow`/`visibilitychange` foreground 복귀, 다음 촬영 전 날짜 검사에서 같은 `finalizeOpenPastRecords()` helper를 호출한다. 8번째 사진 확정은 `handleDraftChange()`에서 `finalizeOpenRecord()`를 즉시 적용한다. `handleSelectMissionPack()`은 0장이면 `DailyMissionState`만, 1–7장이면 `updateMissionPackSelection()` 뒤 remote post가 있을 때만 `updatePostColorHuntMetadata()`로 별도 동기화하고 실패는 기존 pending/error 재시도에 남긴다.
+- `src/lib/collection.ts`의 `getMissionPackCollections()`는 `missionPack.finalizedAt` 있고 `id`가 유효한 닫힌 기록만 세어 종료 기록 수·8장 완성 수만 반환한다. Pack 전용 배지·해금·재화·별도 reward table은 추가하지 않았다.
+- 2026-07-28 KST 검증: lint 0 errors, Vitest 13 files/64 tests(전체) 및 5 files/39 tests(focused: missionPacks/dailyRecord/missionState/collection/livingHueDeck) 통과, `tsc -b && vite build` 성공, `npm run verify:supabase` 전체 `ok:true`(anon signin/write-block, profile upsert, storage upload/signed url, post CRUD, grid metadata, RLS cross-user block, product events 모두 통과, `gridImageStorage`는 기존과 동일하게 `client_meta_fallback`), `npm run cap:sync` 성공, `git diff --check b17b5e9 b3128c1` 공백 오류 없음, Android debug build(JDK21, D-drive Gradle cache, `--no-daemon --max-workers=1`) `BUILD SUCCESSFUL in 2m 16s`(129 tasks)로 `app-debug.apk` 17,960,631 bytes 생성 확인.
+- 430×932 Playwright QA(Chrome for Testing v1232, D-drive `.playwright-browsers` cache, `colorwalk_test_01` 계정 로그인): 자유 기본 모드, "오늘 추천" 배지(clouds/night→실내 한 바퀴), 0장 pack 선택/해제 시 확인 다이얼로그 없음. IndexedDB에 3장(비 오는 창가) 및 8장(실내 한 바퀴, closed) draft를 직접 seed해 실제 카메라 없이 UI 경로만 확인: 1–7장 변경/해제 시 각각 정확한 확인 문구("지금까지 모은 N장이 모두 '...' 하루 페이지로 묶여요" / 해제 경고) 노출과 확인 후에만 적용, 8장 종료 후 모든 chip disabled와 "이 기록은 종료됐어요. 팩은 더 바꿀 수 없어요." 문구, Deck 뷰에 `mission-pack-collection-tile` 3개(빈 상태: "홈에서 이 팩을 고르고 하루를 닫으면 카드가 모여요"+카메라 진입점; populated: "종료된 기록 1 · 완성 1"+8/8 카드+스토리 버튼)를 확인했다. 콘솔의 button-in-button nesting 경고는 `GridCollage.tsx`/`DeckCard` 관련 기존 이슈로 M4 diff(`git diff b17b5e9 b3128c1 --stat -- src/components/GridCollage.tsx` 결과 없음) 밖이라 수정하지 않았다. QA 스크립트/스크린샷은 `.tmp/m4-qa.mjs`, `.tmp/m4-qa-2.mjs`, `.tmp/m4-qa/*.png`에 scratch로만 보존(커밋 대상 아님).
+- 갱신한 문서: `docs/hueday-product-blueprint.md`(5.2 절에 M4 실제 범위 참고 추가), `docs/hueday-development-roadmap.md`(M4를 완료로 표시, 실제 구현 작업/성공 조건/검증으로 재작성), `docs/living-hue-deck-product-spec.md`(상황 컬렉션 M4 완료 반영), `docs/product-growth-strategy.md`(analytics allowlist에 M4 cta/screen 값 반영), `docs/colorwalk-reward-system.md`(미션 팩 행의 "문맥별 대표 아이템" 오기 수정 — pack 전용 unlock 없음), `docs/data-storage-sync-and-cost-strategy.md`(M4 구현 사실 섹션 추가), `docs/design-reference-index.md`(M4 완료 배너 추가, 새 시각 언어 없음), `docs/design-qa-log.md`(M4 430×932 QA 기록 추가), `plan.md`(status 체크리스트와 최근 정렬 날짜 갱신).
+- `AGENTS.md`, Supabase migration, RLS 정책, 보안 검토, breakout positioning, Hue Room 문서는 이번 작업으로 바뀌지 않았다 — 영향 없음(새 DB 스키마·정책 변경·시장 포지셔닝 변화가 없기 때문).
+
 ## 저장소
 
 - 통합 브랜치: `main`
-- 최근 완료 기능 브랜치: `feature/color-hunt-contract` — M1 날짜별 Color Hunt 계약·기록 복구·QA를 `c22d7a3`으로 `main`에 통합
-- 다음 개발 브랜치: `feature/core-funnel-observability`
+- 현재 진행 기능 브랜치: `feature/everyday-mission-packs` — M4 선택형 일상 미션 팩. checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`, checkpoint 3(문서 정렬) 진행 중. `origin/feature/everyday-mission-packs`와 동기화 상태에서 이어감.
+- 최근 `main` 통합 기능: `feature/local-master-offline-sync`(M2-2), `feature/living-hue-deck`(M3, `5582e46`)
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용
 - 현재 그래프: Graphify 0.9.23, 1,569개 노드와 1,563개 연결, 161개 community (2026-07-24 코드 전용 갱신)

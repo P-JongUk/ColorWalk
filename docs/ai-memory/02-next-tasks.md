@@ -1,26 +1,24 @@
 # 다음 할 일
 
-> ## 최신 재개 지점 (2026-07-27)
+> ## 최신 재개 지점 (2026-07-28)
 >
-> - **기준:** M3 Living Hue Deck은 `5582e46`으로 `main`에 통합됐고, 430×932 local browser QA도 완료됐다.
-> - **첫 구현 작업:** M2-3 local master 수동 정리 코드·단위 검증과 localhost PWA Service Worker 교체 확인은 완료했다. Android/PWA의 로그인된 populated fixture 인플레이스 보존 QA를 다음 release gate에서 닫는다. 자동 master 삭제는 금지하고, preview만 남는 복구 불가 상황은 명확한 경고와 사용자 확인을 거친다.
-> - **그 다음:** M4에서 저장된 명시적 미션 팩 ID 기반의 최대 3개 컬렉션만 구현한다. 날씨·시간·위치 추론으로 기존 일일 카드를 재분류하지 않는다.
-> - **M4 모델·세션:** 새 Codex 작업에서 Sol high+계획 모드로 계획만 승인받고, 구현은 Kiro Sonnet 5 high Supervised 단일-agent 세션, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 새 Codex Terra medium 작업으로 진행한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
+> - **기준:** M4 선택형 일상 미션 팩은 `feature/everyday-mission-packs`(checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)에서 구현·전체 검증·430×932 QA·문서 정렬(checkpoint 3)까지 완료했다. 아직 `main`에 병합하지 않았다.
+> - **첫 구현 작업:** M5 주간 `Hueprint`/`Color DNA`와 월간 `Color Capsule`을 기존 원본 Post/Deck 데이터 위에서 설계한다. 완성 강제·연속 출석·랜덤 보상은 넣지 않는다. M3 카드에서는 기존 Story Studio를 그대로 열고 별도 Deck 이미지 포맷/업로드를 만들지 않는다.
+> - **그 다음:** `feature/everyday-mission-packs`를 `main`에 병합할 시점과 순서(M5 이전/이후)를 사용자와 확인한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
+> - **M5 모델·세션:** 큰 방향 대화는 Sol medium, 고위험 계획 확정은 Sol high+계획 모드, 승인된 구현은 Kiro Sonnet 5 high 단일-agent, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 Codex Terra medium을 기본으로 유지한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
 > - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.
 > - **첫 소셜 업데이트:** Hue Drop은 Canvas와 별도 release로 진행하고 공개/익명 UGC를 열지 않는다.
 
 
-> ## 진행 중 작업 인계
+> ## M4 진행 인계 (완료, 2026-07-28)
 >
-> - **작업명·목표:** 완료 — M2-2 `feature/local-master-offline-sync`: 2560px Hueday 로컬 고화질 master, 기존 IndexedDB `drafts` store 내부의 `daily-record`/`media-asset` kind, preview-only Supabase sync와 재실행 복구.
-> - **현재 브랜치 / 기준 main:** M2-2는 `e495501`까지 `main == origin/main`에 fast-forward 통합 완료. feature 브랜치는 동일 커밋을 가리키며 별도 후속 작업은 새 feature 브랜치에서 시작한다.
-> - **현재 체크포인트:** CP5 문서 정합화까지 완료. CP4 PWA/Capacitor QA와 새 debug APK는 확인했지만, AVD가 ADB-ready가 되지 않아 Android 실경로 QA는 남아 있다.
-> - **완료한 내용:** Graphify로 draft→압축→Storage/Post→복구 경로를 확인했다. staging 원본을 먼저 저장하고 2560px WebP master를 검증한 뒤 staging을 지우는 helper, PWA Blob/Android `Directory.Data` 분기, assetId 기반 preview 경로, 완료 기록 유지, pending/error index 조회의 기반 코드를 작성했다. 4개 bitmap 표본에서 0.86/0.90/0.92 후보를 측정했고 0.90을 beta preset으로 선택했다.
-> - **마지막 통과 검증:** 기존 lint/Vitest(10 files/25 tests)/production build/live Supabase verification 결과, 이번 `npm run cap:sync`, 430×932 PWA Home/Camera smoke, debug APK 17,955,823 bytes.
-> - **다음 작업:** Hue Canvas의 430×932 시각·조작과 실제 Canvas 2D 성능 프로토타입을 검증하고 사용자 승인을 받는다. 빈 탭/Coming Soon 화면은 만들지 않는다. 승인 뒤 local master 수동 정리(자동 삭제 금지·복구 불가 경고·사용자 확인)와 최소 미션 팩을 진행한다.
-> - **범위 밖:** `grid_images` migration/backfill/repair, archive, account export/delete, Cloud backup, SQLite, 자동 master 삭제.
+> - **작업명·목표:** 완료 — M4 `feature/everyday-mission-packs`: `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack + 자유 모드, `colorHunt` v2 metadata 계약, metadata-only pack 변경, lazy finalization, pack 컬렉션.
+> - **현재 브랜치 / 기준:** `feature/everyday-mission-packs`, `origin/feature/everyday-mission-packs`와 동기화. base는 `origin/main` `b17b5e9`. `main`에는 아직 병합하지 않았다.
+> - **체크포인트:** checkpoint 1 `5eeaf91`(타입/config/v2 reader/metadata-only update/deep-merge test), checkpoint 2 `b3128c1`(8장·lazy finalization/UI/Deck 컬렉션/analytics/QA), checkpoint 3(문서·AI memory 정렬, 이 커밋).
+> - **마지막 통과 검증(2026-07-28 KST):** lint 0 errors, Vitest 13 files/64 tests, build, `verify:supabase` 전체 ok, `cap:sync`, `git diff --check`, Android debug build(`app-debug.apk` 17,960,631 bytes), 430×932 Playwright QA(자유 기본/추천 배지/0장 무확인/1–7장 확인 다이얼로그/8장 읽기전용/collection tile 3개/8·8 카드+Story).
+> - **범위 밖으로 남긴 것:** Android 실기기 인플레이스 QA(M7 gate), `main` 병합, DB migration, production 배포.
 
 현재 순서의 source of truth는 `docs/hueday-development-roadmap.md`입니다. 이 목록은 세션 재개용 요약이며 서로 다른 우선순위를 만들지 않습니다.
 
@@ -38,6 +36,11 @@
 - [x] M1 통합: 구현·브라우저 QA·Android 환경 진단 결과를 `c22d7a3`으로 `main`에 병합하고 lint·19개 test·production build·diff 검사를 다시 통과해 원격에 푸시
 - [ ] M1 Android 잔여 QA: 안정적인 별도 AVD 또는 실제 기기에서 7/8·8/8 이어서 촬영·완료 배지, foreground 날짜 전환, 저널 저장, Story 네이티브 공유 시트를 확인하기. 2026-07-24 KST에 430×932 브라우저 전체 흐름, 테스트 재시드, Android 실제 카메라 권한·촬영·다시 찍기·확정·1/8 저장·background/foreground 복구·2/8·5/8 순차 촬영, lint·19개 test·build·라이브 Supabase·Capacitor sync·Android debug/release build는 통과했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 사용하지 않으며, clean `ColorWalkM1QA` AVD cold boot는 앱 설치 전 System UI·전화·Google Play services ANR을 재현했다. 남은 항목은 통과로 기록하지 않고 실제 Android 기기 출시 전 필수 QA로 유지한다.
 - [ ] 출시 전 브랜드 게이트: Hueday와 국내 컬러워크·Daily Hue의 상표/스토어 검색/ASO 혼동 검토. 별도 승인 전 브랜드 변경 금지
+- [x] M4 구현: `feature/everyday-mission-packs`에서 `indoor-hunt`/`commute-hunt`/`rainy-window` 3개 static pack + 자유 모드, `colorHunt` v2 metadata 계약, metadata-only 0–7장 pack 선택/변경/해제, 8장 즉시 finalization과 boot/foreground/다음 촬영 lazy finalization, 명시적 pack ID 기반 최대 3개 컬렉션을 구현하기 (checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`)
+- [x] M4 검증: 전체 lint/test/build/Supabase verification/Capacitor sync/Android debug build/git diff --check와 430×932 Playwright QA(자유 기본, 추천 배지, 0장 무확인, 1–7장 확인 다이얼로그, 8장 읽기전용, collection tile, 8/8 카드+Story)를 통과하기 (2026-07-28 KST)
+- [x] M4 문서·AI memory 정렬: blueprint/roadmap/living-hue-deck-spec/growth-strategy/reward-system/storage-strategy/design-reference-index/design-qa-log/plan.md와 이 vault를 실제 diff·검증 결과에 맞춰 갱신하기 (checkpoint 3)
+- [ ] M4 후속: `feature/everyday-mission-packs`를 `main`에 병합할 시점 확정. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지
+- [ ] M5 Hueprint/Color DNA/Color Capsule: 기존 원본 Post/Deck 데이터 위에서 주간 회고와 공유를 연결하고, 완성 강제·연속 출석·랜덤 보상은 넣지 않기
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트와 화면 조회·foreground 체류·핵심 CTA·D1/D7/D30 집계 계약, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M4 우선: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기. 빈 탭/Coming Soon 화면 금지
 - [ ] M2-3 release QA: password-user populated baseline에서 Android `adb install -r`로 로그인·1/8 draft/master·synced 8/8 history/journal/Story 보존, 정리 happy path와 확인 직후 force-stop 복구를 확인한다. PWA는 같은 localhost origin에서 로그인된 draft/master/history/Story와 offline metadata/cache를 확인한다. 구현·단위 검증·SW controller/cache 교체는 완료했으며 Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지
