@@ -1,5 +1,12 @@
 # Security Audit Notes
 
+## Post-launch payment security boundary (approved 2026-07-28)
+
+- Version 1 contains no payment SDK, entitlement table, webhook, or paywall. The `M8M` update follows `docs/post-launch-monetization-and-payment-safety.md` after an actual in-place data-preservation check.
+- A client purchase callback must not self-grant paid access. Store/provider verification is authoritative; pending purchases stay locked, and refund/revocation/account switch refresh entitlement without touching free records.
+- Bind purchase ownership to the authenticated Supabase user ID, not email or username. Never expose webhook secrets, store service credentials, RevenueCat secret keys, or purchase tokens in the Vite bundle or product-event payload.
+- Any entitlement mirror is additive, owner-scoped, and cross-user denied. It must not broaden existing Post/Storage policies or require rewriting photos, Posts, drafts, or local masters.
+
 ## Product boundary update (2026-07-26)
 
 - First release has no public/anonymous user-generated image surface, feed, Relay, or Hue Drop. This is an intentional safety boundary, not a missing implementation.

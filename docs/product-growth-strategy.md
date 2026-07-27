@@ -452,7 +452,8 @@ Backend 후보:
 ### Current Status
 
 - 2026-07-23 현재 결제, 구독, 광고, 스폰서 미션은 구현되어 있지 않다.
-- 베타에서는 daily mission, 촬영, 기록, history, 기본 story export와 공유를 무료로 유지한다.
+- 버전 1은 daily mission, 촬영, 기록, history, 기본 Hueprint/Capsule/story export와 공유를 무료로 출시한다.
+- 결제는 무료 버전의 실제 인플레이스 업데이트에서 데이터 보존을 확인한 뒤 첫 우선 업데이트로 진행한다. 구현·복원·entitlement·기존 데이터 불변 계약은 `docs/post-launch-monetization-and-payment-safety.md`를 따른다.
 - 리텐션과 공유 루프가 검증되기 전에는 광고나 core paywall을 추가하지 않는다.
 - 디지털 상품을 실제 앱에서 판매할 때는 Apple In-App Purchase와 Google Play Billing 정책을 구현 시점에 다시 확인한다.
 
@@ -483,7 +484,8 @@ Backend 후보:
 
 | 단계 | 수익 모델 | 판매 가치 | 시작 조건 |
 | --- | --- | --- | --- |
-| Beta | 무료 | 결제 없음. core loop와 공유 행동 측정 | 저장 안정성과 D1/D7 사용 패턴 확인 |
+| Version 1 | 무료 | 결제 없음. core loop와 공유 행동 측정 | 저장 안정성과 실제 인플레이스 업데이트 보존 확인 |
+| Post-launch M8M | Hueday Studio 1회 구매 | 고급 Hueprint/Capsule/Story 스타일·편집·고해상도 내보내기 후보 | 구매 가치 승인, Play Billing·복원·환불/회수·계정 귀속·업데이트 보존 완성 |
 | 1 | 1회 구매 Creative Pack | 계절·여행·커플·졸업 palette, 도안, frame, typography, sticker | recap/story/Canvas의 반복 사용과 구매 의향 확인 |
 | 2 | Hueday Studio 1회 구매 | 고급 Hue Canvas 재질·도안·레이어·편집·로컬 이력·고해상도 창작 export | 창작 도구 가치와 store 1회 결제 의향 확인 |
 | 3 | Hueday Cloud 구독 | 5GB 고화질 백업, 자동 기기 복구, 고화질 다시 받기, 30일 휴지통 | 복구 신뢰와 사용자당 storage/egress 비용 확인 |
@@ -533,7 +535,7 @@ Backend 후보:
 
 ### Launch Gates
 
-유료 기능은 일정 날짜가 아니라 아래 증거가 생겼을 때 연다.
+유료 기능은 버전 1의 실제 인플레이스 업데이트 보존을 확인한 뒤, 아래 증거와 안전 조건이 생겼을 때 연다.
 
 - 핵심 저장/복구 실패가 베타 운영을 방해하지 않는다.
 - 사용자가 한 달 동안 반복해서 기록하고 recap 또는 story를 다시 만든다.

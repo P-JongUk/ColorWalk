@@ -194,6 +194,14 @@
 - Hueday Studio 1회 구매 가격 가설은 19,900원, 출시 프로모션 14,900원 검토입니다. 고급 기기 내 창작 도구를 제공하되 Cloud·AI·실물·모든 미래 팩은 포함하지 않습니다.
 - 기본 Hue Canvas, 얻은 색, 기본 재질/도안, 로컬 저장/export는 무료로 유지합니다.
 
+## 2026-07-28 — 결제는 무료 버전 출시 후 additive 업데이트 (approved)
+
+- 버전 1에는 결제 모듈을 넣지 않고 무료 핵심 경험과 인플레이스 업데이트 보존을 먼저 검증합니다.
+- 결제는 무기한 보류가 아니라 첫 우선 후속 업데이트 `M8M`입니다. 사용자가 유료 업데이트·Studio·Cloud·paywall·entitlement를 요청하면 `docs/post-launch-monetization-and-payment-safety.md`를 자동으로 읽고 그 절차를 따릅니다.
+- 첫 상품 기본안은 반복 서버 비용이 작은 Hueday Studio 1회 구매입니다. Cloud는 실제 storage/egress와 복구 수요를 측정한 뒤 별도 승인합니다.
+- 결제 권한은 기존 Post·사진·IndexedDB/local master와 분리된 additive 계층이며 Supabase user ID에 귀속합니다. 결제 도입을 이유로 기존 사용자 데이터를 backfill·변환·삭제하지 않습니다.
+- 구매 실패·보류·환불·취소·만료가 무료 기록 열람, 기본 내보내기와 계정 삭제를 막지 않습니다.
+
 ## 2026-07-23 — 백엔드 공급자 역할
 
 - 현재 Supabase Auth·Postgres·RLS·Storage 결합과 검증 자산을 유지하며 Railway로 선제 이전하지 않습니다.

@@ -1,5 +1,12 @@
 # Hueday Release Readiness Notes
 
+## Post-launch payment update gate (approved 2026-07-28)
+
+- Version 1 launches without billing. Payment is the priority `M8M` update only after one real in-place update preserves the signed-in user's draft/master, history, Deck, Hueprint/Capsule, Story, and free export.
+- Follow `docs/post-launch-monetization-and-payment-safety.md`. Add billing and entitlement separately from Posts, media assets, and local masters; do not pass the gate by uninstalling or clearing app data.
+- Before rollout, verify Play license-tester purchase, cancellation, pending-to-purchased, restore, refund/revocation, logout/account switch, and the unchanged free path on a physical device.
+- Hueday Cloud is not part of this gate until measured storage/egress and backup/restore/retention behavior are separately approved.
+
 ## Launch-scope and update-safety gate (2026-07-26)
 
 - First release is a personal product: Color Hunt, local-first recovery, Living Hue Deck, Color Volume, M4 explicit-pack collections, M5 Hueprint, and existing Story export. Hue Canvas, Hue Drop, Relay, public feeds, and anonymous UGC are out of scope.

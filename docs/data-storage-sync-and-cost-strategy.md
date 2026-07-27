@@ -18,6 +18,15 @@
 - 출시 후 Hue Drop은 참여자의 기기 원본 대신 충분한 화질의 display preview와 thumbnail을 공유한다. 공동 결과 다운로드는 합성 카드 중심으로 제공하고, 타인의 개별 원본 다운로드·공개 CDN·무제한 재전송을 기본값으로 두지 않는다.
 - 트래픽·Storage 비용 판단은 실제 파일 바이트, preview 재다운로드, 동기화 실패 재시도, Cloud 전환율을 측정한 뒤 한다. 출시 전 추정만으로 이미지 품질을 과도하게 낮추거나 CDN/서버를 추가하지 않는다.
 
+## 2026-07-28 결제 업데이트 데이터 분리 계약
+
+- 버전 1에는 결제 SDK·entitlement table·Cloud quota를 미리 만들지 않는다.
+- 출시 후 결제는 기존 `posts`, IndexedDB 일일 기록, `media-asset`, local master와 분리된 additive 권한 계층으로 추가한다. 결제 도입을 이유로 기존 기록을 backfill·변환·삭제하지 않는다.
+- 사용자 귀속은 Supabase user ID를 기준으로 하며 이메일·사용자명을 결제 소유권 키로 쓰지 않는다. 로그아웃과 계정 전환에서 이전 계정 권한 캐시를 분리한다.
+- Hueday Studio 환불·검증 실패는 유료 도구만 잠그며 무료 기록과 기본 내보내기는 유지한다.
+- Hueday Cloud는 실제 master 바이트·storage/egress·복구 수요·해지 후 보존 기간을 측정하고 승인하기 전에는 구현하지 않는다.
+- 상세 구현·구매 복원·인플레이스 업데이트 QA는 `docs/post-launch-monetization-and-payment-safety.md`를 따른다.
+
 마지막 갱신: 2026-07-24 KST
 상태: 제품·아키텍처 기준 확정, M1 일일 기록 경로 구현 완료; 고화질 Cloud 계층은 후속
 목표: 사용자가 늘어도 사진 트래픽과 DB 비용을 통제하면서 기록 손실과 기기 변경 불안을 막는다.

@@ -9,6 +9,7 @@
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
 > - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.
+> - **출시 후 우선 수익화:** 무료 버전의 실제 인플레이스 업데이트 보존 확인 뒤 `M8M`에서 Hueday Studio 1회 구매의 Play Billing/entitlement·구매 복원·보류·환불/회수·계정 전환을 구현한다. 기존 Post/사진/로컬 저장은 변환하지 않는다. 상세 계약은 `docs/post-launch-monetization-and-payment-safety.md`다.
 > - **첫 소셜 업데이트:** Hue Drop은 Canvas와 별도 release로 진행하고 공개/익명 UGC를 열지 않는다.
 
 
@@ -41,6 +42,9 @@
 - [x] M4 문서·AI memory 정렬: blueprint/roadmap/living-hue-deck-spec/growth-strategy/reward-system/storage-strategy/design-reference-index/design-qa-log/plan.md와 이 vault를 실제 diff·검증 결과에 맞춰 갱신하기 (checkpoint 3)
 - [x] M4 후속: `feature/everyday-mission-packs`를 `a49caf6`까지 fast-forward로 `main`에 통합. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지
 - [ ] M5 Hueprint/Color DNA/Color Capsule: 기존 원본 Post/Deck 데이터 위에서 주간 회고와 공유를 연결하고, 완성 강제·연속 출석·랜덤 보상은 넣지 않기
+- [ ] 무료 버전 1 출시 뒤 실제 인플레이스 업데이트에서 기존 로그인·draft/master·기록함·Deck·Hueprint/Capsule·Story 보존 확인
+- [ ] M8M 결제 업데이트: 상품·가격·무료/유료 경계 재승인 → Hueday Studio 1회 구매 → 검증된 entitlement → 구매 복원·보류·환불/회수·계정 전환 → 기존 데이터 보존 QA 순서로 진행
+- [ ] Hueday Cloud는 실제 master 바이트·storage/egress·복구 수요·해지 후 보존 계약을 측정·승인한 뒤 별도 계획
 - [ ] M2: 가입 → 촬영 → 저장의 안정성·E2E·최소 이벤트와 화면 조회·foreground 체류·핵심 CTA·D1/D7/D30 집계 계약, 로컬 고화질 마스터·preview·archive 기반 완성하기
 - [ ] M4 우선: Hue Canvas 빈/Palette/자유 작업/도안 크기/완성·export 430x932와 실제 Canvas 2D 성능 스파이크를 검증하고 사용자 승인받기. 빈 탭/Coming Soon 화면 금지
 - [ ] M2-3 release QA: password-user populated baseline에서 Android `adb install -r`로 로그인·1/8 draft/master·synced 8/8 history/journal/Story 보존, 정리 happy path와 확인 직후 force-stop 복구를 확인한다. PWA는 같은 localhost origin에서 로그인된 draft/master/history/Story와 offline metadata/cache를 확인한다. 구현·단위 검증·SW controller/cache 교체는 완료했으며 Android capture → force-stop → offline/online retry는 출시 전 필수 QA로 유지

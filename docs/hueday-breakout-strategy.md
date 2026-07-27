@@ -1,8 +1,8 @@
 # Hueday Breakout Strategy
 
-> **제품 방향 갱신(2026-07-26):** 첫 출시의 차별점은 실제로 찾은 색이 `Living Hue Deck`의 성장 카드·Color Volume·주간 Hueprint가 되는 개인 아카이브다. Hue Canvas는 G1을 보존한 출시 후 초기 필수 기능 업데이트로, 발견 색을 능동적으로 쓰는 창작 확장이다. Hue Drop은 첫 소셜 업데이트다. 공개/익명 이미지 커뮤니티는 모더레이션 운영을 별도 승인하기 전까지 제품 가설에 포함하지 않는다. 이 변경은 외부 시장 사실이 아니라 사용자 승인 제품 결정이며 상세 계약은 `docs/launch-scope-and-update-safety-contract.md`에 있다.
+> **제품 방향 갱신(2026-07-28):** 첫 출시는 무료 개인 아카이브로 완성하고 실제 인플레이스 업데이트 보존을 확인한다. 결제는 무기한 보류하지 않고 `M8M` 우선 업데이트에서 기존 기록과 분리된 additive entitlement로 Hueday Studio 1회 구매부터 검증한다. Cloud는 실제 저장/전송 비용과 복구 가치가 확인된 뒤 별도 진행한다. 상세 계약은 `docs/launch-scope-and-update-safety-contract.md`와 `docs/post-launch-monetization-and-payment-safety.md`에 있다.
 
-마지막 코드 대조: 2026-07-22 KST · 제품 방향 갱신: 2026-07-26 KST
+마지막 코드 대조: 2026-07-22 KST · 제품 방향 갱신: 2026-07-28 KST
 문서 성격: 현재 구현, 시장 근거, 제품 가설을 분리해서 관리하는 living document
 전체 제품 합의: `docs/hueday-product-blueprint.md`
 전체 실행 순서: `docs/hueday-development-roadmap.md`
@@ -253,7 +253,8 @@ M2-2 저장 안정성 뒤에는 전체 미션 팩보다 이 실제 Hue Canvas �
 
 | 시점 | 모델 | 무료로 남길 것 | 유료 가치 | 시작 조건 |
 | --- | --- | --- | --- | --- |
-| 베타 | 전부 무료 | 미션, 촬영, 기록, 히스토리, 기본 공유 | 없음 | 코어 리텐션 측정 |
+| 버전 1 | 전부 무료 | 미션, 촬영, 기록, 히스토리, Deck, 기본 Hueprint/Capsule/공유 | 없음 | 코어 안정성과 실제 인플레이스 업데이트 보존 확인 |
+| 출시 후 M8M | Hueday Studio 1회 구매 | 버전 1 무료 핵심 전체 | 승인된 고급 스타일·편집·고해상도 내보내기 | 구매 가치와 Play Billing·복원·환불/회수·계정 귀속 검증 |
 | 초기 | 1회 구매 팩 | 기본 템플릿과 획득 배지 보상 | 계절·여행·커플·졸업 팔레트, 한정 프레임 | 공유/리캡 사용자가 반복 구매 의향을 보일 때 |
 | 초기 | Hueday Studio 1회 구매 | 기본 Hue Canvas·도안·재질·export | 기기 내 고급 재질·도안·레이어·편집·창작 export | 창작 도구 구매 의향이 확인될 때 |
 | 성장 | Hueday Cloud | 기본 기록, 로컬 고화질, 작은 cloud, 수동 이전 | 5GB 고화질 백업, 자동 복구, 다시 받기, 휴지통 | 반복적인 storage/egress 비용과 복구 가치가 확인될 때 |

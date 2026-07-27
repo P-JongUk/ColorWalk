@@ -1,8 +1,8 @@
 # Hueday 전체 개발 마스터 로드맵
 
-> **2026-07-26 실행 순서 정정 — 이 블록이 아래의 이전 M4 Canvas·M7 Relay 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 버전 1 출시 → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 상세 계약: `docs/launch-scope-and-update-safety-contract.md`, `docs/living-hue-deck-product-spec.md`, `docs/hue-canvas-product-spec.md`, `docs/hue-drop-post-launch-spec.md`.
+> **2026-07-28 실행 순서 정정 — 이 블록이 아래의 이전 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint/Color DNA·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M7 실기기·보안·출시 검증` → 무료 버전 1 출시 → 실제 인플레이스 업데이트 보존 확인 → `M8M 결제·entitlement·Hueday Studio` → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 결제 안전 계약: `docs/post-launch-monetization-and-payment-safety.md`.
 
-마지막 갱신: 2026-07-27 KST
+마지막 갱신: 2026-07-28 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
 
@@ -16,6 +16,7 @@
 | M5 | Hueprint·Color DNA·Color Capsule | 주간 회고와 Story 공유를 Deck 원본 기록 위에서 연결한다. 완성 강제·연속 출석·랜덤 보상을 넣지 않는다. |
 | M6 | 통합 디자인·접근성·성능 | 430×932의 일반 사용자 경로와 기본 Android/PWA 성능을 다듬는다. 고위험/비현실 조합은 P2 보류다. |
 | M7 | 출시 검증 | 인증/RLS/저장·복구/인플레이스 업데이트/공유/실기기 QA와 문서를 마감한다. |
+| M8M (출시 후 우선 수익화) | 결제·entitlement·Hueday Studio | 무료 버전의 실제 인플레이스 업데이트 보존을 확인한 뒤, 기존 기록과 분리된 additive 권한 계층으로 1회 구매·복원·환불/회수·계정 전환을 완성한다. Cloud는 비용·복구 수요 확인 뒤 별도 단계다. |
 | M8A (출시 후 필수) | Hue Canvas production | G1에서 검증한 Canvas 2D를 업데이트 안전 gate 위에서 production 기능으로 완성한다. 기존 사용자 기록과 package/signing을 그대로 유지한다. |
 | M8B (출시 후 소셜) | Hue Drop | 개인 출시의 실제 신호를 확인한 뒤 초대 전용 친구 3×3을 작은 베타로 도입한다. 공개/익명 UGC는 열지 않는다. |
 | M9 (출시 후) | 데이터 기반 후보 재검토 | Charm/Loom/Bouquet, Circle/Drift는 측정·인터뷰 근거가 있을 때만 선택한다. |
@@ -28,6 +29,14 @@
 - [ ] 구버전 앱과 새 버전 앱의 기본 Color Hunt/Post 저장이 additive DB 변경 뒤에도 공존한다.
 - [ ] Canvas 기능 gate를 끄더라도 recipe와 기존 개인 기록이 보존된다.
 - [ ] G2 도안 3개·resize·export와 실제 Android 조작/성능 QA가 통과한다.
+
+### M8M 결제 업데이트 완료 조건
+
+- [ ] 무료 버전 사용자의 로그인·draft/master·기록함·Deck·Hueprint/Capsule·Story가 인플레이스 업데이트 뒤 그대로다.
+- [ ] Google Play sandbox/license tester에서 1회 구매, 사용자 취소, 보류 후 완료, 구매 복원, 환불/권한 회수와 계정 전환이 통과한다.
+- [ ] 결제·entitlement가 기존 Post/사진/로컬 저장과 분리된 additive 경계이며 클라이언트가 스스로 권한을 승격할 수 없다.
+- [ ] 무료 핵심 기록·기본 내보내기·계정 삭제는 결제 실패·만료와 무관하게 동작한다.
+- [ ] 상품·가격·정책·분석·보안 문서가 실제 Play Console과 앱 구현에 일치한다.
 
 ### M3 Living Hue Deck 완료 조건
 
@@ -86,7 +95,8 @@ M0 문서·자동화 기반
 → M5 Hueprint·Color DNA·Color Capsule
 → M6 통합 디자인·접근성·성능
 → M7 실기기·보안·출시 검증
-→ 버전 1 출시
+→ 무료 버전 1 출시·실제 인플레이스 업데이트 보존 확인
+→ M8M 결제·entitlement·Hueday Studio 우선 업데이트
 → M8A Hue Canvas 초기 필수 업데이트
 → M8B Hue Drop 첫 소셜 업데이트
 ```

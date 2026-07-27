@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | M3 Living Hue Deck·Color Volume / M4 컬렉션 / M5 Hueprint | `docs/living-hue-deck-product-spec.md` | 청사진, 보상, 디자인 인덱스, 저장 전략 |
 | 저장 모델·앱 업데이트·migration | `docs/launch-scope-and-update-safety-contract.md` | 저장 전략, 보안 감사, release readiness |
-| 첫 출시 수익화 | `docs/launch-scope-and-update-safety-contract.md` | 성장 전략, 보상 시스템 |
+| 출시 후 결제·유료 업데이트 | `docs/post-launch-monetization-and-payment-safety.md` | 출시/업데이트 안전 계약, 성장 전략, 저장 전략, 보안 감사, release readiness, 보상 시스템 |
 | Hue Drop 검토/구현 | `docs/hue-drop-post-launch-spec.md` | 보안 감사, 저장 전략, 출시 준비도 |
 | Hue Canvas 출시 후 구현 | `docs/hue-canvas-product-spec.md` | 출시/업데이트 안전 계약, 저장 전략, release readiness; G1 브랜치 전체 병합 금지 |
 
@@ -46,7 +46,7 @@
 | Supabase, Auth, RLS, Storage, migration | `docs/security-audit.md`, `docs/release-readiness.md`, `AGENTS.md`의 Supabase 절 | migration, verify script, 보안 문서, fallback 종료 조건 |
 | Android, PWA, 카메라 권한, 알림 | `docs/android-local-environment.md`, `docs/release-readiness.md`, 관련 QA 기록 | 실기기/에뮬레이터 결과와 검증 날짜 |
 | 배포, 출시, 스토어, iOS | `docs/release-readiness.md`, `docs/hueday-breakout-strategy.md`, `plan.md` | 실제 배포 상태, 사용자 수동 작업, 보안/스토어 요구사항 |
-| 수익화, 결제, 유료 팩 | `docs/product-growth-strategy.md`의 Monetization Model, 보상 문서 | 무료 약속, store billing, 보상 가치, 출시 gate |
+| 수익화, 결제, 유료 팩, Studio, Cloud, 구매 복원, paywall, entitlement | `docs/post-launch-monetization-and-payment-safety.md`, `docs/product-growth-strategy.md`의 Monetization Model, 출시/업데이트 안전 계약 | 무료 약속, 기존 데이터 불변, store billing·구매 검증·복원, 보안/RLS, 인플레이스 업데이트 gate |
 | 분석, 조회수, 체류시간, 재방문, 클릭, 운영 대시보드, 초기 트래픽 | `docs/product-growth-strategy.md`의 Metrics, `docs/security-audit.md`, `docs/hueday-development-roadmap.md` M2·M9·M10 | 이벤트·지표 정의, 개인정보 경계, 집계 접근권한, 용량 검증, 후속 관리자 화면 |
 | AI 워크플로, Graphify, Obsidian, 도구 저장 | Hueday workflow skill, AI memory README, `AGENTS.md` | 자동화 검증, D 드라이브, 취업 기록 |
 
@@ -69,6 +69,7 @@
 | 전체 기능 의존 순서·현재 진행 상태 | `docs/hueday-development-roadmap.md` |
 | 제품 진단·차별화·iOS·시장 근거 | `docs/hueday-breakout-strategy.md` |
 | 성장 기능·수익화 | `docs/product-growth-strategy.md` |
+| 결제 구현 시점·entitlement·업데이트 데이터 보존 | `docs/post-launch-monetization-and-payment-safety.md` |
 | 발견 색 콘텐츠 결정·후보·보류 | `docs/discovered-color-content-strategy.md` |
 | Hue Canvas 상세 계약 | `docs/hue-canvas-product-spec.md` |
 | 저장·동기화·비용 | `docs/data-storage-sync-and-cost-strategy.md` |
