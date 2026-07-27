@@ -2,12 +2,14 @@ import { CalendarDays, Camera, ChevronLeft, ChevronRight, Share2 } from 'lucide-
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
+import { ColorCapsuleArchiveView, ColorCapsuleMonthView, HueprintWeekView } from '@/components/HueprintView'
 import { ColorVolumeView, LivingHueDeckView, MissionPackCollectionView } from '@/components/LivingHueDeckView'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
 import { getMissionPackCollections, getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
+import { getColorCapsules, getWeekKey, saveHueprintCoverPreference, type HueprintDay, type WeeklyHueprint } from '@/lib/hueprint'
 import { t } from '@/lib/i18n'
 import { getColorVolumes, getLivingHueDeckCards, type DeckStage, type LivingHueDeckCard } from '@/lib/livingHueDeck'
 import { MISSION_PACKS } from '@/lib/missionPacks'
@@ -16,9 +18,11 @@ import { cn } from '@/lib/utils'
 import type { CaptureDraft, Locale, MissionPackId, Post } from '@/types'
 
 type DeckEvent = 'entered' | 'volume_opened' | 'source_opened' | 'story_opened'
+type ContentView = 'record' | 'deck' | 'volume' | 'pack' | 'hueprint' | 'capsule' | 'capsule-month'
 
 type CalendarViewProps = {
   locale: Locale
+  ownerId: string
   posts: Post[]
   currentDraft?: CaptureDraft | null
   masterCleanupByDate?: Record<string, { eligible: boolean; masterCount: number; masterBytes?: number }>
@@ -29,6 +33,8 @@ type CalendarViewProps = {
   onStoryExported?: (post: Post, kind: 'story' | 'grid', delivery: 'download' | 'share') => void
   onStoryShareOpened?: (post: Post, kind: 'story' | 'grid') => void
   onMissionPackCollectionOpened?: (id: MissionPackId) => void
+  onHueprintScreenViewed?: (screen: 'hueprint_week' | 'color_capsule_archive' | 'color_capsule_month') => void
+  onHueprintCtaClicked?: (cta: 'hueprint_cover_changed' | 'hueprint_source_opened' | 'color_capsule_source_opened' | 'color_memory_source_opened') => void
 }
 
 function formatBytes(bytes: number) {
@@ -41,15 +47,18 @@ function createDeckSessionId() {
   return `deck-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened }: CalendarViewProps) {
+export function CalendarView({ locale, ownerId, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened, onHueprintScreenViewed, onHueprintCtaClicked }: CalendarViewProps) {
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
-  const [contentView, setContentView] = useState<'record' | 'deck' | 'volume' | 'pack'>('record')
-  const [storyReturnView, setStoryReturnView] = useState<'record' | 'deck' | 'volume' | 'pack'>('record')
+  const [contentView, setContentView] = useState<ContentView>('record')
+  const [storyReturnView, setStoryReturnView] = useState<ContentView>('record')
   const [selectedVolumeHex, setSelectedVolumeHex] = useState<string | null>(null)
   const [selectedPackId, setSelectedPackId] = useState<MissionPackId | null>(null)
   const [deckVisit, setDeckVisit] = useState(0)
+  const [hueprintWeekKey, setHueprintWeekKey] = useState(() => getWeekKey(new Date()))
+  const [hueprintCoverVersion, setHueprintCoverVersion] = useState(0)
+  const [selectedCapsuleMonthKey, setSelectedCapsuleMonthKey] = useState<string | null>(null)
   const [showMasterCleanupConfirm, setShowMasterCleanupConfirm] = useState(false)
   const [isCleaningMaster, setIsCleaningMaster] = useState(false)
   const [masterCleanupError, setMasterCleanupError] = useState<string | null>(null)
@@ -68,6 +77,8 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     [deckCards, selectedPackId],
   )
   const selectedPackConfig = selectedPackId ? MISSION_PACKS.find((pack) => pack.id === selectedPackId) : null
+  const colorCapsules = useMemo(() => getColorCapsules(posts), [posts])
+  const selectedCapsule = selectedCapsuleMonthKey ? colorCapsules.find((capsule) => capsule.monthKey === selectedCapsuleMonthKey) : null
   const deckSessionRef = useRef<string | null>(null)
   const seenDeckStagesRef = useRef(new Set<DeckStage>())
   const todayKey = getLocalDateKey()
@@ -140,6 +151,57 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     setContentView('volume')
   }
 
+  function openHueprint() {
+    setHueprintWeekKey(getWeekKey(new Date()))
+    onHueprintScreenViewed?.('hueprint_week')
+    setContentView('hueprint')
+    setShowStoryStudio(false)
+  }
+
+  function openCapsuleArchive() {
+    onHueprintScreenViewed?.('color_capsule_archive')
+    setSelectedCapsuleMonthKey(null)
+    setContentView('capsule')
+    setShowStoryStudio(false)
+  }
+
+  function openCapsuleMonth(monthKey: string) {
+    onHueprintScreenViewed?.('color_capsule_month')
+    setSelectedCapsuleMonthKey(monthKey)
+    setContentView('capsule-month')
+  }
+
+  function openHueprintDay(day: HueprintDay) {
+    onHueprintCtaClicked?.('hueprint_source_opened')
+    setSelectedDate(day.localDate)
+    setContentView('record')
+    setShowStoryStudio(false)
+  }
+
+  function openCapsuleDay(day: HueprintDay) {
+    onHueprintCtaClicked?.('color_capsule_source_opened')
+    setSelectedDate(day.localDate)
+    setContentView('record')
+    setShowStoryStudio(false)
+  }
+
+  function openColorMemoryDay(day: HueprintDay) {
+    onHueprintCtaClicked?.('color_memory_source_opened')
+    setSelectedDate(day.localDate)
+    setContentView('record')
+    setShowStoryStudio(false)
+  }
+
+  function changeHueprintCover(week: WeeklyHueprint) {
+    if (!week.coverCandidates.length) return
+    const currentIndex = week.coverCandidates.findIndex((candidate) => candidate.imageId === week.defaultCover?.imageId)
+    const nextCandidate = week.coverCandidates[(currentIndex + 1) % week.coverCandidates.length]
+    if (saveHueprintCoverPreference(ownerId, week.weekKey, nextCandidate)) {
+      onHueprintCtaClicked?.('hueprint_cover_changed')
+      setHueprintCoverVersion((version) => version + 1)
+    }
+  }
+
   useEffect(() => {
     document.body.classList.toggle('story-mode-active', showStoryStudio)
     return () => document.body.classList.remove('story-mode-active')
@@ -199,15 +261,70 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
     )
   }
 
+  if (contentView === 'capsule-month' && selectedCapsule) {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <ColorCapsuleMonthView
+          locale={locale}
+          capsule={selectedCapsule}
+          onBack={openCapsuleArchive}
+          onOpenDay={openCapsuleDay}
+        />
+      </main>
+    )
+  }
+
+  if (contentView === 'capsule') {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <ColorCapsuleArchiveView
+          locale={locale}
+          posts={posts}
+          onOpenMonth={openCapsuleMonth}
+          onOpenDay={openColorMemoryDay}
+          onOpenHistory={() => setContentView('record')}
+        />
+      </main>
+    )
+  }
+
+  if (contentView === 'hueprint') {
+    return (
+      <main className="screen-flow history-screen deck-history-screen">
+        <header className="app-header">
+          <div><h1>{t(locale, 'calendar')}</h1></div>
+        </header>
+        <div className="history-view-switch history-view-switch-3" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
+          <button type="button" role="tab" aria-selected={false} onClick={() => setContentView('record')}>{locale === 'ko' ? '기록' : 'Records'}</button>
+          <button type="button" role="tab" aria-selected={false} onClick={openDeck}>Deck</button>
+          <button type="button" role="tab" aria-selected className="is-active">Hueprint</button>
+        </div>
+        <HueprintWeekView
+          key={`${hueprintWeekKey}:${hueprintCoverVersion}`}
+          locale={locale}
+          ownerId={ownerId}
+          posts={posts}
+          weekKey={hueprintWeekKey}
+          onChangeWeek={setHueprintWeekKey}
+          onOpenDay={openHueprintDay}
+          onChangeCover={changeHueprintCover}
+          onOpenHistory={() => setContentView('record')}
+          onOpenCapsule={openCapsuleArchive}
+        />
+      </main>
+    )
+  }
+
   if (contentView === 'deck') {
     return (
       <main className="screen-flow history-screen deck-history-screen">
         <header className="app-header">
           <div><h1>{t(locale, 'calendar')}</h1></div>
         </header>
-        <div className="history-view-switch" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
+        <div className="history-view-switch history-view-switch-3" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
           <button type="button" role="tab" aria-selected={false} onClick={() => setContentView('record')}>{locale === 'ko' ? '기록' : 'Records'}</button>
           <button type="button" role="tab" aria-selected className="is-active">Deck</button>
+          <button type="button" role="tab" aria-selected={false} onClick={openHueprint}>Hueprint</button>
         </div>
         <LivingHueDeckView
           key={deckVisit}
@@ -265,9 +382,10 @@ export function CalendarView({ locale, posts, currentDraft, masterCleanupByDate 
         </div>
       </header>
 
-      <div className="history-view-switch" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
+      <div className="history-view-switch history-view-switch-3" role="tablist" aria-label={locale === 'ko' ? '히스토리 보기' : 'History view'}>
         <button type="button" role="tab" aria-selected className="is-active">{locale === 'ko' ? '기록' : 'Records'}</button>
         <button type="button" role="tab" aria-selected={false} onClick={openDeck}>Deck</button>
+        <button type="button" role="tab" aria-selected={false} onClick={openHueprint}>Hueprint</button>
       </div>
 
       <section className="calendar-panel">

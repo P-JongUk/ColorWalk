@@ -17,6 +17,10 @@
   background: rgba(255, 253, 248, .8);
 }
 
+.history-view-switch-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .history-view-switch button {
   min-height: 34px;
   border-radius: 10px;
@@ -10226,4 +10230,281 @@
     font-weight: 700;
     line-height: 1.55;
   }
+}
+
+/* M5 Hueprint / Color Capsule - reuses the Chromatic Archive paper/sage/ink tokens and the
+   .deck-* archive language above. tier-N is a single decorative preset, never stacked. */
+.hueprint-screen,
+.capsule-screen {
+  display: grid;
+  gap: 16px;
+}
+
+.hueprint-week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hueprint-week-nav h2 {
+  color: #2f211b;
+  font-size: 15px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.hueprint-card {
+  overflow: hidden;
+  border: 1px solid rgba(112, 130, 56, .17);
+  border-radius: 22px;
+  background: url('/design/earth-soft-border.webp') center / 100% 100% no-repeat, #fffdf8;
+  box-shadow: 0 14px 30px rgba(62, 39, 35, .09);
+  padding: 16px;
+}
+
+.hueprint-cover {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--hueprint-accent, #708238) 22%, #f7f2e8);
+}
+
+.hueprint-cover-image {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+
+.hueprint-cover-empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #708238;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  padding: 24px;
+}
+
+.hueprint-cover-meta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, transparent, rgba(33, 29, 27, .55));
+  color: #fffdf8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hueprint-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.hueprint-stat {
+  display: grid;
+  gap: 2px;
+  border: 1px solid rgba(112, 130, 56, .16);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 253, 248, .85);
+}
+
+.hueprint-stat strong {
+  color: #2f211b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.hueprint-stat span {
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.hueprint-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.hueprint-palette-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #fffdf8;
+  box-shadow: 0 0 0 1px rgba(62, 39, 35, .12);
+}
+
+.hueprint-day-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.hueprint-day-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid rgba(112, 130, 56, .14);
+  border-radius: 14px;
+  padding: 8px 10px;
+  background: rgba(255, 253, 248, .82);
+  text-align: left;
+}
+
+.hueprint-day-thumb {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: center / cover no-repeat;
+}
+
+.hueprint-day-row strong {
+  color: #2f211b;
+  font-size: 13px;
+}
+
+.hueprint-day-row span {
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.hueprint-empty-week {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  gap: 10px;
+  text-align: center;
+  border: 1px dashed rgba(112, 130, 56, .32);
+  border-radius: 20px;
+  padding: 28px;
+  background: rgba(255, 253, 248, .7);
+}
+
+.hueprint-invalid-week {
+  border-color: rgba(200, 120, 90, .35);
+}
+
+.hueprint-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.hueprint-actions-secondary {
+  grid-template-columns: 1fr;
+  margin-top: 8px;
+}
+
+/* Detail tier presets - exactly one applied at a time, never stacked. */
+.hueprint-tier-0 .hueprint-card { box-shadow: 0 14px 30px rgba(62, 39, 35, .09); }
+
+.hueprint-tier-1 .hueprint-card {
+  border-color: color-mix(in srgb, #708238 26%, rgba(112, 130, 56, .17));
+}
+
+.hueprint-tier-2 .hueprint-card {
+  border-color: color-mix(in srgb, #708238 36%, rgba(112, 130, 56, .17));
+  box-shadow: 0 16px 34px rgba(62, 39, 35, .12);
+}
+
+.hueprint-tier-3 .hueprint-card {
+  border-color: color-mix(in srgb, #708238 46%, rgba(112, 130, 56, .17));
+  background: url('/design/earth-soft-border.webp') center / 100% 100% no-repeat, linear-gradient(160deg, #fffdf8, color-mix(in srgb, #708238 6%, #fffdf8));
+  box-shadow: 0 18px 38px rgba(62, 39, 35, .14);
+}
+
+.hueprint-tier-4 .hueprint-card {
+  border: 1.5px solid color-mix(in srgb, #708238 58%, rgba(112, 130, 56, .17));
+  background: url('/design/earth-soft-border.webp') center / 100% 100% no-repeat, linear-gradient(160deg, #fffdf8, color-mix(in srgb, #708238 12%, #fffdf8));
+  box-shadow: inset 0 0 0 1px rgba(112,130,56,.14), 0 20px 42px rgba(62, 39, 35, .16);
+}
+
+.capsule-tile-list {
+  display: grid;
+  gap: 12px;
+}
+
+.capsule-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid rgba(112, 130, 56, .16);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 253, 248, .88);
+  text-align: left;
+}
+
+.capsule-tile-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  width: 66px;
+  height: 66px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f2ede1;
+}
+
+.capsule-tile-photos span {
+  background: center / cover no-repeat;
+}
+
+.capsule-tile strong {
+  color: #2f211b;
+  font-size: 14px;
+}
+
+.capsule-tile span.capsule-tile-meta {
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.color-memory-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px dashed rgba(112, 130, 56, .3);
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: rgba(255, 253, 248, .75);
+  margin-top: 14px;
+}
+
+.color-memory-photo {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: center / cover no-repeat;
+}
+
+.color-memory-card strong {
+  color: #2f211b;
+  font-size: 12.5px;
+}
+
+.color-memory-card span {
+  color: #786b5e;
+  font-size: 11px;
+  font-weight: 700;
 }
