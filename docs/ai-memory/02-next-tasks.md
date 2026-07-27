@@ -2,9 +2,10 @@
 
 > ## 최신 재개 지점 (2026-07-27)
 >
-> - **기준:** `feature/living-hue-deck`의 M3 구현·430×932 local browser QA가 완료됐다. main에는 병합하지 않는다.
+> - **기준:** M3 Living Hue Deck은 `5582e46`으로 `main`에 통합됐고, 430×932 local browser QA도 완료됐다.
 > - **첫 구현 작업:** M2-3 local master 수동 정리 코드·단위 검증과 localhost PWA Service Worker 교체 확인은 완료했다. Android/PWA의 로그인된 populated fixture 인플레이스 보존 QA를 다음 release gate에서 닫는다. 자동 master 삭제는 금지하고, preview만 남는 복구 불가 상황은 명확한 경고와 사용자 확인을 거친다.
 > - **그 다음:** M4에서 저장된 명시적 미션 팩 ID 기반의 최대 3개 컬렉션만 구현한다. 날씨·시간·위치 추론으로 기존 일일 카드를 재분류하지 않는다.
+> - **M4 모델·세션:** 새 Codex 작업에서 Sol high+계획 모드로 계획만 승인받고, 구현은 Kiro Sonnet 5 high Supervised 단일-agent 세션, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 새 Codex Terra medium 작업으로 진행한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
 > - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
 > - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.

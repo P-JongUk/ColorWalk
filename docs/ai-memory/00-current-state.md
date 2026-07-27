@@ -1,10 +1,12 @@
 # 현재 상태
 
-> **2026-07-27 M3 Living Hue Deck checkpoint — current source of truth:** `feature/living-hue-deck` implements Deck from merged daily records: `getPostGridImages()` decides 1/3/5/8 using `grid_images → client_meta.gridImages → image_path`; valid six-digit mission HEX is canonicalized through the shared color helpers for exact Color Volume grouping. The History switch is `기록 / Deck`; only the Deck content title spells `Living Hue Deck`. Completed local/pending records stay in Deck/Volume with `기기 저장` or `동기화 대기`, never a cloud-complete claim. Deck opens the original history record and existing Story Studio; export/share stays on the actual existing callback. M3 adds no table, migration, image format, upload, Canvas, social feature, collection, Hueprint, or AI. M4 owns explicit mission-pack-ID collections; M5 owns Hueprint/Color DNA/Capsule. Lazyweb was not callable in this session, so the D direction uses only confirmed local references/assets. Final gates passed: lint, Vitest 12 files/40 tests, build, live Supabase verification, Capacitor sync, and Android debug build; 430×932 empty/1/3/5/8/Volume/source/Story fixture captures are local. Physical Android in-place update remains a release gate.
+> **2026-07-27 M3 Living Hue Deck — main 통합 완료:** `5582e46`은 merged daily records에서 Deck을 파생한다. `getPostGridImages()`는 `grid_images → client_meta.gridImages → image_path`로 1/3/5/8을 정하고, 유효한 여섯 자리 mission HEX는 공유 helper로 canonicalize해 정확한 Color Volume을 만든다. 히스토리 전환은 `기록 / Deck`이며, 완료 local/pending 기록은 `기기 저장` 또는 `동기화 대기`로만 표시한다. 새 table, migration, image format/upload, Canvas, social, collection, Hueprint, AI는 추가하지 않았다. M4가 명시적 mission-pack-ID 컬렉션을, M5가 Hueprint/Color DNA/Capsule을 맡는다. lint, Vitest 12 files/40 tests, build, live Supabase verification, Capacitor sync, Android debug build, 430×932 Deck QA를 통과했다. Android 인플레이스 업데이트 실기기 QA는 출시 gate로 남는다.
 
-> **2026-07-26 최신 상태 — 이 블록이 아래의 이전 Canvas/Relay 출시 우선순위보다 우선한다.** `feature/local-master-cleanup-update-safety`에서 M2-3 local master 수동 정리 구현과 자동 검증을 완료했고, Android/PWA의 로그인된 populated fixture 인플레이스 QA만 release gate로 남았다. 첫 출시 대표 콘텐츠는 Living Hue Deck이며, Hue Canvas G1은 `feature/hue-canvas-prototype`에 보존된 deferred 실험이고 Hue Drop은 첫 출시 후 첫 소셜 업데이트다. 다음 구현 순서는 M2-3 release QA → M3 Living Hue Deck → 버전 1 출시 → M8A Hue Canvas → M8B Hue Drop이다.
+> **현재 실행 순서:** M2-3 Android/PWA 인플레이스 QA는 출시 gate로 유지한다. M3 Living Hue Deck은 `main`에 통합 완료됐고, 다음 구현은 M4 최소 일상 미션 팩 → M5 Hueprint/Color DNA·Color Capsule → M6 통합 디자인·접근성·성능 → M7 출시 검증 → 버전 1 출시다. Hue Canvas는 출시 후 필수 초기 업데이트, Hue Drop은 별도 첫 소셜 업데이트다.
 
 ## 제품
+
+- 모델 운용: 큰 방향 대화는 Codex Sol medium, 고위험 계획 확정은 Sol high+계획 모드, 승인된 기능 구현은 Kiro Sonnet 5 high, 독립 diff 검토는 Antigravity Gemini 3.1 Pro high, 최종 통합은 Codex Terra medium을 기본으로 한다. 역할 전환마다 Git checkpoint를 만들고 같은 worktree를 동시에 수정하지 않는다.
 
 - 공개 브랜드: Hueday
 - 내부 저장소/패키지/Supabase 이름: ColorWalk 유지

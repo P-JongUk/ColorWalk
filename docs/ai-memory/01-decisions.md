@@ -1,5 +1,14 @@
 # 지속 결정
 
+## 2026-07-27 — 다중 계정 모델 풀을 비용 효율적으로 사용
+
+- 상태: approved
+- 결정: ChatGPT Plus, Kiro 유료 계정, Copilot Student, Gemini 학생 Pro 혜택을 별도 사용량 풀로 보고, 작업 영향도·역할·실제 도구 권한에 따라 가장 낮은 충분 모델을 고른다.
+- 운영: 큰 방향 대화는 Codex Sol medium, 승인 계획은 Sol high+계획 모드, 승인된 다중 파일 구현은 Kiro Sonnet 5 high(Sonnet 4.6 안정형 fallback), 읽기 전용 독립 검토는 Antigravity Gemini 3.1 Pro high, 최종 통합은 Codex Terra medium을 기본으로 한다. Copilot Student는 Auto/월 200 credits이므로 장시간 agent 대신 무제한 completion과 작은 작업에 쓴다.
+- 세션: 기능마다 계획 1회·구현 담당 1개·독립 검토 1회·최종 통합 1회만 두고, 역할 전환 전 commit·push한다. 동일 worktree 동시 수정, Kiro의 제품 방향 재결정, Antigravity의 파일 수정, 검증 없는 자동 병합은 금지한다.
+- 이유: ChatGPT 고성능 사용량은 되돌리기 비싼 판단에 남기고, 학생 제공 사용량으로 저위험 작업을 처리하되 Hueday의 보안·데이터 보호·검증 품질은 낮추지 않는다.
+- 근거: 사용자가 제공한 Kiro/OpenCodex 모델 목록, Copilot Student 사용량 화면과 보유 계정 정보(2026-07-27). 실제 한도·도구 권한은 provider UI에서 작업마다 확인한다.
+
 ## 2026-07-27 — M3 Living Hue Deck execution contract (approved and implemented)
 
 - Color Volume is exact canonical six-digit mission HEX only: shared `hexToRgb`/`rgbToHex` normalizes normal casing such as `#ff0000` and `#FF0000`; no similarity grouping or speculative invalid-string recovery is added.

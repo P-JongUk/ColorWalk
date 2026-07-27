@@ -9,6 +9,29 @@
 3. 이 저장소의 과거 성공·실패 기록과 검증 결과
 4. 사용자가 제공한 `Artificial Analysis Coding Agent Index v1.1` 비용-성능 그래프
 
+## 다중 계정·모델 풀 운용 규칙 (2026-07-27)
+
+사용자는 ChatGPT Plus, Kiro 유료 계정, GitHub Copilot Student, Gemini 학생 Pro 혜택과 OpenCodex의 여러 provider 모델을 사용할 수 있다. 이는 서로 대체 가능한 "무료 모델 순위"가 아니라 **작업별로 소진할 수 있는 별도 사용량 풀**이다. 모델 표시명, 도구 권한, 컨텍스트 한도와 실제 할당량은 provider·시점에 따라 달라지므로, 고정 벤치마크 순위만 보고 선택하지 않는다.
+
+1. 먼저 작업의 영향도와 필요한 도구(저장소 읽기/수정, 브라우저, 테스트, 배포)를 확인한다. 선택한 provider가 현재 작업에 같은 도구 권한을 제공하지 않으면 그 provider는 후보에서 제외한다.
+2. 지금처럼 제품의 큰 줄기를 대화로 탐색할 때는 ChatGPT Plus의 `GPT-5.6 Sol · medium`을 사용한다. 구현 계약을 확정하거나 되돌리기 비싼 계획을 승인받을 때만 `Sol · high + 계획 모드`로 올린다.
+3. 승인된 다중 파일 기능의 주 구현은 Kiro 유료 풀의 `Claude Sonnet 5 · high`를 기본으로 한다. Kiro에서 Sonnet 5는 1.3x/1M context의 experimental 모델이므로 지시 누락이나 불안정성이 반복되면 같은 1.3x/1M context의 Active `Claude Sonnet 4.6 · high`로 내린다. Kiro는 local IDE의 같은 D-drive worktree, Supervised mode, 단일 agent로만 사용한다.
+4. Kiro의 Opus 5/4.8은 2.2x이므로 Sonnet이 실제로 막힌 복잡한 문제에만 승급한다. Sol 2.4x, Terra 1.2x, Luna 0.6x는 Kiro에서 굳이 중복 사용하지 않고 ChatGPT Codex의 판단·통합 역할과 분리한다. Qwen3 Coder Next·DeepSeek·MiniMax·GLM은 테스트로 정답을 즉시 판정할 수 있는 격리된 기계 작업 외에는 핵심 구현에 사용하지 않는다.
+5. 구현 후 독립 검토는 Google 학생 Pro 풀의 OpenCodex Antigravity `Gemini 3.1 Pro · high`를 읽기 전용으로 사용한다. 검토 모델은 파일을 수정하거나 제품 결정을 다시 열지 않고 승인된 계획 대비 commit diff의 누락·회귀·과설계만 보고한다. 해당 provider가 현재 task에서 diff/파일 읽기 도구를 제공하지 않으면 생략한다.
+6. 최종 확인·문서 정합성·main 병합은 ChatGPT Codex의 `Terra · medium`으로 commit 범위만 확인한다. 데이터 손실·인증/RLS·DB 계약·원인 불명 회귀가 발견될 때만 Terra high 또는 Sol high로 승급한다.
+7. GitHub Copilot Student는 현재 VS Code에서 Auto만 선택 가능하고 2026-07-27 화면 기준 월 200 AI credits다. 장시간 Agent 구현에는 쓰지 않고, AI credits가 들지 않는 IDE code completion과 짧은 설명·작은 격리 수정에 우선 사용한다.
+8. 짧은 요약·문구·읽기 전용 조사에는 Kiro Haiku/Luna 또는 Antigravity Flash처럼 별도 풀의 작은 모델을 사용한다. `search`, `embedding`, `exec-agent`, 모델 라우팅 전용 항목은 일반 개발 대화 모델로 선택하지 않는다. Ultra와 하위 에이전트는 계속 금지한다.
+
+### 세션과 작업 소유권
+
+- 하나의 기능에는 **계획 1회, 구현 담당 1개, 독립 검토 1회, 최종 통합 1회**만 둔다. 모든 모델이 저장소 전체를 반복해서 읽거나 각자 새 계획을 만들게 하지 않는다.
+- 같은 체크포인트의 구현·수정·검증은 같은 Kiro 세션에서 계속한다. 새로운 마스터 단계, 역할 전환, 컨텍스트가 크게 달라지는 독립 검토·최종 병합은 새 작업으로 연다.
+- Codex와 Kiro/OpenCodex는 같은 worktree를 동시에 수정하지 않는다. 역할을 넘기기 전에 Git checkpoint를 commit·push하고, 다음 모델은 전체 대화 대신 승인된 계획, `AGENTS.md`, 관련 source-of-truth 문서, 정확한 commit 범위를 읽는다.
+- Kiro 구현 세션은 방향을 다시 결정하지 않는다. Antigravity 검토 세션은 수정하지 않는다. Codex 통합 세션은 검토 결과를 무조건 적용하지 않고 실제 diff와 검증으로 채택 여부를 판단한다.
+- provider 오류나 지원되지 않는 mode가 한 번 확인되면 같은 작업에서 반복 시도하지 않는다. 사용 가능한 검증된 경로로 전환하고 모델 목록에 보인다는 이유만으로 호환성을 가정하지 않는다.
+
+각 작업의 첫 답변에는 실제로 선택할 **provider/모델 · 추론 · 계획 모드 · 목표 모드 · Fast**를 한 줄로 추천하고, 추천 이유를 작업의 모호성·영향·검증 비용으로만 설명한다. "무료이므로" 품질이 충분하지 않은 모델로 고위험 작업을 낮추지 않는다.
+
 외부 벤치마크 그래프는 방향을 잡는 보조 자료입니다. 그래프의 API cost는 Hueday 작업 한 건의 실제 요금이 아니며, 종합 점수가 특정 제품 기획이나 버그 수정의 품질을 보장하지 않습니다. 그래프에서는 Luna 계열이 저비용 구간에서 효율적이고 Sol이 최고 품질 구간에 있지만, 최종 선택은 작업 적합성으로 결정합니다.
 
 공식 기준은 다음 문서를 우선 확인합니다.
