@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useId, useRef, useState } from 'react'
 import { Camera as CameraIcon, Check, Images, RotateCcw, X, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { GridCollage } from '@/components/GridCollage'
 import { Button } from '@/components/ui/button'
+import { HuedayDialog } from '@/components/ui/dialog'
 import {
   buildCameraVideoConstraints,
   clampZoom,
@@ -69,6 +70,7 @@ type CameraSettings = MediaTrackSettings & {
 }
 
 export function CameraView({ locale, mission, initialDraft, activeMissionPack, onBack, onDraftChange, onComplete }: CameraViewProps) {
+  const previewDialogTitleId = useId()
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const backdropVideoRef = useRef<HTMLVideoElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -322,12 +324,15 @@ export function CameraView({ locale, mission, initialDraft, activeMissionPack, o
       <div className="camera-vignette" />
 
       {pendingImage ? (
-        <section className="absolute inset-x-4 top-20 z-20 rounded-[28px] bg-background/95 p-4 shadow-2xl backdrop-blur">
-          <img src={pendingImage.image.previewUrl} alt="Captured preview" className="aspect-[3/4] w-full rounded-[20px] object-cover" />
-          <p className="mt-3 text-center text-sm font-semibold">
-            {locale === 'ko' ? '이 사진을 오늘의 색 기록에 사용할까요?' : 'Use this photo for today’s color?'}
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-2">
+        <HuedayDialog
+          open={Boolean(pendingImage)}
+          onClose={discardPendingImage}
+          titleId={previewDialogTitleId}
+          title={locale === 'ko' ? '이 사진을 오늘의 색 기록에 사용할까요?' : 'Use this photo for today’s color?'}
+          closeLabel={locale === 'ko' ? '다시 찍기' : 'Retake'}
+        >
+          <img src={pendingImage.image.previewUrl} alt={locale === 'ko' ? '촬영한 사진 미리보기' : 'Captured photo preview'} className="aspect-[3/4] w-full rounded-[16px] object-cover" />
+          <div className="hd-dialog-actions">
             <Button type="button" variant="outline" onClick={discardPendingImage} disabled={isCapturing}>
               {locale === 'ko' ? '다시 찍기' : 'Retake'}
             </Button>
@@ -335,7 +340,7 @@ export function CameraView({ locale, mission, initialDraft, activeMissionPack, o
               {locale === 'ko' ? '이 사진 사용' : 'Use photo'}
             </Button>
           </div>
-        </section>
+        </HuedayDialog>
       ) : null}
 
       <header className="camera-header">
@@ -368,7 +373,7 @@ export function CameraView({ locale, mission, initialDraft, activeMissionPack, o
             {canComplete ? (
               <Button type="button" onClick={() => onComplete(buildDraft(mission, images, undefined, initialDraft, initialDraft?.localDate ?? openedLocalDate.current, activeMissionPack))}>
                 <Check data-icon="inline-start" aria-hidden="true" />
-                {locale === 'ko' ? '????곌린' : 'Write journal'}
+                {locale === 'ko' ? '저널 쓰기' : 'Write journal'}
               </Button>
             ) : null}
             <Button type="button" variant="ghost" onClick={onBack}>

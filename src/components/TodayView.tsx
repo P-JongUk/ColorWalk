@@ -1,5 +1,5 @@
-import { Bell, Camera, CloudSun, Images, Info, Shuffle } from 'lucide-react'
-import { useState, type CSSProperties } from 'react'
+import { Bell, Camera, CloudSun, Images, Info, Lock, Shuffle } from 'lucide-react'
+import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
 import { BadgeShelf } from '@/components/BadgeShelf'
@@ -7,6 +7,9 @@ import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { GridCollage } from '@/components/GridCollage'
 import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
+import { HuedayDialog } from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
+import { getReadableTextColor } from '@/lib/colors'
 import { getLocalDateKey } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
 import { t } from '@/lib/i18n'
@@ -22,7 +25,6 @@ type TodayViewProps = {
   missionPack: MissionPackSelection
   onSelectMissionPack: (id: MissionPackId | null) => void
   onStartCamera: () => void
-  onToggleLocale: () => void
   onShuffleMission: () => void
   canShuffleMission: boolean
 }
@@ -36,6 +38,7 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
   onSelectMissionPack: (id: MissionPackId | null) => void
 }) {
   const [pendingId, setPendingId] = useState<MissionPackId | null | undefined>(undefined)
+  const confirmDialogTitleId = useId()
   const recommendedId = getRecommendedMissionPackId(mission.weatherGroup, mission.timeBucket)
 
   function requestSelect(id: MissionPackId | null) {
@@ -92,7 +95,13 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
         ))}
       </div>
       {pendingId !== undefined ? (
-        <div className="mission-pack-confirm" role="alertdialog" aria-label={locale === 'ko' ? '미션 팩 변경 확인' : 'Mission pack change confirmation'}>
+        <HuedayDialog
+          open={pendingId !== undefined}
+          onClose={() => setPendingId(undefined)}
+          titleId={confirmDialogTitleId}
+          title={locale === 'ko' ? '미션 팩 변경 확인' : 'Mission pack change confirmation'}
+          closeLabel={locale === 'ko' ? '취소' : 'Cancel'}
+        >
           <p>
             {pendingId
               ? (locale === 'ko'
@@ -102,11 +111,11 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
                 ? '팩을 해제하면 이 기록은 종료 후 팩 컬렉션에서 제외돼요.'
                 : 'Clearing the pack means this record will be excluded from pack collections once closed.')}
           </p>
-          <div className="mission-pack-confirm-actions">
+          <div className="hd-dialog-actions">
             <Button type="button" variant="outline" size="sm" onClick={() => setPendingId(undefined)}>{locale === 'ko' ? '취소' : 'Cancel'}</Button>
             <Button type="button" size="sm" onClick={confirmSelect}>{locale === 'ko' ? '확인' : 'Confirm'}</Button>
           </div>
-        </div>
+        </HuedayDialog>
       ) : null}
     </section>
   )
@@ -147,12 +156,36 @@ export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, 
         <h2>{t(locale, 'todayColor')}</h2>
         <div className="home-title-actions">
           <button type="button" className="home-info-button" aria-label="Mission info" onClick={() => toast.message(locale === 'ko' ? '오늘의 색은 현재 날씨와 시간에 맞춰 골라요.' : 'Today’s color uses the current weather and time.')}><Info aria-hidden="true" /></button>
-          <button type="button" className="mission-shuffle-button" onClick={onShuffleMission} data-locked={!canShuffleMission || undefined} disabled={!canShuffleMission}><Shuffle aria-hidden="true" /><span>{locale === 'ko' ? '다른 색' : 'Shuffle'}</span></button>
+          {canShuffleMission ? (
+            <button type="button" className="mission-shuffle-button" onClick={onShuffleMission}><Shuffle aria-hidden="true" /><span>{locale === 'ko' ? '다른 색' : 'Shuffle'}</span></button>
+          ) : null}
         </div>
       </section>
-      <section className="mission-ticket mission-ticket-grid" style={{ '--mission-color': mission.hex } as CSSProperties}>
-        <div className="ticket-copy"><p>TODAY COLOR</p><h2>{mission.label[locale]}</h2><strong>{mission.hex}</strong></div>
-        <div className="ticket-grid-preview"><GridCollage locale={locale} missionHex={mission.hex} colorName={mission.label[locale]} images={todayGridImages} variant="home" /></div>
+      <section className="mission-frame-artifact">
+        <p className="mission-frame-label">{locale === 'ko' ? '3×3 한 페이지' : '3×3, one page'}</p>
+        <div className="mission-frame-row">
+          <div
+            className="mission-frame"
+            style={{ backgroundColor: mission.hex, color: getReadableTextColor(mission.hex) }}
+          >
+            <p className="mission-frame-eyebrow">{locale === 'ko' ? '오늘의 미션 색' : "Today's mission color"}</p>
+            <h2 className="mission-frame-name">{mission.label[locale]}</h2>
+            <div className="mission-frame-meta">
+              <span className="mission-frame-hex">{mission.hex}</span>
+              {isRecordClosed || photoCount > 0 ? (
+                <span className="mission-frame-lock"><Lock aria-hidden="true" />{locale === 'ko' ? '색 잠금' : 'Locked'}</span>
+              ) : null}
+            </div>
+          </div>
+          <div className="mission-frame-grid"><GridCollage locale={locale} missionHex={mission.hex} colorName={mission.label[locale]} images={todayGridImages} variant="home" /></div>
+        </div>
+        <div className="mission-frame-progress">
+          <div className="mission-frame-progress-row">
+            <span className="mission-frame-fraction">{photoCount}/8</span>
+            <Progress value={(photoCount / 8) * 100} aria-label={locale === 'ko' ? '3×3 진행률' : '3×3 progress'} />
+          </div>
+          <p className="mission-frame-state">{stateLabel}</p>
+        </div>
       </section>
       <section className="prompt-card"><span>●</span><div><strong>{mission.prompt[locale]}</strong><p>{locale === 'ko' ? '주변에서 같은 결의 색을 발견해 보세요.' : 'Find a color with the same feeling around you.'}</p></div></section>
       {(usedFallbackLocation || isLocalOnly) ? <p className="soft-note">{usedFallbackLocation ? t(locale, 'locationFallback') : t(locale, 'cloudPending')}</p> : null}

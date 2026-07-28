@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Bell, BellOff, Cloud, Globe2, LogOut, ShieldCheck, Smartphone } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -6,27 +6,37 @@ import { BadgeShelf } from '@/components/BadgeShelf'
 import { ColorWalkMark } from '@/components/ColorWalkMark'
 import { HuedayWordmark } from '@/components/HuedayWordmark'
 import { Button } from '@/components/ui/button'
+import { HuedayDialog } from '@/components/ui/dialog'
 import { getMonthlyCollection } from '@/lib/collection'
 import { t } from '@/lib/i18n'
 import { cancelDailyReminder, getReminderSettings, scheduleDailyReminder, sendTestReminderNotification } from '@/lib/notifications'
-import type { Locale, Post, UserProfile } from '@/types'
+import type { Locale, LocalePreference, Post, UserProfile } from '@/types'
 
 type ProfileViewProps = {
   locale: Locale
+  localePreference: LocalePreference
+  onChangeLocalePreference: (preference: LocalePreference) => void
   posts: Post[]
   profile: UserProfile | null
   isLocalOnly: boolean
-  onToggleLocale: () => void
   onSignOut: () => void | Promise<void>
 }
 
-export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocale, onSignOut }: ProfileViewProps) {
+const LOCALE_PREFERENCE_LABEL: Record<LocalePreference, Record<Locale, string>> = {
+  system: { ko: '시스템 설정', en: 'System setting' },
+  ko: { ko: '한국어', en: '한국어 (Korean)' },
+  en: { ko: 'English', en: 'English' },
+}
+
+export function ProfileView({ locale, localePreference, onChangeLocalePreference, posts, profile, isLocalOnly, onSignOut }: ProfileViewProps) {
   const monthly = getMonthlyCollection(posts)
   const initialReminder = getReminderSettings()
   const [reminderTime, setReminderTime] = useState(initialReminder.time)
   const [reminderEnabled, setReminderEnabled] = useState(initialReminder.enabled)
   const [isScheduling, setIsScheduling] = useState(false)
   const [isSendingTest, setIsSendingTest] = useState(false)
+  const [isLanguageDialogOpen, setIsLanguageDialogOpen] = useState(false)
+  const languageDialogTitleId = useId()
 
   async function saveReminder() {
     setIsScheduling(true)
@@ -102,10 +112,10 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
 
       <section className="soft-section">
         <div className="settings-list">
-          <button type="button" onClick={onToggleLocale}>
+          <button type="button" onClick={() => setIsLanguageDialogOpen(true)}>
             <Globe2 aria-hidden="true" />
-            <span>{locale === 'ko' ? 'English mode' : 'Korean mode'}</span>
-            <strong>{t(locale, 'language')}</strong>
+            <span>{locale === 'ko' ? '언어' : 'Language'}</span>
+            <strong>{LOCALE_PREFERENCE_LABEL[localePreference][locale]}</strong>
           </button>
           <div>
             <Cloud aria-hidden="true" />
@@ -163,6 +173,33 @@ export function ProfileView({ locale, posts, profile, isLocalOnly, onToggleLocal
           <span>{locale === 'ko' ? '로그아웃' : 'Log out'}</span>
         </button>
       </section>
+
+      <HuedayDialog
+        open={isLanguageDialogOpen}
+        onClose={() => setIsLanguageDialogOpen(false)}
+        titleId={languageDialogTitleId}
+        title={locale === 'ko' ? '언어' : 'Language'}
+        closeLabel={locale === 'ko' ? '닫기' : 'Close'}
+      >
+        <div role="radiogroup" aria-labelledby={languageDialogTitleId} className="language-preference-options">
+          {(['system', 'ko', 'en'] as const).map((preference) => (
+            <button
+              key={preference}
+              type="button"
+              role="radio"
+              aria-checked={localePreference === preference}
+              className="language-preference-option"
+              data-active={localePreference === preference || undefined}
+              onClick={() => {
+                onChangeLocalePreference(preference)
+                setIsLanguageDialogOpen(false)
+              }}
+            >
+              {LOCALE_PREFERENCE_LABEL[preference][locale]}
+            </button>
+          ))}
+        </div>
+      </HuedayDialog>
     </main>
   )
 }

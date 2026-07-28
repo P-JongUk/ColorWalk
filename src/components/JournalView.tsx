@@ -114,14 +114,6 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
             <b>{draft.gridImages.length}</b>
           </div>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={isSaving}
-          onClick={() => void onSave(savePayload)}
-        >
-          {isSaving ? t(locale, 'saving') : t(locale, 'save')}
-        </Button>
       </header>
 
       <section className="journal-grid-panel">
@@ -176,7 +168,7 @@ export function JournalView({ locale, mission, draft, isSaving, onOpenCamera, on
       </section>
 
       <Button type="button" size="lg" className="journal-save-cta" disabled={isSaving} onClick={() => void onSave(savePayload)}>
-        {isSaving ? t(locale, 'saving') : locale === 'ko' ? '그리드 저장' : t(locale, 'save')}
+        {isSaving ? t(locale, 'saving') : locale === 'ko' ? '기록 저장' : 'Save record'}
         <Bookmark data-icon="inline-end" aria-hidden="true" />
       </Button>
 

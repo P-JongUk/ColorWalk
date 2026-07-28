@@ -1,17 +1,18 @@
 import { create } from 'zustand'
 
-import { detectLocale, persistLocale } from '@/lib/i18n'
-import type { AppTab, CaptureDraft, Locale, Mission, Post } from '@/types'
+import { loadLocalePreference, resolveEffectiveLocale, saveLocalePreference } from '@/lib/i18n'
+import type { AppTab, CaptureDraft, LocalePreference, Locale, Mission, Post } from '@/types'
 
 type ColorWalkState = {
   locale: Locale
+  localePreference: LocalePreference
   activeTab: AppTab
   mission: Mission | null
   usedFallbackLocation: boolean
   draft: CaptureDraft | null
   posts: Post[]
   selectedDate: string | null
-  setLocale: (locale: Locale) => void
+  setLocalePreference: (preference: LocalePreference) => void
   setActiveTab: (tab: AppTab) => void
   setMission: (mission: Mission, usedFallbackLocation: boolean) => void
   setDraft: (draft: CaptureDraft | null) => void
@@ -19,17 +20,20 @@ type ColorWalkState = {
   setSelectedDate: (date: string | null) => void
 }
 
+const initialLocalePreference = loadLocalePreference()
+
 export const useColorWalkStore = create<ColorWalkState>((set) => ({
-  locale: detectLocale(),
+  locale: resolveEffectiveLocale(initialLocalePreference),
+  localePreference: initialLocalePreference,
   activeTab: 'today',
   mission: null,
   usedFallbackLocation: false,
   draft: null,
   posts: [],
   selectedDate: null,
-  setLocale: (locale) => {
-    persistLocale(locale)
-    set({ locale })
+  setLocalePreference: (preference) => {
+    saveLocalePreference(preference)
+    set({ localePreference: preference, locale: resolveEffectiveLocale(preference) })
   },
   setActiveTab: (activeTab) => set({ activeTab }),
   setMission: (mission, usedFallbackLocation) => set({ mission, usedFallbackLocation }),

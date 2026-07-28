@@ -9041,56 +9041,6 @@
 }
 
 @layer components {
-  .color-grid-empty-matte {
-    background:
-      linear-gradient(135deg, rgba(255, 253, 248, .82), rgba(247, 242, 234, .92)),
-      #f4eee5 !important;
-  }
-
-  .color-grid-empty-sage-wash {
-    background:
-      linear-gradient(135deg, rgba(255, 253, 248, .7), rgba(243, 249, 245, .88)),
-      linear-gradient(135deg, #dbeee8, #f9f3ea) !important;
-  }
-
-  .color-grid-empty-fine-grid {
-    background:
-      linear-gradient(90deg, rgba(43, 38, 33, .045) 1px, transparent 1px) 0 0 / 24px 24px,
-      linear-gradient(0deg, rgba(43, 38, 33, .045) 1px, transparent 1px) 0 0 / 24px 24px,
-      linear-gradient(135deg, #fbf7f0, #eef6f2) !important;
-  }
-
-  .color-grid-empty-paper-line {
-    background:
-      linear-gradient(0deg, transparent 0 63%, rgba(43, 38, 33, .07) 64% 65%, transparent 66%),
-      linear-gradient(135deg, #fffaf2, #f3eee6) !important;
-  }
-
-  .color-grid-empty-split-surface {
-    background:
-      linear-gradient(135deg, #f8f2e9 0 50%, #eaf5f0 50% 100%) !important;
-  }
-
-  .color-grid-empty-soft-stripe {
-    background:
-      repeating-linear-gradient(135deg, rgba(43, 38, 33, .045) 0 1px, transparent 1px 12px),
-      linear-gradient(135deg, #fbf8f2, #eef6f1) !important;
-  }
-
-  .color-grid-empty-negative-frame {
-    background:
-      linear-gradient(#fffaf3, #fff7ef) padding-box,
-      linear-gradient(135deg, rgba(95, 159, 145, .16), rgba(43, 38, 33, .08)) border-box !important;
-    border: 1px solid rgba(95, 159, 145, .14) !important;
-    box-shadow: inset 0 0 0 9px rgba(255, 253, 248, .82) !important;
-  }
-
-  .color-grid-empty-quiet-dot {
-    background:
-      radial-gradient(circle at 50% 50%, rgba(43, 38, 33, .11) 0 1.2px, transparent 1.8px),
-      linear-gradient(135deg, #fbf7f0, #eef6f2) !important;
-  }
-
   .camera-shutter {
     background: linear-gradient(135deg, #9fd5c8 0%, #6db6a5 48%, #4f9182 100%) !important;
     border-color: #fffdf8 !important;
@@ -10841,5 +10791,263 @@
     button[data-hd-variant='primary'] {
       transition: none !important;
     }
+  }
+
+  /* Profile language preference: system/한국어/English radio group inside HuedayDialog */
+  .language-preference-options {
+    display: grid;
+    gap: var(--hd-space-2);
+  }
+
+  .language-preference-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: var(--hd-space-3) var(--hd-space-4);
+    border: 1px solid var(--hd-border);
+    border-radius: var(--hd-radius-md);
+    background: var(--hd-paper);
+    color: var(--hd-ink);
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .language-preference-option[data-active] {
+    border-color: var(--hd-sage-action);
+    background: var(--hd-sage-soft);
+    color: var(--hd-archive-ink);
+    font-weight: 800;
+  }
+
+  .language-preference-option[data-active]::after {
+    content: '✓';
+    color: var(--hd-sage-action);
+  }
+}
+
+@layer components {
+  /* Modern Warm Archive — Editorial Contact Sheet (M6 CP2).
+     Overrides the legacy 70/30-split ivory-inset chip and the random/hash
+     empty-slot fillers above with one deterministic system shared by Home,
+     Camera, Journal, History, Story preview, and export. */
+  .color-grid-chip {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: var(--hd-space-2);
+    border: 1px solid rgb(0 0 0 / 0.08);
+  }
+
+  .color-grid-chip strong {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .color-grid-chip span {
+    font-size: 9px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.86;
+  }
+
+  .color-grid-empty {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--hd-border);
+    border-radius: var(--hd-radius-sm);
+    background: var(--hd-paper);
+  }
+
+  .color-grid-empty:disabled {
+    opacity: 1;
+  }
+
+  .color-grid-empty svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.5;
+    color: var(--hd-muted);
+  }
+
+  .color-grid-empty-static {
+    display: grid;
+    place-items: center;
+  }
+
+  .color-grid-empty-slot-number {
+    color: var(--hd-muted);
+    font-size: 10px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+  }
+}
+
+
+@layer components {
+  /* Home mission frame — Modern Warm Archive Editorial artifact (M6 CP2).
+     Replaces the legacy .mission-ticket coral-gradient/perforated-ticket
+     layout. Landscape mission-color frame (~1.5-1.7:1 at 430px) beside an
+     exact 1:1 3x3 grid, two restrained paper-cut corners, and the fraction
+     + progress bar + state copy kept in the same artifact. */
+  .mission-frame-artifact {
+    display: grid;
+    gap: var(--hd-space-3);
+  }
+
+  .mission-frame-label {
+    color: var(--hd-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .mission-frame-row {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    align-items: stretch;
+    gap: var(--hd-space-3);
+  }
+
+  .mission-frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--hd-space-1);
+    min-height: 140px;
+    padding: var(--hd-space-4);
+    border-radius: var(--hd-radius-lg);
+    box-shadow: var(--hd-shadow-paper);
+    /* Two restrained paper-cut corners: top-right and bottom-left only. */
+    clip-path: polygon(
+      0 0,
+      calc(100% - 14px) 0,
+      100% 14px,
+      100% 100%,
+      14px 100%,
+      0 calc(100% - 14px)
+    );
+  }
+
+  .mission-frame-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.82;
+  }
+
+  .mission-frame-name {
+    max-width: 90%;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .mission-frame-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--hd-space-3);
+    margin-top: var(--hd-space-1);
+  }
+
+  .mission-frame-hex {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
+  }
+
+  .mission-frame-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.9;
+  }
+
+  .mission-frame-lock svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .mission-frame-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mission-frame-grid .color-grid {
+    width: 140px;
+  }
+
+  .mission-frame-progress {
+    display: grid;
+    gap: var(--hd-space-1);
+  }
+
+  .mission-frame-progress-row {
+    display: flex;
+    align-items: center;
+    gap: var(--hd-space-3);
+  }
+
+  .mission-frame-fraction {
+    color: var(--hd-ink);
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .mission-frame-state {
+    color: var(--hd-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Under 200% zoom the side-by-side geometry no longer fits; stack the
+     landscape frame above the square grid while keeping reading order. */
+  @media (max-width: 360px) {
+    .mission-frame-row {
+      grid-template-columns: 1fr 112px;
+    }
+
+    .mission-frame-grid .color-grid {
+      width: 112px;
+    }
+  }
+
+  @media (max-width: 260px) {
+    .mission-frame-row {
+      grid-template-columns: 1fr;
+    }
+
+    .mission-frame-grid {
+      justify-content: flex-start;
+    }
+
+    .mission-frame-grid .color-grid {
+      width: 140px;
+    }
+  }
+
+  /* Touch target compliance for compact Home controls (M6 CP2). The visible
+     glyph stays small; a non-overlapping minimum hit area meets 44x44px. */
+  .home-info-button,
+  .mission-shuffle-button {
+    position: relative;
+    min-width: 44px;
+    min-height: 44px;
   }
 }

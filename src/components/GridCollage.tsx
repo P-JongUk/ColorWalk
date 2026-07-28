@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { Plus } from 'lucide-react'
 
 import { GRID_ALL_SLOTS, GRID_CENTER_SLOT, getGridImageUrl } from '@/lib/grid'
-import { getGridFillerVariant } from '@/lib/gridFillers'
+import { getReadableTextColor } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 import type { GridDraftImage, GridImage, Locale } from '@/types'
 
@@ -15,6 +15,10 @@ type GridCollageProps = {
   onEmptyClick?: () => void
   className?: string
 }
+
+/** Home and Camera are the only interactive capture surfaces; every other
+ * surface renders the same Editorial Contact Sheet without the `+` glyph. */
+const INTERACTIVE_VARIANTS: ReadonlySet<GridCollageProps['variant']> = new Set(['home', 'camera'])
 
 function getImageForSlot(images: Array<GridImage | GridDraftImage>, slot: number) {
   return images.find((image) => image.slot === slot)
@@ -30,18 +34,21 @@ export function GridCollage({
   className,
 }: GridCollageProps) {
   const label = colorName?.trim() || (locale === 'ko' ? '오늘의 색' : "Today's color")
+  const centerTextColor = getReadableTextColor(missionHex)
+  const isInteractive = INTERACTIVE_VARIANTS.has(variant)
 
   return (
     <div className={cn('color-grid', `color-grid-${variant}`, className)} style={{ '--grid-color': missionHex } as CSSProperties}>
       {GRID_ALL_SLOTS.map((slot) => {
         if (slot === GRID_CENTER_SLOT) {
           return (
-            <div key="center" className="color-grid-chip">
-              <div className="color-grid-chip-color" />
-              <div className="color-grid-chip-label">
-                <strong>{label}</strong>
-                <span>{missionHex}</span>
-              </div>
+            <div
+              key="center"
+              className="color-grid-chip"
+              style={{ backgroundColor: missionHex, color: centerTextColor }}
+            >
+              <strong>{label}</strong>
+              <span>{missionHex}</span>
             </div>
           )
         }
@@ -55,17 +62,29 @@ export function GridCollage({
           )
         }
 
+        // Editorial Contact Sheet: one deterministic empty-slot treatment.
+        // Interactive Home/Camera surfaces show a centered "+"; every static
+        // surface (Journal/History/Story/export) shows a quiet slot number
+        // instead so registration reads as intentional, not decorative.
+        if (isInteractive) {
+          return (
+            <button
+              key={slot}
+              type="button"
+              className="color-grid-empty"
+              onClick={onEmptyClick}
+              disabled={!onEmptyClick}
+              aria-label={locale === 'ko' ? '사진 추가' : 'Add photo'}
+            >
+              <Plus aria-hidden="true" />
+            </button>
+          )
+        }
+
         return (
-          <button
-            key={slot}
-            type="button"
-            className={cn('color-grid-empty', `color-grid-empty-${getGridFillerVariant(missionHex, slot)}`)}
-            onClick={onEmptyClick}
-            disabled={!onEmptyClick}
-            aria-label={locale === 'ko' ? '사진 추가' : 'Add photo'}
-          >
-            {variant === 'camera' ? <Plus aria-hidden="true" /> : null}
-          </button>
+          <div key={slot} className="color-grid-empty color-grid-empty-static" aria-hidden="true">
+            <span className="color-grid-empty-slot-number">{slot + 1}</span>
+          </div>
         )
       })}
     </div>

@@ -169,9 +169,42 @@ export function getColorFamily(hex: string): ColorFamily {
   return 'pink'
 }
 
-export function getReadableTextColor(hex: string) {
+/** WCAG relative luminance for one sRGB hex color (0–1 linear-light scale). */
+function getRelativeLuminanceFromHex(hex: string) {
   const { r, g, b } = hexToRgb(hex)
-  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+  const linearize = (channel: number) => {
+    const normalized = channel / 255
+    return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b)
+}
 
-  return luminance > 0.62 ? '#241F1A' : '#FFFDF8'
+/** WCAG contrast ratio between two relative luminances, always >= 1. */
+function getContrastRatio(luminanceA: number, luminanceB: number) {
+  const lighter = Math.max(luminanceA, luminanceB)
+  const darker = Math.min(luminanceA, luminanceB)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+const HD_INK = '#211D1B'
+const HD_PAPER = '#FFFDF8'
+
+/**
+ * Resolves the higher-contrast canonical text color (Ink or Paper) for text
+ * drawn directly on a mission-color specimen. Mirrors DESIGN.md's
+ * mission-color text algorithm: parse sRGB, linearize per WCAG, and pick
+ * whichever candidate wins against the mission color's luminance.
+ */
+export function getReadableTextColor(hex: string) {
+  const missionLuminance = getRelativeLuminanceFromHex(hex)
+  const inkContrast = getContrastRatio(missionLuminance, getRelativeLuminanceFromHex(HD_INK))
+  const paperContrast = getContrastRatio(missionLuminance, getRelativeLuminanceFromHex(HD_PAPER))
+  return inkContrast >= paperContrast ? HD_INK : HD_PAPER
+}
+
+/** Contrast ratio (>= 1) the resolved text color reaches against the mission color. */
+export function getReadableTextContrast(hex: string) {
+  const missionLuminance = getRelativeLuminanceFromHex(hex)
+  const resolved = getReadableTextColor(hex)
+  return getContrastRatio(missionLuminance, getRelativeLuminanceFromHex(resolved))
 }

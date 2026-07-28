@@ -29,7 +29,7 @@ import { flushProductEvents, trackProductEvent, type ProductEventName, type Prod
 import { deletePostImage, ensureProfile, fetchPosts, fetchProfile, isSupabaseConfigured, supabase, updatePostColorHuntMetadata, uploadPostImage, upsertPostWithGridFallback } from '@/lib/supabase'
 import { loadTodayMission } from '@/lib/weather'
 import { useColorWalkStore } from '@/store/useColorWalkStore'
-import type { CaptureDraft, MissionPackId, MissionPackSelection, Post, StoryDesign, UserProfile } from '@/types'
+import type { CaptureDraft, LocalePreference, MissionPackId, MissionPackSelection, Post, StoryDesign, UserProfile } from '@/types'
 
 const LOCAL_POSTS_KEY = 'colorwalk:local-posts'
 
@@ -47,7 +47,7 @@ function writeLocalPosts(posts: Post[]) {
 }
 
 function App() {
-  const { locale, activeTab, mission, usedFallbackLocation, draft, posts, setLocale, setActiveTab, setMission, setDraft, setPosts } = useColorWalkStore()
+  const { locale, localePreference, activeTab, mission, usedFallbackLocation, draft, posts, setLocalePreference, setActiveTab, setMission, setDraft, setPosts } = useColorWalkStore()
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
@@ -567,7 +567,7 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft, dailyDrafts, ownerId])
 
-  function toggleLocale() { setLocale(locale === 'ko' ? 'en' : 'ko') }
+  function changeLocalePreference(preference: LocalePreference) { setLocalePreference(preference) }
   async function handleAuthenticated(nextSession: Session, mode: 'signup' | 'login') {
     setIsAuthLoading(true)
     try {
@@ -654,8 +654,8 @@ function App() {
     if (activeTab === 'camera' && mission) return <CameraView locale={locale} mission={mission} initialDraft={draft} activeMissionPack={activeMissionPack} onBack={() => setActiveTab('today')} onDraftChange={handleDraftChange} onComplete={() => setActiveTab('journal')} />
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
     if (activeTab === 'calendar') return <CalendarView locale={locale} ownerId={ownerId} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} onMissionPackCollectionOpened={recordMissionPackCollectionOpened} onHueprintScreenViewed={recordHueprintScreenViewed} onHueprintCtaClicked={recordHueprintCtaClicked} onHueprintExported={recordHueprintExported} onHueprintShareOpened={recordHueprintShareOpened} onColorCapsuleExported={recordColorCapsuleExported} onColorCapsuleShareOpened={recordColorCapsuleShareOpened} />
-    if (activeTab === 'profile') return <ProfileView locale={locale} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onToggleLocale={toggleLocale} onSignOut={signOut} />
-    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onToggleLocale={toggleLocale} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
+    if (activeTab === 'profile') return <ProfileView locale={locale} localePreference={localePreference} onChangeLocalePreference={changeLocalePreference} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onSignOut={signOut} />
+    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()
 
   if (isSupabaseConfigured && isAuthLoading) return <div className="phone-shell flex justify-center"><div className="app-frame"><main className="screen-flow"><section className="passport-panel flex min-h-[70svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main></div></div>

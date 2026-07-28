@@ -1,5 +1,8 @@
 export type Locale = 'ko' | 'en'
 
+/** User preference for effective locale. `system` re-resolves from device/browser language. */
+export type LocalePreference = 'system' | Locale
+
 export type WeatherGroup = 'clear' | 'clouds' | 'rain' | 'snow' | 'storm' | 'fog'
 
 export type TimeBucket = 'morning' | 'day' | 'sunset' | 'night'

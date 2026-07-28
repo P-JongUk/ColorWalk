@@ -141,15 +141,51 @@ export const copy = {
 
 export type CopyKey = keyof typeof copy.ko
 
+/** User-facing preference. `system` follows device/browser language every time it resolves. */
+export type LocalePreference = 'system' | Locale
+
 const LOCALE_STORAGE_KEY = 'colorwalk-locale'
+const LOCALE_PREFERENCE_STORAGE_KEY = 'hueday-locale-preference:v1'
 
-export function detectLocale(): Locale {
-  if (typeof localStorage !== 'undefined') {
-    const saved = localStorage.getItem(LOCALE_STORAGE_KEY)
-    if (saved === 'ko' || saved === 'en') return saved
+function detectSystemLocale(): Locale {
+  if (typeof navigator !== 'undefined') {
+    const candidates = navigator.languages?.length ? navigator.languages : [navigator.language]
+    for (const candidate of candidates) {
+      if (candidate?.toLowerCase().startsWith('ko')) return 'ko'
+    }
   }
+  return 'en'
+}
 
-  return 'ko'
+/** Reads the stored device-local preference. Defaults to `system` when nothing is saved yet. */
+export function loadLocalePreference(): LocalePreference {
+  if (typeof localStorage !== 'undefined') {
+    const saved = localStorage.getItem(LOCALE_PREFERENCE_STORAGE_KEY)
+    if (saved === 'system' || saved === 'ko' || saved === 'en') return saved
+
+    // Pre-M6 installs only ever stored an explicit ko/en locale (no `system` concept existed).
+    // Treat that legacy value as an explicit preference rather than silently resetting it to system.
+    const legacy = localStorage.getItem(LOCALE_STORAGE_KEY)
+    if (legacy === 'ko' || legacy === 'en') return legacy
+  }
+  return 'system'
+}
+
+/** Stores only the device-local preference. Never touches Post/draft/mission/client_meta. */
+export function saveLocalePreference(preference: LocalePreference) {
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem(LOCALE_PREFERENCE_STORAGE_KEY, preference)
+}
+
+/** Resolves the preference to the one effective locale every screen renders with. */
+export function resolveEffectiveLocale(preference: LocalePreference): Locale {
+  if (preference === 'system') return detectSystemLocale()
+  return preference
+}
+
+/** Convenience: current effective locale from the stored preference, for initial render. */
+export function detectLocale(): Locale {
+  return resolveEffectiveLocale(loadLocalePreference())
 }
 
 export function persistLocale(locale: Locale) {

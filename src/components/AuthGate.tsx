@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useId, useMemo, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { LockKeyhole, Sparkles, UserRound } from 'lucide-react'
 
@@ -27,6 +27,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
   const [birthYear, setBirthYear] = useState('2008')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const errorId = useId()
   const normalizedUsername = useMemo(() => normalizeUsername(username), [username])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -100,6 +101,8 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 inputMode="text"
                 placeholder="hueday"
                 required
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? errorId : undefined}
               />
             </div>
             {username && normalizedUsername !== username.trim().toLowerCase() ? (
@@ -118,6 +121,8 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 minLength={6}
                 required
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? errorId : undefined}
               />
             </div>
           </label>
@@ -160,7 +165,7 @@ export function AuthGate({ locale, onAuthenticated }: AuthGateProps) {
             </>
           ) : null}
 
-          {error ? <p className="auth-error">{error}</p> : null}
+          {error ? <p id={errorId} className="auth-error" role="alert">{error}</p> : null}
 
           <Button type="submit" size="lg" className="auth-submit" disabled={isSubmitting}>
             <Sparkles data-icon="inline-start" aria-hidden="true" />
