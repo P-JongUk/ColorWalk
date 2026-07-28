@@ -1,5 +1,13 @@
 # Design QA Log
 
+## 2026-07-29 — M6 독립 검토 P1 수정
+
+- Opus 4.8 High 읽기 전용 검토에서 직접 도달 가능한 P1 세 건을 확인하고 `feature/integrated-design-accessibility-performance`에서 수정했다.
+- mission-color 텍스트는 먼저 canonical Ink/Paper를 비교하고, 둘 다 `4.5:1` 미만일 때만 계산된 순흑/순백으로 fallback한다. `getAllMissionCandidates()` 전체를 순회하는 테스트를 추가해 현재 모든 mission candidate가 `4.5:1` 이상임을 검증한다. mission HEX 자체와 기존 Post/Color Volume 키는 변경하지 않았다.
+- 원본 정리 확인 버튼은 dialog가 열려 있는 동안 DOM에 유지하고, modal의 native inert 처리에 맡겨 닫힐 때 실제 trigger로 focus를 복귀시킨다.
+- canonical Tailwind 변수 블록을 기존 coral override와 같은 `@layer components`의 파일 후반부로 옮겼다. production CSS에서 마지막 `--primary`는 `195.8 50% 14.9%`, `--primary-foreground`는 `42.9 100% 98.6%`, `--ring`은 `183 76.9% 25.5%`로 확인했다.
+- 검증: `npm run lint` 통과, Vitest 16 files/98 tests 통과, production build 통과(CSS 122.36kB raw/24.60kB gzip).
+
 ## 2026-07-28 — M6 Modern Warm Archive 통합 (CP1–CP4)
 
 - 구현 브랜치: `feature/integrated-design-accessibility-performance` (CP1 `1b1e132`, CP2 `4bfa8fe`, CP3 `755dc01`, CP4 `b61b8ee`). DESIGN.md의 `Modern Warm Archive` 계약을 App shell/BottomNav/Button(CP1), Auth/Today/Camera/Journal(CP2), History/Deck/Hueprint/Capsule/Story/Profile(CP3), 접근성/reduced-motion/성능 baseline(CP4) 순서로 적용했다.

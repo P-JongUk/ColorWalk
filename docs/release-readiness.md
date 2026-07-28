@@ -1,5 +1,12 @@
 # Hueday Release Readiness Notes
 
+## M6 independent-review correction gate (2026-07-29)
+
+- The read-only merge review found three reachable P1 issues: mission colors could not always reach `4.5:1` with canonical Ink/Paper, the local-master cleanup dialog removed its trigger before focus capture, and the canonical Tailwind variables were placed in a lower cascade layer than legacy component overrides.
+- The shared contrast resolver now keeps Ink/Paper when compliant and uses calculated black/white only when required, with a full mission-catalog test. Mission HEX values and existing Post/Color Volume identities are unchanged.
+- The cleanup trigger remains mounted while the modal dialog makes background content inert, and the canonical Tailwind variables now win in the compiled CSS. Lint, all 98 Vitest tests, and production build passed after the correction.
+- The feature is eligible for a second narrow read-only review. Real 430×932/360px/200%-zoom screenshots and Android TalkBack/device QA remain M7 gates rather than being claimed complete.
+
 ## M6 Modern Warm Archive design/accessibility/performance gate (2026-07-28)
 
 - `feature/integrated-design-accessibility-performance` implemented CP1 (canonical `--hd-*` tokens, App shell/BottomNav/Button/dialog helper), CP2 (Auth/Today/Camera/Journal mission-frame and Editorial Contact Sheet), CP3 (History/Deck/Hueprint/Capsule/Story/Profile), and CP4 (keyboard/focus/dialog/reduced-motion/44px targets, measured performance baseline) against the DESIGN.md `Modern Warm Archive` contract. Commits: `1b1e132`, `4bfa8fe`, `755dc01`, `b61b8ee`.

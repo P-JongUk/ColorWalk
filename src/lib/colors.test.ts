@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { getColorFamily, getReadableTextColor, getReadableTextContrast, hexToRgb, rgbToHex } from '@/lib/colors'
+import { getAllMissionCandidates } from '@/lib/mission'
 
 describe('color helpers', () => {
   it('converts hex and rgb values', () => {
@@ -25,6 +26,12 @@ describe('color helpers', () => {
     const sampleMissionColors = ['#FF625B', '#3F776C', '#F6C56F', '#211D1B', '#FFFDF8', '#8FCFBD', '#526331']
     for (const hex of sampleMissionColors) {
       expect(getReadableTextContrast(hex)).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it('keeps every curated mission color readable at normal text size', () => {
+    for (const mission of getAllMissionCandidates()) {
+      expect(getReadableTextContrast(mission.hex), `${mission.id} ${mission.hex}`).toBeGreaterThanOrEqual(4.5)
     }
   })
 })

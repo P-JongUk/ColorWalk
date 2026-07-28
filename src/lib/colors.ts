@@ -188,18 +188,25 @@ function getContrastRatio(luminanceA: number, luminanceB: number) {
 
 const HD_INK = '#211D1B'
 const HD_PAPER = '#FFFDF8'
+const WCAG_BLACK = '#000000'
+const WCAG_WHITE = '#FFFFFF'
+const WCAG_NORMAL_TEXT_MINIMUM = 4.5
 
 /**
- * Resolves the higher-contrast canonical text color (Ink or Paper) for text
- * drawn directly on a mission-color specimen. Mirrors DESIGN.md's
- * mission-color text algorithm: parse sRGB, linearize per WCAG, and pick
- * whichever candidate wins against the mission color's luminance.
+ * Resolves canonical Ink/Paper for text drawn directly on a mission-color
+ * specimen, falling back to calculated black/white only when the canonical
+ * pair cannot meet WCAG normal-text contrast.
  */
 export function getReadableTextColor(hex: string) {
   const missionLuminance = getRelativeLuminanceFromHex(hex)
   const inkContrast = getContrastRatio(missionLuminance, getRelativeLuminanceFromHex(HD_INK))
   const paperContrast = getContrastRatio(missionLuminance, getRelativeLuminanceFromHex(HD_PAPER))
-  return inkContrast >= paperContrast ? HD_INK : HD_PAPER
+  const canonicalColor = inkContrast >= paperContrast ? HD_INK : HD_PAPER
+  if (Math.max(inkContrast, paperContrast) >= WCAG_NORMAL_TEXT_MINIMUM) return canonicalColor
+
+  const blackContrast = getContrastRatio(missionLuminance, 0)
+  const whiteContrast = getContrastRatio(missionLuminance, 1)
+  return blackContrast >= whiteContrast ? WCAG_BLACK : WCAG_WHITE
 }
 
 /** Contrast ratio (>= 1) the resolved text color reaches against the mission color. */

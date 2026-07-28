@@ -58,10 +58,10 @@ Mission HEX values are content. They may fill the mission frame, center tile, ch
 ### Mission-color text algorithm
 
 - Parse the mission HEX as sRGB, linearize each channel with the WCAG relative-luminance formula, and calculate contrast against both `Ink #211D1B` and `Paper #FFFDF8`.
-- Choose whichever of Ink or Paper has the higher contrast against the mission color. Normal color name, HEX, lock state, and specimen labels must still reach at least `4.5:1`; large display text must reach `3:1`.
+- Choose whichever of Ink or Paper has the higher contrast against the mission color. If neither reaches `4.5:1`, use calculated pure black or pure white only for that specimen. Normal color name, HEX, lock state, and specimen labels must still reach at least `4.5:1`; large display text must reach `3:1`.
 - Do not use translucent text, an arbitrary white default, a mission-color-derived text color, shadow-only contrast, or a decorative ivory label inset.
 - Use the same resolved text color in Home, Journal, History/Deck, Story preview, 3×3 export, Hueprint, and Capsule wherever the color name or HEX is drawn directly on the mission color.
-- A color that cannot reach the required ratio with either canonical candidate is a validation failure for the curated catalog and must use a fixed accessible specimen treatment before release; do not silently lower the threshold.
+- The full curated catalog must pass the resolved algorithm at `4.5:1` or higher; treat a failing catalog test as a release-blocking validation error rather than lowering the threshold.
 
 ### Contrast acceptance
 

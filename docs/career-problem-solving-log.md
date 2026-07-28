@@ -729,6 +729,27 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 - 실제 기존 데이터 fixture 위 `adb install -r`, 구매·취소·보류 후 완료·복원·환불/회수·로그아웃/계정 전환을 P0로 검증한다.
 - 정량 결과는 아직 측정하지 않음이다. 다음 측정은 무료 버전의 실제 인플레이스 업데이트에서 보존된 기록 수/종류와 M8M sandbox 구매 상태별 권한 결과, 소요 시간, 실패 수를 기록하는 것이다.
 
+## CW-020 — M6 독립 검토에서 색 정체성을 보존하며 접근성·cascade 결함 수정
+
+### 문제와 영향
+
+2026-07-29 KST, 병합 전 독립 검토에서 canonical Ink/Paper만으로 `4.5:1`을 만들 수 없는 mission color, dialog trigger 조기 unmount, 낮은 CSS cascade layer의 theme override가 발견됐다. 그대로 병합하면 일부 작은 텍스트의 WCAG 미달, 원본 정리 dialog 종료 후 focus 유실, 89개 공용 Button에 legacy coral theme가 남는 문제가 발생할 수 있었다.
+
+### 비교와 결정
+
+처음에는 지적된 mission HEX 5개를 조정했지만 실제 전체 catalog 검사에서 더 많은 중간 명도 색이 드러났고, 기존 Post의 정확한 HEX와 Color Volume 정체성을 고칠 수 없었다. 따라서 mission HEX는 원복하고 공용 대비 helper에서 canonical 색을 우선하되 기준 미달일 때 계산된 순흑/순백을 선택했다. focus는 새 API 없이 trigger를 mounted 상태로 유지하고 background interaction은 native modal inert에 맡겼으며, CSS는 호출부 89개를 고치지 않고 canonical variable block의 cascade layer만 바로잡았다.
+
+### 검증과 결과
+
+- 전체 mission candidate 대비 테스트: 최소 `4.5:1`, Vitest 16 files/98 tests 통과.
+- lint와 production build 통과, CSS 122.36kB raw/24.60kB gzip.
+- compiled CSS 마지막 값: primary `195.8 50% 14.9%`, primary foreground `42.9 100% 98.6%`, ring `183 76.9% 25.5%`.
+- mission HEX, Post, client_meta와 Color Volume key 변경 없음.
+
+### 남은 부채
+
+실제 430×932/360px/200% 확대 캡처와 Android TalkBack·실기기 QA는 M7 환경 gate에서 수행한다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.

@@ -10565,7 +10565,7 @@
    card, status, and focus primitives without deleting older theme passes
    above. Touched screens migrate to --hd-* incrementally in CP2/CP3.
    ========================================================================== */
-@layer base {
+@layer components {
   :root {
     --hd-canvas: #FBF8F1;
     --hd-paper: #FFFDF8;

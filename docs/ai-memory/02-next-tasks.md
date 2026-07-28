@@ -1,5 +1,12 @@
 # 다음 할 일
 
+> ## 2026-07-29 M6 재검토·병합 순서
+>
+> - 독립 검토 P1 세 건의 수정 커밋과 feature push를 완료한다.
+> - 수정된 파일만 대상으로 읽기 전용 재검토해 P0/P1이 없는지 확인한다.
+> - 통과하면 기존 전체 검증과 이번 lint/98 tests/build 결과를 재사용해 `main` 병합·push한다.
+> - 실제 430×932/360px/200% 확대, Android TalkBack·실기기 QA는 M7 release gate로 유지한다.
+
 > ## 최신 재개 지점 (2026-07-28, M6)
 >
 > - **기준:** M6 Modern Warm Archive 통합은 `feature/integrated-design-accessibility-performance`(base `main` `102b2de`, 시작 HEAD `944ceed`)에서 CP1(`1b1e132`)~CP4(`b61b8ee`)까지 구현·검증·push 완료했다. CP5(전체 user-flow QA·문서·AI memory·Graphify 정렬)가 진행 중이다.

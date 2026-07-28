@@ -878,7 +878,7 @@ function getMissionCandidates(weatherGroup: WeatherGroup, timeBucket: TimeBucket
   ]
 }
 
-function getAllMissionCandidates() {
+export function getAllMissionCandidates() {
   return (Object.keys(missionMap) as WeatherGroup[]).flatMap((weatherGroup) =>
     (Object.keys(missionMap[weatherGroup]) as TimeBucket[]).flatMap((timeBucket) => getMissionCandidates(weatherGroup, timeBucket)),
   )

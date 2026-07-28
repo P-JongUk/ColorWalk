@@ -485,11 +485,15 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
           <div className="mt-4 rounded-[16px] border border-amber-200 bg-amber-50/80 p-4">
             <p className="text-sm font-black text-amber-950">기기 원본 정리</p>
             <p className="mt-1 text-xs leading-5 text-amber-900">동기화된 미리보기는 남기고 이 날짜의 고화질 원본만 기기에서 정리해요.</p>
-            {!showMasterCleanupConfirm ? (
-              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => setShowMasterCleanupConfirm(true)}>
-                원본 정리하기
-              </Button>
-            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={() => setShowMasterCleanupConfirm(true)}
+            >
+              원본 정리하기
+            </Button>
             <HuedayDialog
               open={showMasterCleanupConfirm}
               onClose={() => { setShowMasterCleanupConfirm(false); setMasterCleanupError(null) }}
