@@ -86,11 +86,27 @@ Must close before first Play upload:
 - Review `android:allowBackup="true"` against private diary data and the explicit Hueday archive/Cloud policy; OS backup is not a substitute for product backup.
 - Run Play pre-launch report and physical Android QA after signing.
 
+## Korean/English locale and international Play release gate (approved, not yet implemented or submitted)
+
+App locale — M6 implementation and QA:
+
+- Detect the device/browser language for first launch. `시스템 설정`, `한국어`, and `English` resolve one effective locale; an explicit choice is stored only on the device.
+- Confirm whether Android per-app language settings are connected to the same contract; do not claim this is complete until a real Android device verifies it.
+- Check Korean and English UI at 430×932, 360px, and 200% zoom, plus a real Android device. Include date/time, weather, notifications, errors, accessibility labels, and Story/Hueprint/Capsule exports.
+- User-authored journals, color-name suggestions, and existing records are never automatically translated or rewritten.
+
+Play Console and policy — M7 release gate:
+
+- Choose the Play Console default language and complete both Korean and English store listings: app name, short description, full description, screenshots, feature graphic, and release notes.
+- Confirm supported countries/regions and the intended availability for each release track.
+- Publish Korean and English privacy-policy and support pages, then reconcile them with actual camera, photo, authentication, approximate-location/weather, analytics, retention, and deletion behavior.
+- Complete and re-check Data Safety, target audience, IARC content rating, no-ads declaration, review login account/access instructions, and every in-app disclosure against actual behavior.
+
 Language follow-up:
 
 - `Locale` currently supports `ko` and `en`, but first launch defaults to `ko` unless a saved preference exists and several screens still use inline locale ternaries.
 - This does not block a Korean-first Play beta.
-- Before an international listing, detect supported device locale on first launch, centralize remaining inline copy, and run 430x932 Korean/English clipping and accessibility screenshots.
+- Before any international listing, complete the M6/M7 gate above; this audit is not evidence that locale implementation, policy materials, or Play submission is complete.
 - M1 must remove legacy walk-only, match-rate, and streak wording that conflicts with the approved product direction.
 
 Official policy references were rechecked on 2026-07-23:

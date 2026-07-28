@@ -80,3 +80,9 @@
 - [ ] `20260529200000_add_grid_images.sql`을 라이브 Supabase에 적용할 인증된 admin 경로를 마련하고 fallback 종료 조건 정하기
 - [ ] 최초 Play 업로드 전에 `com.colorwalk.app` 영구 사용을 확정하고 업로드 키/Play App Signing, versionCode, 계정 삭제, 개인정보처리방침, Data Safety를 완성하기
 - [ ] 실제 iPhone/App Store가 필요해질 때 Apple Developer 가입과 Mac mini/단기 Mac/cloud CI 중 초기 빌드 경로 확정하기
+
+## 2026-07-28 한국어·영어 및 해외 Play 다음 작업
+
+- M6: `시스템 설정` / `한국어` / `English` UI, 하나의 effective locale, hardcoded copy 정렬을 구현한다. 사용자 저널·색 이름 제안·기존 콘텐츠는 자동 번역하지 않는다.
+- M7: Play Console 한국어·영어 listing, 정책/지원 페이지, Data Safety·대상 연령·IARC·광고 없음·심사 계정, 언어별 Android/PWA QA를 마감한다.
+- 출시 전: 영문 제품 카피를 교정하고 한국어·영어 Store screenshot/feature graphic/release notes를 제작한다.

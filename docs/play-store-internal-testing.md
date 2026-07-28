@@ -51,6 +51,15 @@ Confirm `com.colorwalk.app` before creating the first Play app. A package ID sho
 
 ## Play Console Steps
 
+### Korean/English listing and international release preparation (M7; do not perform before the app locale gate)
+
+1. In Store presence, set the default language deliberately, then add Korean and English translations. Enter each language's app name, short description, full description, screenshots, feature graphic, and release notes; do not reuse Korean text as English placeholder copy.
+2. Prepare language-specific screenshots and graphic assets that show the matching Korean or English app UI. Keep source files and final asset dimensions traceable for review.
+3. Set release notes separately for Korean and English for the selected release.
+4. Configure supported countries/regions independently from track selection. Internal, closed, open, and production tracks control tester/audience progression; country/region availability controls where a released listing can be distributed.
+5. Add a review login account and clear access instructions. Verify that it reaches the requested app experience without relying on unpublished credentials or personal accounts.
+6. On a device with an overseas/non-Korean locale, verify that the English listing appears where available and that the installed app resolves to English under `시스템 설정`; also verify the explicit `한국어` and `English` app choices.
+
 1. Open Play Console.
 2. Create or open the Hueday app.
 3. Complete the required app content sections, privacy policy, Data Safety, account deletion, and permission declarations.

@@ -6,6 +6,8 @@ Read this file before coding in this repository.
 
 - Public product brand: `Hueday`. Keep internal repo paths, Supabase namespace, Android package, storage keys, and Vercel project names as `ColorWalk`/`colorwalk` unless a deliberate migration is planned.
 - Main target: Korean beta users, especially teens and young adults.
+- Hueday supports Korean and English UI and prepares for Google Play distribution beyond Korea. Keep app locale implementation, Korean/English store listings, privacy/policy pages, and language-specific QA aligned; do not treat a translated store listing as proof that the app UI is localized.
+- Never automatically translate or rewrite user-authored journals, proposed color names, or other user content. Only product UI and product-authored copy follow the effective locale.
 - Release priority: ship as quickly as possible, but launch with the complete set of feasible high-impact elements that make Hueday distinctive and likely to succeed. Do not reduce the product to a bare minimum beta; defer only features whose implementation or operational complexity is disproportionate to their launch value. Optimize dependencies and scope without skipping product coherence, security, data-loss protection, or required device QA.
 - Experience goal: soft, emotional, polished color diary/PWA with a camera-first habit loop.
 - Visual source of truth and artifact status: `docs/design-reference-index.md`. Large source images remain on D under `.design-references/` and `.lazyweb/` and are ignored by git.

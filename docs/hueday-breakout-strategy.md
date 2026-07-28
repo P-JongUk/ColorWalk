@@ -13,6 +13,11 @@
 
 경쟁 앱의 알림, 피드, 위젯, 미니홈피를 그대로 복제하지 않는다. Hueday가 소유해야 할 경험은 `오늘의 미션 색을 현실에서 발견하는 순간`, `그 색을 직접 조합해 처음 보는 작품을 만드는 순간`, `모인 색이 Hueprint가 되는 순간`이다.
 
+## Korean/English and overseas Play intent (approved direction)
+
+- Korea remains the initial product, marketing, and support priority, while Korean/English UI and Google Play availability outside Korea are approved launch direction.
+- Before an overseas production release, verify that `Hueday` store naming and search presentation do not create material confusion with ColorWalk or another product in each prepared Korean/English listing. Record the observed Play Console/store result; do not infer market demand or international success from this gate.
+
 ## 문서를 읽는 법
 
 - **확인됨**: 2026-07-22 현재 코드나 공식 자료에서 확인한 사실이다.

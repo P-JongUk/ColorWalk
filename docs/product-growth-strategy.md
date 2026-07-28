@@ -48,6 +48,13 @@ Hueday는 사진 SNS가 아니라, 현실에서 발견한 색을 가볍게 수�
 - Core sharing: 얼굴/원본 사진보다 색, 무드, 작은 이야기 중심의 공유.
 - Core safety: 공개 랭킹, 비교 피드, 압박형 streak를 피하고 가까운 사람끼리의 낮은 부담을 유지한다.
 
+## Korean/English launch reach
+
+- The first release permits English UI and downloads outside Korea, while initial marketing and customer-support priority remains Korean users.
+- Assess overseas performance only through the existing privacy-preserving aggregate events and aggregate queries: country-level installs where the store provides them, first saved record, return, 8-photo completion, and successful export. Do not add an analytics SDK, raw-content collection, device fingerprinting, or a country-specific server to answer this question.
+- Do not pre-build country-specific functionality, content, or infrastructure. Revisit only when aggregate evidence and support demand justify it.
+- English ASO should express Hueday's differentiation as `Color Hunt → 3×3 collection → Hueprint`, rather than generic photo-diary or social-network language.
+
 ## Reference Principles
 
 ### 2026-07-23 KST 차별화와 검증 기준

@@ -1,5 +1,12 @@
 # 지속 결정
 
+## 2026-07-28 — 한국어·영어 UI와 해외 Google Play 준비 (approved)
+
+- Hueday는 한국어와 영어 UI를 동시에 지원하고, 한국 외 Google Play 배포를 준비한다. 초기 마케팅과 고객 지원의 우선순위는 한국 사용자이며, 해외 성공이나 시장 규모는 이 결정만으로 주장하지 않는다.
+- `시스템 설정` / `한국어` / `English` 3가지를 채택한다. 첫 실행은 기기·브라우저 언어를 따르되, 명시 선택은 기기 로컬에 저장해 사용자가 예측 가능하게 재설정할 수 있다. 한국어 이외의 지원하지 않는 시스템 locale은 영어로 fallback한다.
+- UI와 Hueday가 작성한 날짜·시간·날씨·알림·오류·접근성·export copy만 하나의 effective locale로 바꾼다. 저널, 색 이름 제안, 기존 사용자 콘텐츠는 의미·개인 표현·서버 기록을 보존하기 위해 자동 번역하거나 재작성하지 않는다.
+- M6은 앱 locale 구현과 UI 검증, M7은 Play Console 현지화·정책·언어별 실제 기기/출시 QA를 맡는다. store listing 번역은 앱 locale 구현 완료의 증거가 아니다.
+
 ## 2026-07-28 — M5 Hueprint·Color Capsule execution contract (approved and implemented)
 
 - 대표 이름은 `Hueprint`로 확정하고 `Color DNA`는 기능명·진단명으로 사용하지 않는다. Hueprint/Capsule 파생은 오직 canonical `mission_hex`만 사용하며, 무효 `mission_hex`를 `captured_hex`, 이미지 픽셀, 날씨, 색 이름으로 절대 보정하지 않는다.

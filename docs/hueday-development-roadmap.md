@@ -66,6 +66,20 @@
 - [ ] Android 실기기 또는 안정적인 AVD에서 capture → force-stop → offline/online retry가 통과한다.
 - [ ] 공개 UGC/익명 업로드/미구현 친구 기능이 출시 경로·권한·분석에 섞이지 않는다.
 
+### M6 한국어·영어 UI 계약
+
+- [ ] Profile의 언어 선택은 `시스템 설정` / `한국어` / `English`이며, 명시 선택은 기기 로컬 preference로 저장한다.
+- [ ] 기기·브라우저 언어로 초기 locale을 정하고, 한국어 시스템 locale은 한국어로, 지원하지 않는 시스템 locale은 영어로 fallback한다.
+- [ ] UI, 날짜·시간, 날씨, 알림, 오류, 접근성 label, Story/Hueprint/Capsule export는 하나의 effective locale에서 함께 결정한다.
+- [ ] 사용자 저널, 색 이름 제안, 기존 사용자 콘텐츠와 서버 기록은 locale 변경으로 자동 번역·재작성하지 않는다.
+
+### M7 한국어·영어 출시 gate
+
+- [ ] 한국어와 영어에서 UI 잘림을 430×932, 360px, 200% 확대와 실제 Android에서 확인한다. 날짜·시간·날씨·알림·오류·접근성 label·Story/Hueprint/Capsule export도 같은 effective locale로 검증한다.
+- [ ] Android 앱별 언어 설정 연동 여부를 실제 지원 범위에 따라 확인한다.
+- [ ] Play Console의 한국어·영어 listing, 언어별 assets/release notes, 지원 국가·지역 배포를 확인한다. 이는 M6 앱 locale 구현과 별개의 M7 수동 출시 작업이다.
+- [ ] 한국어·영어 개인정보처리방침·지원 페이지와 실제 수집/처리를 대조하고, Data Safety, 대상 연령, IARC 콘텐츠 등급, 광고 없음, 심사용 계정을 마감한다.
+
 ## 현재 진행 위치
 
 - 마스터 단계: **M5 — Hueprint·Color Capsule 구현·검증·문서 정렬 완료(feature 브랜치, main 통합 전)**

@@ -102,3 +102,9 @@
 - npm/pip/uv/Playwright 캐시와 Gradle/Android/Vercel 작업 데이터는 D 드라이브 우선 환경 변수로 고정되어 있습니다.
 - Playwright 브라우저 캐시는 `C:\Users\JongUk\AppData\Local\ms-playwright`에서 `D:\JongUk\Documents\ColorWalk\.playwright-browsers`로 이동했습니다.
 - Obsidian 실행 파일, JDK, Codex 전역 플러그인 캐시는 시스템 통합을 위해 C 드라이브에 유지합니다.
+
+# 2026-07-28 — 한국어·영어 및 해외 Google Play 문서 계약
+
+- 승인 결정은 한국어·영어 UI와 한국 외 Google Play 배포 준비다. M6은 `시스템 설정` / `한국어` / `English`와 하나의 effective locale의 앱 구현·copy 정렬을 맡고, M7은 Play Console 현지화·정책·실기기 언어 QA를 맡는다.
+- 이 작업은 문서만 변경했다. production `src/`, CSS, package, Android 설정, DB, env, Play Console과 live 서비스는 변경·검증하지 않았다. 실제 locale 구현, Store listing, 정책 페이지, 해외 배포는 아직 완료로 주장하지 않는다.
+- 사용자 저널·색 이름 제안·기존 사용자 콘텐츠는 자동 번역하거나 재작성하지 않는다.
