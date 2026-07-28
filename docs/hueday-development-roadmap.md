@@ -82,9 +82,9 @@
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M6 — 통합 디자인·접근성·성능(Modern Warm Archive), CP1~CP4 구현·검증·push 완료(feature 브랜치, main 통합 전)**
-- 현재 작업: **CP5(전체 user-flow QA·문서·AI memory·Graphify 정렬) 진행 중.** M2-3/M3/M4/M5/M6 Android 인플레이스 update QA는 M7 출시 gate로 유지한다.
-- 다음 한 작업: **CP5 완료 후 최종 gate(lint/test/build/verify:supabase/cap:sync/Android debug build/git diff --check)를 순서대로 통과시키고, 사용자 검토 뒤 main 병합 여부를 결정한다.**
+- 마스터 단계: **M6 — 통합 디자인·접근성·성능(Modern Warm Archive) 구현·검증·독립 검토·main 통합 완료**
+- 현재 작업: **M7 출시 gate 준비.** M2-3/M3/M4/M5/M6 Android 인플레이스 update QA와 430×932/360px/200% 확대·TalkBack 검증을 실제 기기/브라우저 환경에서 마감한다.
+- 다음 한 작업: **M7 계획에서 실제 Android 인플레이스 업데이트, 한국어·영어 UI/스토어 자료, Play 정책·Data Safety·IARC·심사 계정의 실행 순서를 확정한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙

@@ -6,7 +6,7 @@
 - mission-color 텍스트는 먼저 canonical Ink/Paper를 비교하고, 둘 다 `4.5:1` 미만일 때만 계산된 순흑/순백으로 fallback한다. `getAllMissionCandidates()` 전체를 순회하는 테스트를 추가해 현재 모든 mission candidate가 `4.5:1` 이상임을 검증한다. mission HEX 자체와 기존 Post/Color Volume 키는 변경하지 않았다.
 - 원본 정리 확인 버튼은 dialog가 열려 있는 동안 DOM에 유지하고, modal의 native inert 처리에 맡겨 닫힐 때 실제 trigger로 focus를 복귀시킨다.
 - canonical Tailwind 변수 블록을 기존 coral override와 같은 `@layer components`의 파일 후반부로 옮겼다. production CSS에서 마지막 `--primary`는 `195.8 50% 14.9%`, `--primary-foreground`는 `42.9 100% 98.6%`, `--ring`은 `183 76.9% 25.5%`로 확인했다.
-- 검증: `npm run lint` 통과, Vitest 16 files/98 tests 통과, production build 통과(CSS 122.36kB raw/24.60kB gzip).
+- 검증: `npm run lint` 통과, Vitest 16 files/98 tests 통과, production build 통과(CSS 122.36kB raw/24.60kB gzip). 수정 커밋 `551b818`의 좁은 재검토에서 P0/P1 없음·`병합 가능` 판정을 받아 `main`에 fast-forward 통합했다. 실제 시각·TalkBack 검증은 M7 gate로 유지한다.
 
 ## 2026-07-28 — M6 Modern Warm Archive 통합 (CP1–CP4)
 

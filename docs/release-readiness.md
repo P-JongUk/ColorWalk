@@ -5,7 +5,7 @@
 - The read-only merge review found three reachable P1 issues: mission colors could not always reach `4.5:1` with canonical Ink/Paper, the local-master cleanup dialog removed its trigger before focus capture, and the canonical Tailwind variables were placed in a lower cascade layer than legacy component overrides.
 - The shared contrast resolver now keeps Ink/Paper when compliant and uses calculated black/white only when required, with a full mission-catalog test. Mission HEX values and existing Post/Color Volume identities are unchanged.
 - The cleanup trigger remains mounted while the modal dialog makes background content inert, and the canonical Tailwind variables now win in the compiled CSS. Lint, all 98 Vitest tests, and production build passed after the correction.
-- The feature is eligible for a second narrow read-only review. Real 430×932/360px/200%-zoom screenshots and Android TalkBack/device QA remain M7 gates rather than being claimed complete.
+- The second read-only review of `551b818` found no P0/P1 issues and approved the feature for merge. M6 was fast-forwarded to `main`. Real 430×932/360px/200%-zoom screenshots and Android TalkBack/device QA remain M7 gates rather than being claimed complete.
 
 ## M6 Modern Warm Archive design/accessibility/performance gate (2026-07-28)
 
