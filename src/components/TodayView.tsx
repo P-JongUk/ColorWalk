@@ -71,10 +71,11 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
       <div className="mission-pack-chip-row" role="radiogroup" aria-label={locale === 'ko' ? '미션 팩 선택' : 'Mission pack selection'}>
         <button
           type="button"
+          role="radio"
           className="mission-pack-chip"
           data-active={missionPack.id === null || undefined}
           disabled={isClosed}
-          aria-pressed={missionPack.id === null}
+          aria-checked={missionPack.id === null}
           onClick={() => requestSelect(null)}
         >
           {locale === 'ko' ? '테마 없이 자유롭게' : 'No theme, free mode'}
@@ -82,11 +83,12 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
         {MISSION_PACKS.map((pack) => (
           <button
             type="button"
+            role="radio"
             key={pack.id}
             className="mission-pack-chip"
             data-active={missionPack.id === pack.id || undefined}
             disabled={isClosed}
-            aria-pressed={missionPack.id === pack.id}
+            aria-checked={missionPack.id === pack.id}
             onClick={() => requestSelect(pack.id)}
           >
             {pack.label[locale]}

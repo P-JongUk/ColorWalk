@@ -10084,7 +10084,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 34px;
+    min-height: 44px;
     border: 1px solid rgba(95, 159, 145, .22);
     border-radius: 999px;
     padding: 0 13px;
@@ -10790,6 +10790,18 @@
     .btn-hd-primary,
     button[data-hd-variant='primary'] {
       transition: none !important;
+    }
+
+    /* Remove every remaining press/hover translate or scale feedback that
+       predates the canonical token layer. Layout-positioning transforms
+       (centering via translate(-50%, -50%)) are untouched since they are
+       not motion feedback. */
+    .camera-shutter:active,
+    .calendar-day:active,
+    .camera-native-link:active,
+    .mission-shuffle-button[data-locked='true']:active,
+    button.hover\:-translate-y-0\.5:hover {
+      transform: none !important;
     }
   }
 

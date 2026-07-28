@@ -20,6 +20,7 @@ type HuedayDialogProps = {
  */
 export function HuedayDialog({ open, onClose, titleId, title, closeLabel, children, className }: HuedayDialogProps) {
   const dialogRef = React.useRef<HTMLDialogElement>(null)
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null)
   const triggerFocusRef = React.useRef<HTMLElement | null>(null)
 
   React.useEffect(() => {
@@ -29,6 +30,9 @@ export function HuedayDialog({ open, onClose, titleId, title, closeLabel, childr
     if (open && !dialog.open) {
       triggerFocusRef.current = document.activeElement as HTMLElement | null
       dialog.showModal()
+      // Move entry focus to a meaningful, always-present first action
+      // instead of relying on the browser's dialog-element fallback focus.
+      closeButtonRef.current?.focus()
     } else if (!open && dialog.open) {
       dialog.close()
     }
@@ -50,7 +54,7 @@ export function HuedayDialog({ open, onClose, titleId, title, closeLabel, childr
   return (
     <dialog ref={dialogRef} className={cn('hd-dialog', className)} aria-labelledby={titleId}>
       <div className="hd-dialog-body">
-        <button type="button" className="hd-dialog-close" onClick={() => dialogRef.current?.close()} aria-label={closeLabel}>
+        <button ref={closeButtonRef} type="button" className="hd-dialog-close" onClick={() => dialogRef.current?.close()} aria-label={closeLabel}>
           ×
         </button>
         <h2 id={titleId} className="hd-dialog-title">{title}</h2>
