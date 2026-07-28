@@ -1,5 +1,18 @@
 # Security Audit Notes
 
+## Version 1 photo/location security baseline (approved 2026-07-29)
+
+This is a small private diary's realistic launch boundary, not a public-social-network or enterprise-security architecture.
+
+- Photos are private by default. Raw and local-master files stay on the device; Supabase receives only the existing compressed preview and Post metadata. The `post-images` bucket remains private, owner-path writes and owner RLS remain mandatory, and reads use authenticated access or short-lived signed URLs. Signed URLs, Blob contents, storage paths beyond required metadata, and auth tokens must never enter product analytics or logs.
+- M7 must verify with representative camera and album samples that the preview re-encoding path removes EXIF location metadata before upload. Until that fixture check passes, metadata stripping is a release gate rather than a claimed implementation fact. File MIME and size validation remain required at the supported import boundary.
+- Location is requested only in the foreground to choose weather/time mission context. Exact coordinates and place names are not stored in Post, `client_meta`, IndexedDB records, analytics, or application logs; permission denial keeps the app usable.
+- The current weather request sends browser coordinates to the weather provider. Before release, reduce them to the coarsest precision that preserves useful local weather (initial implementation target: about two decimal degrees, then verify behavior) and do not cache or reuse the original precision. Document the third-party weather transfer accurately in Korean/English privacy disclosures.
+- Sign-out and account switching must keep owner-local records isolated in UI and stop pending owner sync. They must not expose another owner's local preview or signed URL.
+- M7 re-runs anonymous-write denial, cross-user Post/Storage denial, owner signed-read, and product-event privacy checks against the release environment. No custom encryption layer, WAF, SIEM, custom always-on backend, exhaustive fuzz matrix, or large-scale load architecture is added without a concrete beta threat, incident, or measured load need.
+
+Operational basis: Supabase Storage RLS is the access-control boundary; object ownership alone is not authorization. Private-bucket signed URLs are bearer links until expiry, so keep their lifetime short and never log or expose them outside the intended view.
+
 ## Post-launch payment security boundary (approved 2026-07-28)
 
 - Version 1 contains no payment SDK, entitlement table, webhook, or paywall. The `M8M` update follows `docs/post-launch-monetization-and-payment-safety.md` after an actual in-place data-preservation check.
@@ -33,7 +46,7 @@
 - `grid_images` migration과 과거 remote migration history 불일치는 별도 후속 작업이다. 이 관측성 변경은 기존 Post, Storage, RLS를 repair하거나 변경하지 않는다.
 - 베타 분석은 allowlist 이벤트와 집계 SQL만 사용한다. 출시 후 관리자 웹 화면을 만들 경우 browser에 service role을 두지 않고 aggregate-only Edge Function, 관리자 UID allowlist, 원시 사진·일기·정확 위치 비노출을 보안 gate로 둔다.
 
-Last checked: 2026-07-26 KST.
+Last checked: 2026-07-29 KST. The 2026-07-29 section records the approved M7 verification contract; it does not claim the pending coarse-coordinate or EXIF checks have passed.
 
 ## Completed
 

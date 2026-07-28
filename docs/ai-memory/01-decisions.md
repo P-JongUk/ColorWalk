@@ -1,5 +1,13 @@
 # 지속 결정
 
+## 2026-07-29 — M7 전 제품 마감과 사진·위치 보안 (approved)
+
+- M6 디자인 방향은 다시 열지 않는다. M7 store asset/전체 release QA 전에 실제 브라우저로 M6.5를 수행해 승인 시안과 다른 부분만 수정한다.
+- 최초 문맥 추천은 횟수에 포함하지 않고 `다른 색`은 첫 사진 확정 전 하루 최대 6회다. 1~3회는 같은 날씨·시간·coarse-location 문맥, 4~6회는 전체 catalog 균등 무작위이며 그날 이미 보여 준 모든 색을 제외한다. 첫 사진 확정 뒤 잠금과 자정 초기화는 그대로다.
+- Story에는 `중앙 색 이름 표시`를 추가한다. 기본은 켜짐이고, 끄면 Story 중앙 타일의 이름·HEX만 숨긴다. 원본 Post, mission identity, Story header, 다른 화면은 변경하지 않는다. legacy metadata는 켜짐으로 읽는다.
+- 추천 색 이름은 감성보다 먼저 자연스럽고 이해 가능해야 한다. ID·HEX는 바꾸지 않고 한국어/영어 label만 전수 검토한다. 예: `소리 낮춘 고사리`는 `차분한 고사리빛`, `소리 낮춘 살구빛`은 `은은한 살구빛`, `소리 낮춘 테라코타`는 `차분한 테라코타` 같은 자연스러운 표현으로 교정한다. 기존 기록 label은 backfill하지 않는다.
+- 첫 출시 보안은 private diary의 실제 위험에 맞춘다. raw/local master는 기기, cloud는 owner-private preview, RLS와 짧은 signed URL, analytics/log 개인정보 차단을 유지한다. M7에서 preview EXIF 위치 제거와 weather provider coarse 좌표 전달을 검증·구현하고 정확 좌표/장소명을 저장하지 않는다. 증거 없는 enterprise 보안·초대형 scale 구조는 보류한다.
+
 ## 2026-07-28 — M6 Modern Warm Archive CP1~CP4 구현 완료 (implementation fact, contract unchanged)
 
 - CP0에서 승인된 DESIGN.md `Modern Warm Archive` 계약을 재해석하거나 축소하지 않고 그대로 구현했다. `feature/integrated-design-accessibility-performance`(base `main` `102b2de`, 시작 HEAD `944ceed`)의 CP1(`1b1e132`)/CP2(`4bfa8fe`)/CP3(`755dc01`)/CP4(`b61b8ee`)가 각각 canonical token/App shell, Auth·Today·Camera·Journal, History·Deck·Hueprint·Capsule·Story·Profile, 접근성·모션·성능 baseline을 담당했다.
@@ -185,6 +193,8 @@
 - 새 디자인 제안이 제품 청사진·성장 전략·보상 시스템·발견 색 대표 콘텐츠 결정과 충돌하면 임의로 바꾸지 않고 충돌 내용과 선택지를 먼저 제시합니다.
 
 ## 2026-07-23 — 현지 날짜별 새 컬러와 비처벌형 일일 기록
+
+> 2026-07-29 변경: 아래 3회 이후 무제한 교체 규칙은 상단의 `M7 전 제품 마감` 결정으로 대체됐다. 현재 승인 계약은 `다른 색` 최대 6회와 당일 노출 색 전체 제외다. 나머지 첫 사진 잠금·부분 기록·자정 종료 결정은 유지한다.
 
 - 기기 현지 날짜마다 새 미션 색 선택을 시작합니다. 국가를 추정해 시간대를 강제하지 않습니다.
 - 첫 추천은 날씨·시간·선택적 대략 위치를 사용하고, `다른 색` 최대 3회도 같은 문맥에서 다른 색을 제안합니다.

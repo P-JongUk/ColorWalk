@@ -1,5 +1,9 @@
 # 현재 상태
 
+> **2026-07-29 M7 전 마감 순서 확정:** M6는 `main`에 통합됐다. Store screenshot과 전체 M7 QA 전에 M6.5 실제 화면·제품 카피 마감을 한 번 수행한다. 실제 430×932/360px/200% 화면에서 승인된 Modern Warm Archive만 좁게 교정하고, `다른 색` 최대 6회(문맥 3+전체 무작위 3, 당일 노출 색 전체 제외), Story 중앙 이름·HEX 표시 선택, 자연스러운 한국어/영어 mission 이름을 구현한다. 그 뒤 M7에서 Android update·보안·Play 출시 gate를 닫는다.
+
+> **2026-07-29 첫 출시 보안 기준:** 기존 owner RLS/private Storage/signed URL/preview-only cloud/analytics allowlist는 유지한다. M7에서 대표 사진 EXIF GPS 제거, foreground-only 위치와 거부 fallback, 날씨 제공자 coarse 좌표 전달, 좌표·장소명 비저장, anonymous/cross-user denial을 실제 출시 경로로 확인한다. 초기 개인 다이어리에 불필요한 custom server·WAF·SIEM·대규모 부하 구조는 만들지 않는다.
+
 > **2026-07-29 M6 main 통합 완료:** 독립 재검토에서 `551b818`의 P1 수정 세 건이 모두 통과해 P0/P1 없음·`병합 가능` 판정을 받았다. `feature/integrated-design-accessibility-performance`를 `main`에 fast-forward 통합했다. 최신 M6 검증(lint, Vitest 16 files/98 tests, production build, Supabase verification, Capacitor sync, Android debug build)을 재사용했고 병합 뒤 코드 변경은 없다. 실제 430×932/360px/200% 확대와 Android TalkBack·실기기 QA는 M7 release gate다.
 
 > **2026-07-29 M6 독립 검토 P1 수정 완료:** `feature/integrated-design-accessibility-performance`의 읽기 전용 병합 검토에서 발견한 mission-color 전체 카탈로그 대비, 원본 정리 dialog focus 복귀, Tailwind token cascade 세 문제를 최소 수정했다. mission HEX와 기존 기록은 바꾸지 않았고, 전체 카탈로그 대비 테스트를 추가했다. lint, Vitest 16 files/98 tests, production build가 통과했다. main 병합 전 수정 diff에 대한 좁은 재검토와 최종 Git 검사가 남아 있다.
@@ -27,7 +31,7 @@
 - 현재 구현: 아이디/비밀번호 인증, 사용자·현지 날짜별 mission/재추천 상태, 촬영 미리보기 후 `이 사진 사용` 확정, 1~7장 날짜별 IndexedDB 초안·서버 Post 병합, 8장 완성 페이지 배지, Supabase 저장, 짧은 일기, 9:16 스토리/3x3 공유, 달력, 로컬 알림, PWA/Android
 - 백엔드 공급자 결정: 출시와 초기 성장에는 검증된 Supabase Auth·Postgres·RLS·Storage를 유지한다. R2는 유료 고화질 백업 비용이 측정된 뒤, Railway는 장시간 서버 작업이 실제로 필요할 때만 보조 도입한다.
 - M2-1 구현 완료: 최소 분석 이벤트·IndexedDB outbox·핵심 E2E와 live `product_events` 수집. 2026-07-26 `npm run verify:supabase`에서 ready·owner read·dedupe·anonymous/cross-user denial을 확인했다. 그 밖에 일상 미션 팩 선택, Hue Palette/Canvas·리믹스, 로컬 우선 저장·Cloud 계층, Color Rhythm, 공개 안전 Relay 링크, 월간 Hueprint/Capsule, 실제 창작 옵션 해금, 결제, 네이티브 iOS는 미구현이다.
-- 확정된 Color Hunt 의미: 기기 현지 날짜마다 날씨·시간·선택적 대략 위치 기반 색을 새로 추천하고 최대 3회까지 같은 문맥으로 바꾼 뒤 전체 큐레이션 색 균등 무작위를 제공한다. 첫 사진을 확정하면 그날 색이 잠긴다. 1–7장도 유효한 일일 기록이며 8장만 3×3 한 페이지와 주요 보상을 완성한다. 현지 자정에는 현재 장수로 닫고 다음 날 새 색을 선택한다.
+- 확정된 Color Hunt 의미: 기기 현지 날짜마다 날씨·시간·선택적 대략 위치 기반 색을 새로 추천하고 `다른 색`은 최대 6회 제공한다. 1~3회는 같은 문맥, 4~6회는 전체 큐레이션 균등 무작위이며 그날 본 모든 색을 제외한다. 첫 사진을 확정하면 그날 색이 잠긴다. 1–7장도 유효한 일일 기록이며 8장만 3×3 한 페이지와 주요 보상을 완성한다. 현지 자정에는 현재 장수로 닫고 다음 날 새 색을 선택한다.
 - M1 구현 상태: `feature/color-hunt-contract`의 날짜별 Color Hunt 계약·복구·QA 결과를 `c22d7a3`으로 `main`에 통합했다. 2026-07-24 KST lint·19개 unit test·build·라이브 Supabase 검증·Capacitor sync·Android debug/release build와 430×932 브라우저 QA를 통과했고, 병합된 `main`에서도 lint·19개 test·production build·`git diff --check`를 다시 통과했다. 별도 `ColorWalkM1QA` AVD에서는 실제 카메라 촬영·다시 찍기·확정, 1/8 저장·background/foreground 복구와 2/8·5/8 순차 촬영까지 확인했다. 전역 날짜 mock은 Supabase 인증 시간과 충돌해 Android 날짜 QA의 유효한 방법이 아니었고, clean `wipe-data` cold boot에서는 앱 설치 전 System UI·전화·Google Play services ANR이 반복됐다. 따라서 Android 7/8·8/8 완료/배지·foreground 날짜 전환·저널/Story 네이티브 공유는 실제 기기 또는 안정적인 AVD에서 남아 있다. 기존 `ColorWalkPixel7` 데이터는 건드리지 않았다.
 - 현재 마스터 단계: M2 안정성·데이터·측정 기반. M2-1 관측성·E2E·live event 수집을 완료했고 다음 저장 안정성 하위 작업을 준비한다.
 - 현재 디자인 결정: 외부 앱 UI는 D — Chromatic Archive를 작업 방향으로 유지한다. Hue Room H1/H2/H3 시안은 승인된 출시 화면이 아니며 모든 방·가구·2.5D/3D 작업을 중단했다.

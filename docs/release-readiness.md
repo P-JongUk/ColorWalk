@@ -1,5 +1,12 @@
 # Hueday Release Readiness Notes
 
+## Pre-M7 visual/product and privacy gate (approved 2026-07-29)
+
+- Run one short M6.5 pass before the full M7 release gate. It must inspect the real 430×932 browser UI and only correct discrepancies from the approved Modern Warm Archive, then verify 360px and 200% zoom. Do not reopen the design direction or generate store assets before this pass.
+- Product polish in that pass is limited to: six maximum pre-capture color replacements (three contextual, then three catalog-random excluding all colors shown that day), an optional Story center name/HEX label that defaults on, and a Korean/English catalog-name audit that preserves mission IDs/HEX and historical labels.
+- M7 then verifies photo/location privacy in the actual release path: preview-only cloud upload, representative EXIF-location removal, foreground-only location with denial fallback, coarse coordinates to the weather provider, no coordinate/place-name persistence or analytics, private bucket/owner RLS, short signed URLs, and anonymous/cross-user denial.
+- These are realistic private-diary protections. Public UGC moderation infrastructure, custom servers, enterprise monitoring, exhaustive fuzzing, and speculative massive-scale architecture remain outside version 1.
+
 ## M6 independent-review correction gate (2026-07-29)
 
 - The read-only merge review found three reachable P1 issues: mission colors could not always reach `4.5:1` with canonical Ink/Paper, the local-master cleanup dialog removed its trigger before focus capture, and the canonical Tailwind variables were placed in a lower cascade layer than legacy component overrides.

@@ -1,5 +1,13 @@
 # 다음 할 일
 
+> ## 2026-07-29 다음 실행 — M6.5 후 M7
+>
+> 1. `feature/pre-m7-visual-product-polish`에서 실제 430×932 브라우저를 열고 Home 0장/부분/완료, Journal, Story preview/export를 승인 시안과 비교한다. 360px·200% 확대도 확인한다.
+> 2. `다른 색` 최대 6회와 당일 노출 색 전체 제외를 구현한다. 기존 날짜별 local mission state를 최소 확장하고 새 DB/server는 만들지 않는다.
+> 3. Story 중앙 이름·HEX 표시 toggle(default on, legacy on)과 자연스러운 한국어/영어 mission-name catalog 교정을 구현한다. ID·HEX·기존 기록은 변경하지 않는다.
+> 4. M6.5를 검증·병합한 뒤 M7에서 representative camera/album preview EXIF, coarse weather coordinates, location denial/no-persistence, owner RLS/private signed read/cross-user denial, Android in-place update, Play 한국어·영어 출시 자료를 마감한다.
+> 5. M6.5 구현 추천 설정: `GPT-5.6 Terra · high · 계획 모드 끔 · 목표 모드 끔 · Fast 끔`. 방향은 승인됐으므로 Sol/계획 모드는 불필요하다. 수정 후 단순 회귀 캡처만 재확인할 때는 Luna high 또는 Terra medium으로 낮출 수 있다.
+
 > ## 2026-07-29 M6 재검토·병합 순서
 >
 > - [x] 독립 검토 P1 세 건의 수정 커밋 `551b818`과 feature push를 완료했다.

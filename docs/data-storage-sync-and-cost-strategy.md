@@ -65,6 +65,14 @@ Color Hunt의 최소 기록 계약은 `local_date`, 당시 기기 시간대, 잠
 
 ## 3. 사진 품질 정책
 
+### 3.0 첫 출시 개인정보·전송 경계
+
+- 카메라/앨범 원본과 local master는 기기 안에 두고, 무료 cloud에는 현재 규격의 preview만 올린다. raw/master upload는 첫 출시 경로가 아니다.
+- preview는 private `post-images` bucket의 owner 경로에 저장하고 owner RLS·anonymous/cross-user denial·짧은 signed URL로 읽는다. signed URL과 원본 경로를 analytics/log에 넣지 않는다.
+- 카메라와 앨범 대표 표본을 preview로 재인코딩한 뒤 EXIF GPS가 남지 않는지 M7에서 확인한다. 단순히 WebP/canvas를 쓴다는 이유만으로 제거 완료를 주장하지 않는다.
+- 위치는 foreground 미션 추천용 일시 입력이다. Post, draft, `client_meta`, product event, 로그에 좌표·장소명을 저장하지 않으며 권한 거부 시 위치 없는 추천으로 계속한다.
+- 날씨 제공자에는 출시 전 검증한 coarse 좌표만 보내고 원래 정밀 좌표는 요청 뒤 보관·재사용하지 않는다. 이 외부 전송은 개인정보처리방침과 Data Safety 설명에 실제 동작대로 적는다.
+
 현재 구현은 최대 1440px, 목표 약 420KB, 최소 품질 0.6의 WebP 압축본을 업로드한다. 달력 썸네일과 3x3 미리보기에는 효율적이지만 유일한 장기 원본으로 쓰기에는 품질 손실 위험이 있다.
 
 앞으로는 한 번의 파괴적 압축이 아니라 목적별 파생본을 사용한다.

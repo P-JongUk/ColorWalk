@@ -213,8 +213,8 @@ Under `prefers-reduced-motion: reduce`, remove translate, scale, parallax, stagg
 - Show the current recommendation's mission-color card and the same color in the center of an otherwise empty 3×3 grid. Label the state `추천 색 · 아직 잠기지 않음` and show `0/8` with an empty progress bar.
 - A compact secondary ticket states only the coarse recommendation context: approximate location category, current weather, and time band. Never display or persist exact coordinates or a place name.
 - Keep `다른 색` available before capture and until a preview is accepted with `이 사진 사용`.
-- Explain the stage beside the control in natural language: `같은 날씨 추천 · 3번 남음`, then `2번 남음`, `1번 남음`; after those rerolls, show `이제 전체 색에서 골라요`. Do not expose internal terms such as context stage, catalog mode, or reroll index.
-- The first recommendation does not consume a reroll. Up to three subsequent recommendations reuse the same weather/time/coarse-location context. Later rerolls draw uniformly from the full curated catalog.
+- Explain the stage beside the control in natural language: `같은 날씨 추천 · 3번 남음`, then `2번 남음`, `1번 남음`; choices 4–6 say that the app is choosing from all colors and show the remaining count. After the sixth replacement, hide or disable the action with calm copy such as `오늘의 후보를 모두 골랐어요. 이 색으로 시작해볼까요?`. Do not expose internal terms such as context stage, catalog mode, reroll index, or probability.
+- The first recommendation does not consume a reroll. Up to three subsequent recommendations reuse the same weather/time/coarse-location context. Replacements 4–6 draw uniformly from the full curated catalog. Every replacement excludes all mission colors already shown on that local date, not only the immediately previous color. Six `다른 색` choices are the hard daily maximum before photo confirmation.
 - Selecting or previewing a photo does not lock the color. Only `이 사진 사용` locks it; immediately after that confirmation, hide `다른 색`.
 
 #### Home state: 1–7 photos, color locked
@@ -284,6 +284,7 @@ After approval:
 - The 9:16 preview remains the dominant surface. The top action is named `내보내기` or the exact operation, never ambiguous `저장`.
 - Template selection is a compact horizontal picker. Sticker search/picker is a secondary collapsible tool region with 44px controls.
 - Existing stickers may be selected, deleted, and moved forward/backward with keyboard-reachable controls.
+- Provide one compact `중앙 색 이름 표시` toggle. It defaults on. Turning it off hides only the center mission tile's name-and-HEX label in Story preview/export while preserving the center color, Story header, original Post, journal, mission identity, and every non-Story surface. Legacy Story metadata without this preference resolves to on.
 - Arrow-key position movement is allowed only as a small handler on the existing coordinate state; otherwise defer it as P2.
 - Stickers are never persisted to the original photo, Post, Deck, Hueprint, Home, or Profile. Do not create a coordinate editor, collision system, or migration.
 - Export actions retain distinct meanings: `3×3 저장`, `스토리 저장`, and `공유하기`; show busy/error state and preserve success-only analytics.
