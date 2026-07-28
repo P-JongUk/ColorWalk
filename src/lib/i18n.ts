@@ -4,9 +4,9 @@ export const copy = {
   ko: {
     appName: 'Hueday',
     today: '오늘',
-    camera: '카메라',
+    camera: '촬영',
     journal: '저널',
-    calendar: '히스토리',
+    calendar: '기록',
     profile: '나',
     language: 'EN',
     loadingMission: '오늘의 색을 고르는 중',
@@ -72,7 +72,7 @@ export const copy = {
   en: {
     appName: 'Hueday',
     today: 'Today',
-    camera: 'Camera',
+    camera: 'Capture',
     journal: 'Journal',
     calendar: 'History',
     profile: 'Me',

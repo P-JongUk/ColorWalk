@@ -10607,3 +10607,239 @@
   font-size: 11px;
   font-weight: 800;
 }
+
+/* ==========================================================================
+   Modern Warm Archive — canonical design tokens (M6 CP1)
+   Source of truth: DESIGN.md. This layer is additive: it introduces the
+   --hd-* token namespace and re-aligns the App shell, BottomNav, Button,
+   card, status, and focus primitives without deleting older theme passes
+   above. Touched screens migrate to --hd-* incrementally in CP2/CP3.
+   ========================================================================== */
+@layer base {
+  :root {
+    --hd-canvas: #FBF8F1;
+    --hd-paper: #FFFDF8;
+    --hd-paper-muted: #F2EDE1;
+    --hd-ink: #211D1B;
+    --hd-archive-ink: #132F39;
+    --hd-muted: #786B5E;
+    --hd-sage-action: #3F776C;
+    --hd-sage-soft: #ECF8F4;
+    --hd-sage-decorative: #8FCFBD;
+    --hd-olive: #526331;
+    --hd-coral-text: #B33C32;
+    --hd-coral-decorative: #FF6F61;
+    --hd-border: #D8D0C2;
+    --hd-focus: #0F6E73;
+
+    --hd-space-1: 4px;
+    --hd-space-2: 8px;
+    --hd-space-3: 12px;
+    --hd-space-4: 16px;
+    --hd-space-5: 20px;
+    --hd-space-6: 24px;
+    --hd-space-7: 32px;
+    --hd-space-8: 40px;
+
+    --hd-radius-sm: 8px;
+    --hd-radius-md: 12px;
+    --hd-radius-lg: 16px;
+    --hd-radius-xl: 24px;
+    --hd-radius-pill: 999px;
+
+    --hd-motion-fast: 120ms;
+    --hd-motion-control: 180ms;
+    --hd-motion-sheet: 240ms;
+    --hd-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --hd-ease-reposition: cubic-bezier(0.77, 0, 0.175, 1);
+
+    --hd-shadow-paper: 0 1px 2px rgb(33 29 27 / 0.06), 0 12px 28px rgb(19 47 57 / 0.08);
+
+    /* Retarget the shared Tailwind theme variables (see tailwind.config.js)
+       to the canonical Modern Warm Archive palette so existing bg-primary/
+       bg-secondary/border/ring utility classes render on-brand app-wide
+       without touching each of the 89 existing <Button> call sites. */
+    --background: 42.0 55.6% 96.5%;
+    --foreground: 20.0 10.0% 11.8%;
+    --card: 42.9 100.0% 98.6%;
+    --card-foreground: 20.0 10.0% 11.8%;
+    --primary: 195.8 50.0% 14.9%;
+    --primary-foreground: 42.9 100.0% 98.6%;
+    --secondary: 42.4 39.5% 91.6%;
+    --secondary-foreground: 20.0 10.0% 11.8%;
+    --muted: 42.4 39.5% 91.6%;
+    --muted-foreground: 30.0 12.1% 42.0%;
+    --accent: 160.0 46.2% 94.9%;
+    --accent-foreground: 195.8 50.0% 14.9%;
+    --destructive: 4.7 56.3% 44.9%;
+    --destructive-foreground: 42.9 100.0% 98.6%;
+    --border: 38.2 22.0% 80.4%;
+    --input: 38.2 22.0% 80.4%;
+    --ring: 183.0 76.9% 25.5%;
+    --radius: 16px;
+  }
+}
+
+@layer components {
+  /* App shell */
+  .phone-shell {
+    background: var(--hd-canvas) !important;
+  }
+
+  .app-frame {
+    background: var(--hd-canvas) !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background: var(--hd-canvas) !important;
+    color: var(--hd-ink) !important;
+  }
+
+  /* BottomNav: exactly five destinations, selection uses shape+weight+color together */
+  .bottom-nav {
+    border: 1px solid var(--hd-border) !important;
+    background: var(--hd-paper) !important;
+    box-shadow: var(--hd-shadow-paper);
+  }
+
+  .bottom-nav-item {
+    position: relative;
+    min-height: 48px;
+    color: var(--hd-muted) !important;
+    font-weight: 700;
+    transition: color var(--hd-motion-fast) var(--hd-ease-out);
+  }
+
+  .bottom-nav-item-active,
+  .bottom-nav-item[aria-current='page'] {
+    color: var(--hd-archive-ink) !important;
+    font-weight: 800;
+  }
+
+  .bottom-nav-item-active svg,
+  .bottom-nav-item[aria-current='page'] svg {
+    color: var(--hd-archive-ink) !important;
+    stroke: var(--hd-archive-ink) !important;
+    fill: var(--hd-sage-soft);
+  }
+
+  .bottom-nav-item-active::before {
+    content: '' !important;
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 18px;
+    height: 3px;
+    border-radius: var(--hd-radius-pill);
+    background: var(--hd-archive-ink);
+    transform: translateX(-50%);
+  }
+
+  .bottom-nav-item:focus-visible {
+    outline: 2px solid var(--hd-focus) !important;
+    outline-offset: 2px;
+  }
+
+  /* Shared card / status surfaces */
+  .status-card {
+    border: 1px solid var(--hd-border) !important;
+    background: var(--hd-paper) !important;
+    box-shadow: var(--hd-shadow-paper);
+  }
+
+  /* Buttons: primary/secondary/tertiary hierarchy on the canonical ink */
+  .btn-hd-primary,
+  button[data-hd-variant='primary'] {
+    min-height: 48px;
+    border: none;
+    border-radius: var(--hd-radius-md);
+    background: var(--hd-archive-ink);
+    color: var(--hd-paper);
+    font-weight: 700;
+    transition: transform var(--hd-motion-fast) var(--hd-ease-out);
+  }
+
+  .btn-hd-secondary,
+  button[data-hd-variant='secondary'] {
+    min-height: 44px;
+    border: 1px solid var(--hd-border);
+    border-radius: var(--hd-radius-md);
+    background: var(--hd-paper);
+    color: var(--hd-archive-ink);
+    font-weight: 700;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .btn-hd-primary:active,
+    button[data-hd-variant='primary']:active {
+      transform: scale(0.96);
+    }
+  }
+
+  /* Global focus-visible: never color-only, always a visible outline */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--hd-focus);
+    outline-offset: 2px;
+  }
+
+  /* Minimal native <dialog> helper (Hueday Dialog). See src/components/ui/dialog.tsx. */
+  .hd-dialog {
+    max-width: min(92vw, 420px);
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--hd-border);
+    border-radius: var(--hd-radius-lg);
+    background: var(--hd-paper);
+    box-shadow: var(--hd-shadow-paper);
+  }
+
+  .hd-dialog::backdrop {
+    background: rgb(19 47 57 / 0.32);
+  }
+
+  .hd-dialog-body {
+    display: grid;
+    gap: var(--hd-space-4);
+    padding: var(--hd-space-6);
+  }
+
+  .hd-dialog-title {
+    color: var(--hd-ink);
+    font-size: 20px;
+    font-weight: 750;
+  }
+
+  .hd-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--hd-space-2);
+  }
+
+  .hd-dialog-close {
+    position: absolute;
+    top: var(--hd-space-3);
+    right: var(--hd-space-3);
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--hd-radius-sm);
+    color: var(--hd-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hd-dialog,
+    .bottom-nav-item,
+    .btn-hd-primary,
+    button[data-hd-variant='primary'] {
+      transition: none !important;
+    }
+  }
+}

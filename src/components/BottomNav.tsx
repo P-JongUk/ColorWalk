@@ -7,8 +7,8 @@ import type { AppTab, Locale } from '@/types'
 
 const navItems: Array<{ tab: AppTab; icon: typeof Home; labelKey: 'today' | 'camera' | 'journal' | 'calendar' | 'profile' }> = [
   { tab: 'today', icon: Home, labelKey: 'today' },
-  { tab: 'camera', icon: Camera, labelKey: 'camera' },
   { tab: 'journal', icon: PenLine, labelKey: 'journal' },
+  { tab: 'camera', icon: Camera, labelKey: 'camera' },
   { tab: 'calendar', icon: CalendarDays, labelKey: 'calendar' },
   { tab: 'profile', icon: Smile, labelKey: 'profile' },
 ]
