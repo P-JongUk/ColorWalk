@@ -69,6 +69,31 @@
 | CW-011 | 2026-07-24 | 기록 복구의 이미지 서명 요청 폭주를 배치화 | 복구 성능·최소 변경·회귀 검증 | 구현·브라우저 QA 완료, Android 잔여 QA |
 | CW-017 | 2026-07-28 | 사진 상태를 건드리지 않는 부분 업데이트와 서버 타이머 없는 마감 | 데이터 아키텍처·동시성 경계·최소 변경 | 구현·전체 검증·430×932 QA 완료, Android 실기기 QA 후속 |
 | CW-018 | 2026-07-28 | 9:16 export의 html2canvas CSS 미지원과 analytics outbox 동시 flush race | 실기 브라우저 QA·CSS 렌더링 제약·동시성 버그 진단 | 구현·수정·브라우저 QA 완료 |
+| CW-019 | 2026-07-28 | M6 Modern Warm Archive 디자인 통합에서 발견한 소스 손상·잘못된 셀렉터 클릭·CSS cascade 재구성 | 코드 리뷰 정밀도·접근성 리팩터링·최소변경 CSS 전략 | 구현·전체 검증 완료, 실기기/실브라우저 QA 후속 |
+
+## CW-019 — M6 Modern Warm Archive 디자인 통합에서 발견한 소스 손상·잘못된 셀렉터 클릭·CSS cascade 재구성
+
+### 문제와 영향
+
+CP1~CP4 디자인 통합 작업 중 디자인 정렬과 무관하게 존재하던 세 가지 실제 결함을 코드 리뷰로 발견했다. (1) `CameraView.tsx`의 카메라 권한 거부 상태 저널 버튼 라벨이 `'????곌린'`(mixed-encoding mojibake, raw bytes `3F C2 80 3F 3F 3F EA B3 8C EB A6 B0`)으로 소스에 손상돼 있었다 — 같은 파일의 정상 경로에는 올바른 `'저널 쓰기'`가 있어 대조 가능했다. (2) `CalendarView.tsx`의 Story 페이지 헤더 `저장` 버튼이 `document.querySelector('.story-export-actions button')`로 DOM의 **첫 번째** 버튼을 클릭했는데, 실제 첫 버튼은 `3×3 저장`이라 사용자가 스토리 저장을 의도해도 3×3만 저장되는 잘못된 동작이었다. (3) `index.css`(240KB, ~10,600줄)에 `:root` 블록이 8회 재선언되어 있고 각각 "final pass"/"absolute final" 주석을 달고 있었지만 실제로 CSS 파일 순서상 마지막(line 7216 근처)에 있는 코랄 팔레트만 렌더링되고 있었다 — 주석이 실제 우선순위를 반영하지 않아 새 토큰을 어디에 추가해야 확실히 이기는지 실측 없이는 알 수 없었다.
+
+### 선택과 구현
+
+- Mojibake는 임의로 재작성하지 않고, 같은 파일의 동일 버튼(정상 경로)에 있는 정확한 한국어 문자열로 교체했다(추측이 아니라 소스 내부 대조 근거).
+- Story 헤더의 모호한 버튼은 DESIGN.md의 "top action은 실제 동작에 맞는 이름, `저장`처럼 모호한 표현 금지" 계약과 정확히 일치하는 결함이라 새 로직을 만들지 않고 버튼 자체를 제거했다(`StoryStudio` 자체에 이미 올바르게 연결된 `3×3 저장`/`스토리 저장`/`공유하기` 3개 버튼이 있음).
+- CSS는 전체 재작성 대신 파일 진짜 끝(EOF)에 `@layer base`/`@layer components` 블록을 추가하는 additive 전략을 썼다 — CSS cascade에서 동일 layer·동일 specificity일 때 소스 순서상 마지막 규칙이 항상 이기므로, 파일 끝에 추가하면 8개의 과거 "final" 시도와 관계없이 확정적으로 우선한다. 기존 8개 블록은 삭제하지 않고 그대로 뒀다(다른 미터치 화면이 참조할 가능성 및 minimal-change 원칙).
+
+### 검증과 결과
+
+- Mojibake 수정은 PowerShell `Get-Content -Encoding UTF8`로 원본 바이트를 16진수로 실측한 뒤(위 hex 시퀀스), 같은 인코딩으로 교체 라인만 다시 쓰고 재실측해 유효한 UTF-8 한글임을 확인했다.
+- CSS cascade 가설은 `grep`으로 8개 `:root` 재선언과 각 블록의 실제 파일 라인 번호를 모두 나열한 뒤, 가장 마지막 줄 번호(7216)의 값이 `--primary: 4 100% 69%`(코랄)임을 확인하고, 새로 추가한 EOF 토큰 블록의 `--primary` 값이 `npm run build` 결과물 CSS에서 실제로 마지막에 등장하는지 `dist` 산출물로 재확인했다.
+- 전체 lint(0 errors), Vitest 16 files/97 tests, production build(dist CSS 122.36kB/24.59kB gzip)를 CP1~CP4 각 체크포인트에서 반복 통과했다.
+- Playwright가 프로젝트 의존성에 없고(`.playwright-browsers` 캐시도 비어 있음) 새 패키지 설치가 금지되어, 실제 430×932 브라우저 스크린샷으로 위 세 수정의 시각적 결과를 확인하지 못했다. 코드 대조·CSS 산출물 검사·79개 유닛 테스트로 대체했다.
+
+### 남은 부채
+
+- 위 3개 결함이 M6 이전부터 실제 사용자에게 노출됐는지(즉 이번 발견이 신규 회귀가 아니라 기존 버그인지)는 git blame으로 도입 커밋을 특정하지 않았다 — 다음 조사: `git log -S'곌린' -- src/components/CameraView.tsx`로 도입 시점 확인.
+- Playwright 실제 설치와 430×932/360px/200%줌 스크린샷 QA는 M7 또는 별도 환경 준비 후 재시도가 필요하다. 다음 측정: `.playwright-browsers`에 브라우저를 받은 뒤 Auth/Home 0장·진행·완성/Camera/Journal/History/Deck/Hueprint/Story/Profile 9개 화면 캡처.
 
 ## CW-018 — 9:16 export의 html2canvas CSS 미지원과 analytics outbox 동시 flush race
 

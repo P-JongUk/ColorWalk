@@ -1,5 +1,16 @@
 # Design QA Log
 
+## 2026-07-28 — M6 Modern Warm Archive 통합 (CP1–CP4)
+
+- 구현 브랜치: `feature/integrated-design-accessibility-performance` (CP1 `1b1e132`, CP2 `4bfa8fe`, CP3 `755dc01`, CP4 `b61b8ee`). DESIGN.md의 `Modern Warm Archive` 계약을 App shell/BottomNav/Button(CP1), Auth/Today/Camera/Journal(CP2), History/Deck/Hueprint/Capsule/Story/Profile(CP3), 접근성/reduced-motion/성능 baseline(CP4) 순서로 적용했다.
+- 핵심 시각 변경: `--hd-*` canonical token layer(캔버스/페이퍼/잉크/아카이브잉크/세이지/올리브/보더/포커스)를 `index.css` 파일 끝(EOF)에 추가하고 Tailwind `--primary`/`--secondary`/`--border`/`--ring`도 같은 값으로 리타겟해 89개 기존 `<Button>` 호출부에 자동 적용했다. Home의 `mission-ticket`(코랄 그라디언트+ticket perforation)을 `mission-frame-artifact`(mission color 풀배경, top-right/bottom-left corner-fold, 직접 텍스트)로 교체했다. `GridCollage`의 중앙 타일 70/30 ivory inset을 제거하고 `getReadableTextColor`(WCAG 대비 알고리즘)로 직접 텍스트를 그렸다. 빈 슬롯을 Editorial Contact Sheet 단일 체계로 통일하고 `gridFillers.ts`의 랜덤/해시 필러 8종을 완전히 제거했다.
+- 접근성 변경: 네이티브 `<dialog>` 기반 `HuedayDialog` helper 신규(진입 포커스 명시적 이동, ESC, 트리거 focus 복귀) — camera 미리보기, mission-pack 변경 확인, 원본 정리 확인, Profile 언어 선택을 이 컴포넌트로 전환했다. `mission-pack-chip`의 `aria-pressed`를 `role="radio"`+`aria-checked`로 시맨틱 정합, calendar-day의 `aria-label`을 raw date key에서 `formatDisplayDate`로 교체. `prefers-reduced-motion: reduce`에서 `.camera-shutter`/`.calendar-day`/`.camera-native-link`/`.mission-shuffle-button`의 `:active scale(.96)`과 Button 기본 hover translate를 모두 제거. 44×44px 미만이었던 `.home-info-button`/`.mission-shuffle-button`/`.mission-pack-chip`/`.history-view-switch button`을 44px 이상으로 조정.
+- Locale: `LocalePreference`(`system`/`ko`/`en`) 3단 계약을 `i18n.ts`/`useColorWalkStore`에 신규 구현하고 Profile의 언어 row를 `HuedayDialog` 기반 radiogroup으로 교체(시스템 locale은 `navigator.language(s)`에서 `ko` 시작만 한국어 판정).
+- 실제 버그 발견·수정(디자인과 무관하게 존재하던 결함, 상세 근거는 `docs/career-problem-solving-log.md`의 CW-019): CameraView의 mojibake 저널 버튼 라벨, CalendarView의 Story 헤더가 `document.querySelector`로 잘못된 첫 버튼(`3×3 저장`)을 클릭하던 실제 오동작, JournalView의 중복 저장 버튼(2개 → 1개), ProfileView의 `Supabase` 벤더명 노출.
+- 검증: 각 체크포인트에서 `npm run lint`(0 errors), `npm test -- --run`(최종 16 files/97 tests, CP1 대비 신규 7 tests), `npm run build`(dist CSS 128.14kB→122.36kB raw, 25.73kB→24.59kB gzip) 통과. `git diff --check` 공백 오류 없음.
+- 성능 baseline(CP4, 2026-07-28 KST): pre-M6 `944ceed`를 임시 checkout하여 원본 빌드 후 비교. CSS 124.25kB→122.36kB raw(-1.5%)/24.76kB→24.59kB gzip, 메인 JS(index) 117.84kB→119.99kB raw(+1.8%)/40.71kB→41.37kB gzip(+1.6%). 측정 결과 병목 없음 — "측정상 최적화 불필요"로 별도 성능 코드·커밋을 만들지 않았다.
+- **미해결 제약**: Playwright가 프로젝트 의존성에 없고 `.playwright-browsers` 캐시가 비어 있어(새 패키지 설치 금지 규칙과 충돌) 실제 430×932/360px/200%줌 브라우저 스크린샷 QA를 수행하지 못했다. 대신 CSS 산출물 실측(dist 빌드 결과 grep), 430px 기준 mission-frame 비율 수식 검증(390px 콘텐츠폭 - 140px 그리드 - 12px gap = 238px, 비율 1.7:1), 신규 유닛 테스트(`getReadableTextColor`/`getReadableTextContrast` 대비 검증, locale preference 로직)로 대체했다. 실제 브라우저/Android 기기 스크린샷은 M7 또는 Playwright 설치 승인 후 재시도가 필요하다.
+
 ## 2026-07-28 — M4 선택형 미션 팩 430×932 QA
 
 - Captures: `.tmp/m4-qa/` (scratch, not committed — ignored `.tmp/`). Key frames: `02-free-default.png`, `03-recommended-badge.png`, `04-0photo-select-commute.png`, `05-back-to-free.png`, `08-deck-view.png`, `09-collection-empty-state.png`, `10-3photo-rainy-window.png`, `11-3photo-change-confirm-dialog.png`, `14-8photo-closed-readonly.png`, `16-indoor-collection-with-card.png`.

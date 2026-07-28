@@ -1,5 +1,7 @@
 # 현재 상태
 
+> **2026-07-28 M6 Modern Warm Archive 통합 — CP1~CP4 구현·검증·push 완료(main 병합 전):** `feature/integrated-design-accessibility-performance`(base `main` 102b2de, 시작 HEAD `944ceed`)에서 DESIGN.md의 `Modern Warm Archive` 계약을 적용했다. CP1(`1b1e132`) canonical `--hd-*` token layer+App shell/BottomNav/Button 정렬+`HuedayDialog` 네이티브 `<dialog>` helper, CP2(`4bfa8fe`) Auth/Today/Camera/Journal의 mission-frame-artifact(코너폴드+mission color 풀배경)+Editorial Contact Sheet 빈 슬롯+`LocalePreference`(system/ko/en) 3단 계약 신설, CP3(`755dc01`) History/Deck/Hueprint/Capsule/Story/Profile 정렬+월 라벨 로컬라이즈+스티커 키보드 이동+벤더명(Supabase) 노출 제거, CP4(`b61b8ee`) 접근성 시맨틱 수정+reduced-motion 전면 적용+44px 터치타겟+성능 baseline 실측(병목 없음, 별도 성능 커밋 없음)을 각각 좁은 검증 후 push했다. 디자인과 무관한 실제 버그 3건도 발견·수정: CameraView의 mojibake 저널 버튼, CalendarView Story 헤더의 잘못된 `document.querySelector` 클릭(3×3 저장이 대신 실행되던 버그), JournalView의 중복 저장 버튼. 각 체크포인트에서 lint 0 errors, vitest(최종 16 files/97 tests), production build를 통과했다. Playwright가 프로젝트 의존성에 없어(새 패키지 설치 금지) 실제 430×932 브라우저 스크린샷 QA는 CSS 산출물 검사·유닛 테스트·수식 검증으로 대체했다. CP5(문서·AI memory·Graphify 정렬)와 최종 gate(verify:supabase/cap:sync/Android build)가 다음 작업이다. main 병합은 별도 사용자 검토 뒤 진행한다.
+
 > **2026-07-28 M5 Hueprint·Color Capsule — 구현·검증·문서 정렬 완료(main 병합 전):** `feature/hueprint-color-capsule`(체크포인트 1 `b898c30`, 체크포인트 2 `999b672`, 체크포인트 3 `4543e65`)에서 canonical `mission_hex`-only 주간 Hueprint(`src/lib/hueprint.ts`)와 월간 Color Capsule을 기존 `mergeDailyRecords()` 출력 위에서 파생했다. 무효 `mission_hex` 기록은 History/Deck/Story 진입을 유지한 채 Hueprint/Capsule 파생·Color Volume에서만 제외되도록 `canonicalizeMissionHex()`를 nullable로 바꾸고 `LivingHueDeckView`에 neutral archive 상태를 추가했다. 로컬 표지 preference(`hueday:hueprint-cover:v1:<ownerId>:<weekKey>`), `다시 만난 색`(동일 월·일 최근 연도 → 이전 달 ±3일), `getHueprintDetailTier()` 단일 tier class, 전용 9:16 export(`src/lib/shareImage.ts`가 기존 StoryStudio의 html2canvas/download/Web Share/Capacitor Share 패턴을 공용화)를 구현했다. Export 성공 analytics(`hueprint_exported`/`color_capsule_exported`/`*_share_opened`)는 `owner+week/month+artifact+delivery` dedupe key로 성공 완료 뒤에만 기록되고 실패·취소는 기록하지 않음을 430×932 Playwright QA로 실제 확인했다(html2canvas `color-mix()` 미지원 버그와 `flushProductEvents()` 동시 호출 시 `product_events_pkey` 충돌 race를 모두 발견·수정). 전체 lint(0 errors), Vitest 15 files/90 tests, build, live Supabase verification, Capacitor sync, Android debug build(`app-debug.apk` 17,982,899 bytes), `git diff --check`를 통과했다. main 병합은 별도 사용자 검토 뒤 진행한다.
 
 > **2026-07-28 출시 후 결제 업데이트 결정:** 버전 1은 무료로 출시한다. 실제 Android/PWA 인플레이스 업데이트에서 기존 로그인·draft/master·기록함·Deck·Hueprint/Capsule·Story 보존을 확인한 뒤 `M8M`에서 Hueday Studio 1회 구매를 우선 구현한다. 결제는 기존 Post/사진/로컬 저장을 변환하지 않는 additive entitlement 계층으로 분리하고, 구매·복원·보류·환불/회수·계정 전환을 실제 스토어 테스트로 검증한다. Cloud 구독은 저장/전송 비용과 자동 복구 범위가 승인될 때 별도 진행한다. 자동 재개 계약은 `docs/post-launch-monetization-and-payment-safety.md`다.
@@ -8,7 +10,7 @@
 
 > **2026-07-27 M3 Living Hue Deck — main 통합 완료:** `5582e46`은 merged daily records에서 Deck을 파생한다. `getPostGridImages()`는 `grid_images → client_meta.gridImages → image_path`로 1/3/5/8을 정하고, 유효한 여섯 자리 mission HEX는 공유 helper로 canonicalize해 정확한 Color Volume을 만든다. 히스토리 전환은 `기록 / Deck`이며, 완료 local/pending 기록은 `기기 저장` 또는 `동기화 대기`로만 표시한다. 새 table, migration, image format/upload, Canvas, social, collection, Hueprint, AI는 추가하지 않았다. M4가 명시적 mission-pack-ID 컬렉션을, M5가 Hueprint/Capsule을 맡는다. lint, Vitest 12 files/40 tests, build, live Supabase verification, Capacitor sync, Android debug build, 430×932 Deck QA를 통과했다. Android 인플레이스 업데이트 실기기 QA는 출시 gate로 남는다.
 
-> **현재 실행 순서:** M2-3 Android/PWA 인플레이스 QA는 M7 출시 gate로 유지한다. M3/M4는 `main`에 통합 완료됐고, M5 Hueprint·Color Capsule은 `feature/hueprint-color-capsule`에서 구현·검증·문서 정렬까지 완료해 사용자 검토 뒤 main 병합을 기다린다. 다음 구현은 M6 통합 디자인·접근성·성능 → M7 출시 검증 → 버전 1 출시다. Hue Canvas는 출시 후 필수 초기 업데이트, Hue Drop은 별도 첫 소셜 업데이트다.
+> **현재 실행 순서:** M2-3 Android/PWA 인플레이스 QA는 M7 출시 gate로 유지한다. M3/M4는 `main`에 통합 완료됐고, M5 Hueprint·Color Capsule과 M6 통합 디자인·접근성·성능(Modern Warm Archive)은 각각 별도 feature 브랜치에서 구현·검증·문서 정렬까지 완료해 사용자 검토 뒤 main 병합을 기다린다. 다음은 M6 CP5(전체 QA·문서 정렬) → 최종 gate(verify:supabase/cap:sync/Android build) → M7 출시 검증 → 버전 1 출시다. Hue Canvas는 출시 후 필수 초기 업데이트, Hue Drop은 별도 첫 소셜 업데이트다.
 
 ## 제품
 
@@ -68,7 +70,7 @@
 ## 저장소
 
 - 통합 브랜치: `main`
-- 현재 진행 기능 브랜치: `feature/everyday-mission-packs` — M4 선택형 일상 미션 팩. checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`, checkpoint 3(문서 정렬) 진행 중. `origin/feature/everyday-mission-packs`와 동기화 상태에서 이어감.
+- 현재 진행 기능 브랜치: `feature/everyday-mission-packs` — M4 선택형 일상 미션 팩. checkpoint 1 `5eeaf91`, checkpoint 2 `b3128c1`, checkpoint 3(문서 정렬) 진행 중. `origin/feature/everyday-mission-packs`와 동기화 상태에서 이어감. **(2026-07-28 갱신: 이후 M5는 `feature/hueprint-color-capsule`, M6은 `feature/integrated-design-accessibility-performance`에서 각각 진행·완료했다. 이 줄은 M4 시점 기록으로 보존한다.)**
 - 최근 `main` 통합 기능: `feature/local-master-offline-sync`(M2-2), `feature/living-hue-deck`(M3, `5582e46`)
 - 대형 기능 브랜치 규칙: `feature/<기능명>`
 - 커밋 메시지: 한글, 가능하면 `feat:`, `fix:`, `docs:` 등의 접두사 사용

@@ -1,5 +1,13 @@
 # 지속 결정
 
+## 2026-07-28 — M6 Modern Warm Archive CP1~CP4 구현 완료 (implementation fact, contract unchanged)
+
+- CP0에서 승인된 DESIGN.md `Modern Warm Archive` 계약을 재해석하거나 축소하지 않고 그대로 구현했다. `feature/integrated-design-accessibility-performance`(base `main` `102b2de`, 시작 HEAD `944ceed`)의 CP1(`1b1e132`)/CP2(`4bfa8fe`)/CP3(`755dc01`)/CP4(`b61b8ee`)가 각각 canonical token/App shell, Auth·Today·Camera·Journal, History·Deck·Hueprint·Capsule·Story·Profile, 접근성·모션·성능 baseline을 담당했다.
+- `LocalePreference`(`system`/`ko`/`en`) 3단 계약은 DESIGN.md 8절과 정확히 일치하게 신설했다. 기존 `colorwalk-locale` 값은 legacy fallback으로만 읽고 마이그레이션·삭제하지 않는다. 사용자 저널/색 이름 제안/서버 기록은 locale 변경으로 건드리지 않는다(diff로 확인).
+- 색 대비는 DESIGN.md 2절의 WCAG relative-luminance+contrast-ratio 알고리즘을 `getReadableTextColor`/`getReadableTextContrast`로 그대로 구현했다. 임의 임계값이나 mission-color derived text color는 사용하지 않는다.
+- 새 DB, migration, package, 서버, analytics SDK는 추가하지 않았다(diff로 확인). Daily Color Hunt·local-first draft/master·Supabase Post/client_meta/grid_images fallback·Living Hue Deck/Hueprint/Capsule 파생 규칙은 변경하지 않았다.
+- Playwright 미설치로 인한 실제 브라우저 QA 제약은 계약 자체를 바꾸지 않는다 — CP5/M7에서 재시도가 필요한 별도 검증 공백으로 기록했다(`docs/design-qa-log.md`, `docs/release-readiness.md`).
+
 ## 2026-07-28 — 한국어·영어 UI와 해외 Google Play 준비 (approved)
 
 - Hueday는 한국어와 영어 UI를 동시에 지원하고, 한국 외 Google Play 배포를 준비한다. 초기 마케팅과 고객 지원의 우선순위는 한국 사용자이며, 해외 성공이나 시장 규모는 이 결정만으로 주장하지 않는다.

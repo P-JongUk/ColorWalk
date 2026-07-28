@@ -1,16 +1,22 @@
 # 다음 할 일
 
-> ## 최신 재개 지점 (2026-07-28)
+> ## 최신 재개 지점 (2026-07-28, M6)
 >
-> - **기준:** M5 Hueprint·Color Capsule은 `feature/hueprint-color-capsule`(checkpoint 1 `b898c30`, checkpoint 2 `999b672`, checkpoint 3 `4543e65`)에서 구현·전체 검증·430×932 Playwright QA·문서 정렬(checkpoint 4)까지 완료했다. main 병합은 사용자 검토 뒤 별도 단계다.
-> - **다음 구현 작업:** M6 통합 디자인·접근성·성능을 시작하기 전에 M5 feature 브랜치를 사용자 검토 뒤 main에 병합한다.
-> - **그 다음:** M6 통합 디자인·접근성·성능(430×932 일반 사용자 경로, 기본 Android/PWA 성능)을 진행한다. Android 실기기 인플레이스 QA는 M7 출시 gate로 유지한다.
-> - **M5 모델·세션:** 큰 방향 대화는 Sol medium, 고위험 계획 확정은 Sol high+계획 모드, 승인된 구현은 Kiro Sonnet 5 high 단일-agent, 검토는 Antigravity Gemini 3.1 Pro high 읽기 전용, 통합은 Codex Terra medium을 기본으로 유지한다. 각 전환 전에 commit·push하고 같은 worktree를 동시에 수정하지 않는다.
-> - **출시 후:** Hue Drop만 친구 기능 우선순위 1이며, 개인 출시 지표와 업데이트 안전을 확인하기 전에는 설계·DB migration을 시작하지 않는다.
+> - **기준:** M6 Modern Warm Archive 통합은 `feature/integrated-design-accessibility-performance`(base `main` `102b2de`, 시작 HEAD `944ceed`)에서 CP1(`1b1e132`)~CP4(`b61b8ee`)까지 구현·검증·push 완료했다. CP5(전체 user-flow QA·문서·AI memory·Graphify 정렬)가 진행 중이다.
+> - **다음 구현 작업:** CP5 커밋(`docs: M6 검증 결과와 출시 준비 상태 정렬`) 후 push, 이어서 최종 gate(`npm run lint`/`test`/`build`/`verify:supabase`/`cap:sync`/Android debug build/`git diff --check`)를 순서대로 foreground 실행한다.
+> - **그 다음:** Hueday finish workflow 스크립트 실행 후 session note를 실제 내용으로 채운다. main 병합은 사용자 검토 뒤 별도 결정이다. M5(`feature/hueprint-color-capsule`)와 M6이 모두 main 병합을 기다리는 상태이므로 병합 순서를 사용자와 먼저 확인한다.
+> - **미해결 제약:** Playwright가 프로젝트 의존성에 없어 실제 430×932/360px/200%줌 브라우저 스크린샷 QA를 수행하지 못했다. M7 또는 별도 환경 준비 후 재시도가 필요하다.
 > - **유지:** Android capture → force-stop → offline/online retry는 여전히 출시 전 필수 QA다.
-> - **출시 후 필수:** `feature/hue-canvas-production`에서 G1 코드를 선별 이식하고, 기존 사용자 데이터가 채워진 Android/PWA 인플레이스 업데이트, Palette 재파생, versioned recipe 복구, 기능 gate 롤백을 통과한 뒤 Hue Canvas를 배포한다.
-> - **출시 후 우선 수익화:** 무료 버전의 실제 인플레이스 업데이트 보존 확인 뒤 `M8M`에서 Hueday Studio 1회 구매의 Play Billing/entitlement·구매 복원·보류·환불/회수·계정 전환을 구현한다. 기존 Post/사진/로컬 저장은 변환하지 않는다. 상세 계약은 `docs/post-launch-monetization-and-payment-safety.md`다.
-> - **첫 소셜 업데이트:** Hue Drop은 Canvas와 별도 release로 진행하고 공개/익명 UGC를 열지 않는다.
+
+
+> ## M6 진행 인계 (CP1~CP4 완료, CP5 진행 중, 2026-07-28)
+>
+> - **작업명·목표:** 진행 중 — M6 `feature/integrated-design-accessibility-performance`: DESIGN.md `Modern Warm Archive` 계약을 App shell/Button(CP1), Auth/Today/Camera/Journal(CP2), History/Deck/Hueprint/Capsule/Story/Profile(CP3), 접근성/모션/성능(CP4) 순으로 구현.
+> - **기준:** `feature/integrated-design-accessibility-performance`는 `main` `102b2de`에서 분기했고 시작 HEAD는 `944ceed`(CP0 디자인 승인+해외 출시 문서 정렬 커밋)다. main 병합은 아직 진행하지 않았다.
+> - **체크포인트:** CP1 `1b1e132`(canonical token, App shell/BottomNav/Button, HuedayDialog), CP2 `4bfa8fe`(Auth/Today/Camera/Journal, LocalePreference 신설), CP3 `755dc01`(History/Deck/Hueprint/Capsule/Story/Profile), CP4 `b61b8ee`(접근성 시맨틱+reduced-motion+44px+성능 baseline), CP5(이 커밋, 문서 정렬).
+> - **각 체크포인트 검증(2026-07-28 KST):** lint 0 errors, vitest(CP1 15 files/90 tests → CP2~CP4 16 files/97 tests), production build(dist CSS 128.14kB→122.36kB raw), `git diff --check` 통과. 최종 gate(verify:supabase/cap:sync/Android build)는 CP5 이후 별도 실행한다.
+> - **실행 중 발견·수정한 실제 버그(디자인과 무관):** CameraView의 mojibake 저널 버튼 라벨, CalendarView Story 헤더의 `document.querySelector` 오작동(3×3 저장이 대신 실행), JournalView의 중복 저장 버튼. 상세 근거는 `docs/career-problem-solving-log.md` CW-019.
+> - **범위 밖으로 남긴 것:** Playwright 실제 브라우저 QA(환경 제약, M7 후속), Android 실기기 인플레이스 QA(M7 gate), main 병합, DB migration, production 배포.
 
 
 > ## M5 진행 인계 (완료, 2026-07-28)

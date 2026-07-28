@@ -1,5 +1,13 @@
 # Hueday Release Readiness Notes
 
+## M6 Modern Warm Archive design/accessibility/performance gate (2026-07-28)
+
+- `feature/integrated-design-accessibility-performance` implemented CP1 (canonical `--hd-*` tokens, App shell/BottomNav/Button/dialog helper), CP2 (Auth/Today/Camera/Journal mission-frame and Editorial Contact Sheet), CP3 (History/Deck/Hueprint/Capsule/Story/Profile), and CP4 (keyboard/focus/dialog/reduced-motion/44px targets, measured performance baseline) against the DESIGN.md `Modern Warm Archive` contract. Commits: `1b1e132`, `4bfa8fe`, `755dc01`, `b61b8ee`.
+- Each checkpoint passed `npm run lint` (0 errors), `npm test -- --run` (final: 16 files/97 tests), `npm run build`, and `git diff --check`. Compiled CSS moved from 128.14kB/25.73kB gzip (CP1) to 122.36kB/24.59kB gzip (CP4) as dead random/hash empty-slot CSS and the legacy `gridFillers.ts` filler system were removed.
+- Measured performance baseline (CP4): compiled against pre-M6 `944ceed`. CSS 124.25kB→122.36kB raw (-1.5%), 24.76kB→24.59kB gzip. Main JS bundle 117.84kB→119.99kB raw (+1.8%), 40.71kB→41.37kB gzip (+1.6%). No bottleneck found; no performance-specific code or commit was added.
+- No DB schema, migration, new package, or production deployment changed. `feature/integrated-design-accessibility-performance` stays a feature branch; `main` merge is a separate follow-up after user review.
+- **Known gap**: Playwright is not an installed project dependency and `.playwright-browsers` cache is empty in this environment; installing it was out of scope (no new dependency rule). Real 430×932/360px/200%-zoom browser screenshots and Android TalkBack/device QA were not captured this cycle. Substituted evidence: CSS build-output inspection, mission-frame ratio arithmetic (390px content width − 140px grid − 12px gap = 238px, ratio 1.7:1 at 430px), and new unit tests (`getReadableTextColor`/`getReadableTextContrast` WCAG contrast, locale-preference resolution). This is an M7-or-later follow-up, not a passed browser QA checkpoint.
+
 ## Post-launch payment update gate (approved 2026-07-28)
 
 - Version 1 launches without billing. Payment is the priority `M8M` update only after one real in-place update preserves the signed-in user's draft/master, history, Deck, Hueprint/Capsule, Story, and free export.

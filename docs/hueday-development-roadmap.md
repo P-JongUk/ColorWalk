@@ -68,10 +68,10 @@
 
 ### M6 한국어·영어 UI 계약
 
-- [ ] Profile의 언어 선택은 `시스템 설정` / `한국어` / `English`이며, 명시 선택은 기기 로컬 preference로 저장한다.
-- [ ] 기기·브라우저 언어로 초기 locale을 정하고, 한국어 시스템 locale은 한국어로, 지원하지 않는 시스템 locale은 영어로 fallback한다.
-- [ ] UI, 날짜·시간, 날씨, 알림, 오류, 접근성 label, Story/Hueprint/Capsule export는 하나의 effective locale에서 함께 결정한다.
-- [ ] 사용자 저널, 색 이름 제안, 기존 사용자 콘텐츠와 서버 기록은 locale 변경으로 자동 번역·재작성하지 않는다.
+- [x] Profile의 언어 선택은 `시스템 설정` / `한국어` / `English`이며, 명시 선택은 기기 로컬 preference로 저장한다. (`src/lib/i18n.ts`의 `LocalePreference`, key `hueday-locale-preference:v1`; `ProfileView`의 `HuedayDialog` 기반 radiogroup, 2026-07-28 CP2/CP3)
+- [x] 기기·브라우저 언어로 초기 locale을 정하고, 한국어 시스템 locale은 한국어로, 지원하지 않는 시스템 locale은 영어로 fallback한다. (`detectSystemLocale()`이 `navigator.languages`에서 `ko` 시작만 한국어 판정, 나머지 전부 영어)
+- [x] UI, 날짜·시간, 날씨, 알림, 오류, 접근성 label, Story/Hueprint/Capsule export는 하나의 effective locale에서 함께 결정한다. (`useColorWalkStore`의 `locale`이 유일한 effective locale, 화면별 개별 locale 상태 없음)
+- [x] 사용자 저널, 색 이름 제안, 기존 사용자 콘텐츠와 서버 기록은 locale 변경으로 자동 번역·재작성하지 않는다. (`setLocalePreference()`는 UI 상태만 갱신, Post/draft/mission/client_meta를 건드리지 않음 — diff로 확인)
 
 ### M7 한국어·영어 출시 gate
 
@@ -82,9 +82,9 @@
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M5 — Hueprint·Color Capsule 구현·검증·문서 정렬 완료(feature 브랜치, main 통합 전)**
-- 현재 작업: **M5 feature gate 통과 후 사용자 검토·main 병합 대기**. M2-3/M4/M5 Android 인플레이스 update QA는 M7 출시 gate로 유지한다.
-- 다음 한 작업: **M6 통합 디자인·접근성·성능을 시작하기 전에 M5 feature 브랜치를 사용자 검토 뒤 main에 병합한다.**
+- 마스터 단계: **M6 — 통합 디자인·접근성·성능(Modern Warm Archive), CP1~CP4 구현·검증·push 완료(feature 브랜치, main 통합 전)**
+- 현재 작업: **CP5(전체 user-flow QA·문서·AI memory·Graphify 정렬) 진행 중.** M2-3/M3/M4/M5/M6 Android 인플레이스 update QA는 M7 출시 gate로 유지한다.
+- 다음 한 작업: **CP5 완료 후 최종 gate(lint/test/build/verify:supabase/cap:sync/Android debug build/git diff --check)를 순서대로 통과시키고, 사용자 검토 뒤 main 병합 여부를 결정한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙
@@ -363,7 +363,9 @@ M2-2 저장 안정성 완료 뒤의 다음 우선순위다. Hue Canvas 전용 �
 - 다른 사용자가 개인 작품 recipe나 source post를 읽지 못한다.
 - 새로고침·로그인·기기 재실행 뒤 작품과 원본 연결이 복구된다.
 
-## M6 — Hueprint·Color Capsule
+## Historical — prior M6 Hueprint·Color Capsule roadmap (superseded, implemented as M5)
+
+> 이 절의 "M6"은 2026-07-26 실행 순서 정정 이전의 옛 번호다. Hueprint·Color Capsule은 실제로 M5로 구현·완료됐다(`feature/hueprint-color-capsule`, checkpoint 1~3). 현재 M6은 통합 디자인·접근성·성능(Modern Warm Archive)이다.
 
 목표: 색이 쌓일수록 개인 가치가 커지고 과거 기록을 다시 찾게 한다.
 
