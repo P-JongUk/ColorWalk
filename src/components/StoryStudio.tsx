@@ -135,6 +135,18 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
     )
   }
 
+  /** Small keyboard-reachable handler on the existing coordinate state (percent-of-card units).
+   * No coordinate editor, collision system, or migration is added. */
+  function nudgeSticker(uid: string, deltaX: number, deltaY: number) {
+    setNextStickers(
+      stickers.map((sticker) =>
+        sticker.uid === uid
+          ? { ...sticker, x: Math.min(94, Math.max(6, sticker.x + deltaX)), y: Math.min(94, Math.max(6, sticker.y + deltaY)) }
+          : sticker,
+      ),
+    )
+  }
+
   async function saveOrShare(mode: 'download' | 'share', kind: 'story' | 'grid' = 'story') {
     const target = kind === 'grid' ? gridExportRef.current : exportRef.current
     if (!target) return
@@ -192,6 +204,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
           selectedStickerUid={selectedStickerUid}
           onStickerPointerDown={beginDrag}
           onSelectSticker={setSelectedStickerUid}
+          onStickerNudge={nudgeSticker}
         />
       </div>
 

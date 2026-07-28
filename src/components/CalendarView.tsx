@@ -1,11 +1,12 @@
 import { CalendarDays, Camera, ChevronLeft, ChevronRight, Share2 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { GridCollage } from '@/components/GridCollage'
 import { ColorCapsuleArchiveView, ColorCapsuleMonthView, HueprintWeekView } from '@/components/HueprintView'
 import { ColorVolumeView, LivingHueDeckView, MissionPackCollectionView } from '@/components/LivingHueDeckView'
 import { StoryStudio } from '@/components/StoryStudio'
 import { Button } from '@/components/ui/button'
+import { HuedayDialog } from '@/components/ui/dialog'
 import { getMissionPackCollections, getMonthlyCollection } from '@/lib/collection'
 import { formatDisplayDate, getLocalDateKey, getMonthMatrix } from '@/lib/date'
 import { getPostGridImages } from '@/lib/grid'
@@ -52,6 +53,7 @@ function createDeckSessionId() {
 }
 
 export function CalendarView({ locale, ownerId, posts, currentDraft, masterCleanupByDate = {}, onCleanupMaster, onStartCamera, onDeckEvent, onDeckStageVisible, onStoryExported, onStoryShareOpened, onMissionPackCollectionOpened, onHueprintScreenViewed, onHueprintCtaClicked, onHueprintExported, onHueprintShareOpened, onColorCapsuleExported, onColorCapsuleShareOpened }: CalendarViewProps) {
+  const masterCleanupDialogTitleId = useId()
   const [visibleMonth, setVisibleMonth] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateKey())
   const [showStoryStudio, setShowStoryStudio] = useState(false)
@@ -219,13 +221,6 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
             <ChevronLeft aria-hidden="true" />
           </Button>
           <h1>{locale === 'ko' ? '스토리 만들기' : 'Make story'}</h1>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => document.querySelector<HTMLButtonElement>('.story-export-actions button')?.click()}
-          >
-            {t(locale, 'save')}
-          </Button>
         </header>
         <div className="story-ratio-tabs" aria-label="Story ratio">
           <span className="is-active">9:16</span>
@@ -440,7 +435,7 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
                   setShowMasterCleanupConfirm(false)
                   setMasterCleanupError(null)
                 }}
-                aria-label={key}
+                aria-label={formatDisplayDate(key, localeCode)}
               >
                 {day.getDate()}
               </button>
@@ -494,37 +489,42 @@ export function CalendarView({ locale, ownerId, posts, currentDraft, masterClean
               <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => setShowMasterCleanupConfirm(true)}>
                 원본 정리하기
               </Button>
-            ) : (
-              <div className="mt-3 rounded-xl bg-white/85 p-3" role="alertdialog" aria-label="원본 정리 확인">
-                <p className="text-sm font-bold text-slate-900">
-                  고화질 원본 {masterCleanup.masterCount}장을 이 기기에서 삭제할까요?
-                </p>
-                <p className="mt-2 text-xs leading-5 text-slate-700">
-                  {masterCleanup.masterBytes === undefined ? '예상 용량 확인 불가' : `약 ${formatBytes(masterCleanup.masterBytes)} 확보`}. 기록, 저널, Story와 온라인 미리보기는 남지만 원본 품질로 복구할 수 없어요. 오프라인에서는 고화질 Story 재생성을 보장하지 않아요.
-                </p>
-                {masterCleanupError ? <p className="mt-2 text-xs font-bold text-rose-700">{masterCleanupError}</p> : null}
-                <div className="mt-3 flex gap-2">
-                  <Button type="button" variant="outline" size="sm" disabled={isCleaningMaster} onClick={() => { setShowMasterCleanupConfirm(false); setMasterCleanupError(null) }}>
-                    취소
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={isCleaningMaster}
-                    onClick={() => {
-                      setIsCleaningMaster(true)
-                      setMasterCleanupError(null)
-                      void onCleanupMaster(selectedDate)
-                        .then(() => setShowMasterCleanupConfirm(false))
-                        .catch((error) => setMasterCleanupError(error instanceof Error ? error.message : '원본 정리를 완료하지 못했어요.'))
-                        .finally(() => setIsCleaningMaster(false))
-                    }}
-                  >
-                    {isCleaningMaster ? '정리 중…' : '원본 삭제'}
-                  </Button>
-                </div>
+            ) : null}
+            <HuedayDialog
+              open={showMasterCleanupConfirm}
+              onClose={() => { setShowMasterCleanupConfirm(false); setMasterCleanupError(null) }}
+              titleId={masterCleanupDialogTitleId}
+              title="원본 정리 확인"
+              closeLabel="취소"
+            >
+              <p className="text-sm font-bold text-slate-900">
+                고화질 원본 {masterCleanup.masterCount}장을 이 기기에서 삭제할까요?
+              </p>
+              <p className="mt-2 text-xs leading-5 text-slate-700">
+                {masterCleanup.masterBytes === undefined ? '예상 용량 확인 불가' : `약 ${formatBytes(masterCleanup.masterBytes)} 확보`}. 기록, 저널, Story와 온라인 미리보기는 남지만 원본 품질로 복구할 수 없어요. 오프라인에서는 고화질 Story 재생성을 보장하지 않아요.
+              </p>
+              {masterCleanupError ? <p className="mt-2 text-xs font-bold text-rose-700" role="alert">{masterCleanupError}</p> : null}
+              <div className="hd-dialog-actions">
+                <Button type="button" variant="outline" size="sm" disabled={isCleaningMaster} onClick={() => { setShowMasterCleanupConfirm(false); setMasterCleanupError(null) }}>
+                  취소
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={isCleaningMaster}
+                  onClick={() => {
+                    setIsCleaningMaster(true)
+                    setMasterCleanupError(null)
+                    void onCleanupMaster(selectedDate)
+                      .then(() => setShowMasterCleanupConfirm(false))
+                      .catch((error) => setMasterCleanupError(error instanceof Error ? error.message : '원본 정리를 완료하지 못했어요.'))
+                      .finally(() => setIsCleaningMaster(false))
+                  }}
+                >
+                  {isCleaningMaster ? '정리 중…' : '원본 삭제'}
+                </Button>
               </div>
-            )}
+            </HuedayDialog>
           </div>
         ) : null}
       </section>

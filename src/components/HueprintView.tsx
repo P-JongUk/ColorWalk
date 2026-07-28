@@ -26,6 +26,15 @@ function localeCode(locale: Locale) {
   return locale === 'ko' ? 'ko-KR' : 'en-US'
 }
 
+/** Formats a `YYYY-MM` monthKey as a localized month label for display only.
+ * Never changes the underlying monthKey data contract or capsule derivation. */
+function formatMonthKeyLabel(locale: Locale, monthKey: string) {
+  const [year, month] = monthKey.split('-').map(Number)
+  if (!year || !month) return monthKey
+  const date = new Date(year, month - 1, 1)
+  return new Intl.DateTimeFormat(localeCode(locale), { year: 'numeric', month: 'long' }).format(date)
+}
+
 function dayThumbUrl(day: HueprintDay) {
   const restorable = day.images.find((image) => image.signedUrl ?? image.previewUrl)
   return restorable ? (restorable.signedUrl ?? restorable.previewUrl) : undefined
@@ -325,14 +334,14 @@ export function ColorCapsuleArchiveView({ locale, posts, onOpenMonth, onOpenDay,
       {capsules.length ? (
         <div className="capsule-tile-list">
           {capsules.map((capsule) => (
-            <button key={capsule.monthKey} type="button" className="capsule-tile" onClick={() => onOpenMonth(capsule.monthKey)}>
+            <button key={capsule.monthKey} type="button" className="capsule-tile" onClick={() => onOpenMonth(capsule.monthKey)} aria-label={formatMonthKeyLabel(locale, capsule.monthKey)}>
               <span className="capsule-tile-photos">
                 {capsule.representativePhotos.slice(0, 3).map((cover: HueprintCover) => (
                   <span key={cover.imageId} style={cover.imageUrl ? { backgroundImage: `url("${cover.imageUrl}")` } : undefined} />
                 ))}
               </span>
               <span className="min-w-0 flex-1">
-                <strong className="block">{capsule.monthKey}</strong>
+                <strong className="block">{formatMonthKeyLabel(locale, capsule.monthKey)}</strong>
                 <span className="capsule-tile-meta">
                   {locale === 'ko'
                     ? `기록한 날 ${capsule.recordedDayCount}일 · 완성 ${capsule.completedGridCount}개`
@@ -372,7 +381,7 @@ export function ColorCapsuleMonthView({ locale, capsule, onBack, onOpenDay, onEx
       </button>
       <header className="deck-header">
         <p>{capsule.isCurrentMonth ? (locale === 'ko' ? '진행 중인 달' : 'This month') : (locale === 'ko' ? '지난 달' : 'Past month')}</p>
-        <h1>{capsule.monthKey}</h1>
+        <h1>{formatMonthKeyLabel(locale, capsule.monthKey)}</h1>
       </header>
 
       <div className="hueprint-card">
@@ -401,7 +410,7 @@ export function ColorCapsuleMonthView({ locale, capsule, onBack, onOpenDay, onEx
           filenamePrefix="hueday-color-capsule"
           label="Color Capsule"
           card={{
-            title: capsule.monthKey,
+            title: formatMonthKeyLabel(locale, capsule.monthKey),
             subtitle: locale === 'ko' ? 'Color Capsule' : 'Color Capsule',
             coverUrl: representativeCover?.imageUrl,
             accentHex: capsule.palette[capsule.palette.length - 1] ?? null,

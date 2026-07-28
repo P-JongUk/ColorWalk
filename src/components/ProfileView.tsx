@@ -120,17 +120,17 @@ export function ProfileView({ locale, localePreference, onChangeLocalePreference
           <div>
             <Cloud aria-hidden="true" />
             <span>{locale === 'ko' ? '클라우드 저장' : 'Cloud saving'}</span>
-            <strong>{isLocalOnly ? t(locale, 'localOnlyShort') : 'Supabase'}</strong>
+            <strong>{isLocalOnly ? t(locale, 'localOnlyShort') : (locale === 'ko' ? '켜짐' : 'On')}</strong>
           </div>
           <div>
             <ShieldCheck aria-hidden="true" />
-            <span>{locale === 'ko' ? '베타 접근' : 'Beta access'}</span>
-            <strong>{t(locale, 'betaReady')}</strong>
+            <span>{locale === 'ko' ? '계정 상태' : 'Account status'}</span>
+            <strong>{locale === 'ko' ? '정상' : 'Active'}</strong>
           </div>
           <div>
             <Smartphone aria-hidden="true" />
-            <span>{locale === 'ko' ? '설치 테스트' : 'Install test'}</span>
-            <strong>{t(locale, 'webBeta')}</strong>
+            <span>{locale === 'ko' ? '설치 상태' : 'Install status'}</span>
+            <strong>{locale === 'ko' ? '웹 앱' : 'Web app'}</strong>
           </div>
         </div>
       </section>

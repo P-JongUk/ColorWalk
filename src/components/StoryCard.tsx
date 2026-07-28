@@ -26,6 +26,7 @@ type StoryCardProps = StoryCardData & {
   selectedStickerUid?: string | null
   onStickerPointerDown?: (event: PointerEvent<HTMLButtonElement>, sticker: StoryStickerItem) => void
   onSelectSticker?: (uid: string) => void
+  onStickerNudge?: (uid: string, deltaX: number, deltaY: number) => void
 }
 
 export function StoryCard({
@@ -42,6 +43,7 @@ export function StoryCard({
   selectedStickerUid,
   onStickerPointerDown,
   onSelectSticker,
+  onStickerNudge,
 }: StoryCardProps) {
   const template = getStoryTemplate(templateId)
   const title = colorName?.trim() || missionLabel
@@ -99,6 +101,13 @@ export function StoryCard({
             }}
             onPointerDown={(event) => onStickerPointerDown?.(event, sticker)}
             onClick={() => onSelectSticker?.(sticker.uid)}
+            onKeyDown={(event) => {
+              const step = event.shiftKey ? 5 : 1
+              if (event.key === 'ArrowLeft') { event.preventDefault(); onSelectSticker?.(sticker.uid); onStickerNudge?.(sticker.uid, -step, 0) }
+              else if (event.key === 'ArrowRight') { event.preventDefault(); onSelectSticker?.(sticker.uid); onStickerNudge?.(sticker.uid, step, 0) }
+              else if (event.key === 'ArrowUp') { event.preventDefault(); onSelectSticker?.(sticker.uid); onStickerNudge?.(sticker.uid, 0, -step) }
+              else if (event.key === 'ArrowDown') { event.preventDefault(); onSelectSticker?.(sticker.uid); onStickerNudge?.(sticker.uid, 0, step) }
+            }}
             aria-label={definition.label}
           >
             <img src={definition.assetUrl} alt="" draggable={false} />
