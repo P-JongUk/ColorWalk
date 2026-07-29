@@ -16,7 +16,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#8BC6E8',
       weatherGroup: 'clear',
       timeBucket: 'day',
-      label: { ko: '가벼운 하늘', en: 'Easy Sky' },
+      label: { ko: '맑은 하늘', en: 'Clear Sky' },
       prompt: { ko: '오늘 하늘처럼 가벼운 파랑을 찾아봐요.', en: 'Look for a blue that feels open and easy.' },
       hint: { ko: '맑음 · 낮', en: 'Clear · Day' },
     },
@@ -25,7 +25,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#F39A7A',
       weatherGroup: 'clear',
       timeBucket: 'sunset',
-      label: { ko: '피치 아워', en: 'Peach Hour' },
+      label: { ko: '노을빛 복숭아', en: 'Sunset Peach' },
       prompt: { ko: '하루가 부드럽게 접히는 색을 찾아봐요.', en: 'Find a color that folds the day softly.' },
       hint: { ko: '맑음 · 노을', en: 'Clear · Sunset' },
     },
@@ -34,7 +34,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#303A59',
       weatherGroup: 'clear',
       timeBucket: 'night',
-      label: { ko: '밤공기 잉크', en: 'Night Ink' },
+      label: { ko: '불 꺼진 하늘', en: 'Dark Sky' },
       prompt: { ko: '조용한 밤공기처럼 깊은 색을 찾아봐요.', en: 'Find a deep color that feels like quiet air.' },
       hint: { ko: '맑음 · 밤', en: 'Clear · Night' },
     },
@@ -54,7 +54,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#B9C4BE',
       weatherGroup: 'clouds',
       timeBucket: 'day',
-      label: { ko: '창밖 세이지', en: 'Window Sage' },
+      label: { ko: '창밖 잎사귀', en: 'Window Leaves' },
       prompt: { ko: '차분하지만 지루하지 않은 색을 찾아봐요.', en: 'Look for something calm but not plain.' },
       hint: { ko: '흐림 · 낮', en: 'Cloudy · Day' },
     },
@@ -63,7 +63,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#CFA7A3',
       weatherGroup: 'clouds',
       timeBucket: 'sunset',
-      label: { ko: '말랑 로즈', en: 'Soft Rose' },
+      label: { ko: '구름 뒤 분홍', en: 'Pink Behind Clouds' },
       prompt: { ko: '구름 뒤에 숨어 있는 분홍빛을 찾아봐요.', en: 'Find a rose tone hiding behind the clouds.' },
       hint: { ko: '흐림 · 노을', en: 'Cloudy · Sunset' },
     },
@@ -101,7 +101,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#986F6D',
       weatherGroup: 'rain',
       timeBucket: 'sunset',
-      label: { ko: '젖은 코랄', en: 'Washed Coral' },
+      label: { ko: '젖은 벽돌', en: 'Wet Brick' },
       prompt: { ko: '조금 흐려져서 더 예쁜 코랄을 찾아봐요.', en: 'Find a coral softened by the weather.' },
       hint: { ko: '비 · 노을', en: 'Rain · Sunset' },
     },
@@ -110,7 +110,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#2F4F4F',
       weatherGroup: 'rain',
       timeBucket: 'night',
-      label: { ko: '빗방울 딥틸', en: 'Deep Rain Teal' },
+      label: { ko: '우산 안쪽 밤빛', en: 'Umbrella Night' },
       prompt: { ko: '우산 속 빗방울과 어울리는 색을 찾아봐요.', en: 'Find a shade that belongs on a wet umbrella.' },
       hint: { ko: '비 · 밤', en: 'Rain · Night' },
     },
@@ -139,7 +139,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#E7B9A8',
       weatherGroup: 'snow',
       timeBucket: 'sunset',
-      label: { ko: '살구 눈빛', en: 'Apricot Snow' },
+      label: { ko: '눈 위 복숭아', en: 'Peach on Snow' },
       prompt: { ko: '차가운 공기 위에 얹힌 살구빛을 찾아봐요.', en: 'Find an apricot glow on something cool.' },
       hint: { ko: '눈 · 노을', en: 'Snow · Sunset' },
     },
@@ -159,7 +159,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#68707E',
       weatherGroup: 'storm',
       timeBucket: 'morning',
-      label: { ko: '먹구름 실버', en: 'Storm Silver' },
+      label: { ko: '먹구름 아래 창문', en: 'Window Under Clouds' },
       prompt: { ko: '흔들리지 않는 단단한 색을 찾아봐요.', en: 'Find a color that stays steady.' },
       hint: { ko: '폭풍 · 아침', en: 'Storm · Morning' },
     },
@@ -168,7 +168,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#4F6670',
       weatherGroup: 'storm',
       timeBucket: 'day',
-      label: { ko: '천둥 틸', en: 'Thunder Teal' },
+      label: { ko: '천둥 전 바다', en: 'Sea Before Thunder' },
       prompt: { ko: '짙지만 생기가 있는 색을 찾아봐요.', en: 'Find a dark color with a pulse.' },
       hint: { ko: '폭풍 · 낮', en: 'Storm · Day' },
     },
@@ -177,7 +177,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#8A656E',
       weatherGroup: 'storm',
       timeBucket: 'sunset',
-      label: { ko: '번개 로즈', en: 'Lightning Rose' },
+      label: { ko: '번개빛 분홍', en: 'Lightning Pink' },
       prompt: { ko: '조금 드라마틱한 장밋빛을 찾아봐요.', en: 'Find a rose with a little drama.' },
       hint: { ko: '폭풍 · 노을', en: 'Storm · Sunset' },
     },
@@ -186,7 +186,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#252D3C',
       weatherGroup: 'storm',
       timeBucket: 'night',
-      label: { ko: '눈길 번개', en: 'Afterstorm' },
+      label: { ko: '비바람 뒤 밤길', en: 'Night Street After Rain' },
       prompt: { ko: '깊고 선명한 밤색을 찾아봐요.', en: 'Find a night color with sharp edges.' },
       hint: { ko: '폭풍 · 밤', en: 'Storm · Night' },
     },
@@ -197,7 +197,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#D8D6CC',
       weatherGroup: 'fog',
       timeBucket: 'morning',
-      label: { ko: '안개 리넨', en: 'Fog Linen' },
+      label: { ko: '안개 낀 셔츠', en: 'Foggy Shirt' },
       prompt: { ko: '흐릿해서 더 부드러운 색을 찾아봐요.', en: 'Find a color softened by haze.' },
       hint: { ko: '안개 · 아침', en: 'Fog · Morning' },
     },
@@ -206,7 +206,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#C8D3CF',
       weatherGroup: 'fog',
       timeBucket: 'day',
-      label: { ko: '흐린 민트', en: 'Hazy Mint' },
+      label: { ko: '흐린 유리병', en: 'Cloudy Glass Bottle' },
       prompt: { ko: '선명하지 않아도 기분 좋은 민트를 찾아봐요.', en: 'Find a mint that does not need to shout.' },
       hint: { ko: '안개 · 낮', en: 'Fog · Day' },
     },
@@ -215,7 +215,7 @@ const missionMap: Record<WeatherGroup, Record<TimeBucket, Omit<Mission, 'source'
       hex: '#D0AFA3',
       weatherGroup: 'fog',
       timeBucket: 'sunset',
-      label: { ko: '필터 살몬', en: 'Filtered Salmon' },
+      label: { ko: '흐린 노을빛', en: 'Hazy Sunset' },
       prompt: { ko: '필름처럼 흐린 노을색을 찾아봐요.', en: 'Find a sunset color with a film-soft blur.' },
       hint: { ko: '안개 · 노을', en: 'Fog · Sunset' },
     },
@@ -268,7 +268,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'clear-sunset-alley-coral',
         hex: '#F18274',
-        label: { ko: '저녁 골목 코랄', en: 'Alley Coral' },
+        label: { ko: '저녁 골목 벽돌', en: 'Brick Alley at Dusk' },
         prompt: { ko: '노을이 골목 끝에 잠깐 남긴 코랄을 찾아봐요.', en: 'Find a coral the sunset left at the end of the street.' },
       },
       {
@@ -282,13 +282,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'clear-night-before-dawn',
         hex: '#2E3655',
-        label: { ko: '새벽 전 잉크블루', en: 'Before-Dawn Ink' },
+        label: { ko: '새벽 전 창문', en: 'Before-Dawn Window' },
         prompt: { ko: '아직 잠들지 않은 밤의 잉크빛을 찾아봐요.', en: 'Find an ink blue that has not quite fallen asleep.' },
       },
       {
         id: 'clear-night-window-navy',
         hex: '#343754',
-        label: { ko: '불 꺼진 창문 남색', en: 'Quiet Window Navy' },
+        label: { ko: '불 꺼진 창문', en: 'Dark Window' },
         prompt: { ko: '조용한 창문처럼 깊고 차분한 남색을 찾아봐요.', en: 'Look for a navy as quiet as a dark window.' },
       },
     ],
@@ -298,7 +298,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'clouds-morning-oat-mist',
         hex: '#D9D1C3',
-        label: { ko: '오트밀 안개빛', en: 'Oat Mist' },
+        label: { ko: '아침 시리얼 그릇', en: 'Breakfast Cereal Bowl' },
         prompt: { ko: '부드러운 아침 공기처럼 흐린 베이지를 찾아봐요.', en: 'Find a cloudy beige as soft as morning air.' },
       },
       {
@@ -312,13 +312,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'clouds-day-balcony-sage',
         hex: '#AFC4B7',
-        label: { ko: '베란다 세이지', en: 'Balcony Sage' },
+        label: { ko: '베란다 화분잎', en: 'Balcony Plant' },
         prompt: { ko: '흐린 낮에도 싱그러움이 남아 있는 세이지를 찾아봐요.', en: 'Find a sage that still feels fresh on a cloudy day.' },
       },
       {
         id: 'clouds-day-quiet-mint',
         hex: '#BFD1C9',
-        label: { ko: '말수 적은 민트', en: 'Soft-Spoken Mint' },
+        label: { ko: '흐린 날 유리병', en: 'Cloudy-Day Glass Bottle' },
         prompt: { ko: '튀지 않지만 계속 보고 싶은 민트빛을 찾아봐요.', en: 'Look for a mint that stays quiet but keeps your eye.' },
       },
     ],
@@ -326,13 +326,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'clouds-sunset-filter-rose',
         hex: '#D4A19B',
-        label: { ko: '필름 속 로즈빛', en: 'Film Rose' },
+        label: { ko: '필름 속 분홍', en: 'Film Pink' },
         prompt: { ko: '필름 사진처럼 살짝 흐린 장밋빛을 찾아봐요.', en: 'Find a rose tone with a soft film-photo blur.' },
       },
       {
         id: 'clouds-sunset-cotton-coral',
         hex: '#DBADA2',
-        label: { ko: '솜구름 코랄', en: 'Cotton Cloud Coral' },
+        label: { ko: '솜구름 저녁빛', en: 'Cotton Cloud Dusk' },
         prompt: { ko: '구름 사이에 남은 말랑한 코랄을 찾아봐요.', en: 'Find a soft coral caught between the clouds.' },
       },
     ],
@@ -362,7 +362,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'rain-morning-umbrella-teal',
         hex: '#5C7880',
-        label: { ko: '우산 안쪽 틸', en: 'Inside-Umbrella Teal' },
+        label: { ko: '우산 안쪽 물빛', en: 'Inside-Umbrella Blue' },
         prompt: { ko: '우산 아래에서 더 깊어지는 틸색을 찾아봐요.', en: 'Find a teal that gets deeper under an umbrella.' },
       },
     ],
@@ -376,7 +376,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'rain-day-puddle-sage',
         hex: '#789080',
-        label: { ko: '웅덩이에 비친 세이지', en: 'Puddle Sage' },
+        label: { ko: '웅덩이 속 잎사귀', en: 'Leaf in a Puddle' },
         prompt: { ko: '젖은 바닥에 비친 차분한 초록빛을 찾아봐요.', en: 'Find a calm green reflected on the wet ground.' },
       },
     ],
@@ -384,13 +384,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'rain-sunset-washed-peach',
         hex: '#B77A74',
-        label: { ko: '비에 씻긴 피치', en: 'Rain-Washed Peach' },
+        label: { ko: '비에 씻긴 복숭아', en: 'Rain-Washed Peach' },
         prompt: { ko: '비가 한 겹 씻어낸 듯한 피치빛을 찾아봐요.', en: 'Find a peach tone softened by rain.' },
       },
       {
         id: 'rain-sunset-umbrella-rose',
         hex: '#A97178',
-        label: { ko: '우산 끝 로즈', en: 'Umbrella-Tip Rose' },
+        label: { ko: '우산 끝 분홍', en: 'Umbrella-Tip Pink' },
         prompt: { ko: '젖은 손잡이와 어울리는 로즈빛을 찾아봐요.', en: 'Find a rose that belongs near a wet umbrella handle.' },
       },
     ],
@@ -398,13 +398,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'rain-night-neon-teal',
         hex: '#315B5E',
-        label: { ko: '네온 아래 빗물틸', en: 'Neon Rain Teal' },
+        label: { ko: '네온 아래 빗물', en: 'Rain Under Neon' },
         prompt: { ko: '가로등 아래 반짝이는 짙은 틸을 찾아봐요.', en: 'Find a dark teal glinting under streetlights.' },
       },
       {
         id: 'rain-night-wet-navy',
         hex: '#283F46',
-        label: { ko: '젖은 밤 남청', en: 'Wet Night Navy' },
+        label: { ko: '젖은 밤길', en: 'Wet Night Street' },
         prompt: { ko: '비 때문에 더 깊어진 밤색을 찾아봐요.', en: 'Find a night color made deeper by rain.' },
       },
     ],
@@ -434,7 +434,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'snow-day-frost-mint',
         hex: '#D5E7E5',
-        label: { ko: '서리 낀 민트', en: 'Frosted Mint' },
+        label: { ko: '서리 낀 유리병', en: 'Frosted Glass Bottle' },
         prompt: { ko: '손끝이 살짝 시린 민트빛을 찾아봐요.', en: 'Find a mint that feels cool at your fingertips.' },
       },
     ],
@@ -448,7 +448,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'snow-sunset-winter-coral',
         hex: '#E3A8A0',
-        label: { ko: '겨울 코랄 스카프', en: 'Winter Coral Scarf' },
+        label: { ko: '겨울 분홍 목도리', en: 'Winter Pink Scarf' },
         prompt: { ko: '추운 날 더 선명해지는 코랄을 찾아봐요.', en: 'Find a coral that feels brighter in the cold.' },
       },
     ],
@@ -462,7 +462,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'snow-night-cold-slate',
         hex: '#6B7483',
-        label: { ko: '차가운 슬레이트 밤', en: 'Cold Slate Night' },
+        label: { ko: '차가운 밤 계단', en: 'Cold Night Steps' },
         prompt: { ko: '차갑지만 부드러운 회청색을 찾아봐요.', en: 'Find a cool slate tone with a soft edge.' },
       },
     ],
@@ -478,7 +478,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'storm-morning-quiet-steel',
         hex: '#656E7A',
-        label: { ko: '조용한 스틸블루', en: 'Quiet Steel Blue' },
+        label: { ko: '비 오기 전 난간', en: 'Railing Before Rain' },
         prompt: { ko: '폭풍 전 조용히 가라앉은 푸른 회색을 찾아봐요.', en: 'Find a blue-gray that settles before the storm.' },
       },
     ],
@@ -486,13 +486,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'storm-day-deep-harbor',
         hex: '#465F69',
-        label: { ko: '깊은 항구 틸', en: 'Deep Harbor Teal' },
+        label: { ko: '깊은 항구 물빛', en: 'Deep Harbor Water' },
         prompt: { ko: '짙은데 생기가 남아 있는 틸색을 찾아봐요.', en: 'Find a dark teal that still has a pulse.' },
       },
       {
         id: 'storm-day-slate-green',
         hex: '#536D6C',
-        label: { ko: '번개 전 슬레이트그린', en: 'Pre-Lightning Slate' },
+        label: { ko: '번개 전 젖은 잎', en: 'Wet Leaves Before Lightning' },
         prompt: { ko: '녹색과 회색 사이에서 흔들리는 색을 찾아봐요.', en: 'Find a color wavering between green and gray.' },
       },
     ],
@@ -500,13 +500,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'storm-sunset-dramatic-mauve',
         hex: '#946A73',
-        label: { ko: '드라마틱 모브', en: 'Dramatic Mauve' },
+        label: { ko: '폭풍 뒤 자두', en: 'Plum After the Storm' },
         prompt: { ko: '오늘을 영화처럼 보이게 하는 모브빛을 찾아봐요.', en: 'Find a mauve that makes today feel cinematic.' },
       },
       {
         id: 'storm-sunset-smoked-rose',
         hex: '#805F6B',
-        label: { ko: '연기 묻은 로즈', en: 'Smoked Rose' },
+        label: { ko: '연기 낀 분홍', en: 'Pink in Smoke' },
         prompt: { ko: '장밋빛에 어두운 연기가 섞인 색을 찾아봐요.', en: 'Find a rose tone with a smoky edge.' },
       },
     ],
@@ -520,7 +520,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'storm-night-afterimage',
         hex: '#202839',
-        label: { ko: '번개 잔상 네이비', en: 'Lightning Afterimage' },
+        label: { ko: '번개 뒤 밤하늘', en: 'Night Sky After Lightning' },
         prompt: { ko: '잠깐 번쩍인 뒤 더 깊어진 남색을 찾아봐요.', en: 'Find a navy that feels deeper after a flash.' },
       },
     ],
@@ -536,7 +536,7 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'fog-morning-wool-linen',
         hex: '#D3D2C6',
-        label: { ko: '울니트 리넨빛', en: 'Wool Linen' },
+        label: { ko: '울니트 실', en: 'Wool Knit Thread' },
         prompt: { ko: '니트처럼 포근한 흐린 리넨색을 찾아봐요.', en: 'Find a hazy linen tone as cozy as knitwear.' },
       },
     ],
@@ -544,27 +544,27 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'fog-day-blurred-mint',
         hex: '#C1D3CC',
-        label: { ko: '초점 흐린 민트', en: 'Blurred Mint' },
+        label: { ko: '흐릿한 유리병', en: 'Blurred Glass Bottle' },
         prompt: { ko: '초점이 살짝 나간 듯한 민트빛을 찾아봐요.', en: 'Find a mint with a gentle out-of-focus softness.' },
       },
       {
         id: 'fog-day-glass-sage',
         hex: '#B9C8C3',
-        label: { ko: '안개 낀 유리 세이지', en: 'Fogged Glass Sage' },
-        prompt: { ko: '유리 너머로 보이는 차분한 세이지를 찾아봐요.', en: 'Find a sage seen through fogged glass.' },
+        label: { ko: '안개 낀 화분잎', en: 'Fogged Plant Leaves' },
+        prompt: { ko: '유리 너머로 보이는 조용한 잎사귀 초록을 찾아봐요.', en: 'Find leaf green seen through fogged glass.' },
       },
     ],
     sunset: [
       {
         id: 'fog-sunset-powder-salmon',
         hex: '#D8AA9D',
-        label: { ko: '파우더 살몬 노을', en: 'Powder Salmon' },
+        label: { ko: '가루빛 노을', en: 'Powdery Sunset' },
         prompt: { ko: '노을에 파우더를 얹은 듯한 살몬빛을 찾아봐요.', en: 'Find a salmon sunset dusted with powder.' },
       },
       {
         id: 'fog-sunset-muted-apricot',
         hex: '#D6B39F',
-        label: { ko: '소리 낮춘 살구빛', en: 'Muted Apricot' },
+        label: { ko: '흐린 날 살구빛', en: 'Apricot on a Hazy Day' },
         prompt: { ko: '크게 말하지 않아 더 예쁜 살구빛을 찾아봐요.', en: 'Find an apricot tone made prettier by staying quiet.' },
       },
     ],
@@ -572,13 +572,13 @@ const missionVariants: Partial<Record<WeatherGroup, Partial<Record<TimeBucket, M
       {
         id: 'fog-night-soft-charcoal',
         hex: '#5B6068',
-        label: { ko: '몽글한 차콜 밤', en: 'Soft Charcoal Night' },
+        label: { ko: '흐린 밤 계단', en: 'Cloudy Night Steps' },
         prompt: { ko: '경계가 흐려진 차콜색을 찾아봐요.', en: 'Find a charcoal shade with blurred edges.' },
       },
       {
         id: 'fog-night-hazy-navy',
         hex: '#56606B',
-        label: { ko: '안개 낀 남청', en: 'Hazy Navy' },
+        label: { ko: '안개 낀 밤길', en: 'Foggy Night Street' },
         prompt: { ko: '선명하지 않아서 더 분위기 있는 남청을 찾아봐요.', en: 'Find a navy made moodier by haze.' },
       },
     ],
@@ -847,6 +847,31 @@ function variant(
   }
 }
 
+const everydayLabelWords: Array<[string, string, string, string]> = [
+  ['세이지', '화분잎', 'Sage', 'Plant Leaf'], ['올리브', '잎사귀', 'Olive', 'Leaves'],
+  ['코랄', '벽돌빛', 'Coral', 'Brick'], ['틸', '물빛', 'Teal', 'Water'],
+  ['차콜', '밤그늘', 'Charcoal', 'Night Shadow'], ['리넨', '셔츠소매', 'Linen', 'Shirt Sleeve'],
+  ['크래프트', '종이봉투', 'Kraft', 'Paper Bag'], ['앰버', '불빛', 'Amber', 'Light'],
+  ['골드', '불빛', 'Gold', 'Light'], ['브론즈', '잎맥', 'Bronze', 'Leaf Veins'],
+  ['아이보리', '셔츠', 'Ivory', 'Shirt'], ['클레이', '머그컵', 'Clay', 'Mug'],
+  ['라떼', '종이컵', 'Latte', 'Paper Cup'], ['월넛', '나무의자', 'Walnut', 'Wooden Chair'],
+  ['코퍼', '난간', 'Copper', 'Railing'], ['구리', '난간', 'Copper', 'Railing'],
+  ['러스트', '오래된', 'Rust', 'Worn'], ['오트', '시리얼', 'Oat', 'Cereal'],
+  ['테라코타', '흙벽', 'Terracotta', 'Earthen Wall'], ['모브', '자두빛', 'Mauve', 'Plum'],
+  ['슬레이트', '돌계단', 'Slate', 'Stone Steps'], ['네이비', '밤하늘', 'Navy', 'Night Sky'],
+  ['남청', '밤길', 'Navy', 'Night Street'], ['스틸', '난간', 'Steel', 'Railing'],
+]
+
+function withEverydayMissionLabel(mission: MissionCore): MissionCore {
+  let ko = mission.label.ko
+  let en = mission.label.en
+  for (const [koFrom, koTo, enFrom, enTo] of everydayLabelWords) {
+    ko = ko.replaceAll(koFrom, koTo)
+    en = en.replaceAll(enFrom, enTo)
+  }
+  return ko === mission.label.ko && en === mission.label.en ? mission : { ...mission, label: { ko, en } }
+}
+
 function toMissionDateKey(date: Date) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
@@ -875,7 +900,7 @@ function getMissionCandidates(weatherGroup: WeatherGroup, timeBucket: TimeBucket
       ...missionMap[weatherGroup][timeBucket],
       ...variant,
     })),
-  ]
+  ].map(withEverydayMissionLabel)
 }
 
 export function getAllMissionCandidates() {
@@ -926,7 +951,7 @@ export function getMission(
   weatherCode?: number,
 ): Mission {
   return {
-    ...missionMap[weatherGroup][timeBucket],
+    ...withEverydayMissionLabel(missionMap[weatherGroup][timeBucket]),
     source,
     weatherCode,
   }

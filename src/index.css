@@ -11063,6 +11063,53 @@
     min-height: 44px;
   }
 
+  .mission-shuffle-status {
+    margin: calc(var(--hd-space-2) * -1) 0 0;
+    color: var(--hd-muted);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 17px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .home-screen .camera-cta,
+  .story-export-actions > :last-child {
+    background: var(--hd-archive-ink) !important;
+    color: var(--hd-paper) !important;
+    box-shadow: var(--hd-shadow-paper) !important;
+  }
+
+  @media (max-width: 360px) {
+    .mission-frame-row {
+      gap: var(--hd-space-2);
+    }
+
+    .mission-frame {
+      min-height: 112px;
+      padding: var(--hd-space-3);
+    }
+
+    .mission-frame-name {
+      max-width: 100%;
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 260px) {
+    .screen-flow {
+      padding-inline: var(--hd-space-4) !important;
+    }
+
+    .home-hero > div {
+      min-width: 0;
+      max-width: calc(100% - 32px);
+    }
+
+    .home-hero > button {
+      flex: 0 0 24px;
+    }
+  }
+
   .story-center-label-toggle {
     grid-column: 1 / -1;
     display: flex;

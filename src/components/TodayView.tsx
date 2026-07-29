@@ -164,7 +164,15 @@ export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, 
           ) : null}
         </div>
       </section>
-      {canShuffleMission ? <p className="mission-shuffle-status">{rerollCount < 3 ? (locale === 'ko' ? `같은 추천 ${3 - rerollCount}회 남음` : `${3 - rerollCount} contextual choices left`) : (locale === 'ko' ? `전체 색 ${6 - rerollCount}회 남음` : `${6 - rerollCount} catalog choices left`)}</p> : null}
+      {(canShuffleMission || (rerollCount >= 6 && photoCount === 0 && !isRecordClosed)) ? (
+        <p className="mission-shuffle-status">
+          {canShuffleMission
+            ? (rerollCount < 3
+              ? (locale === 'ko' ? `같은 추천 ${3 - rerollCount}회 남음` : `${3 - rerollCount} contextual choices left`)
+              : (locale === 'ko' ? `전체 색 ${6 - rerollCount}회 남음` : `${6 - rerollCount} catalog choices left`))
+            : (locale === 'ko' ? '오늘의 후보를 모두 골랐어요. 이 색으로 시작해볼까요?' : 'You have seen every choice for today. Ready to begin?')}
+        </p>
+      ) : null}
       <section className="mission-frame-artifact">
         <p className="mission-frame-label">{locale === 'ko' ? '3×3 한 페이지' : '3×3, one page'}</p>
         <div className="mission-frame-row">
