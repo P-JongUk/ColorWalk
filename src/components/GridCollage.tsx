@@ -14,6 +14,7 @@ type GridCollageProps = {
   variant?: 'home' | 'camera' | 'journal' | 'story' | 'mini'
   onEmptyClick?: () => void
   className?: string
+  showCenterColorName?: boolean
 }
 
 /** Home and Camera are the only interactive capture surfaces; every other
@@ -32,6 +33,7 @@ export function GridCollage({
   variant = 'journal',
   onEmptyClick,
   className,
+  showCenterColorName = true,
 }: GridCollageProps) {
   const label = colorName?.trim() || (locale === 'ko' ? '오늘의 색' : "Today's color")
   const centerTextColor = getReadableTextColor(missionHex)
@@ -47,8 +49,7 @@ export function GridCollage({
               className="color-grid-chip"
               style={{ backgroundColor: missionHex, color: centerTextColor }}
             >
-              <strong>{label}</strong>
-              <span>{missionHex}</span>
+              {showCenterColorName ? <><strong>{label}</strong><span>{missionHex}</span></> : null}
             </div>
           )
         }

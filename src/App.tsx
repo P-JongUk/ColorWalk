@@ -134,7 +134,7 @@ function App() {
           return
         }
         // A brand-new DailyMissionState always starts in free mode; yesterday's pack never carries over.
-        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
+        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, shownMissionIds: [resolvedWeather.mission.id], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
         setMission(resolvedWeather.mission, resolvedWeather.usedFallbackLocation)
         setActiveMissionPack(createFreeModeSelection())
       } catch {
@@ -380,7 +380,7 @@ function App() {
       const localDate = getLocalDateKey()
       const selected = loadDailyMissionState(ownerId, localDate)
       const nextMission = selected?.mission ?? weather.mission
-      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
+      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, shownMissionIds: [nextMission.id], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
       setMission(nextMission, weather.usedFallbackLocation)
       setActiveMissionPack(selected?.missionPack ?? createFreeModeSelection())
       setActiveTab('today')
@@ -539,13 +539,18 @@ function App() {
       return
     }
     const rerollCount = selected?.rerollCount ?? 0
+    if (rerollCount >= 6) {
+      toast.message(locale === 'ko' ? '오늘의 후보를 모두 골랐어요. 이 색으로 시작해볼까요?' : "You've seen all of today's alternatives. Start with this color?")
+      return
+    }
     const broaden = rerollCount >= 3
     const nextMission = getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode, {
       broaden,
       excludeId: mission.id,
       excludeHex: mission.hex,
+      excludeIds: selected?.shownMissionIds ?? [mission.id],
     })
-    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, selectedAt: new Date().toISOString(), missionPack: selected?.missionPack ?? createFreeModeSelection() })
+    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, shownMissionIds: [...(selected?.shownMissionIds ?? [mission.id]), nextMission.id], selectedAt: new Date().toISOString(), missionPack: selected?.missionPack ?? createFreeModeSelection() })
     setMission(nextMission, usedFallbackLocation)
     toast.success(locale === 'ko' ? (broaden ? '전체 큐레이션에서 다른 색을 골랐어요.' : '오늘의 날씨와 시간에 맞는 다른 색을 골랐어요.') : "Today's color was shuffled.")
   }
@@ -655,7 +660,7 @@ function App() {
     if (activeTab === 'journal' && mission) return <JournalView locale={locale} mission={mission} draft={draft} isSaving={isSaving} onOpenCamera={startCamera} onPersistJournal={persistJournal} onSave={saveEntry} onStoryExported={recordStoryExport} onStoryShareOpened={recordStoryShareOpened} />
     if (activeTab === 'calendar') return <CalendarView locale={locale} ownerId={ownerId} posts={displayPosts} currentDraft={draft} masterCleanupByDate={masterCleanupByDate} onCleanupMaster={session && !session.user.is_anonymous ? handleMasterCleanup : undefined} onStartCamera={startCamera} onDeckEvent={recordDeckEvent} onDeckStageVisible={recordDeckStageVisible} onStoryExported={recordStoryExportForPost} onStoryShareOpened={recordStoryShareOpenedForPost} onMissionPackCollectionOpened={recordMissionPackCollectionOpened} onHueprintScreenViewed={recordHueprintScreenViewed} onHueprintCtaClicked={recordHueprintCtaClicked} onHueprintExported={recordHueprintExported} onHueprintShareOpened={recordHueprintShareOpened} onColorCapsuleExported={recordColorCapsuleExported} onColorCapsuleShareOpened={recordColorCapsuleShareOpened} />
     if (activeTab === 'profile') return <ProfileView locale={locale} localePreference={localePreference} onChangeLocalePreference={changeLocalePreference} posts={displayPosts} profile={profile} isLocalOnly={isLocalOnly} onSignOut={signOut} />
-    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onShuffleMission={shuffleMission} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
+    return <TodayView locale={locale} mission={mission} usedFallbackLocation={usedFallbackLocation} isLocalOnly={isLocalOnly} posts={displayPosts} missionPack={effectiveMissionPack} onSelectMissionPack={(id) => void handleSelectMissionPack(id)} onStartCamera={startCamera} onShuffleMission={shuffleMission} rerollCount={loadDailyMissionState(ownerId, getLocalDateKey())?.rerollCount ?? 0} canShuffleMission={!loadDailyMissionState(ownerId, getLocalDateKey())?.lockedAt && (loadDailyMissionState(ownerId, getLocalDateKey())?.rerollCount ?? 0) < 6 && !displayPosts.some((post) => post.local_date === getLocalDateKey())} />
   })()
 
   if (isSupabaseConfigured && isAuthLoading) return <div className="phone-shell flex justify-center"><div className="app-frame"><main className="screen-flow"><section className="passport-panel flex min-h-[70svh] items-center justify-center p-8 text-center"><p className="font-black">{t(locale, 'loadingMission')}</p></section></main></div></div>

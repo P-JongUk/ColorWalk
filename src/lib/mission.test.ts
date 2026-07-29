@@ -46,4 +46,10 @@ describe('mission helpers', () => {
     expect(contextual.hex).not.toBe('#5F7F83')
     expect(broad.hex).not.toBe('#5F7F83')
   })
+
+  it('excludes every mission already shown that day, not only the current mission', () => {
+    const first = getRandomMission('rain', 'morning', 'live', 61, { rng: () => 0 })
+    const next = getRandomMission('rain', 'morning', 'live', 61, { excludeIds: [first.id], rng: () => 0 })
+    expect(next.id).not.toBe(first.id)
+  })
 })

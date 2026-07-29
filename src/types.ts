@@ -187,6 +187,8 @@ export type StoryStickerItem = {
 export type StoryDesign = {
   templateId: StoryTemplateId
   stickers: StoryStickerItem[]
+  /** Missing on legacy records means the center specimen stays visible. */
+  showCenterColorName?: boolean
 }
 
 export type AppTab = 'today' | 'camera' | 'journal' | 'calendar' | 'profile'

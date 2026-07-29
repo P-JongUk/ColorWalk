@@ -46,6 +46,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
   const stickerIndexRef = useRef(0)
   const [templateId, setTemplateId] = useState<StoryTemplateId>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.templateId ?? DEFAULT_STORY_DESIGN.templateId : SIMPLE_STORY_TEMPLATE_ID)
   const [stickers, setStickers] = useState<StoryStickerItem[]>(STORY_DECORATION_TOOLS_ENABLED ? initialDesign?.stickers ?? DEFAULT_STORY_DESIGN.stickers : [])
+  const [showCenterColorName, setShowCenterColorName] = useState(initialDesign?.showCenterColorName ?? true)
   const [selectedStickerUid, setSelectedStickerUid] = useState<string | null>(stickers[0]?.uid ?? null)
   const [activeCategory, setActiveCategory] = useState<StoryStickerCategory>('all')
   const [activeTemplateCategory, setActiveTemplateCategory] = useState<StoryTemplateCategory>('recommended')
@@ -70,8 +71,8 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
     })
   }, [activeCategory, query])
 
-  function publish(nextTemplateId: StoryTemplateId, nextStickers: StoryStickerItem[]) {
-    onDesignChange?.({ templateId: nextTemplateId, stickers: nextStickers })
+  function publish(nextTemplateId: StoryTemplateId, nextStickers: StoryStickerItem[], nextShowCenterColorName = showCenterColorName) {
+    onDesignChange?.({ templateId: nextTemplateId, stickers: nextStickers, showCenterColorName: nextShowCenterColorName })
   }
 
   function selectTemplate(nextTemplateId: StoryTemplateId) {
@@ -82,6 +83,11 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
   function setNextStickers(nextStickers: StoryStickerItem[]) {
     setStickers(nextStickers)
     publish(templateId, nextStickers)
+  }
+
+  function updateCenterColorName(nextValue: boolean) {
+    setShowCenterColorName(nextValue)
+    publish(templateId, stickers, nextValue)
   }
 
   function addSticker(stickerId: string) {
@@ -205,6 +211,7 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
           onStickerPointerDown={beginDrag}
           onSelectSticker={setSelectedStickerUid}
           onStickerNudge={nudgeSticker}
+          showCenterColorName={showCenterColorName}
         />
       </div>
 
@@ -256,6 +263,10 @@ export function StoryStudio({ locale, data, initialDesign, onDesignChange, onExp
       ) : null}
 
       <div className="story-export-actions">
+        <label className="story-center-label-toggle">
+          <input type="checkbox" checked={showCenterColorName} onChange={(event) => updateCenterColorName(event.target.checked)} />
+          {locale === 'ko' ? '중앙 색 이름 표시' : 'Show center color name'}
+        </label>
         <Button type="button" variant="outline" onClick={() => void saveOrShare('download', 'grid')}>
           <Download data-icon="inline-start" aria-hidden="true" />
           {locale === 'ko' ? '3x3 저장' : 'Save 3x3'}

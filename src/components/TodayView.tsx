@@ -27,6 +27,7 @@ type TodayViewProps = {
   onStartCamera: () => void
   onShuffleMission: () => void
   canShuffleMission: boolean
+  rerollCount: number
 }
 
 function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPack, onSelectMissionPack }: {
@@ -123,7 +124,7 @@ function MissionPackSelector({ locale, mission, photoCount, isClosed, missionPac
   )
 }
 
-export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, posts, missionPack, onSelectMissionPack, onStartCamera, onShuffleMission, canShuffleMission }: TodayViewProps) {
+export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, posts, missionPack, onSelectMissionPack, onStartCamera, onShuffleMission, canShuffleMission, rerollCount }: TodayViewProps) {
   const todayPost = posts.find((post) => post.local_date === getLocalDateKey())
   const todayGridImages = getPostGridImages(todayPost)
   const photoCount = todayGridImages.length
@@ -156,13 +157,14 @@ export function TodayView({ locale, mission, usedFallbackLocation, isLocalOnly, 
       </div>
       <section className="home-section-title">
         <h2>{t(locale, 'todayColor')}</h2>
-        <div className="home-title-actions">
+        <div className="home-title-actions" data-reroll-count={rerollCount}>
           <button type="button" className="home-info-button" aria-label="Mission info" onClick={() => toast.message(locale === 'ko' ? '오늘의 색은 현재 날씨와 시간에 맞춰 골라요.' : 'Today’s color uses the current weather and time.')}><Info aria-hidden="true" /></button>
           {canShuffleMission ? (
             <button type="button" className="mission-shuffle-button" onClick={onShuffleMission}><Shuffle aria-hidden="true" /><span>{locale === 'ko' ? '다른 색' : 'Shuffle'}</span></button>
           ) : null}
         </div>
       </section>
+      {canShuffleMission ? <p className="mission-shuffle-status">{rerollCount < 3 ? (locale === 'ko' ? `같은 추천 ${3 - rerollCount}회 남음` : `${3 - rerollCount} contextual choices left`) : (locale === 'ko' ? `전체 색 ${6 - rerollCount}회 남음` : `${6 - rerollCount} catalog choices left`)}</p> : null}
       <section className="mission-frame-artifact">
         <p className="mission-frame-label">{locale === 'ko' ? '3×3 한 페이지' : '3×3, one page'}</p>
         <div className="mission-frame-row">

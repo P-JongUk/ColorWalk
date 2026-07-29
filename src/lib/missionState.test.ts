@@ -24,4 +24,10 @@ describe('daily mission state', () => {
     expect(loadDailyMissionState('user-c', '2026-07-25')).toBeNull()
     expect(loadDailyMissionState('user-c', '2026-07-24')?.missionPack).toEqual({ id: 'commute-hunt', version: 1 })
   })
+
+  it('treats a legacy state as having shown its stored first recommendation', () => {
+    const mission = getMission('clear', 'day', 'live', 0)
+    saveDailyMissionState('user-d', { localDate: '2026-07-23', mission, rerollCount: 0, selectedAt: '2026-07-23T10:00:00.000Z' })
+    expect(loadDailyMissionState('user-d', '2026-07-23')?.shownMissionIds).toEqual([mission.id])
+  })
 })

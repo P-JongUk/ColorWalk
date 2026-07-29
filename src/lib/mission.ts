@@ -886,10 +886,11 @@ export function getAllMissionCandidates() {
 
 export function chooseMissionCandidate(
   candidates: MissionCore[],
-  options: { excludeId?: string; excludeHex?: string; rng?: () => number } = {},
+  options: { excludeId?: string; excludeHex?: string; excludeIds?: string[]; rng?: () => number } = {},
 ) {
+  const excludedIds = new Set([...(options.excludeIds ?? []), ...(options.excludeId ? [options.excludeId] : [])])
   const withoutCurrent = candidates.filter((candidate) =>
-    candidate.id !== options.excludeId && candidate.hex.toUpperCase() !== options.excludeHex?.toUpperCase(),
+    !excludedIds.has(candidate.id) && candidate.hex.toUpperCase() !== options.excludeHex?.toUpperCase(),
   )
   const filtered = withoutCurrent.length ? withoutCurrent : candidates
   const index = Math.min(filtered.length - 1, Math.floor((options.rng ?? Math.random)() * filtered.length))
@@ -954,7 +955,7 @@ export function getRandomMission(
   timeBucket: TimeBucket,
   source: Mission['source'],
   weatherCode?: number,
-  options: { broaden?: boolean; excludeId?: string; excludeHex?: string; rng?: () => number } = {},
+  options: { broaden?: boolean; excludeId?: string; excludeHex?: string; excludeIds?: string[]; rng?: () => number } = {},
 ): Mission {
   const candidates = options.broaden
     ? Array.from(new Map(getAllMissionCandidates().map((candidate) => [candidate.hex.toUpperCase(), candidate])).values())

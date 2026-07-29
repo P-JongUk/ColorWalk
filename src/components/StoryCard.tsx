@@ -27,6 +27,7 @@ type StoryCardProps = StoryCardData & {
   onStickerPointerDown?: (event: PointerEvent<HTMLButtonElement>, sticker: StoryStickerItem) => void
   onSelectSticker?: (uid: string) => void
   onStickerNudge?: (uid: string, deltaX: number, deltaY: number) => void
+  showCenterColorName?: boolean
 }
 
 export function StoryCard({
@@ -44,6 +45,7 @@ export function StoryCard({
   onStickerPointerDown,
   onSelectSticker,
   onStickerNudge,
+  showCenterColorName = true,
 }: StoryCardProps) {
   const template = getStoryTemplate(templateId)
   const title = colorName?.trim() || missionLabel
@@ -69,6 +71,7 @@ export function StoryCard({
           colorName={title}
           images={gridImages}
           variant="story"
+          showCenterColorName={showCenterColorName}
         />
       </div>
 

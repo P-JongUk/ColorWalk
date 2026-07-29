@@ -11062,4 +11062,15 @@
     min-width: 44px;
     min-height: 44px;
   }
+
+  .story-center-label-toggle {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--hd-archive-ink);
+    font-size: 13px;
+    font-weight: 700;
+  }
 }
