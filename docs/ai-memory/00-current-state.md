@@ -1,5 +1,7 @@
 # 현재 상태
 
+> **2026-07-31 포트폴리오 README 갱신:** 기존 ColorWalk 소개를 Hueday 현재 제품 루프·local-first/Supabase 구조·실제 트러블슈팅·검증 수치·M6.5/M7 상태 중심의 취업 포트폴리오 문서로 교체했다. 최신 M6.5 Home과 production 코드 경로의 Color Hunt/Deck/Hueprint/Story/Profile 430×932 실제 브라우저 캡처 6장을 `docs/assets/readme/`에 선별해 포함했으며, 기존 ignored 디자인 자료와 `output/` 원본은 변경하지 않았다.
+
 > **2026-07-29 M7 전 마감 순서 확정:** M6는 `main`에 통합됐다. Store screenshot과 전체 M7 QA 전에 M6.5 실제 화면·제품 카피 마감을 한 번 수행한다. 실제 430×932/360px/200% 화면에서 승인된 Modern Warm Archive만 좁게 교정하고, `다른 색` 최대 6회(문맥 3+전체 무작위 3, 당일 노출 색 전체 제외), Story 중앙 이름·HEX 표시 선택, 자연스러운 한국어/영어 mission 이름을 구현한다. 그 뒤 M7에서 Android update·보안·Play 출시 gate를 닫는다.
 
 > **2026-07-29 첫 출시 보안 기준:** 기존 owner RLS/private Storage/signed URL/preview-only cloud/analytics allowlist는 유지한다. M7에서 대표 사진 EXIF GPS 제거, foreground-only 위치와 거부 fallback, 날씨 제공자 coarse 좌표 전달, 좌표·장소명 비저장, anonymous/cross-user denial을 실제 출시 경로로 확인한다. 초기 개인 다이어리에 불필요한 custom server·WAF·SIEM·대규모 부하 구조는 만들지 않는다.
