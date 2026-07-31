@@ -1,6 +1,6 @@
 # 현재 상태
 
-> **2026-07-31 포트폴리오 README 화면 임시 갱신:** README의 Home·색 재추천·Deck·Hueprint·Story·Profile 6장을 모두 `feature/pre-m7-visual-product-polish` 최신 코드의 430×932 로컬 실행 화면으로 교체했다. 이 화면은 `프로토타입 UI · 최종 QA 전`으로 명시했으며 `main` 병합·production 배포·Android 실기기 QA 완료 증거로 사용하지 않는다. 캡처 원본은 `output/playwright/readme-latest-feature/`에만 남기고 README용 선별본만 `docs/assets/readme/`에 포함한다.
+> **2026-07-31 포트폴리오 README 화면 임시 갱신:** README의 Home·색 재추천·Deck·Hueprint·Profile은 `feature/pre-m7-visual-product-polish` 최신 코드의 430×932 로컬 실행 화면으로 교체했다. Story는 같은 최신 UI 캡처의 픽셀 fixture만 개인정보 없는 실사형 컬러워크 예시로 교체한 시각 프로토타입이며 실제 사용자 사진·실행 QA 증거가 아니다. README에 `프로토타입 UI · 최종 QA 전`을 명시했고 `main` 병합·production 배포·Android 실기기 QA 완료 증거로 사용하지 않는다.
 
 > **2026-07-29 M7 전 마감 순서 확정:** M6는 `main`에 통합됐다. Store screenshot과 전체 M7 QA 전에 M6.5 실제 화면·제품 카피 마감을 한 번 수행한다. 실제 430×932/360px/200% 화면에서 승인된 Modern Warm Archive만 좁게 교정하고, `다른 색` 최대 6회(문맥 3+전체 무작위 3, 당일 노출 색 전체 제외), Story 중앙 이름·HEX 표시 선택, 자연스러운 한국어/영어 mission 이름을 구현한다. 그 뒤 M7에서 Android update·보안·Play 출시 gate를 닫는다.
 
