@@ -30,7 +30,7 @@ Hueday는 사진을 잘 찍거나 많은 반응을 얻는 경쟁 대신, **오�
 
 ## 실제 실행 화면
 
-> **프로토타입 UI · 최종 QA 전** — 아래 이미지는 모두 `feature/pre-m7-visual-product-polish`의 최신 코드를 430×932 로컬 브라우저에서 직접 실행해 캡처한 임시 화면입니다. 아직 `main` 병합·production 배포·최종 기기 QA 전이며 출시 화면은 달라질 수 있습니다.
+> **프로토타입 UI · 최종 QA 전** — Home·색 재추천·Deck·Hueprint·Profile은 `feature/pre-m7-visual-product-polish` 최신 코드를 430×932 로컬 브라우저에서 직접 실행한 화면입니다. Story는 같은 최신 UI 캡처에서 픽셀 fixture만 개인정보 없는 실사형 컬러워크 예시 사진으로 교체한 시각 프로토타입이며, 실제 사용자 사진이나 QA 통과 증거가 아닙니다. 아직 `main` 병합·production 배포·최종 기기 QA 전이라 출시 화면은 달라질 수 있습니다.
 
 <table>
   <tr>
@@ -40,7 +40,7 @@ Hueday는 사진을 잘 찍거나 많은 반응을 얻는 경쟁 대신, **오�
   </tr>
   <tr>
     <td align="center"><img src="./docs/assets/readme/04-hueprint.png" alt="Hueprint" width="250"/><br/><sub>주간 색 기록 Hueprint</sub></td>
-    <td align="center"><img src="./docs/assets/readme/05-story-studio.png" alt="Story Studio" width="250"/><br/><sub>9:16 Story 편집·공유</sub></td>
+    <td align="center"><img src="./docs/assets/readme/05-story-studio.png" alt="실사형 컬러워크 예시를 넣은 Story Studio 프로토타입" width="250"/><br/><sub>실사형 컬러워크 예시를 넣은 9:16 Story</sub></td>
     <td align="center"><img src="./docs/assets/readme/06-profile.png" alt="프로필과 기록 통계" width="250"/><br/><sub>기록 통계·언어·동기화 상태</sub></td>
   </tr>
 </table>
