@@ -30,12 +30,12 @@ Hueday는 사진을 잘 찍거나 많은 반응을 얻는 경쟁 대신, **오�
 
 ## 실제 실행 화면
 
-아래 이미지는 430×932 브라우저 QA에서 캡처한 실제 실행 화면입니다. 첫 화면은 현재 M6.5 후보 브랜치이며, 나머지는 production 코드 경로를 beta/QA fixture로 직접 렌더링한 결과입니다.
+> **프로토타입 UI · 최종 QA 전** — 아래 이미지는 모두 `feature/pre-m7-visual-product-polish`의 최신 코드를 430×932 로컬 브라우저에서 직접 실행해 캡처한 임시 화면입니다. 아직 `main` 병합·production 배포·최종 기기 QA 전이며 출시 화면은 달라질 수 있습니다.
 
 <table>
   <tr>
     <td align="center"><img src="./docs/assets/readme/01-home-mission.png" alt="오늘의 색 미션" width="250"/><br/><sub>날씨·시간 기반 오늘의 색</sub></td>
-    <td align="center"><img src="./docs/assets/readme/02-color-hunt-progress.png" alt="컬러 헌트 진행" width="250"/><br/><sub>부분 기록도 안전한 3×3 진행</sub></td>
+    <td align="center"><img src="./docs/assets/readme/02-color-hunt-progress.png" alt="오늘의 색 재추천" width="250"/><br/><sub>문맥 추천 3회 + 중복 없는 무작위 3회</sub></td>
     <td align="center"><img src="./docs/assets/readme/03-living-hue-deck.png" alt="Living Hue Deck" width="250"/><br/><sub>1/3/5/8장에 따라 성장하는 Deck</sub></td>
   </tr>
   <tr>
