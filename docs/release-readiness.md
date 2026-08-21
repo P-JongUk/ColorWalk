@@ -6,6 +6,7 @@
 - 실제 6회 재추천은 문맥 3회 뒤 전체 catalog 3회로 종료됐고, 새로고침 뒤 reroll count·shown ID·shown HEX가 유지됐다. 첫 사진 확정 뒤 `lockedAt`과 reroll UI 잠금도 확인했다. 192 catalog ID 중 191 HEX라서 legacy 상태까지 포함해 seen HEX를 보존하도록 최소 확장했다.
 - Story 중앙 이름·HEX toggle은 신규/legacy 모두 default on이며, off에서는 preview와 실제 1080×1920 PNG의 중앙 label만 사라진다. 실제 QA에서 낮은 cascade layer가 inline mission color를 흰색으로 덮은 결함을 좁게 수정했다.
 - 카탈로그 전수 확인에서 전역 label rewrite를 제거하고 `흐린 한지빛` / `Hazy Hanji Light`만 교정했다. mission ID·HEX·기존 record에는 backfill이 없다. DB schema, server/package, 보상 경제, production deploy도 바꾸지 않았다.
+- 휴대폰 확인용 Preview는 [colorwalk-66z58fizw-parkjonguks-projects.vercel.app](https://colorwalk-66z58fizw-parkjonguks-projects.vercel.app)이며 deployment 응답에서 현재 `index-B-CPgGvA.js`/`index-DjxVk24v.css`를 확인했다. Preview protection이 켜진 프로젝트 설정은 유지했고 production 배포는 하지 않았다.
 - M7은 아직 열려 있다: Android/PWA in-place update, EXIF·coarse location/no persistence, 실제 auth/RLS/signed read 재검증, 실기기 capture/retry, locale/store listing·Play policy 자료가 출시 차단 gate다.
 
 ## Pre-M7 visual/product and privacy gate (approved 2026-07-29)
