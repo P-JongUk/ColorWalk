@@ -29,5 +29,19 @@ describe('daily mission state', () => {
     const mission = getMission('clear', 'day', 'live', 0)
     saveDailyMissionState('user-d', { localDate: '2026-07-23', mission, rerollCount: 0, selectedAt: '2026-07-23T10:00:00.000Z' })
     expect(loadDailyMissionState('user-d', '2026-07-23')?.shownMissionIds).toEqual([mission.id])
+    expect(loadDailyMissionState('user-d', '2026-07-23')?.shownMissionHexes).toEqual([mission.hex])
+  })
+
+  it('derives legacy shown colors from every persisted mission ID', () => {
+    const mission = getMission('rain', 'night', 'live', 61)
+    saveDailyMissionState('user-e', {
+      localDate: '2026-07-23',
+      mission,
+      rerollCount: 1,
+      shownMissionIds: ['rain-morning-asphalt-charcoal', 'rain-night'],
+      selectedAt: '2026-07-23T10:00:00.000Z',
+    })
+
+    expect(loadDailyMissionState('user-e', '2026-07-23')?.shownMissionHexes).toEqual(['#2F4F4F'])
   })
 })

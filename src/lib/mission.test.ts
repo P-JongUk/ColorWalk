@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getDailyMission, getMission, getRandomMission, getTimeBucket, mapWeatherCodeToGroup } from '@/lib/mission'
+import { getAllMissionCandidates, getDailyMission, getMission, getRandomMission, getTimeBucket, mapWeatherCodeToGroup } from '@/lib/mission'
 
 describe('mission helpers', () => {
   it('maps Open-Meteo weather codes to supported groups', () => {
@@ -51,5 +51,31 @@ describe('mission helpers', () => {
     const first = getRandomMission('rain', 'morning', 'live', 61, { rng: () => 0 })
     const next = getRandomMission('rain', 'morning', 'live', 61, { excludeIds: [first.id], rng: () => 0 })
     expect(next.id).not.toBe(first.id)
+  })
+
+  it('keeps all curated Korean and English names as authored labels', () => {
+    const catalog = getAllMissionCandidates()
+
+    expect(catalog).toHaveLength(192)
+    expect(new Set(catalog.map((mission) => mission.hex))).toHaveLength(191)
+    expect(catalog.find((mission) => mission.id === 'clouds-morning-rice-paper-cream')?.label).toEqual({
+      ko: '흐린 한지빛',
+      en: 'Hazy Hanji Light',
+    })
+    expect(catalog.find((mission) => mission.id === 'clouds-morning-clay-mug')?.label).toEqual({
+      ko: '흐린 날 머그컵 클레이',
+      en: 'Cloudy Mug Clay',
+    })
+  })
+
+  it('excludes every previously shown hex even when two catalog IDs share a color', () => {
+    const next = getRandomMission('rain', 'night', 'live', 61, {
+      broaden: true,
+      excludeIds: ['rain-night'],
+      excludeHexes: ['#2F4F4F'],
+      rng: () => 0,
+    })
+
+    expect(next.hex).not.toBe('#2F4F4F')
   })
 })

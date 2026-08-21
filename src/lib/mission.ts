@@ -761,7 +761,7 @@ const missionVariantSceneExpansions: Partial<Record<WeatherGroup, Partial<Record
   },
   clouds: {
     morning: [
-      variant('clouds-morning-rice-paper-cream', '#E6DDC9', '흐린 아침 한지크림', 'Cloudy Rice-Paper Cream', '흐린 빛을 부드럽게 머금은 한지 같은 크림색을 찾아봐요.', 'Find a rice-paper cream holding cloudy morning light.'),
+      variant('clouds-morning-rice-paper-cream', '#E6DDC9', '흐린 한지빛', 'Hazy Hanji Light', '흐린 빛을 부드럽게 머금은 한지 같은 크림색을 찾아봐요.', 'Find a rice-paper cream holding cloudy morning light.'),
     ],
     day: [
       variant('clouds-day-olive-notebook', '#8D8E63', '노트 위 올리브잉크', 'Notebook Olive Ink', '노트 위에 오래 말라붙은 올리브 잉크 같은 색을 찾아봐요.', 'Find an olive ink tone dried into a notebook page.'),
@@ -847,31 +847,6 @@ function variant(
   }
 }
 
-const everydayLabelWords: Array<[string, string, string, string]> = [
-  ['세이지', '화분잎', 'Sage', 'Plant Leaf'], ['올리브', '잎사귀', 'Olive', 'Leaves'],
-  ['코랄', '벽돌빛', 'Coral', 'Brick'], ['틸', '물빛', 'Teal', 'Water'],
-  ['차콜', '밤그늘', 'Charcoal', 'Night Shadow'], ['리넨', '셔츠소매', 'Linen', 'Shirt Sleeve'],
-  ['크래프트', '종이봉투', 'Kraft', 'Paper Bag'], ['앰버', '불빛', 'Amber', 'Light'],
-  ['골드', '불빛', 'Gold', 'Light'], ['브론즈', '잎맥', 'Bronze', 'Leaf Veins'],
-  ['아이보리', '셔츠', 'Ivory', 'Shirt'], ['클레이', '머그컵', 'Clay', 'Mug'],
-  ['라떼', '종이컵', 'Latte', 'Paper Cup'], ['월넛', '나무의자', 'Walnut', 'Wooden Chair'],
-  ['코퍼', '난간', 'Copper', 'Railing'], ['구리', '난간', 'Copper', 'Railing'],
-  ['러스트', '오래된', 'Rust', 'Worn'], ['오트', '시리얼', 'Oat', 'Cereal'],
-  ['테라코타', '흙벽', 'Terracotta', 'Earthen Wall'], ['모브', '자두빛', 'Mauve', 'Plum'],
-  ['슬레이트', '돌계단', 'Slate', 'Stone Steps'], ['네이비', '밤하늘', 'Navy', 'Night Sky'],
-  ['남청', '밤길', 'Navy', 'Night Street'], ['스틸', '난간', 'Steel', 'Railing'],
-]
-
-function withEverydayMissionLabel(mission: MissionCore): MissionCore {
-  let ko = mission.label.ko
-  let en = mission.label.en
-  for (const [koFrom, koTo, enFrom, enTo] of everydayLabelWords) {
-    ko = ko.replaceAll(koFrom, koTo)
-    en = en.replaceAll(enFrom, enTo)
-  }
-  return ko === mission.label.ko && en === mission.label.en ? mission : { ...mission, label: { ko, en } }
-}
-
 function toMissionDateKey(date: Date) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
@@ -900,7 +875,7 @@ function getMissionCandidates(weatherGroup: WeatherGroup, timeBucket: TimeBucket
       ...missionMap[weatherGroup][timeBucket],
       ...variant,
     })),
-  ].map(withEverydayMissionLabel)
+  ]
 }
 
 export function getAllMissionCandidates() {
@@ -911,11 +886,12 @@ export function getAllMissionCandidates() {
 
 export function chooseMissionCandidate(
   candidates: MissionCore[],
-  options: { excludeId?: string; excludeHex?: string; excludeIds?: string[]; rng?: () => number } = {},
+  options: { excludeId?: string; excludeHex?: string; excludeHexes?: string[]; excludeIds?: string[]; rng?: () => number } = {},
 ) {
   const excludedIds = new Set([...(options.excludeIds ?? []), ...(options.excludeId ? [options.excludeId] : [])])
+  const excludedHexes = new Set([...(options.excludeHexes ?? []), ...(options.excludeHex ? [options.excludeHex] : [])].map((hex) => hex.toUpperCase()))
   const withoutCurrent = candidates.filter((candidate) =>
-    !excludedIds.has(candidate.id) && candidate.hex.toUpperCase() !== options.excludeHex?.toUpperCase(),
+    !excludedIds.has(candidate.id) && !excludedHexes.has(candidate.hex.toUpperCase()),
   )
   const filtered = withoutCurrent.length ? withoutCurrent : candidates
   const index = Math.min(filtered.length - 1, Math.floor((options.rng ?? Math.random)() * filtered.length))
@@ -951,7 +927,7 @@ export function getMission(
   weatherCode?: number,
 ): Mission {
   return {
-    ...withEverydayMissionLabel(missionMap[weatherGroup][timeBucket]),
+    ...missionMap[weatherGroup][timeBucket],
     source,
     weatherCode,
   }
@@ -980,7 +956,7 @@ export function getRandomMission(
   timeBucket: TimeBucket,
   source: Mission['source'],
   weatherCode?: number,
-  options: { broaden?: boolean; excludeId?: string; excludeHex?: string; excludeIds?: string[]; rng?: () => number } = {},
+  options: { broaden?: boolean; excludeId?: string; excludeHex?: string; excludeHexes?: string[]; excludeIds?: string[]; rng?: () => number } = {},
 ): Mission {
   const candidates = options.broaden
     ? Array.from(new Map(getAllMissionCandidates().map((candidate) => [candidate.hex.toUpperCase(), candidate])).values())

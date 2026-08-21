@@ -1,4 +1,5 @@
 import { createFreeModeSelection, parseMissionPackSelection } from '@/lib/missionPacks'
+import { getAllMissionCandidates } from '@/lib/mission'
 import type { Mission, MissionPackSelection } from '@/types'
 
 const PREFIX = 'colorwalk:daily-mission'
@@ -8,6 +9,7 @@ export type DailyMissionState = {
   mission: Mission
   rerollCount: number
   shownMissionIds?: string[]
+  shownMissionHexes?: string[]
   selectedAt: string
   lockedAt?: string
   /** Absent on pre-M4 state read back from storage; callers should treat that as free mode. */
@@ -25,7 +27,14 @@ export function loadDailyMissionState(userId: string, localDate: string) {
     const parsed = JSON.parse(value) as DailyMissionState
     // Legacy state (pre-M4) has no missionPack field. Normalize it to explicit free mode
     // so callers never need to special-case "field absent" vs "free mode".
-    return { ...parsed, shownMissionIds: Array.from(new Set([...(parsed.shownMissionIds ?? []), parsed.mission.id])), missionPack: parseMissionPackSelection(parsed.missionPack) ?? createFreeModeSelection() }
+    const shownMissionIds = Array.from(new Set([...(parsed.shownMissionIds ?? []), parsed.mission.id]))
+    const missionHexById = new Map(getAllMissionCandidates().map((mission) => [mission.id, mission.hex.toUpperCase()]))
+    const shownMissionHexes = Array.from(new Set([
+      ...(parsed.shownMissionHexes ?? []).map((hex) => hex.toUpperCase()),
+      ...shownMissionIds.map((id) => missionHexById.get(id)).filter((hex): hex is string => Boolean(hex)),
+      parsed.mission.hex.toUpperCase(),
+    ]))
+    return { ...parsed, shownMissionIds, shownMissionHexes, missionPack: parseMissionPackSelection(parsed.missionPack) ?? createFreeModeSelection() }
   } catch {
     return null
   }

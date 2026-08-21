@@ -134,7 +134,7 @@ function App() {
           return
         }
         // A brand-new DailyMissionState always starts in free mode; yesterday's pack never carries over.
-        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, shownMissionIds: [resolvedWeather.mission.id], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
+        saveDailyMissionState(ownerId, { localDate, mission: resolvedWeather.mission, rerollCount: 0, shownMissionIds: [resolvedWeather.mission.id], shownMissionHexes: [resolvedWeather.mission.hex], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
         setMission(resolvedWeather.mission, resolvedWeather.usedFallbackLocation)
         setActiveMissionPack(createFreeModeSelection())
       } catch {
@@ -380,7 +380,7 @@ function App() {
       const localDate = getLocalDateKey()
       const selected = loadDailyMissionState(ownerId, localDate)
       const nextMission = selected?.mission ?? weather.mission
-      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, shownMissionIds: [nextMission.id], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
+      if (!selected) saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: 0, shownMissionIds: [nextMission.id], shownMissionHexes: [nextMission.hex], selectedAt: new Date().toISOString(), missionPack: createFreeModeSelection() })
       setMission(nextMission, weather.usedFallbackLocation)
       setActiveMissionPack(selected?.missionPack ?? createFreeModeSelection())
       setActiveTab('today')
@@ -544,13 +544,15 @@ function App() {
       return
     }
     const broaden = rerollCount >= 3
+    const shownMissionHexes = selected?.shownMissionHexes ?? [mission.hex]
     const nextMission = getRandomMission(mission.weatherGroup, mission.timeBucket, mission.source, mission.weatherCode, {
       broaden,
       excludeId: mission.id,
       excludeHex: mission.hex,
+      excludeHexes: shownMissionHexes,
       excludeIds: selected?.shownMissionIds ?? [mission.id],
     })
-    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, shownMissionIds: [...(selected?.shownMissionIds ?? [mission.id]), nextMission.id], selectedAt: new Date().toISOString(), missionPack: selected?.missionPack ?? createFreeModeSelection() })
+    saveDailyMissionState(ownerId, { localDate, mission: nextMission, rerollCount: rerollCount + 1, shownMissionIds: [...(selected?.shownMissionIds ?? [mission.id]), nextMission.id], shownMissionHexes: [...shownMissionHexes, nextMission.hex], selectedAt: new Date().toISOString(), missionPack: selected?.missionPack ?? createFreeModeSelection() })
     setMission(nextMission, usedFallbackLocation)
     toast.success(locale === 'ko' ? (broaden ? '전체 큐레이션에서 다른 색을 골랐어요.' : '오늘의 날씨와 시간에 맞는 다른 색을 골랐어요.') : "Today's color was shuffled.")
   }
