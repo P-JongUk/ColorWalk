@@ -11120,4 +11120,30 @@
     font-size: 13px;
     font-weight: 700;
   }
+
+  /* The partial-record status is a natural two-line Korean label on narrow cards. */
+  .status-card > div {
+    min-width: 0;
+  }
+
+  .status-card strong {
+    display: block;
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  /* Story preview and PNG export must retain the actual center mission color. */
+  .story-card .color-grid-chip,
+  .grid-export-card .color-grid-chip {
+    background-color: var(--grid-color) !important;
+  }
+
+  .story-card .color-grid-chip strong,
+  .story-card .color-grid-chip span,
+  .grid-export-card .color-grid-chip strong,
+  .grid-export-card .color-grid-chip span {
+    color: inherit !important;
+  }
 }
