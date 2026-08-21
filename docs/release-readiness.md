@@ -1,5 +1,13 @@
 # Hueday Release Readiness Notes
 
+## M6.5 browser/product completion (2026-08-21)
+
+- `feature/pre-m7-visual-product-polish`에서 실제 브라우저로 430×932 Home 0장/부분/완료, Journal, Story preview와 실제 download PNG를 확인했다. 360px와 200% 상당 viewport에서도 가로 overflow 없이 핵심 CTA와 정사각형 3×3이 유지됐다.
+- 실제 6회 재추천은 문맥 3회 뒤 전체 catalog 3회로 종료됐고, 새로고침 뒤 reroll count·shown ID·shown HEX가 유지됐다. 첫 사진 확정 뒤 `lockedAt`과 reroll UI 잠금도 확인했다. 192 catalog ID 중 191 HEX라서 legacy 상태까지 포함해 seen HEX를 보존하도록 최소 확장했다.
+- Story 중앙 이름·HEX toggle은 신규/legacy 모두 default on이며, off에서는 preview와 실제 1080×1920 PNG의 중앙 label만 사라진다. 실제 QA에서 낮은 cascade layer가 inline mission color를 흰색으로 덮은 결함을 좁게 수정했다.
+- 카탈로그 전수 확인에서 전역 label rewrite를 제거하고 `흐린 한지빛` / `Hazy Hanji Light`만 교정했다. mission ID·HEX·기존 record에는 backfill이 없다. DB schema, server/package, 보상 경제, production deploy도 바꾸지 않았다.
+- M7은 아직 열려 있다: Android/PWA in-place update, EXIF·coarse location/no persistence, 실제 auth/RLS/signed read 재검증, 실기기 capture/retry, locale/store listing·Play policy 자료가 출시 차단 gate다.
+
 ## Pre-M7 visual/product and privacy gate (approved 2026-07-29)
 
 - Run one short M6.5 pass before the full M7 release gate. It must inspect the real 430×932 browser UI and only correct discrepancies from the approved Modern Warm Archive, then verify 360px and 200% zoom. Do not reopen the design direction or generate store assets before this pass.

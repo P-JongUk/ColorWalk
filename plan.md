@@ -4,7 +4,7 @@
 
 Post-launch Canvas updates must preserve the permanent Android package/signing lineage and all prior-version auth, daily records, local masters, Deck, journal, and Story data. Production recipes use versioned isolated storage and copy-forward migrations; prototype data is not auto-promoted, and additive cloud schema must remain compatible with the prior app version.
 
-Last code/document alignment: 2026-07-28 KST. M1 Color Hunt is integrated into `main` at `c22d7a3`; M4 selective mission packs are implemented and verified on `feature/everyday-mission-packs` (not yet merged to `main`). The latest full release verification remains recorded separately in `docs/release-readiness.md`.
+Last code/document alignment: 2026-08-21 KST. M6.5 real-browser product polish is complete on `feature/pre-m7-visual-product-polish` (`5254956`, `1902653`) and remains unmerged; `main == origin/main == 0b93da9` is unchanged. The next release work is M7 update/privacy/device/Play gating; the latest full release verification remains recorded separately in `docs/release-readiness.md`.
 
 ## Status
 - [x] Lazyweb setup and reference verification
@@ -45,7 +45,7 @@ The approved working direction for the external app UI is D — Chromatic Archiv
 ## Core Implementation Notes
 - Username/password beta accounts are the current app identity model. Signup calls the deployed `beta-signup` Edge Function and then opens a password session. Anonymous sign-in remains only as a compatibility/security verification target; the app rejects anonymous sessions and RLS denies anonymous app-data writes.
 - Images are compressed in-browser to WebP before upload, targeting a beta-friendly mobile payload while preserving enough detail for story export.
-- Mission color selection is zero-AI: weather, local time, and optional coarse location map to static recommendations for the initial color and three rerolls; later rerolls draw uniformly from the curated catalog while excluding the displayed color.
+- Mission color selection is zero-AI: weather, local time, and optional coarse location map to static recommendations for the initial color and three rerolls; later rerolls draw uniformly from the curated catalog while excluding every color shown that day, including catalog entries with a duplicate HEX.
 - The old color-match scoring flow is removed from the product UI. The legacy `posts.match_rate` column is retained as `0` only for schema compatibility until a later cleanup migration.
 - Calendar cells use collected color data, not social data.
 - Story export uses code-native 9:16 frames rendered to image.

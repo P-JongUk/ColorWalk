@@ -2,7 +2,9 @@
 
 > **2026-07-29 실행 순서 정정 — 이 블록이 아래의 이전 출시 순서보다 우선한다.** `M2-3 수동 master 정리·업데이트 안전` → `M3 Living Hue Deck` → `M4 최소 미션 팩` → `M5 Hueprint·Color Capsule` → `M6 통합 디자인·접근성·성능` → `M6.5 실제 화면·제품 카피 마감` → `M7 실기기·보안·출시 검증` → 무료 버전 1 출시 → 실제 인플레이스 업데이트 보존 확인 → `M8M 결제·entitlement·Hueday Studio` → `M8A Hue Canvas 필수 초기 업데이트` → `M8B Hue Drop 첫 소셜 업데이트` → 사용 데이터 기반 후보 재검토. 결제 안전 계약: `docs/post-launch-monetization-and-payment-safety.md`.
 
-마지막 갱신: 2026-07-29 KST
+> **2026-08-21 M6.5 완료:** 실제 브라우저 430×932 Home 0/부분/완료·Journal·Story preview/실제 PNG export, 360px 및 200% 상당 layout QA를 마쳤다. 재추천·재진입 상태와 Story 표기 계약을 실제로 확인하면서 발견한 중복 HEX 제외와 Story tile cascade 결함만 보정했다. 이제 다음 실행 단계는 M7 출시 gate이며, M6.5 feature는 아직 `main`에 병합하지 않는다.
+
+마지막 갱신: 2026-08-21 KST
 제품 기준: `docs/hueday-product-blueprint.md`
 로드맵 성격: 빠르고 완성도 있는 출시를 위한 의존 순서와 검증 gate
 
@@ -73,11 +75,11 @@
 
 ### M6.5 실제 화면·제품 카피 마감 완료 조건
 
-- [ ] 430×932 실제 브라우저에서 Home 0장/부분/완료, Journal, Story preview/export를 확인하고 승인된 시안과 다른 시각 결함만 수정한다. 360px·200% 확대도 핵심 CTA와 3×3 정사각형을 확인한다.
-- [ ] 최초 문맥 추천 뒤 `다른 색`은 최대 6회이며, 1~3회 문맥 추천과 4~6회 전체 catalog 균등 무작위가 당일 이미 본 모든 색을 제외한다.
-- [ ] Story의 `중앙 색 이름 표시`는 기본 켜짐이며, 끄면 중앙 이름·HEX만 preview/export에서 숨고 원본 기록과 다른 화면은 바뀌지 않는다.
-- [ ] 한국어·영어 mission catalog 이름을 전수 검토해 감성적이되 자연스럽고 의미가 통하는 이름만 남긴다. ID·HEX와 기존 기록은 backfill하지 않는다.
-- [ ] 디자인 방향, DB schema, 새 서버/package, 보상 경제는 변경하지 않고 변경된 happy path와 현실적인 복구 path만 검증한다.
+- [x] 430×932 실제 브라우저에서 Home 0장/부분/완료, Journal, Story preview/실제 1080×1920 PNG export를 확인했다. 360px·200% 상당 layout에서도 가로 overflow 없이 CTA와 3×3 정사각형을 확인했고, 부분 상태의 긴 status label wrap과 Story 중앙 tile cascade만 최소 보정했다.
+- [x] 최초 문맥 추천 뒤 `다른 색`은 최대 6회이며, 1~3회 문맥 추천과 4~6회 전체 catalog 균등 무작위가 당일 이미 본 모든 색을 제외한다. 상태는 shown mission ID와 HEX를 함께 보존해 서로 다른 ID의 중복 `#2F4F4F`도 다시 나오지 않으며, 재로드와 첫 사진 확정 뒤 잠금을 확인했다.
+- [x] Story의 `중앙 색 이름 표시`는 기본 및 legacy 기록에서 켜짐으로 읽힌다. 끄면 preview와 실제 export의 중앙 이름·HEX만 숨고, 원본 기록·Story header·다른 화면은 바뀌지 않음을 확인했다.
+- [x] 한국어·영어 mission catalog 192 ID(191 unique HEX) 이름을 전수 검토했다. 전역 동적 문구 치환을 제거하고 `흐린 한지빛` / `Hazy Hanji Light`만 좁게 교정했으며 ID·HEX·기존 기록은 backfill하지 않았다.
+- [x] 디자인 방향, DB schema, 새 서버/package, 보상 경제를 변경하지 않았고 변경 happy path와 새로고침 복구 path만 검증했다.
 
 ### M6 한국어·영어 UI 계약
 
@@ -95,9 +97,9 @@
 
 ## 현재 진행 위치
 
-- 마스터 단계: **M6 — 통합 디자인·접근성·성능(Modern Warm Archive) 구현·검증·독립 검토·main 통합 완료**
-- 현재 작업: **M6.5 실제 화면·제품 카피 마감 준비.** M7 store asset과 최종 QA 전에 실제 브라우저에서 승인 디자인을 보고 재추천·Story 표기·색 이름을 좁게 마감한다.
-- 다음 한 작업: **Terra high 단일 작업에서 실제 430×932 브라우저 화면을 확인하고 M6.5 계약만 구현·검증한다.** 완료 뒤 M7 Android 인플레이스 업데이트, 보안, 한국어·영어 store 자료와 Play 정책을 실행한다.
+- 마스터 단계: **M6.5 — 실제 화면·제품 카피 마감 완료(2026-08-21).**
+- 현재 작업: **M7 실기기·보안·출시 검증 준비.** M6.5 branch는 feature 상태로 유지하고 `main` 병합은 별도 검토·결정한다.
+- 다음 한 작업: **M7 Android/PWA 인플레이스 업데이트, 사진·위치 privacy, auth/RLS 재검증, 한국어·영어 Play 출시 자료와 정책 gate를 실행한다.**
 - 최종 목표: 성공 가능성을 만드는 핵심 경험과 안전·품질 기준을 갖춘 Hueday를 최대한 빨리 출시
 
 ## 완료 판정 규칙

@@ -1,12 +1,12 @@
 # 다음 할 일
 
-> ## 2026-07-29 다음 실행 — M6.5 후 M7
+> ## 2026-08-21 다음 실행 — M7 출시 gate
 >
-> 1. `feature/pre-m7-visual-product-polish`에서 실제 430×932 브라우저를 열고 Home 0장/부분/완료, Journal, Story preview/export를 승인 시안과 비교한다. 360px·200% 확대도 확인한다.
-> 2. `다른 색` 최대 6회와 당일 노출 색 전체 제외를 구현한다. 기존 날짜별 local mission state를 최소 확장하고 새 DB/server는 만들지 않는다.
-> 3. Story 중앙 이름·HEX 표시 toggle(default on, legacy on)과 자연스러운 한국어/영어 mission-name catalog 교정을 구현한다. ID·HEX·기존 기록은 변경하지 않는다.
-> 4. M6.5를 검증·병합한 뒤 M7에서 representative camera/album preview EXIF, coarse weather coordinates, location denial/no-persistence, owner RLS/private signed read/cross-user denial, Android in-place update, Play 한국어·영어 출시 자료를 마감한다.
-> 5. M6.5 구현 추천 설정: `GPT-5.6 Terra · high · 계획 모드 끔 · 목표 모드 끔 · Fast 끔`. 방향은 승인됐으므로 Sol/계획 모드는 불필요하다. 수정 후 단순 회귀 캡처만 재확인할 때는 Luna high 또는 Terra medium으로 낮출 수 있다.
+> 1. M6.5 `5254956`/`1902653`의 실제 browser QA와 문서 정렬은 완료했다. `feature/pre-m7-visual-product-polish`는 main 병합 전 상태이며, README 변경은 main의 별도 작업으로 보존한다.
+> 2. password-user populated baseline으로 Android `adb install -r` 및 PWA Service Worker 업데이트 뒤 로그인·draft/master·History·Deck·Story 보존을 실제 확인한다. uninstall/clear data는 통과 근거가 될 수 없다.
+> 3. representative camera/album preview EXIF GPS, foreground-only location denial fallback, coarse weather coordinates/no coordinate-place persistence, private bucket/owner RLS/signed read/anonymous·cross-user denial을 출시 경로에서 재검증한다.
+> 4. 한국어·영어 430×932/360px/200%와 Android 앱별 언어, Play listing·privacy/Data Safety/IARC·심사용 계정을 마감한다. M6.5의 browser-only locale/catalog 검증은 이 gate를 대체하지 않는다.
+> 5. M7 QA와 feature diff의 병합 검토가 모두 통과한 뒤에만 main 병합 여부를 별도 결정한다. production deploy는 그 결정과 별도 출시 절차다.
 
 > ## 2026-07-29 M6 재검토·병합 순서
 >

@@ -750,6 +750,31 @@ M1은 2를 선택했다. 날짜별 IndexedDB key와 `client_meta.colorHunt`를 �
 
 실제 430×932/360px/200% 확대 캡처와 Android TalkBack·실기기 QA는 M7 환경 gate에서 수행한다.
 
+## CW-021 — 실제 M6.5 QA에서 재추천 색 중복과 Story 중심 색 cascade를 좁게 복구
+
+### 문제와 증거
+
+2026-08-21 KST 실제 브라우저 QA에서 catalog는 192 mission ID지만 unique HEX는 191개임을 확인했다. 서로 다른 두 ID가 `#2F4F4F`이므로 shown ID만 제외하는 기존 상태로는 같은 색이 그날 다시 추천될 수 있었다. 또한 Story 중심 tile의 inline mission background(`rgb(95,81,68)`)가 CSS cascade에 의해 `rgb(255,250,242)`로 덮여 실제 preview/export가 색 정체성을 잃었다. 부분 기록 status의 긴 한국어 label도 172px card에서 잘려 보였다.
+
+### 비교와 결정
+
+1. catalog ID/HEX를 수정하거나 duplicate를 제거한다.
+2. 날짜별 local 상태에 shown HEX를 optional으로 보존하고 legacy state에서는 알려진 shown ID/current mission으로 유도한다.
+3. Story export를 별도 렌더러로 갈라 우회한다.
+4. 기존 Story tile에만 최종 cascade 규칙을 추가한다.
+
+2와 4를 선택했다. 이 방식은 mission ID·HEX·기존 기록·DB를 바꾸지 않으면서 계약을 지키고, preview와 html2canvas export가 같은 DOM/CSS를 유지한다. status는 label wrap만 허용해 card 폭이나 layout 구조를 바꾸지 않았다.
+
+### 검증과 결과
+
+- 430×932 Home 0/부분/완료, Journal, Story preview와 실제 1080×1920 PNG download를 확인했다. 360px·200% 상당 viewport도 `scrollWidth === clientWidth`, 정사각형 grid, 접근 가능한 CTA를 확인했다.
+- 실제 6 reroll 뒤 `rerollCount: 6`, shown ID 7개와 unique shown HEX 7개가 재로드 뒤에도 유지됐고 첫 사진 확정 뒤 lock/reroll UI 제거를 확인했다.
+- unit test는 duplicate HEX exclusion과 legacy state HEX 유도를 포함해 16 files/103 tests, lint 0 errors, production build를 통과했다. 성능 수치는 아직 측정하지 않음이며 다음 측정은 M7 실기기에서 3×3 capture/export 체감 시간과 실패 수다.
+
+### 남은 일
+
+- Android/PWA in-place update, EXIF·location privacy, auth/RLS release recheck, physical-device capture/retry, Play locale/policy 자료는 M7 출시 gate로 남는다.
+
 ## 작업 종료 시 갱신 규칙
 
 다음 중 하나라도 해당하면 새 사례를 추가하거나 기존 사례를 갱신한다.

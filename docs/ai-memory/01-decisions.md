@@ -1,5 +1,12 @@
 # 지속 결정
 
+## 2026-08-21 — M6.5 제품 마감 구현 사실 (contract unchanged)
+
+- 전수 catalog 검토에는 authored 한국어/영어 label을 그대로 사용한다. 화면 렌더링 때 전역 문자열 치환을 적용하면 자연스러운 이름도 중복·훼손할 수 있으므로 제거했고, `흐린 한지빛` / `Hazy Hanji Light` 하나만 좁게 교정했다. mission ID·HEX와 historical record label은 바꾸지 않는다.
+- `shownMissionHexes`는 기존 날짜별 local mission state에만 선택적으로 추가한다. catalog에 서로 다른 ID지만 같은 `#2F4F4F`가 있으므로 shown ID만 제외하면 “당일 이미 본 모든 색 제외” 계약을 깨뜨린다. legacy state는 known shown ID/current mission에서 HEX를 유도해 같은 동작으로 복구하며 DB migration/backfill은 하지 않는다.
+- Story 중심 tile은 inline mission background/text가 최종 cascade에서 보존되어야 한다. toggle의 default와 legacy 해석은 `showCenterColorName ?? true`이며, off는 preview/export 중앙 이름·HEX만 숨긴다.
+- M6.5는 실제 브라우저 QA까지 완료했고, 다음은 M7 출시 gate다. feature branch의 main 병합·production deploy는 이 구현 사실에 포함하지 않는다.
+
 ## 2026-07-29 — M7 전 제품 마감과 사진·위치 보안 (approved)
 
 - M6 디자인 방향은 다시 열지 않는다. M7 store asset/전체 release QA 전에 실제 브라우저로 M6.5를 수행해 승인 시안과 다른 부분만 수정한다.
