@@ -1,5 +1,7 @@
 # 다음 할 일
 
+> **2026-10-03 V2 exact next:** `$quota-resume`으로 공식 회복/weekly/Git state 확인 → partial 출력 누락 문서 재확인 → local reading ledger의 나머지 관련 Markdown 전체 독해 → Graphify/scoped code rationale 대조 → Phase 0 baseline checks/screens/performance와 dev watcher 원인 검증 → Phase 1 국내외 research와 영역별 처분. 현재 branch `v2/product-redesign`, V1 `e54ffad`. 이전 M7 목록은 V1 release history이며 지금은 V2 master Phase 0–9가 실행 순서다. 완료 체크포인트는 없으며 Phase 0을 건너뛰지 않는다.
+
 > **2026-10-02 온보딩 후 첫 실행:** 기존 M7 우선순위를 유지한다. populated password-user baseline을 마련해 Android `adb install -r`와 동일 origin PWA 업데이트 후 로그인/draft/master/History/Deck/Story 보존부터 검증한다. 로컬 dev 실행이 필요할 때는 `.tmp` Chromium Cookies watcher `EBUSY`를 좁게 진단·보정하고 확인한다(이번 턴은 설정 보존, preview smoke만 성공). `src/lib/weather.ts`의 coarse 좌표 전달, EXIF·auth/RLS·실기기·한국어/영어 Play gate는 미해결이다. main 병합/배포/Canvas/소셜/결제 착수 승인을 온보딩으로 대체하지 않는다.
 
 > ## 2026-08-21 다음 실행 — M7 출시 gate

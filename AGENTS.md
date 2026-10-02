@@ -1,5 +1,12 @@
 # Hueday Codex Handoff
 
+## Active V2 override — 2026-10-03
+
+- 사용자가 V1 `e54ffad`를 보존하고 `v2/product-redesign`에서 전체 V2 개편을 실행하도록 승인했다. V2 작업에는 아래의 일반 `feature/*`/최신 main 분기 규칙보다 이 branch와 baseline 지시가 우선한다.
+- 가역적인 V2 제품·디자인 결정은 기존 의도, 전체 repository Markdown/code 감사, fresh research/rendered evidence를 비교하고 Decision Evidence를 남겨 자율 선택한다. 과거 V1 승인/후보/보류 기록을 삭제하거나 구현 사실로 바꾸지는 않는다.
+- 이번 요청은 production DB mutation도 승인 gate로 지정했다. 실제 결제/배포/store publish/destructive Git/새 secret·account credential 역시 승인 전 실행하지 않는다. single-agent와 데이터/보안 보호는 유지한다.
+- 실행 상태는 local-only `.ai-context/long-run-plan.md`와 `quota-task.json`, 독해 범위는 `v2-document-reading-ledger.json`, 지속 감사는 `docs/research/v2-existing-project-audit.md`에서 확인한다. 현재 Phase 0과 전체 독해는 미완료다.
+
 Read this file before coding in this repository.
 
 ## Current Product Direction

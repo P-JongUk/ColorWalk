@@ -1,5 +1,13 @@
 # 지속 결정
 
+## 2026-10-03 — V2 전체 개편 승인과 독해 gate
+
+- 사용자 요청에 따라 V1 baseline `e54ffad`를 유지하고 V2 작업은 `v2/product-redesign`에서만 한다. main merge/publication은 포함하지 않는다.
+- 전체 관련 Markdown 실제 독해와 code rationale 확인 뒤 major area를 KEEP/REFINE/SIMPLIFY/REPLACE/REMOVE/DEFER로 판단한다. 가역적 방향은 근거 기록 후 자율 선택하며 기존 재승인 규칙을 이유로 멈추지 않는다.
+- production DB mutation/실제 결제/store publish/public release/destructive Git/새 secret·account credential은 별도 gate다. 단일 agent, 개인정보·인증·유일한 기록 보호는 유지한다.
+- V1 중앙색+8장과 V2 9/9 예시는 확인된 비교 과제이며 아직 변경 결정이 아니다. 전체 독해/외부 조사 전 결론을 채우지 않는다.
+- quota pause는 완료가 아니다. local plan/runtime과 reading ledger를 유지하고 같은 chat에서 실제 회복 확인 후 재개한다.
+
 ## 2026-10-02 — 최초 개인 프로젝트 온보딩
 
 - canonical root는 `D:/JongUk/Documents/ColorWalk`, repo명 ColorWalk, 공개 브랜드 Hueday다. 복사·이동·새 repo/전역 도구 재설치 없이 기존 저장소를 사용한다.
