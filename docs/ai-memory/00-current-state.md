@@ -1,5 +1,7 @@
 # 현재 상태
 
+> **2026-10-02 최초 Personal Product Dev System 온보딩:** canonical root `D:/JongUk/Documents/ColorWalk`와 기존 `feature/pre-m7-visual-product-polish` / `5156435`를 유지했다. `.ai/project-profile.yaml`과 local-only `.ai-context/`를 구성하고 Notion `Personal Product Dev HQ > Projects`에 ColorWalk 한 항목을 생성·readback했다. lint, Vitest 16 files/103 tests, build(타입 검사 포함)를 새로 통과했다. dev는 `.tmp` Chromium profile Cookies 감시 `EBUSY`로 실패했으며 기존 preview에서 HTTP200·인증 화면·로그인 탭 전환을 CLI로 확인했다. 기능/설정/의존성/main/배포/DB는 변경하지 않았다. M7 gate는 그대로 미완료이며 live·실기기 검증 날짜를 갱신하지 않는다.
+
 > **2026-08-21 M6.5 완료(아직 main 병합 전):** `feature/pre-m7-visual-product-polish`에서 `5254956`(mission catalog·재추천/복구)과 `1902653`(Story 중심 tile cascade·부분 status wrap)를 push했다. 실제 브라우저로 430×932 Home 0장/부분/완료, Journal, Story preview와 1080×1920 PNG download, 360px·200% 상당 layout을 확인했다. 6회 재추천과 새로고침 복구, 첫 사진 lock도 실제 UI로 통과했다. catalog는 192 ID/191 unique HEX이므로 local `shownMissionHexes`를 additive·legacy-safe하게 보존해 같은 색을 ID가 달라도 재노출하지 않는다. 휴대폰 확인 Preview는 `https://colorwalk-66z58fizw-parkjonguks-projects.vercel.app`이며 production 배포는 하지 않았다. M7의 update/privacy/auth/RLS/실기기/Play gate는 아직 열려 있으며, M6.5는 별도 merge 검토 전까지 feature branch에 남는다.
 
 > **2026-07-31 포트폴리오 README 화면 임시 갱신:** README의 Home·색 재추천·Deck·Hueprint·Profile은 `feature/pre-m7-visual-product-polish` 최신 코드의 430×932 로컬 실행 화면으로 교체했다. Story는 같은 최신 UI 캡처의 픽셀 fixture만 개인정보 없는 실사형 컬러워크 예시로 교체한 시각 프로토타입이며 실제 사용자 사진·실행 QA 증거가 아니다. README에 `프로토타입 UI · 최종 QA 전`을 명시했고 `main` 병합·production 배포·Android 실기기 QA 완료 증거로 사용하지 않는다.

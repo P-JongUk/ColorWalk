@@ -1,5 +1,7 @@
 # 다음 할 일
 
+> **2026-10-02 온보딩 후 첫 실행:** 기존 M7 우선순위를 유지한다. populated password-user baseline을 마련해 Android `adb install -r`와 동일 origin PWA 업데이트 후 로그인/draft/master/History/Deck/Story 보존부터 검증한다. 로컬 dev 실행이 필요할 때는 `.tmp` Chromium Cookies watcher `EBUSY`를 좁게 진단·보정하고 확인한다(이번 턴은 설정 보존, preview smoke만 성공). `src/lib/weather.ts`의 coarse 좌표 전달, EXIF·auth/RLS·실기기·한국어/영어 Play gate는 미해결이다. main 병합/배포/Canvas/소셜/결제 착수 승인을 온보딩으로 대체하지 않는다.
+
 > ## 2026-08-21 다음 실행 — M7 출시 gate
 >
 > 1. M6.5 `5254956`/`1902653`의 실제 browser QA와 문서 정렬은 완료했다. `feature/pre-m7-visual-product-polish`는 main 병합 전 상태이며, README 변경은 main의 별도 작업으로 보존한다.

@@ -1,5 +1,12 @@
 # 지속 결정
 
+## 2026-10-02 — 최초 개인 프로젝트 온보딩
+
+- canonical root는 `D:/JongUk/Documents/ColorWalk`, repo명 ColorWalk, 공개 브랜드 Hueday다. 복사·이동·새 repo/전역 도구 재설치 없이 기존 저장소를 사용한다.
+- 기본 SHIP과 repo AGENTS/승인 제품 계약/단일 agent를 유지한다. `.ai/project-profile.yaml`은 공유 가능한 실행 근거, `.ai-context/`의 current-task/ledger/handoff는 `.git/info/exclude`로 local-only다. 지속 제품 문서는 기존 `docs/ai-memory/`를 우선한다.
+- Notion Project ID는 `3ed4b738-6e49-8114-9ee1-c9ef0d86b53b`다. 재온보딩은 이 ID와 canonical path/repo로 확인해 갱신하고 중복 생성하지 않는다.
+- Storybook/Impeccable Live 설치·설정은 이번 범위에 필요 없어 생략했다. Browser Annotation/Adjust 미검증과 실제 Playwright CLI preview smoke 성공을 구분한다. dev watcher 실패는 preview로 우회했으며 설정 수정 완료를 주장하지 않는다.
+
 ## 2026-08-21 — M6.5 제품 마감 구현 사실 (contract unchanged)
 
 - 전수 catalog 검토에는 authored 한국어/영어 label을 그대로 사용한다. 화면 렌더링 때 전역 문자열 치환을 적용하면 자연스러운 이름도 중복·훼손할 수 있으므로 제거했고, `흐린 한지빛` / `Hazy Hanji Light` 하나만 좁게 교정했다. mission ID·HEX와 historical record label은 바꾸지 않는다.

@@ -1,0 +1,96 @@
+schema_version: 1
+project:
+  name: ColorWalk
+  public_brand: Hueday
+  repo_root: 'D:/JongUk/Documents/ColorWalk'
+  repo_url: 'https://github.com/P-JongUk/ColorWalk'
+  product_goal: '매일 미션 색 → 중앙색 3×3 기록 → Living Hue Deck/Color Volume → Hueprint/Story'
+  default_mode: SHIP
+  trusted_personal: true
+  phase: 'M6.5 완료(2026-08-21 기록), M7 출시 검증 대기; feature main 미병합'
+  onboarding_branch: feature/pre-m7-visual-product-polish
+  onboarding_head: 51564358c05e0c81af4ebf8143fefe56ce533276
+stack:
+  languages: [TypeScript, JavaScript, CSS, SQL, Java]
+  frameworks: ['React 19.2.6', 'Vite 8.0.14', 'Tailwind CSS 3.4.17', 'Zustand 5.0.13', 'Capacitor 8.3.4']
+  package_managers: ['npm 11.17.0; package-lock.json v3']
+  toolchain: ['Node.js v24.19.0 local / 22 CI', 'TypeScript 6.0.3', 'Vitest 4.1.7', 'ESLint 10.4.0']
+  databases: ['Supabase hosted Postgres', 'IndexedDB drafts/master/archive/outbox']
+  external_services: ['Supabase Auth/RLS/private Storage/Edge Functions', 'Open-Meteo', 'Vercel', 'GitHub Pages workflow']
+  native_storage: Capacitor Filesystem
+  evidence: 'package.json/lock, vite.config.ts, src/lib, android, CI'
+  docker: 'Not required for ordinary web dev; no Dockerfile/compose/supabase/config.toml found; local Supabase unconfigured'
+commands:
+  install: {value: 'npm ci', status: confirmed_not_run, evidence: '.github/workflows/ci.yml; vercel.json; existing node_modules reused'}
+  dev: {value: 'npm run dev', status: startup_then_failed, evidence: 'package.json vite; ready 440ms then EBUSY watching .tmp Chromium Cookies; HTTP/MCP timeout; preview workaround passed, config untouched'}
+  build: {value: 'npm run build', status: passed, evidence: 'tsc -b && vite build; 2026-10-02 KST exit 0; 1847 modules, Vite phase 11.85s'}
+  test: {value: 'npm test -- --run', status: passed, evidence: 'vitest run; CI; 2026-10-02 KST exit 0; 16 files/103 tests, 28.69s'}
+  lint: {value: 'npm run lint', status: passed, evidence: 'eslint .; CI; 2026-10-02 KST exit 0'}
+  typecheck: {value: 'npm run build (includes tsc -b)', status: passed_via_build, evidence: 'No dedicated npm typecheck script; tsconfig references/noEmit'}
+  preview: {value: 'npm run preview', status: passed_smoke, evidence: 'package.json vite preview; 127.0.0.1:4179 HTTP200/Hueday title; cached Playwright CLI renders auth page'}
+  capacitor_sync: {value: 'npm run cap:sync', status: confirmed_not_run, evidence: 'package.json build && npx cap sync android; native inputs unchanged'}
+  supabase_verification: {value: 'npm run verify:supabase', status: confirmed_not_run, evidence: 'package.json/scripts/verify-supabase.mjs; remote test writes/cleanup excluded from onboarding'}
+  seed: {value: 'npm run seed:test-account', status: confirmed_not_run, evidence: 'package.json; remote account/demo mutation excluded from onboarding'}
+  browser_e2e: {value: 'pwsh -File scripts/e2e-core-funnel.ps1', status: confirmed_not_run, evidence: 'Existing local-only build/preview + cached CLI, 430x932 capture/reload/8 photos/journal/Story; not a package script'}
+  android_debug: {value: '.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:assembleDebug', status: confirmed_not_run, evidence: 'AGENTS and Gradle app project; android cwd, JDK21 + D SDK/cache/temp'}
+  android_release: {value: '.\gradlew.bat --console=plain --no-daemon --max-workers=1 --no-watch-fs --no-build-cache :app:bundleRelease', status: confirmed_not_run, evidence: 'AGENTS and Gradle app project; signing/permanent package/Play gate pending'}
+verification:
+  checked_at: '2026-10-02 Asia/Seoul'
+  default: ['npm run lint', 'npm test -- --run', 'npm run build', 'git diff --check']
+  onboarding: ['YAML/script mapping', 'canonical Git root', 'git check-ignore .ai-context', 'scaffold idempotency', 'Notion unique row/readback']
+  ui: ['Preview HTTP200 and real auth screen rendering; CLI signup/login tab interaction; authenticated core-funnel not run']
+  api: ['verify:supabase at relevant auth/RLS/release gate, not run for onboarding']
+  release: ['M7 populated Android/PWA update preservation', 'EXIF/coarse-location/auth/RLS', 'Korean/English real-device/Play policies']
+  evidence_location: '.ai-context/decision-evidence-ledger.md; docs/ai-memory/sessions/'
+frontend:
+  iteration: 'local app -> Codex Browser/Annotation if available -> Impeccable on-demand -> Playwright -> verify-before-done'
+  codex_browser:
+    status: unknown
+    annotation_element_select: unverified
+    annotation_area_select: unverified
+    annotation_delivery: unverified
+    adjust_preview: unverified
+    evidence: 'No successful native Browser/Annotation action; Playwright availability is separate'
+  impeccable:
+    scope: user
+    status: discovered_not_invoked
+    live: not_configured_unverified
+    hooks: 'no hooks added or enabled'
+    evidence: 'C:/Users/JongUk/.agents/skills/impeccable/SKILL.md exists; no project Live setup found; no UI edit requested'
+  storybook:
+    status: absent_optional
+    command: ''
+    reuse_value: 'UI components exist; add only when isolated state/variant preview has concrete value'
+    evidence: 'No dependency, story/config, or npm script found'
+  playwright:
+    status: cli_preview_smoke_passed_mcp_dev_failed
+    command: 'pwsh -File scripts/e2e-core-funnel.ps1'
+    evidence: 'MCP dev navigation 60s timeout; cached CLI 0.1.17 preview navigation/auth rendering passed; .playwright-cli/page-2026-10-02T13-01-15-659Z.yml; full E2E not run'
+  theme_provider_router_mocks: ['CSS variables + Tailwind / Modern Warm Archive', 'Zustand activeTab and App conditional/lazy views; no router dependency', 'locale/i18n and Supabase session', 'existing VITE_E2E_LOCAL_ONLY; mock permission/file/time only as needed']
+deployment:
+  platform: 'Vercel static Vite; GitHub Pages workflow; Capacitor Android'
+  command: ''
+  notes: 'vercel.json npm ci/build/dist confirmed; historical deploy procedure not revalidated; no deploy/live release claim'
+constraints:
+  protected_files: ['AGENTS.md', 'package-lock.json', '.env*', 'existing app/project config', 'existing user artifacts']
+  forbidden_paths: ['secrets/private account docs/browser sessions/tokens/keystores never enter logs/Notion/Git']
+  no_touch_without_approval: ['approved product-direction changes', 'destructive Git/system/production/data changes', 'permanent package ID/Play signing', 'main merge/release gates']
+  canonical_root_only: true
+  agent_policy: current_agent_only
+  context_policy: '.ai-context excluded via .git/info/exclude; .ai profile shareable after review'
+  source_of_truth: ['AGENTS.md', 'docs/hueday-product-blueprint.md', 'docs/hueday-development-roadmap.md', 'docs/development-reference-guide.md', 'docs/ai-memory/']
+  environment_names_only: [VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_AUTH_EMAIL_DOMAIN]
+  storage_policy: 'D-drive caches and per-command TEMP/TMP; do not change global TEMP/TMP'
+notion:
+  project_page_url: 'https://app.notion.com/p/3ed4b7386e4981149ee1c9ef0d86b53b'
+  project_page_id: '3ed4b738-6e49-8114-9ee1-c9ef0d86b53b'
+  projects_data_source: 'collection://3af9c6d2-db20-4575-8185-03bc5a80b35e'
+  scope: 'Personal Product Dev HQ > Projects; CWP untouched'
+risks:
+  - 'weather.ts sends uncoarsened Open-Meteo coordinates; approved M7 privacy gate pending, no fix this turn'
+  - 'Historical live grid_images fallback/RLS/private bucket state needs fresh gate check'
+  - 'No fresh Android/PWA update-preservation/EXIF/physical-device/Play/deployment evidence'
+  - 'Vite dev watcher EBUSY on .tmp Chromium profile; preview avoids watcher; future dev fix requires targeted verification'
+  - 'Preserved existing untracked .tmp-with-trailing-space path, diff.patch, output'
+next_action: 'M7 populated password-user baseline, Android adb install -r / same-origin PWA update, login/draft/master/History/Deck/Story preservation'
+last_onboarded: '2026-10-02 Asia/Seoul'
